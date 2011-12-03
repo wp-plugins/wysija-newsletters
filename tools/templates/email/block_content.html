@@ -1,0 +1,18 @@
+{if #alignment == 'center'}
+    {if #image.src && ! #image.static}
+        <td class="content-container" valign="top" align="{#alignment}" width="580">{include file="templates/email/block_image.html"}</td>
+    </tr>
+    <tr class="body">
+    {/if}
+    {if #text}
+        <td class="content-container" valign="top" width="580">
+            {include file="templates/email/block_text.html"}
+        </td>
+    {/if}
+{/if}
+{if #alignment != 'center'}
+    <td class="content-container" valign="top" width="580">
+        {include file="templates/email/block_image.html"}
+        {include file="templates/email/block_text.html"}
+    </td>
+{/if}

@@ -1,0 +1,44 @@
+html {
+    background-color: #FFF;
+}
+.header {
+    background-color: #FFF;
+}
+body {
+    color:#525252;
+    font-family: "Georgia";
+    font-size: 13px;
+    background-color: #fff;
+}
+.footer {
+    color: #403DAD;
+    font-family: Georgia;
+    font-size: 12px;
+    background-color: #F7F7F7;
+}
+h1 {
+    color: #525252;
+    font-family: Impact;
+    font-size: 72px;
+}
+h2 {
+    color: #525252;
+    font-family: Georgia;
+    font-size: 34px;
+}
+h3 {
+    color: #525252;
+    font-family: Georgia;
+    font-size: 24px;
+}
+a {
+    color: #403DAD;
+    font-family: Arial;
+    font-size: 13px;
+    text-decoration:'underline';
+}
+.divider {
+    border-color: #BFBFBF;
+    border-size: 1px;
+    border-style: dashed;
+}

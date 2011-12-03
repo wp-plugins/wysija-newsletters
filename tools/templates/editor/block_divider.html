@@ -1,0 +1,9 @@
+<div wysija_type="{#type}" class="wysija_block" wysija_position="{#position}">
+    {include file="templates/editor/block_controls.html"}
+    {include file="templates/editor/block_placeholder.html"}
+
+    <div class="wysija_divider">
+        {if #divider.src}<img src="{#divider.src}" height="{#divider.height}" width="{#divider.width}" />{/if}
+        {if ! #divider.src}<hr />{/if}
+    </div>
+</div>
