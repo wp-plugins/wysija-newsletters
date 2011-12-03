@@ -1,28 +1,175 @@
 <?php
-defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back extends WYSIJA_view{ var $column_actions=array(); var $column_action_list=''; var $arrayMenus=array(); var $bulks=array(); function WYSIJA_view_back(){ if(!$this->column_actions) $this->column_actions=array('view'=>__('View',WYSIJA),'edit'=>__('Edit',WYSIJA),'delete'=>__('Delete',WYSIJA)); $this->bulks["delete"]=array("name"=>__("Delete",WYSIJA)); } function main($data){ echo '<form method="post" action="admin.php?page='.$_REQUEST['page'].'" id="posts-filter">'; $this->filtersLink(); $this->searchBox(); $this->listing($data); echo '</form>'; } function menuTop($actionmenu=false){ $menu=""; foreach($this->arrayMenus as $action =>$actiontrans){ $menu.= '<a href="admin.php?page='.$_REQUEST['page'].'&action='.$action.'" class="button-secondary2">'.$actiontrans.'</a>'; } return $menu; } function header(){ echo '<div id="wysija-app" class="wrap">'; echo '<div class="icon32" id="'.$this->icon.'"><br/></div>'; $fulltitle=__($this->title,WYSIJA); $action=$subtitle=""; if(isset($_REQUEST['action'])) $action=$_REQUEST['action']; if($action && $action!='main' && isset($this->subtitle)) $subtitle="[".ucfirst(__($action,WYSIJA))."]"; if(isset($this->titlelink)){ $mytitle='<a href="admin.php?page='.$_REQUEST['page'].'">'.$fulltitle.'</a> '; }else{ $mytitle=$fulltitle.' '; } echo '<h2>'.$mytitle.$subtitle.$this->menuTop($this->action).'</h2>'; echo $this->messages(); } function footer(){ echo "</div>"; } function filtersLink(){ if($this->links){ ?>
+defined('WYSIJA') or die('Restricted access');
+
+class WYSIJA_view_back extends WYSIJA_view{
+
+    var $column_actions=array();/*list of actions possible through links in the list*/
+    var $column_action_list='';/*name of the column that will contain the list of action*/
+    var $arrayMenus=array();
+    var $bulks=array();
+    
+    function WYSIJA_view_back(){
+        /* the default actions to be linked in a listing */
+        if(!$this->column_actions)  $this->column_actions=array('view'=>__('View',WYSIJA),'edit'=>__('Edit',WYSIJA),'delete'=>__('Delete',WYSIJA));
+
+        $this->bulks["delete"]=array("name"=>__("Delete",WYSIJA));
+    }
+
+    /**
+     * creation of a generic listing view
+     * @param type $data 
+     */
+    function main($data){
+
+        echo '<form method="post" action="admin.php?page='.$_REQUEST['page'].'" id="posts-filter">';
+        $this->filtersLink();
+        $this->searchBox();
+
+        $this->listing($data);
+        echo '</form>';
+    }
+    
+    function menuTop($actionmenu=false){
+        
+        $menu="";
+        foreach($this->arrayMenus as $action =>$actiontrans){
+            $menu.= '<a href="admin.php?page='.$_REQUEST['page'].'&action='.$action.'" class="button-secondary2">'.$actiontrans.'</a>';
+        }
+        return $menu;
+    }
+    
+    /**
+     * to help reproduce the standard view of wordpress admin view here is the header part
+     * @param type $methodView 
+     */
+    function header(){
+        echo '<div id="wysija-app" class="wrap">';/*start div class wrap*/
+        echo '<div class="icon32" id="'.$this->icon.'"><br/></div>';
+        $fulltitle=__($this->title,WYSIJA);
+        $action=$subtitle="";
+        
+        if(isset($_REQUEST['action'])) $action=$_REQUEST['action'];
+        if($action && $action!='main' && isset($this->subtitle)) $subtitle="[".ucfirst(__($action,WYSIJA))."]";
+        
+        
+        if(isset($this->titlelink)){
+            $mytitle='<a href="admin.php?page='.$_REQUEST['page'].'">'.$fulltitle.'</a> ';
+        }else{
+            $mytitle=$fulltitle.' ';
+        }
+        echo '<h2>'.$mytitle.$subtitle.$this->menuTop($this->action).'</h2>';
+        echo $this->messages();     
+    }
+    
+    
+    /**
+     * to help reproduce the standard view of wordpress admin view here is the footer part
+     */
+    function footer(){
+        echo "</div>";/*end div class wrap*/
+    }
+    
+    /**
+     * to help reproduce the standard listing of a wordpress admin, here is the list of links appearing on top
+     */
+    function filtersLink(){
+        if($this->links){
+            ?>
             <div class="filter">
                 <ul class="subsubsub">
                     <?php
- foreach($this->links as $link){ echo '<li><a class="current" href="'.$link['uri'].'">'.$link['title'].' <span class="count">('.$link['count'].')</span></a> |</li>'; } ?>
+                        foreach($this->links as $link){
+                            echo '<li><a class="current" href="'.$link['uri'].'">'.$link['title'].' <span class="count">('.$link['count'].')</span></a> |</li>';
+                        }
+                    ?>
                 </ul>
             </div>
             <?php
- } } function searchBox(){ $search=""; if(isset($_REQUEST['search'])) $search =stripslashes($_REQUEST['search']); ?>
+        }  
+    }
+    
+    /**
+     * to help reproduce the standard listing of a wordpress admin, here is the search box
+     */
+    function searchBox(){
+        $search="";
+        if(isset($_REQUEST['search'])) $search =stripslashes($_REQUEST['search']);
+        ?>
             <p class="search-box">
                 <label for="wysija-search-input" class="screen-reader-text"><?php echo $this->search['title'] ?></label>
                 <input type="text" value="<?php echo esc_attr($search) ?>" class="searchbox" name="search" id="wysija-search-input">
                 <input type="submit" class="searchsub button" value="<?php echo esc_attr($this->search['title']) ?>">
             </p>
         <?php
- } function buildHeaderListing($data){ if(!$data) { return false; } $this->listingHeader='<tr class="thead">'; $columns=$data[0]; $sorting=array(); foreach($columns as $row =>$colss){ $sorting[$row]=" sortable desc"; if(isset($_REQUEST["orderby"]) && $_REQUEST["orderby"]==$row) $sorting[$row]=" sorted ".$_REQUEST["ordert"]; } $hiddenOrder=""; if(isset($_REQUEST["orderby"])){ $hiddenOrder='<input type="hidden" name="orderby" id="wysija-orderby" value="'.esc_attr($_REQUEST["orderby"]).'"/>'; $hiddenOrder.='<input type="hidden" name="ordert" id="wysija-ordert" value="'.esc_attr($_REQUEST["ordert"]).'"/>'; } if(isset($columns[$this->model->pk])){ $nk=str_replace("_",'-',$this->model->pk); $this->listingHeader='<th class="manage-column column-'.$nk.' check-column" id="'.$nk.'" scope="col"><input type="checkbox"></th>'; unset($columns[$this->model->pk]); $this->cols_nks[$this->model->pk]=$nk; } foreach($columns as $key => $value){ $nk=str_replace("_",'-',$key); $this->listingHeader.='<th class="manage-column column-'.$nk.$sorting[$key].'" id="'.$nk.'" scope="col">'; if(isset($this->model->columns[$key]['label'])) $label=$this->model->columns[$key]['label']; else $label=ucfirst($key); $this->listingHeader.='<a class="orderlink" href="#"><span>'.$label.'</span><span class="sorting-indicator"></span></a>'; $this->listingHeader.='</th>'; $this->cols_nks[$key]=$value; } $this->hiddenFields=$hiddenOrder; $this->listingHeader.='</tr>'; return $this->listingHeader; } function globalActions($data=false,$second=false){ ?>
+    }
+    
+    /**
+     * to help reproduce the standard listing of a wordpress admin, here is the table header/footer of the listing
+     * @param type $data
+     * @return type 
+     */
+    function buildHeaderListing($data){
+        //building the headers labels
+        if(!$data) {
+            //$this->notice(__("There is no data at the moment.",WYSIJA));
+            return false;
+        }
+        $this->listingHeader='<tr class="thead">';
+        $columns=$data[0];
+        $sorting=array();
+        
+        foreach($columns as $row =>$colss){   
+            $sorting[$row]=" sortable desc";
+            if(isset($_REQUEST["orderby"]) && $_REQUEST["orderby"]==$row) $sorting[$row]=" sorted ".$_REQUEST["ordert"];
+        } 
+        
+        $hiddenOrder="";
+        if(isset($_REQUEST["orderby"])){
+            $hiddenOrder='<input type="hidden" name="orderby" id="wysija-orderby" value="'.esc_attr($_REQUEST["orderby"]).'"/>';
+            $hiddenOrder.='<input type="hidden" name="ordert" id="wysija-ordert" value="'.esc_attr($_REQUEST["ordert"]).'"/>';
+        }
+        
+        if(isset($columns[$this->model->pk])){
+            $nk=str_replace("_",'-',$this->model->pk); 
+            $this->listingHeader='<th class="manage-column column-'.$nk.' check-column" id="'.$nk.'" scope="col"><input type="checkbox"></th>';
+            unset($columns[$this->model->pk]);
+            $this->cols_nks[$this->model->pk]=$nk;
+        }
+        foreach($columns as $key => $value){
+            $nk=str_replace("_",'-',$key);
+            $this->listingHeader.='<th class="manage-column column-'.$nk.$sorting[$key].'" id="'.$nk.'" scope="col">';
+            
+            if(isset($this->model->columns[$key]['label'])) $label=$this->model->columns[$key]['label'];
+            else  $label=ucfirst($key);
+            $this->listingHeader.='<a class="orderlink" href="#"><span>'.$label.'</span><span class="sorting-indicator"></span></a>';
+
+            $this->listingHeader.='</th>';
+            
+            $this->cols_nks[$key]=$value;
+        }
+        $this->hiddenFields=$hiddenOrder;
+        $this->listingHeader.='</tr>';
+        return $this->listingHeader;
+    }
+    
+    
+    /**
+     * to help reproduce the standard listing of a wordpress admin, here is the bulk action dropdown applied to selected rows
+     */
+    function globalActions($data=false,$second=false){
+         ?>
         <div class="tablenav">    
             <?php if($this->bulks){ ?>
             <div class="alignleft actions">
                 <select name="action2" class="global-action">
                     <option selected="selected" value=""><?php echo esc_attr(__('Bulk Actions', WYSIJA)); ?></option>
-                    <?php  foreach($this->bulks as $key=> $bulk){ echo '<option value="bulk_'.$key.'">'.$bulk['name'].'</option>'; } ?>
+                    <?php 
+                        foreach($this->bulks as $key=> $bulk){
+                            echo '<option value="bulk_'.$key.'">'.$bulk['name'].'</option>';
+                        }
+                    ?>
                 </select>
-                <input type="submit" class="bulksubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Apply', WYSIJA)); ?>">
+                <input type="submit" class="bulksubmit button-secondary action" name="doaction" value="<?php echo  esc_attr(__('Apply', WYSIJA)); ?>">
                 <?php if(!$second)$this->secure('bulk_delete'); ?>
             </div>
             <?php } ?>
@@ -30,54 +177,501 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back extends WY
             <div class="clear"></div>
         </div>
         <?php
- } function pagination($paramsurl='',$second=false){ $numperofpages=ceil($this->model->countRows/$this->model->limit); ?>
+
+    }
+    
+    /**
+     * helping function for listing management here is the pagination function
+     */
+    function pagination($paramsurl='',$second=false){
+
+        $numperofpages=ceil($this->model->countRows/$this->model->limit);
+        
+            ?>
             <div class="tablenav-pages">
-                <span class="displaying-num"><?php  $limitend=$this->model->limit_end; if($this->model->limit_end>$this->model->countRows) $limitend=$this->model->countRows; if($numperofpages>1) echo sprintf(__('Displaying %1$d-%2$d of %3$d.',WYSIJA), $this->model->limit_start+1,$limitend,$this->model->countRows); else echo sprintf(__('%1$d Items',WYSIJA), $this->model->countRows); ?></span>
+                <span class="displaying-num"><?php 
+                $limitend=$this->model->limit_end;
+                if($this->model->limit_end>$this->model->countRows) $limitend=$this->model->countRows;
+                if($numperofpages>1) echo sprintf(__('Displaying %1$d-%2$d of %3$d.',WYSIJA), $this->model->limit_start+1,$limitend,$this->model->countRows);
+                else echo sprintf(__('%1$d Items',WYSIJA), $this->model->countRows);
+
+                        ?></span>
                 <?php
- $pagiNUM=1; if(isset($_REQUEST['pagi'])) $pagiNUM=$_REQUEST['pagi']; if($numperofpages>1){ $textBoxPagi=""; $sufix=""; if($second) $sufix="-2"; $textBoxPagi='<input id="wysija-pagination'.$sufix.'" type="text" name="pagi'.$sufix.'" size="4" value="'.$pagiNUM.'" />'; $textBoxPagi.='<input id="wysija-pagination-max'.$sufix.'" type="hidden" name="pagimax'.$sufix.'" value="'.$numperofpages.'" />'; $pagi=''; if($pagiNUM!=1){ $pagi.='<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi=1'.$paramsurl.'" alt="1" title="'.sprintf(__('Page %1$s',WYSIJA),1).'">«</a>'; if($pagiNUM>2) $pagi.='<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($pagiNUM-1).$paramsurl.'" alt="'.($pagiNUM-1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($pagiNUM-1)).'" ><</a>'; } if($numperofpages>10){ if($pagiNUM>3){ if($pagiNUM>4) $pagi.='<span class="dots">...</span>'; for($i=$pagiNUM-3;$i<=$pagiNUM-1;$i++){ if($i-1==$this->model->page){ $pagi.='<span class="page-numbers current">'.$i.'</span>'; }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>'; } }else{ for($i=1;$i<=3;$i++){ if($i-1==$this->model->page){ $pagi.='<span class="page-numbers current">'.$i.'</span>'; }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>'; } $pagi.='<span class="dots">...</span>'; } $pagi.=$textBoxPagi; if($pagiNUM>3 && $pagiNUM<($numperofpages-3)){ for($i=$pagiNUM+1;$i<=$pagiNUM+3;$i++){ if($i-1==$this->model->page){ $pagi.='<span class="page-numbers current">'.$i.'</span>'; }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>'; } $pagi.='<span class="dots">...</span>'; }else{ if($pagiNUM<3){ $pagi.='<span class="dots">...</span>'; for($i=($numperofpages-2);$i<=$numperofpages;$i++){ if($i-1==$this->model->page){ $pagi.='<span class="page-numbers current">'.$i.'</span>'; }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>'; } } } }else{ $pagi.=$textBoxPagi; for($i=1;$i<=$numperofpages;$i++){ if($i-1==$this->model->page){ $pagi.='<span class="page-numbers current">'.$i.'</span>'; }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>'; } } if($numperofpages >2 && $pagiNUM!=$numperofpages){ if(($numperofpages-$pagiNUM)>=2) $pagi.='<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($pagiNUM+1).$paramsurl.'" alt="'.($pagiNUM+1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($pagiNUM+1)).'">></a>'; $pagi.='<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.$numperofpages.$paramsurl.'" alt="'.$numperofpages.'" title="'.sprintf(__('Page %1$s',WYSIJA),$numperofpages).'" >»</a>'; } echo $pagi; } ?>
+                $pagiNUM=1;
+                if(isset($_REQUEST['pagi'])) $pagiNUM=$_REQUEST['pagi'];
+                if($numperofpages>1){
+                    $textBoxPagi="";
+                    $sufix="";
+                    if($second) $sufix="-2";
+
+                    $textBoxPagi='<input id="wysija-pagination'.$sufix.'" type="text" name="pagi'.$sufix.'" size="4" value="'.$pagiNUM.'" />';
+                    $textBoxPagi.='<input id="wysija-pagination-max'.$sufix.'" type="hidden" name="pagimax'.$sufix.'" value="'.$numperofpages.'" />';
+
+                    $pagi='';
+                    if($pagiNUM!=1){
+                        $pagi.='<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi=1'.$paramsurl.'" alt="1" title="'.sprintf(__('Page %1$s',WYSIJA),1).'">«</a>';
+                        if($pagiNUM>2) $pagi.='<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($pagiNUM-1).$paramsurl.'" alt="'.($pagiNUM-1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($pagiNUM-1)).'" ><</a>';
+                    }
+                    
+                    if($numperofpages>10){
+                        if($pagiNUM>3){
+                            if($pagiNUM>4)  $pagi.='<span class="dots">...</span>';
+                            for($i=$pagiNUM-3;$i<=$pagiNUM-1;$i++){
+                                if($i-1==$this->model->page){
+                                    $pagi.='<span class="page-numbers current">'.$i.'</span>';
+                                }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
+                            }
+                        }else{
+                            for($i=1;$i<=3;$i++){
+                                if($i-1==$this->model->page){
+                                    $pagi.='<span class="page-numbers current">'.$i.'</span>';
+                                }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
+                            }
+                            $pagi.='<span class="dots">...</span>';
+                        }
+                        
+                        $pagi.=$textBoxPagi;
+                        
+                        if($pagiNUM>3 && $pagiNUM<($numperofpages-3)){
+                            for($i=$pagiNUM+1;$i<=$pagiNUM+3;$i++){
+                                if($i-1==$this->model->page){
+                                    $pagi.='<span class="page-numbers current">'.$i.'</span>';
+                                }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';    
+                            }
+                            $pagi.='<span class="dots">...</span>';
+                        }else{
+                            if($pagiNUM<3){
+                                $pagi.='<span class="dots">...</span>';
+                                for($i=($numperofpages-2);$i<=$numperofpages;$i++){
+                                    if($i-1==$this->model->page){
+                                        $pagi.='<span class="page-numbers current">'.$i.'</span>';
+                                    }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';    
+                                }
+                            }
+                            
+                            
+                        }
+                        
+                    }else{
+                        $pagi.=$textBoxPagi;
+                        for($i=1;$i<=$numperofpages;$i++){
+                            if($i-1==$this->model->page){
+                                $pagi.='<span class="page-numbers current">'.$i.'</span>';
+                            }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
+                        }
+                    }
+
+                    
+                    if($numperofpages >2 && $pagiNUM!=$numperofpages){
+
+                        if(($numperofpages-$pagiNUM)>=2) $pagi.='<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($pagiNUM+1).$paramsurl.'" alt="'.($pagiNUM+1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($pagiNUM+1)).'">></a>';
+                        $pagi.='<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.$numperofpages.$paramsurl.'" alt="'.$numperofpages.'" title="'.sprintf(__('Page %1$s',WYSIJA),$numperofpages).'" >»</a>';
+                        
+                    }
+                    echo $pagi;
+                }
+                ?>
             </div>
             <?php
- } function limitPerPage(){ if($this->model->countRows<1) return true; $limitPerpageS=array(10,20,50,100,500); $pagi=""; $limitPerpage=array(); $lastLimitpp=false; foreach($limitPerpageS as $k=> $count){ if(isset($this->limit_pp) && $this->limit_pp>=$count){ $limitPerpage[]=$count; $lastLimitpp=true; }else{ if($this->model->countRows>$count){ $limitPerpage[]=$count; $lastLimitpp=false; } } } if(!$limitPerpage) return; $countT=count($limitPerpage); if(!$lastLimitpp && count($limitPerpage)<count($limitPerpageS)) $limitPerpage[]=$limitPerpageS[$countT]; $lastval=end($limitPerpage); reset($limitPerpage); if(isset($this->limit_pp)) $pagi.='<input id="wysija-pagelimit" type="hidden" name="limit_pp" value="'.$this->limit_pp.'" />'; foreach($limitPerpage as $k=> $count){ $numperofpages=ceil($this->model->countRows/$count); $titleLink=' title="'.sprintf(__('Will split records into %1$s pages.',WYSIJA),$numperofpages).'" '; if(isset($_REQUEST['limit_pp'])){ if($_REQUEST['limit_pp']==$count) $pagi.='<span '.$titleLink.'  class="page-limit current">'.$count.'</span>'; else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&limit_pp='.$count.'" '.$titleLink.' class="page-limit" >'.$count.'</a>'; }else{ if($this->model->limit==$count) $pagi.='<span class="page-limit current" '.$titleLink.' >'.$count.'</span>'; else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&limit_pp='.$count.'" '.$titleLink.' class="page-limit" >'.$count.'</a>'; } if($count!=$lastval) $pagi.=" | "; } ?>
+    }
+    
+    
+    
+    /**
+     * limit of records to show per page
+     */
+    function limitPerPage(){
+        if($this->model->countRows<1) return true;
+        
+        $limitPerpageS=array(10,20,50,100,500);
+        $pagi="";
+        $limitPerpage=array();
+        /* to correct a display bug */
+        $lastLimitpp=false;
+        foreach($limitPerpageS as $k=> $count){
+            if(isset($this->limit_pp) && $this->limit_pp>=$count){
+                $limitPerpage[]=$count;
+                $lastLimitpp=true;
+            }else{
+                if($this->model->countRows>$count){
+                    $limitPerpage[]=$count;
+                    $lastLimitpp=false;
+                }
+            }
+            
+            
+        }
+        if(!$limitPerpage) return;
+
+        $countT=count($limitPerpage);
+        if(!$lastLimitpp && count($limitPerpage)<count($limitPerpageS))   $limitPerpage[]=$limitPerpageS[$countT];
+
+        $lastval=end($limitPerpage);
+        reset($limitPerpage);
+        if(isset($this->limit_pp)) $pagi.='<input id="wysija-pagelimit" type="hidden" name="limit_pp" value="'.$this->limit_pp.'" />';
+        foreach($limitPerpage as $k=> $count){
+            $numperofpages=ceil($this->model->countRows/$count);
+            $titleLink=' title="'.sprintf(__('Will split records into %1$s pages.',WYSIJA),$numperofpages).'" ';
+                if(isset($_REQUEST['limit_pp'])){
+                    if($_REQUEST['limit_pp']==$count) $pagi.='<span '.$titleLink.'  class="page-limit current">'.$count.'</span>';
+                    else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&limit_pp='.$count.'" '.$titleLink.' class="page-limit" >'.$count.'</a>';
+                }else{
+                    if($this->model->limit==$count) $pagi.='<span class="page-limit current" '.$titleLink.' >'.$count.'</span>';
+                    else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&limit_pp='.$count.'" '.$titleLink.' class="page-limit" >'.$count.'</a>';
+                }
+               if($count!=$lastval) $pagi.=" | "; 
+
+        }
+        ?>
         <div class="tablenav-limits subsubsub">
-            <span class="displaying-limits"><?php  if(isset($this->viewObj->msgPerPage)){ echo $this->viewObj->msgPerPage; }else{ _e('Records to show per page:',WYSIJA); } ?></span>
+            <span class="displaying-limits"><?php 
+            if(isset($this->viewObj->msgPerPage)){
+                echo $this->viewObj->msgPerPage;
+            }else{
+                _e('Records to show per page:',WYSIJA);
+            }
+             ?></span>
             <?php
- echo $pagi; ?>
+                echo $pagi;
+            ?>
         </div>
         <?php
- } function fieldListHTML($key,$val,$params=array()){ switch($params['type']){ case "pk": return '<th class="check-column" scope="col"><input class="checkboxselec" type="checkbox" value="'.$val.'" id="'.$key.'_'.$val.'" name="wysija['.$this->model->table_name.']['.$key.'][]"></th>'; break; case "boolean": $wrap='<td class="'.$key.' column-'.$key.'">'; $wrap.=$params['values'][$val]; $wrap.='</td>'; break; case "date": $wrap='<td class="'.$key.' column-'.$key.'">'; $wrap.=$this->fieldListHTML_created_at($val); $wrap.='</td>'; break; default: $wrap='<td class="'.$key.' column-'.$key.'">'; $specialMethod="fieldListHTML_".$key; if(method_exists($this, $specialMethod)) $wrap.=$this->$specialMethod($val); else $wrap.=$val; $wrap.=$this->getActionLinksList($key); $wrap.='</td>'; } return $wrap; } function fieldListHTML_created_at($val){ return date_i18n(get_option('date_format'),$val); } function getActionLinksList($column,$manual=false){ $wrap=''; if($this->column_action_list==$column ||$manual){ $wrap='<div class="row-actions">'; end($this->column_actions); $lastkey=key($this->column_actions); reset($this->column_actions); foreach($this->column_actions as $action => $title){ switch($action){ case "delete": $noncefield='&_wpnonce='.$this->secure(array('action'=>$action,'id'=>$this->valPk),true); break; default: $noncefield=""; } $separator=''; if($action!=$lastkey) $separator=' | '; $wrap.='<span class="'.$action.'">
+        
+        
+    }
+    
+    
+    /**
+     * here is a helper for each column value on a listing view
+     * @param type $key
+     * @param type $val
+     * @param type $type
+     * @return type 
+     */
+    function fieldListHTML($key,$val,$params=array()){
+        /*get the params of that field if there is*/
+
+        switch($params['type']){
+            case "pk":
+                return '<th class="check-column" scope="col"><input class="checkboxselec" type="checkbox" value="'.$val.'" id="'.$key.'_'.$val.'" name="wysija['.$this->model->table_name.']['.$key.'][]"></th>';
+                break;
+            case "boolean":
+
+                $wrap='<td class="'.$key.' column-'.$key.'">';
+                $wrap.=$params['values'][$val];
+                $wrap.='</td>';
+
+                break;
+            case "date":
+
+                $wrap='<td class="'.$key.' column-'.$key.'">';
+                $wrap.=$this->fieldListHTML_created_at($val);
+                $wrap.='</td>';
+
+                break;
+            default:
+                $wrap='<td class="'.$key.' column-'.$key.'">';
+                $specialMethod="fieldListHTML_".$key;
+                if(method_exists($this, $specialMethod)) $wrap.=$this->$specialMethod($val);
+                else $wrap.=$val;
+                
+                $wrap.=$this->getActionLinksList($key);
+                
+                $wrap.='</td>';
+               
+        }
+         return $wrap;
+    }
+    
+    function fieldListHTML_created_at($val){
+        return date_i18n(get_option('date_format'),$val);
+
+        //return date("Y-m-d",$val);
+    }
+    
+    /**
+     * this function adds a list of action links under the column valued in a listing
+     * @param type $column
+     * @return string 
+     */
+    function getActionLinksList($column,$manual=false){
+        $wrap='';
+        if($this->column_action_list==$column ||$manual){
+            $wrap='<div class="row-actions">';
+            end($this->column_actions);
+            $lastkey=key($this->column_actions);
+            reset($this->column_actions);
+            foreach($this->column_actions as $action => $title){
+                switch($action){
+                    case "delete":
+                        $noncefield='&_wpnonce='.$this->secure(array('action'=>$action,'id'=>$this->valPk),true);
+                        break;
+                    default:
+                        $noncefield="";
+                }
+                $separator='';
+
+                if($action!=$lastkey)   $separator=' | ';
+                
+                $wrap.='<span class="'.$action.'">
                     <a href="admin.php?page='.$this->model->table_prefix.'_'.$this->model->table_name.'&id='.$this->valPk.'&action='.$action.$noncefield.'" class="submit'.$action.'">'.$title.'</a>'.$separator.'
-                </span>'; } $wrap.='</div>'; } return $wrap; } function fieldFormHTML($key,$wrapped){ if(isset($this->model->columns[$key]['label'])) $label=$this->model->columns[$key]['label']; else $label=ucfirst($key); $desc=''; if(isset($this->model->columns[$key]['desc'])) $desc='<p class="description">'.$this->model->columns[$key]['desc'].'</p>'; $wrap='<th scope="row">
+                </span>';
+
+            }
+            
+            $wrap.='</div>';
+        }
+        return $wrap;
+    }
+    
+    
+    /**
+     * this function is here to help in generic forms
+     * @param type $key
+     * @param type $val
+     * @param type $type
+     * @return type 
+     */
+    function fieldFormHTML($key,$wrapped){
+        if(isset($this->model->columns[$key]['label'])) $label=$this->model->columns[$key]['label'];
+        else  $label=ucfirst($key);
+        $desc='';
+        if(isset($this->model->columns[$key]['desc'])) $desc='<p class="description">'.$this->model->columns[$key]['desc'].'</p>';
+        $wrap='<th scope="row">
                     <label for="'.$key.'">'.$label.$desc.' </label>
-                </th><td>'; $wrap.=$wrapped; $wrap.='</td>'; return $wrap; } function buildMyForm($step,$data,$model,$required=false){ $formFields=""; foreach($step as $row =>$colparams){ $class=""; $value=""; if(isset($colparams['rowclass'])) $class=' class="'.$colparams['rowclass'].'" '; $formFields.='<tr '.$class.'>'; if($model=="config"){ $value=$this->model->getValue($row); }else{ if($row!="lists") { if(is_array($model)){ foreach($model as $mod){ if(isset($data[$mod][$row])){ $value=$data[$mod][$row]; break; } } }else{ if(isset($data[$model][$row])) $value=$data[$model][$row]; } if($value) $value; elseif(isset($_REQUEST['wysija'][$this->model->table_name][$row])) $value=$_REQUEST['wysija'][$this->model->table_name][$row]; elseif(isset($colparams["default"])) $value=$colparams["default"]; else $value=""; } elseif(isset($data[$row])) $value=$data[$row]; elseif(isset($colparams["default"])) $value=$colparams["default"]; else $value=""; } if($required && !isset($colparams["class"])) $colparams["class"]=$this->getClassValidate($this->model->columns[$row],true); if(isset($colparams['label'])) $label=$colparams['label']; else $label=ucfirst($row); $desc=''; if(isset($colparams['desc'])){ if(isset($colparams['link'])) $colparams['desc']=str_replace(array("[link]","[/link]"),array($colparams['link'],"</a>"),$colparams['desc']); $desc='<p class="description">'.$colparams['desc'].'</p>'; } $formFields.='<th scope="row">
+                </th><td>';
+        
+        $wrap.=$wrapped;
+        $wrap.='</td>';
+        return $wrap;
+    }
+
+    function buildMyForm($step,$data,$model,$required=false){
+        $formFields="";
+                        
+        foreach($step as $row =>$colparams){
+            $class="";
+            $value="";
+            if(isset($colparams['rowclass'])) $class=' class="'.$colparams['rowclass'].'" ';
+            $formFields.='<tr '.$class.'>';
+            if($model=="config"){
+                $value=$this->model->getValue($row);
+            }else{
+                if($row!="lists")   {
+                    if(is_array($model)){
+                        foreach($model as $mod){
+                            if(isset($data[$mod][$row])){
+                                $value=$data[$mod][$row];
+                                break;
+                            }
+                        }
+                            
+                    }else{
+                       if(isset($data[$model][$row])) $value=$data[$model][$row]; 
+                    }
+                    if($value) $value;
+                    elseif(isset($_REQUEST['wysija'][$this->model->table_name][$row])) $value=$_REQUEST['wysija'][$this->model->table_name][$row];
+                    elseif(isset($colparams["default"])) $value=$colparams["default"];
+                    else $value="";
+                }
+                elseif(isset($data[$row])) $value=$data[$row];
+                elseif(isset($colparams["default"])) $value=$colparams["default"];
+                else $value="";
+            }
+            
+            if($required && !isset($colparams["class"]))   $colparams["class"]=$this->getClassValidate($this->model->columns[$row],true);
+
+            if(isset($colparams['label'])) $label=$colparams['label'];
+            else  $label=ucfirst($row);
+            $desc='';
+            if(isset($colparams['desc'])){
+                if(isset($colparams['link'])) $colparams['desc']=str_replace(array("[link]","[/link]"),array($colparams['link'],"</a>"),$colparams['desc']);
+                $desc='<p class="description">'.$colparams['desc'].'</p>';
+            }
+            //if(isset($colparams['desc'])) $desc='<p class="description">'.$colparams['desc'].'</p>';
+            $formFields.='<th scope="row">
                         <label for="'.$row.'">'.$label.$desc.' </label>
-                    </th><td>'; $formFields.=$this->fieldHTML($row,$value,$model,$colparams); $formFields.='</td>'; $formFields.='</tr>'; } return $formFields; } function fieldHTML($key,$val="",$model="",$params=array()){ $classValidate=$wrap=''; $type=$params['type']; if($params) $classValidate=$this->getClassValidate($params); switch($type){ case "pk": return '<input type="hidden" value="'.$val.'" id="'.$key.'" name="wysija['.$model.']['.$key.']">'; break; case "boolean": $formObj=&WYSIJA::get("forms","helper"); $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$params['values'],$val,$classValidate); break; case "roles": $editable_roles = get_editable_roles(); $possible_values=array(); foreach ( $editable_roles as $role => $details ) { $name = translate_user_role($details['name'] ); $possible_values[key($details['capabilities'])]=$name; } $formObj=&WYSIJA::get("forms","helper"); $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$possible_values,$val,$classValidate); break; case "password": if(!isset($params['size'])){ $classValidate.=' size="80"'; } $formObj=&WYSIJA::get("forms","helper"); $wrap.=$formObj->input(array('type'=>'password','id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$val,$classValidate); break; case "radio": $formObj=&WYSIJA::get("forms","helper"); $wrap.=$formObj->radios(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$params['values'],$val,$classValidate); break; case "dropdown": $formObj=&WYSIJA::get("forms","helper"); $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$params['values'],$val,$classValidate); break; case "wysija_pages_list": $wrapd=get_pages( array('post_type'=>"wysijap",'echo'=>0,'name'=>'wysija['.$model.']['.$key.']','id'=>$key,'selected' => $val,'class'=>$classValidate) ); break; case "pages_list": $wrap.=wp_dropdown_pages( array('echo'=>0,'name'=>'wysija['.$model.']['.$key.']','id'=>$key,'selected' => $val,'class'=>$classValidate) ); break; default: if(!isset($params['size'])){ $classValidate.=' size="80"'; }else{ $classValidate.=' size="'.$params['size'].'"'; } if(isset($params['class'])){ $classValidate.=' class="'.$params['class'].'"'; } $specialMethod="fieldFormHTML_".$type; if(method_exists($this, $specialMethod)) $wrap.=$this->$specialMethod($key,$val,$model,$params); else{ $formObj=&WYSIJA::get("forms","helper"); if(method_exists($formObj, $type)){ $wrap.=$formObj->$type(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$val,$classValidate); }else{ $wrap.=$formObj->input(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$val,$classValidate); } } } return $wrap; } function listing($data){ $this->globalActions(); ?>
+                    </th><td>';
+
+            $formFields.=$this->fieldHTML($row,$value,$model,$colparams);
+            $formFields.='</td>';
+
+            $formFields.='</tr>';
+        }
+        return $formFields;
+    }
+    /**
+     *
+     * @param type $key
+     * @param type $val
+     * @param type $type
+     * @return type 
+     */
+    function fieldHTML($key,$val="",$model="",$params=array()){
+        $classValidate=$wrap='';
+        /*get the params of that field if there is*/
+        $type=$params['type'];
+        /* js validator class setup */
+        if($params)  $classValidate=$this->getClassValidate($params);
+
+        switch($type){
+            case "pk":
+                return '<input type="hidden" value="'.$val.'" id="'.$key.'" name="wysija['.$model.']['.$key.']">';
+                break;
+            case "boolean":
+                $formObj=&WYSIJA::get("forms","helper");
+                $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$params['values'],$val,$classValidate);
+                break;
+            case "roles":
+                $editable_roles = get_editable_roles();
+                $possible_values=array();
+                foreach ( $editable_roles as $role => $details ) {
+                    $name = translate_user_role($details['name'] ); 
+                    $possible_values[key($details['capabilities'])]=$name;
+                }
+                
+                $formObj=&WYSIJA::get("forms","helper");
+                $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$possible_values,$val,$classValidate);
+                break;
+            case "password":
+                if(!isset($params['size'])){
+                    $classValidate.=' size="80"';
+                }
+                $formObj=&WYSIJA::get("forms","helper");
+                $wrap.=$formObj->input(array('type'=>'password','id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$val,$classValidate);
+                break;
+            case "radio":
+
+                $formObj=&WYSIJA::get("forms","helper");
+                $wrap.=$formObj->radios(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$params['values'],$val,$classValidate);
+                break;
+            case "dropdown":
+                $formObj=&WYSIJA::get("forms","helper");
+                $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$params['values'],$val,$classValidate);
+                break;
+            case "wysija_pages_list":
+                $wrapd=get_pages( array('post_type'=>"wysijap",'echo'=>0,'name'=>'wysija['.$model.']['.$key.']','id'=>$key,'selected' => $val,'class'=>$classValidate) );
+
+                break;
+            case "pages_list":
+                $wrap.=wp_dropdown_pages( array('echo'=>0,'name'=>'wysija['.$model.']['.$key.']','id'=>$key,'selected' => $val,'class'=>$classValidate) );
+                break;
+            default:
+                if(!isset($params['size'])){
+                    $classValidate.=' size="80"';
+                }else{
+                    $classValidate.=' size="'.$params['size'].'"';
+                }
+                if(isset($params['class'])){
+                    $classValidate.=' class="'.$params['class'].'"';
+                }
+                
+                $specialMethod="fieldFormHTML_".$type;
+
+                if(method_exists($this, $specialMethod)) $wrap.=$this->$specialMethod($key,$val,$model,$params);
+                else{
+                    $formObj=&WYSIJA::get("forms","helper");
+                    if(method_exists($formObj, $type)){
+                        $wrap.=$formObj->$type(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$val,$classValidate);
+                    }else{
+                        $wrap.=$formObj->input(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$val,$classValidate);
+                    }
+                    
+                }
+        }
+        return $wrap;
+    }
+    
+    /**
+     * this function is the default listing function
+     * @param type $data 
+     */
+    function listing($data){
+
+        $this->globalActions(); ?>
 
             <table cellspacing="0" class="widefat fixed">
                 <thead>
                     <?php
- echo $this->buildHeaderListing($data); ?>
+                        
+                        echo $this->buildHeaderListing($data);
+                    ?>
                 </thead>
 
                 <tfoot>
                     <?php
- echo $this->listingHeader; ?>
+                        echo $this->listingHeader;
+                    ?>
                 </tfoot>
 
                 <tbody class="list:<?php echo $this->model->table_name.' '.$this->model->table_name.'-list" id="wysija-'.$this->model->table_name.'"' ?>>
                     <?php
- $listingRows=""; $alt=true; foreach($data as $row =>$columns){ $classRow=""; if($alt) $classRow=' class="alternate" '; $listingRows.='<tr'.$classRow.' id="'.$this->model->table_name.'-'.$this->model->table_name.'">'; if(isset($columns[$this->model->pk])){ $this->valPk=$columns[$this->model->pk]; $this->model->columns[$this->model->pk]['type']='pk'; $listingRows.=$this->fieldListHTML($this->model->pk,$this->valPk,$this->model->columns[$this->model->pk]); unset($columns[$this->model->pk]); } foreach($columns as $key => $value){ $listingRows.=$this->fieldListHTML($key,$value,$this->model->columns[$key]); $listingRows.='</th>'; } $alt=!$alt; } echo $listingRows; ?>
+                        $listingRows="";
+                        $alt=true;
+                        foreach($data as $row =>$columns){
+                            $classRow="";
+                            if($alt) $classRow=' class="alternate" ';
+                            $listingRows.='<tr'.$classRow.' id="'.$this->model->table_name.'-'.$this->model->table_name.'">';
+                            if(isset($columns[$this->model->pk])){
+                                $this->valPk=$columns[$this->model->pk];
+                                $this->model->columns[$this->model->pk]['type']='pk';
+                                $listingRows.=$this->fieldListHTML($this->model->pk,$this->valPk,$this->model->columns[$this->model->pk]);
+                                unset($columns[$this->model->pk]);
+                            }
+                            foreach($columns as $key => $value){
+                                
+                                $listingRows.=$this->fieldListHTML($key,$value,$this->model->columns[$key]);
+                                $listingRows.='</th>';
+                            }
+                            $alt=!$alt;
+                        }
+                        echo $listingRows;
+
+                    ?>
 
                 </tbody>
             </table>
 
-            <?php $this->globalActions(false,true); $this->limitPerPage(); echo $this->hiddenFields; } function edit($data){ $formid='wysija-'.$_REQUEST['action']; if($_REQUEST['action']=="edit"){ $buttonName=__('Modify',WYSIJA); }else{ $buttonName=__('Add',WYSIJA); } ?>
+            <?php $this->globalActions(false,true); 
+                $this->limitPerPage();
+                echo $this->hiddenFields;
+    }
+    
+    /**
+     * here is a generic form view
+     * @param type $data 
+     */
+    function edit($data){
+        
+        $formid='wysija-'.$_REQUEST['action'];
+        if($_REQUEST['action']=="edit"){
+            $buttonName=__('Modify',WYSIJA);
+        }else{
+            $buttonName=__('Add',WYSIJA);
+        }
+        
+        ?>
         
         <form name="<?php echo $formid ?>" method="post" id="<?php echo $formid ?>" action="" class="form-valid">
 
             <table class="form-table">
                 <tbody>
                     <?php
- foreach($data as $row =>$columns){ $formFields='<tr>'; if(isset($columns[$this->model->pk])){ $this->valPk=$columns[$this->model->pk]; $this->model->columns[$this->model->pk]['type']="pk"; $formFields.=$this->fieldHTML($this->model->pk,$this->valPk,$this->model->table_name,$this->model->columns[$this->model->pk ]); unset($columns[$this->model->pk]); } foreach($columns as $key => $value){ $formFields.=$this->fieldFormHTML($key,$this->fieldHTML($key,$value,$this->model->table_name,$this->model->columns[$key])); $formFields.='</tr>'; } echo $formFields; } ?>
+                    foreach($data as $row =>$columns){
+                        $formFields='<tr>';
+                        if(isset($columns[$this->model->pk])){
+                            $this->valPk=$columns[$this->model->pk];
+                            $this->model->columns[$this->model->pk]['type']="pk";
+                            $formFields.=$this->fieldHTML($this->model->pk,$this->valPk,$this->model->table_name,$this->model->columns[$this->model->pk ]);
+                            unset($columns[$this->model->pk]);
+                        }
+                        foreach($columns as $key => $value){
+                            $formFields.=$this->fieldFormHTML($key,$this->fieldHTML($key,$value,$this->model->table_name,$this->model->columns[$key]));
+                            $formFields.='</tr>';
+                        }
+                        echo $formFields;
+                    }
+                    ?>
                 </tbody>
             </table>
             <p class="submit">
@@ -87,22 +681,49 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back extends WY
             </p>
         </form>
         <?php
- } function view($data){ ?>
+    }
+    
+     /**
+     * here is a generic form view
+     * @param type $data 
+     */
+    function view($data){
+        
+        ?>
         
             <table class="form-table">
                 <tbody>
                    <?php
- foreach($data as $row =>$columns){ $formFields='<tr>'; foreach($columns as $key => $value){ $formFields.=$this->fieldFormHTML($key,$value); $formFields.='</tr>'; } echo $formFields; } ?>
+                    foreach($data as $row =>$columns){
+                        $formFields='<tr>';
+
+                        foreach($columns as $key => $value){
+                            $formFields.=$this->fieldFormHTML($key,$value);
+                            $formFields.='</tr>';
+                        }
+                        echo $formFields;
+                    }
+                    ?>
                 </tbody>
             </table>
 
         <?php
- } function _savebuttonsecure($data,$action="save",$button=false){ if(!$button) $button=__("Save",WYSIJA); ?>
+    }
+    
+    function _savebuttonsecure($data,$action="save",$button=false){
+        if(!$button) $button=__("Save",WYSIJA);
+        ?>
             <p class="submit">
-                <?php  $secure=array('action'=>$action); if(isset($data[$this->model->table_name][$this->model->pk]))$secure["id"]=$data[$this->model->table_name][$this->model->pk]; $this->secure($secure); ?>
+                <?php 
+                $secure=array('action'=>$action);
+                if(isset($data[$this->model->table_name][$this->model->pk]))$secure["id"]=$data[$this->model->table_name][$this->model->pk];
+                $this->secure($secure); ?>
                 <input type="hidden" name="wysija[<?php echo $this->model->table_name ?>][<?php echo $this->model->pk ?>]" id="<?php echo $this->model->pk ?>" value="<?php if(isset($data[$this->model->table_name][$this->model->pk])) echo esc_attr($data[$this->model->table_name][$this->model->pk]) ?>" />
                 <input type="hidden" value="<?php echo $action ?>" name="action" />
                 <input type="submit" id="next-steptmpl" value="<?php echo esc_attr($button) ?>" name="submit-draft" class="button-primary wysija"/>
             </p>
         <?php
- } }
+    }
+
+
+}

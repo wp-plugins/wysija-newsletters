@@ -1,4 +1,705 @@
 <?php
- defined('WYSIJA') or die('Restricted access'); require_once(WYSIJA_DIR.'inc'.DS.'phpmailer'.DS.'class.phpmailer.php'); class WYSIJA_help_mailer extends acymailingPHPMailer { var $report = true; var $checkConfirmField = true; var $checkEnabled = true; var $checkAccept = true; var $parameters = array(); var $errorNumber = 0; var $reportMessage = ''; var $autoAddUser = false; var $errorNewTry = array(1,6); var $forceTemplate = 0; var $testemail=false; function WYSIJA_help_mailer($extension="",$config=false) { $this->subscriberClass = &WYSIJA::get("user","model"); $this->subscriberClass->getFormat=OBJECT; $this->encodingHelper = &WYSIJA::get("encoding","helper"); $this->config =&WYSIJA::get("config","model"); if(!empty($config)){ foreach($config as $key => $val) $this->config->values[$key]=$val; } $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name')); $this->Sender = $this->cleanText($this->config->getValue('bounce_email')); if(empty($this->Sender)) $this->Sender = ''; switch ( $this->config->getValue('sending_method') ) { case 'gmail' : case 'smtp' : $this->IsSMTP(); $this->Host = $this->config->getValue('smtp_host'); $port = $this->config->getValue('smtp_port'); if(empty($port) && $this->config->getValue('smtp_secure') == 'ssl') $port = 465; if(!empty($port)) $this->Host.= ':'.$port; $this->SMTPAuth = (bool) $this->config->getValue('smtp_auth'); $this->Username = trim($this->config->getValue('smtp_login')); $this->Password = trim($this->config->getValue('smtp_password')); $this->SMTPSecure = trim((string)$this->config->getValue('smtp_secure')); if(empty($this->Sender)) $this->Sender = strpos($this->Username,'@') ? $this->Username : $this->config->getValue('from_email'); break; case 'site': if($this->config->getValue('sending_emails_site_method')=="phpmail"){ $this->IsMail(); }else{ $this->IsSendmail(); $this->SendMail = trim($this->config->getValue('sendmail_path')); if(empty($this->SendMail)) $this->SendMail = '/usr/sbin/sendmail'; } break; case 'qmail' : $this->IsQmail(); break; default : $this->IsMail(); break; } $this->PluginDir = dirname(__FILE__).DS; $this->CharSet = strtolower($this->config->getValue('advanced_charset')); if(empty($this->CharSet)) $this->CharSet = 'utf-8'; $this->clearAll(); $this->Encoding = '8bit'; $this->WordWrap = 150; } function send(){ if(empty($this->ReplyTo)){ $replyToName = $this->config->getValue('reply_name'); $this->AddReplyTo($this->config->getValue('reply_email'),$replyToName); } if(empty($this->Subject) OR empty($this->Body)){ $this->reportMessage = __("There is no Subject or Body in this e-mail",WYSIJA); $this->errorNumber = 8; return false; } if(function_exists('mb_convert_encoding') && !empty($this->sendHTML)){ $this->Body = mb_convert_encoding($this->Body,'HTML-ENTITIES','UTF-8'); $this->Body = str_replace('&amp;','&',$this->Body); } if($this->CharSet != 'utf-8'){ $this->Body = $this->encodingHelper->change($this->Body,'UTF-8',$this->CharSet); $this->Subject = $this->encodingHelper->change($this->Subject,'UTF-8',$this->CharSet); if(!empty($this->AltBody)) $this->AltBody = $this->encodingHelper->change($this->AltBody,'UTF-8',$this->CharSet); } $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject); $this->Body = str_replace(chr(194),chr(32),$this->Body); ob_start(); $result = parent::Send(); $warnings = ob_get_clean(); if(!empty($warnings) && strpos($warnings,'bloque')){ $result = false; } $receivers = array(); foreach($this->to as $oneReceiver){ $receivers[] = $oneReceiver[0]; } if(!$result){ $this->reportMessage = sprintf(__("Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers)); if(!empty($this->ErrorInfo)) { $this->error($this->ErrorInfo); } if(!empty($warnings)) $this->reportMessage .= ' | '.$warnings; $this->errorNumber = 1; if($this->report){ $this->error($this->reportMessage); } }else{ $this->reportMessage = sprintf(__("Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers)); if($this->report){ if(!empty($warnings)){ $this->reportMessage .= ' | '.$warnings; $this->notice($this->reportMessage,false); } } } return $result; } function load($email_id){ $mailClass = &WYSIJA::get('email','model'); $mailClass->getFormat=OBJECT; $this->defaultMail[$email_id] = $mailClass->getOne($email_id); $this->defaultMail[$email_id]->params = unserialize(base64_decode($this->defaultMail[$email_id]->params)); $this->defaultMail[$email_id]->attach=$this->defaultMail[$email_id]->attachments; unset($this->defaultMail[$email_id]->attachments); if(empty($this->defaultMail[$email_id]->email_id)) return false; if(empty($this->defaultMail[$email_id]->altbody)) $this->defaultMail[$email_id]->altbody = $this->textVersion($this->defaultMail[$email_id]->body); if(!empty($this->defaultMail[$email_id]->attach)){ $this->defaultMail[$email_id]->attachments = array(); $uploadFolder = str_replace(array('/','\\'),DS,html_entity_decode($this->config->getValue('uploadfolder'))); $uploadFolder = trim($uploadFolder,DS.' ').DS; $uploadPath = str_replace(array('/','\\'),DS,$uploadFolder); $uploadURL = $this->config->getValue('uploadurl'); foreach($this->defaultMail[$email_id]->attach as $oneAttach){ $attach = null; $attach->name = $oneAttach->filename; $attach->filename = $uploadPath.$oneAttach->filename; $attach->url = $uploadURL.$oneAttach->filename; $this->defaultMail[$email_id]->attachments[] = $attach; } } $this->recordEmail($email_id); return $this->defaultMail[$email_id]; } function clearAll(){ $this->Subject = ''; $this->Body = ''; $this->AltBody = ''; $this->ClearAllRecipients(); $this->ClearAttachments(); $this->ClearCustomHeaders(); $this->ClearReplyTos(); $this->errorNumber = 0; $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name')); } function recordEmail($email_id,$email_object=false){ if($email_object) $this->defaultMail[$email_id]=$email_object; add_action('wysija_replacetags', array($this,'replacetags')); do_action('wysija_replacetags', $email_id); } function sendOne($email_id,$receiverid){ $this->clearAll(); if(is_object($email_id)){ $emailObj=$email_id; $email_id=$email_id->email_id; $this->recordEmail($email_id,$emailObj); } if(!isset($this->defaultMail[$email_id])){ if(!$this->load($email_id)){ $this->reportMessage = 'Can not load the e-mail : '.$email_id; if($this->report){ $this->error($this->reportMessage); } $this->errorNumber = 2; return false; } } $this->addCustomHeader( 'X-email_id: ' . $this->defaultMail[$email_id]->email_id ); if(!isset($this->forceVersion) AND empty($this->defaultMail[$email_id]->status)){ $this->reportMessage = sprintf(__("The e-mail ID %s is not published",WYSIJA),$email_id); $this->errorNumber = 3; if($this->report){ $this->error($this->reportMessage); } return false; } if(!is_object($receiverid)){ $receiver = $this->subscriberClass->getOne($receiverid); if(!$receiver){ $userHelper = &WYSIJA::get("user","helper"); if($userHelper->validEmail($receiverid)){ $receiver = $this->subscriberClass->getOne(false,array("email"=>$receiverid)); } } if((!$receiver || empty($receiver->user_id)) AND is_string($receiverid) AND $this->autoAddUser){ $userHelper = &WYSIJA::get("user","helper"); if($userHelper->validEmail($receiverid)){ $newUser = array(); $newUser['email'] = $receiverid; $newUser['status'] = 1; $this->subscriberClass->checkVisitor = false; $this->subscriberClass->sendConf = false; $user_id = $this->subscriberClass->insert($newUser); $receiver = $this->subscriberClass->getOne($user_id); } } }else{ $receiver = $receiverid; } if(empty($receiver->email)){ $this->reportMessage = sprintf(__("User not found : <b><i>%s</i></b>",WYSIJA),isset($receiver->user_id) ? $receiver->user_id : $receiverid); if($this->report){ $this->error($this->reportMessage); } $this->errorNumber = 4; return false; } $this->MessageID = "<".preg_replace("|[^a-z0-9+_]|i",'',base64_encode(rand(0,9999999))."WY".$receiver->user_id."SI".$this->defaultMail[$email_id]->email_id."JA".base64_encode(time().rand(0,99999)))."@".$this->ServerHostname().">"; if(!isset($this->forceVersion)){ if( $this->checkConfirmField AND empty($receiver->status) AND $this->config->getValue('confirm_dbleoptin')==1 AND $email_id != $this->config->getValue('confirm_email_id')){ $this->reportMessage = sprintf(__($this->config->getValue('confirm_dbleoptin')." The User <b><i>%s</i></b> is not confirmed",WYSIJA),$receiver->email); if($this->report){ $this->error($this->reportMessage); } $this->errorNumber = 5; return false; } } $addedName = $this->cleanText($receiver->firstname); $this->AddAddress($this->cleanText($receiver->email),$addedName); if(!isset($this->forceVersion)){ $this->sendHTML = "html"; $this->IsHTML($this->sendHTML); }else{ $this->sendHTML = (bool) $this->forceVersion; $this->IsHTML($this->sendHTML); } $this->Subject = $this->defaultMail[$email_id]->subject; if($this->sendHTML){ $this->Body = nl2br($this->defaultMail[$email_id]->body); if($this->config->getValue('multiple_part',false)){ $this->AltBody = $this->defaultMail[$email_id]->altbody; } }else{ $this->Body = $this->defaultMail[$email_id]->altbody; } $this->setFrom($this->defaultMail[$email_id]->from_email,$this->defaultMail[$email_id]->from_name); if(!empty($this->defaultMail[$email_id]->replyto_email)){ $replyToName = $this->cleanText($this->defaultMail[$email_id]->replyto_name) ; $this->AddReplyTo($this->cleanText($this->defaultMail[$email_id]->replyto_email),$replyToName); } if(!empty($this->defaultMail[$email_id]->attachments)){ if(true ){ foreach($this->defaultMail[$email_id]->attachments as $attachment){ $this->AddAttachment($attachment->filename); } }else{ $attachStringHTML = '<br/><fieldset><legend>'.__("Attachments",WYSIJA).'</legend><table>'; $attachStringText = "\n"."\n".'------- '.__("Attachments",WYSIJA).' -------'; foreach($this->defaultMail[$email_id]->attachments as $attachment){ $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>'; $attachStringText .= "\n".'-- '.$attachment->name.' ( '.$attachment->url.' )'; } $attachStringHTML .= '</table></fieldset>'; if($this->sendHTML){ $this->Body .= $attachStringHTML; if(!empty($this->AltBody)) $this->AltBody .= "\n".$attachStringText; }else{ $this->Body .= $attachStringText; } } } if(!empty($this->parameters)){ $keysparams = array_keys($this->parameters); $this->Subject = str_replace($keysparams,$this->parameters,$this->Subject); $this->Body = str_replace($keysparams,$this->parameters,$this->Body); if(!empty($this->AltBody)) $this->AltBody = str_replace($keysparams,$this->parameters,$this->AltBody); } $this->Body=stripslashes($this->Body); $this->Subject=stripslashes($this->Subject); $mailforTrigger = null; $mailforTrigger->body = &$this->Body; $mailforTrigger->subject = &$this->Subject; $mailforTrigger->from = &$this->From; $mailforTrigger->fromName = &$this->FromName; $mailforTrigger->replyto = &$this->ReplyTo; $mailforTrigger->replyname = &$this->defaultMail[$email_id]->replyname; $mailforTrigger->replyemail = &$this->defaultMail[$email_id]->replyemail; $mailforTrigger->email_id = $this->defaultMail[$email_id]->email_id; $mailforTrigger->type = &$this->defaultMail[$email_id]->type; $mailforTrigger->sendHTML = true; add_action('wysija_replaceusertags', array($this,'replaceusertags'),10,2); add_action('wysija_replaceusertags', array($this,'tracker_replaceusertags'),11,2); add_action('wysija_replaceusertags', array($this,'openrate_replaceusertags'),12,2); do_action( 'wysija_replaceusertags', $mailforTrigger,$receiver); if(!empty($mailforTrigger->customHeaders)){ foreach($mailforTrigger->customHeaders as $oneHeader){ $this->addCustomHeader( $oneHeader ); } } if($this->sendHTML){ $this->AltBody = $this->textVersion($this->Body,true); }else{ $this->Body = $this->textVersion($this->Body,false); } return $this->send(); } function embedImages(){ preg_match_all('/(src|background)="([^"]*)"/Ui', $this->Body, $images); $result = true; if(!empty($images[2])) { $mimetypes = array('bmp' => 'image/bmp', 'gif' => 'image/gif', 'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg', 'jpe' => 'image/jpeg', 'png' => 'image/png', 'tiff' => 'image/tiff', 'tif' => 'image/tiff'); $allimages = array(); foreach($images[2] as $i => $url) { if(isset($allimages[$url])) continue; $allimages[$url] = 1; $path = str_replace(array($this->config->getValue('uploadurl'),'/'),array($this->config->getValue('uploadfolder'),DS),urldecode($url)); $filename = basename($url); $md5 = md5($filename); $cid = 'cid:' . $md5; $fileParts = explode(".", $filename); $ext = strtolower($fileParts[1]); if(!isset($mimetypes[$ext])) continue; $mimeType = $mimetypes[$ext]; if($this->AddEmbeddedImage($path, $md5, $filename, 'base64', $mimeType)){ $this->Body = preg_replace("/".$images[1][$i]."=\"".preg_quote($url, '/')."\"/Ui", $images[1][$i]."=\"".$cid."\"", $this->Body); }else{ $result = false; } } } return $result; } function textVersion($html,$fullConvert = true){ if($fullConvert){ $html = preg_replace('# +#',' ',$html); $html = str_replace(array("\n","\r","\t"),'',$html); } $removepictureslinks = "#< *a[^>]*> *< *img[^>]*> *< *\/ *a *>#isU"; $removeScript = "#< *script(?:(?!< */ *script *>).)*< */ *script *>#isU"; $removeStyle = "#< *style(?:(?!< */ *style *>).)*< */ *style *>#isU"; $removeStrikeTags = '#< *strike(?:(?!< */ *strike *>).)*< */ *strike *>#iU'; $replaceByTwoReturnChar = '#< *(h1|h2)[^>]*>#Ui'; $replaceByStars = '#< *li[^>]*>#Ui'; $replaceByReturnChar1 = '#< */ *(li|td|tr|div|p)[^>]*> *< *(li|td|tr|div|p)[^>]*>#Ui'; $replaceByReturnChar = '#< */? *(br|p|h1|h2|legend|h3|li|ul|h4|h5|h6|tr|td|div)[^>]*>#Ui'; $replaceLinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.*)< *\/ *a *>/Uis'; $text = preg_replace(array($removepictureslinks,$removeScript,$removeStyle,$removeStrikeTags,$replaceByTwoReturnChar,$replaceByStars,$replaceByReturnChar1,$replaceByReturnChar,$replaceLinks),array('','','','',"\n\n","\n* ","\n","\n",'${2} ( ${1} )'),$html); $text = str_replace(array(" ","&nbsp;"),' ',strip_tags($text)); $text = trim(@html_entity_decode($text,ENT_QUOTES,'UTF-8')); if($fullConvert){ $text = preg_replace('# +#',' ',$text); $text = preg_replace('#\n *\n\s+#',"\n\n",$text); } return $text; } function cleanText($text){ return trim( preg_replace( '/(%0A|%0D|\n+|\r+)/i', '', (string) $text ) ); } function setFrom($email,$name=''){ if(!empty($email)){ $this->From = $this->cleanText($email); } if(!empty($name)){ $this->FromName = $this->cleanText($name); } } function addParamInfo(){ if(!empty($_SERVER)){ $serverinfo = array(); foreach($_SERVER as $oneKey => $oneInfo){ $serverinfo[] = $oneKey.' => '.strip_tags(print_r($oneInfo,true)); } $this->addParam('serverinfo',implode('<br />',$serverinfo)); } if(!empty($_REQUEST)){ $postinfo = array(); foreach($_REQUEST as $oneKey => $oneInfo){ $postinfo[] = $oneKey.' => '.strip_tags(print_r($oneInfo,true)); } $this->addParam('postinfo',implode('<br />',$postinfo)); } } function addParam($name,$value){ $tagName = '{'.$name.'}'; $this->parameters[$tagName] = $value; } function sendSimple($sendto,$subject,$body,$params=array()){ $modelConfig=&WYSIJA::get("config","model"); $emailObj=null; $emailObj->email_id=0; $emailObj->subject=$subject; $emailObj->body=$body; $emailObj->status=1; $emailObj->attachments=""; if(isset($params['from_name'])) $emailObj->from_name=$params['from_name']; else $emailObj->from_name=$modelConfig->getValue("from_name"); if(isset($params['from_email'])) $emailObj->from_email=$params['from_email']; else $emailObj->from_email=$modelConfig->getValue("from_email"); if(isset($params['replyto_name'])) $emailObj->replyto_name=$params['replyto_name']; else $emailObj->replyto_name=$modelConfig->getValue("replyto_name"); if(isset($params['replyto_email'])) $emailObj->replyto_email=$params['replyto_email']; else $emailObj->replyto_email=$modelConfig->getValue("replyto_email"); $emailObj->mail_format="text"; $emailObj->simple=1; $this->autoAddUser=true; $this->checkConfirmField=false; if(!$this->testemail){ if($emailObj->email_id!=$this->config->getValue('confirm_email_id')) { $emailObj->body.="[subscriptions_links]"; $emailObj->body.="\n[footer_address]"; } add_action('wysija_replacetags', array($this,'replacetags')); do_action( 'wysija_replacetags', array(&$emailObj)); } return $this->sendOne($emailObj,$sendto); } function replacetags($email_id){ $find=array("[footer_address]"); $companyaddress=$this->config->getValue('company_address'); if(!$companyaddress) $companyaddress=""; $replace=array($companyaddress); $this->defaultMail[$email_id]->body=str_replace($find,$replace,$this->defaultMail[$email_id]->body); } function replaceusertags($email,$receiver){ $find=array("[subscriptions_links]"); $subscriptions_links='
+/**
+ * @copyright	Copyright (C) 2009-2011 ACYBA SARL - All rights reserved.
+ * @license		http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL
+ */
+defined('WYSIJA') or die('Restricted access');
+
+require_once(WYSIJA_DIR.'inc'.DS.'phpmailer'.DS.'class.phpmailer.php');
+class WYSIJA_help_mailer extends acymailingPHPMailer {
+	var $report = true;
+	var $checkConfirmField = true;
+	var $checkEnabled = true;
+	var $checkAccept = true;
+	var $parameters = array();
+	//var $dispatcher;
+	var $errorNumber = 0;
+	var $reportMessage = '';
+	var $autoAddUser = false;
+	var $errorNewTry = array(1,6);
+	var $forceTemplate = 0;
+        var $testemail=false;
+
+	function WYSIJA_help_mailer($extension="",$config=false) {
+
+            $this->subscriberClass = &WYSIJA::get("user","model");
+            $this->subscriberClass->getFormat=OBJECT;
+
+            $this->encodingHelper = &WYSIJA::get("encoding","helper");
+            $this->config =&WYSIJA::get("config","model");
+
+            /* override the config with the one passed as parameter */
+
+            if(!empty($config)){
+               //unset($this->config->values);
+               foreach($config as $key => $val)    $this->config->values[$key]=$val;
+            }
+
+            $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name'));
+            $this->Sender 	= $this->cleanText($this->config->getValue('bounce_email'));
+            if(empty($this->Sender)) $this->Sender = '';
+            switch ( $this->config->getValue('sending_method') )
+            {
+                case 'gmail' :
+                case 'smtp' :
+                        $this->IsSMTP();
+                        $this->Host = $this->config->getValue('smtp_host');
+                        $port = $this->config->getValue('smtp_port');
+                        if(empty($port) && $this->config->getValue('smtp_secure') == 'ssl') $port = 465;
+                        if(!empty($port)) $this->Host.= ':'.$port;
+                        $this->SMTPAuth = (bool) $this->config->getValue('smtp_auth');
+                        $this->Username = trim($this->config->getValue('smtp_login'));
+                        $this->Password = trim($this->config->getValue('smtp_password'));
+                        $this->SMTPSecure = trim((string)$this->config->getValue('smtp_secure'));
+                        if(empty($this->Sender)) $this->Sender = strpos($this->Username,'@') ? $this->Username : $this->config->getValue('from_email');
+                        break;
+                case 'site':
+                    if($this->config->getValue('sending_emails_site_method')=="phpmail"){
+                        $this->IsMail();
+                    }else{
+                       $this->IsSendmail();
+                        $this->SendMail = trim($this->config->getValue('sendmail_path'));
+                        if(empty($this->SendMail)) $this->SendMail = '/usr/sbin/sendmail';
+                    }
+                    break;
+                case 'qmail' :
+                        $this->IsQmail();
+                        break;
+                default :
+                        $this->IsMail();
+                        break;
+            }//endswitch
+
+            $this->PluginDir =  dirname(__FILE__).DS;
+            $this->CharSet = strtolower($this->config->getValue('advanced_charset'));
+            if(empty($this->CharSet)) $this->CharSet = 'utf-8';
+            $this->clearAll();
+            $this->Encoding = '8bit';
+            //$this->Hostname = '';
+
+            $this->WordWrap = 150;
+	}//endfct
+	function send(){
+            if(empty($this->ReplyTo)){
+                    $replyToName = $this->config->getValue('reply_name');
+                    $this->AddReplyTo($this->config->getValue('reply_email'),$replyToName);
+            }
+            /*if((bool)0){
+                    $this->embedImages();
+            }*/
+            if(empty($this->Subject) OR empty($this->Body)){
+                    $this->reportMessage = __("There is no Subject or Body in this e-mail",WYSIJA);
+                    $this->errorNumber = 8;
+                    return false;
+            }
+            if(function_exists('mb_convert_encoding') && !empty($this->sendHTML)){
+                    $this->Body = mb_convert_encoding($this->Body,'HTML-ENTITIES','UTF-8');
+                    $this->Body = str_replace('&amp;','&',$this->Body);
+            }
+            if($this->CharSet != 'utf-8'){
+                    $this->Body = $this->encodingHelper->change($this->Body,'UTF-8',$this->CharSet);
+                    $this->Subject = $this->encodingHelper->change($this->Subject,'UTF-8',$this->CharSet);
+                    if(!empty($this->AltBody)) $this->AltBody = $this->encodingHelper->change($this->AltBody,'UTF-8',$this->CharSet);
+            }
+            $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject);
+            $this->Body = str_replace(chr(194),chr(32),$this->Body);
+            ob_start();
+            $result = parent::Send();
+
+            $warnings = ob_get_clean();
+            if(!empty($warnings) && strpos($warnings,'bloque')){
+                    $result = false;
+            }
+            $receivers =  array();
+            foreach($this->to as $oneReceiver){
+                    $receivers[] = $oneReceiver[0];
+            }
+            if(!$result){
+
+                $this->reportMessage = sprintf(__("Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers));
+                    if(!empty($this->ErrorInfo)) {
+                        //echo $this->ErrorInfo;
+                        $this->error($this->ErrorInfo);
+                        //$this->reportMessage();
+                    }
+                    
+                    if(!empty($warnings)) $this->reportMessage .= ' | '.$warnings;
+                    $this->errorNumber = 1;
+                    if($this->report){
+                            $this->error($this->reportMessage);
+                            
+                    }
+                    
+            }else{
+                    $this->reportMessage = sprintf(__("Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers));
+                    
+                    if($this->report){
+                        if(!empty($warnings)){
+                            $this->reportMessage .= ' | '.$warnings;
+                            $this->notice($this->reportMessage,false);
+                        }
+                        
+                    }
+            }
+            return $result;
+	}
+	function load($email_id){
+            $mailClass = &WYSIJA::get('email','model');
+            $mailClass->getFormat=OBJECT;
+            $this->defaultMail[$email_id] = $mailClass->getOne($email_id);
+
+            $this->defaultMail[$email_id]->params = unserialize(base64_decode($this->defaultMail[$email_id]->params));
+
+            $this->defaultMail[$email_id]->attach=$this->defaultMail[$email_id]->attachments;
+            unset($this->defaultMail[$email_id]->attachments);
+
+            if(empty($this->defaultMail[$email_id]->email_id)) return false;
+            if(empty($this->defaultMail[$email_id]->altbody)) $this->defaultMail[$email_id]->altbody = $this->textVersion($this->defaultMail[$email_id]->body);
+            if(!empty($this->defaultMail[$email_id]->attach)){
+                    $this->defaultMail[$email_id]->attachments = array();
+                    $uploadFolder = str_replace(array('/','\\'),DS,html_entity_decode($this->config->getValue('uploadfolder')));
+                    $uploadFolder = trim($uploadFolder,DS.' ').DS;
+                    $uploadPath = str_replace(array('/','\\'),DS,$uploadFolder);
+                    $uploadURL = $this->config->getValue('uploadurl');
+                    foreach($this->defaultMail[$email_id]->attach as $oneAttach){
+                            $attach = null;
+                            $attach->name = $oneAttach->filename;
+                            $attach->filename = $uploadPath.$oneAttach->filename;
+                            $attach->url = $uploadURL.$oneAttach->filename;
+                            $this->defaultMail[$email_id]->attachments[] = $attach;
+                    }
+            }
+
+            $this->recordEmail($email_id);
+            //$this->dispatcher->trigger('acymailing_replacetags',array(&$this->defaultMail[$email_id]));
+            //$this->defaultMail[$email_id]->body = acymailing_absoluteURL($this->defaultMail[$email_id]->body);
+
+            return $this->defaultMail[$email_id];
+	}
+        
+
+        
+	function clearAll(){
+            $this->Subject = '';
+            $this->Body = '';
+            $this->AltBody = '';
+            $this->ClearAllRecipients();
+            $this->ClearAttachments();
+            $this->ClearCustomHeaders();
+            $this->ClearReplyTos();
+            $this->errorNumber = 0;
+            $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name'));
+
+	}
+         function recordEmail($email_id,$email_object=false){
+            if($email_object) $this->defaultMail[$email_id]=$email_object;
+            add_action('wysija_replacetags', array($this,'replacetags')); 
+            do_action('wysija_replacetags', $email_id);
+        }
+	function sendOne($email_id,$receiverid){
+		
+            $this->clearAll();
+                if(is_object($email_id)){
+                    $emailObj=$email_id;
+                    $email_id=$email_id->email_id;
+                    $this->recordEmail($email_id,$emailObj);
+                }
+		if(!isset($this->defaultMail[$email_id])){
+                    if(!$this->load($email_id)){
+                        $this->reportMessage = 'Can not load the e-mail : '.$email_id;
+                        if($this->report){
+                                $this->error($this->reportMessage);
+                        }
+                        $this->errorNumber = 2;
+                        return false;
+                    }
+		}
+                
+                
+
+		/*if(!empty($this->forceTemplate) AND empty($this->defaultMail[$email_id]->tempid)){
+                    $this->defaultMail[$email_id]->tempid = $this->forceTemplate;
+		}*/
+		$this->addCustomHeader( 'X-email_id: ' . $this->defaultMail[$email_id]->email_id );
+		if(!isset($this->forceVersion) AND empty($this->defaultMail[$email_id]->status)){
+
+                    $this->reportMessage = sprintf(__("The e-mail ID %s is not published",WYSIJA),$email_id);
+                    $this->errorNumber = 3;
+                    if($this->report){
+                            $this->error($this->reportMessage);
+                    }
+                    return false;
+		}
+		if(!is_object($receiverid)){
+                    
+                    $receiver = $this->subscriberClass->getOne($receiverid);
+                    
+                    if(!$receiver){
+                        $userHelper = &WYSIJA::get("user","helper");
+
+                        if($userHelper->validEmail($receiverid)){  
+                            $receiver = $this->subscriberClass->getOne(false,array("email"=>$receiverid));
+                        }
+                        
+
+                    }
+
+                    if((!$receiver || empty($receiver->user_id)) AND is_string($receiverid) AND $this->autoAddUser){
+                        
+                        $userHelper = &WYSIJA::get("user","helper");
+                        if($userHelper->validEmail($receiverid)){
+                            $newUser = array();
+                            $newUser['email'] = $receiverid;
+                            $newUser['status'] = 1;
+                            $this->subscriberClass->checkVisitor = false;
+                            $this->subscriberClass->sendConf = false;
+                            $user_id = $this->subscriberClass->insert($newUser);
+                            $receiver = $this->subscriberClass->getOne($user_id);
+                        }
+                    }
+		}else{
+                    $receiver = $receiverid;
+		}
+		if(empty($receiver->email)){
+			$this->reportMessage = sprintf(__("User not found : <b><i>%s</i></b>",WYSIJA),isset($receiver->user_id) ? $receiver->user_id : $receiverid);
+			if($this->report){
+				$this->error($this->reportMessage);
+			}
+			$this->errorNumber = 4;
+			return false;
+		}
+                $this->MessageID = "<".preg_replace("|[^a-z0-9+_]|i",'',base64_encode(rand(0,9999999))."WY".$receiver->user_id."SI".$this->defaultMail[$email_id]->email_id."JA".base64_encode(time().rand(0,99999)))."@".$this->ServerHostname().">";
+		//$this->addCustomHeader( 'X-Subid: ' . $receiver->user_id );
+		if(!isset($this->forceVersion)){
+			if(/*!isset($this->defaultMail[$email_id]->simple) &&*/ $this->checkConfirmField AND empty($receiver->status) AND $this->config->getValue('confirm_dbleoptin')==1 AND $email_id != $this->config->getValue('confirm_email_id')){
+				$this->reportMessage = sprintf(__($this->config->getValue('confirm_dbleoptin')." The User <b><i>%s</i></b> is not confirmed",WYSIJA),$receiver->email);
+				if($this->report){
+					$this->error($this->reportMessage);
+				}
+				$this->errorNumber = 5;
+				return false;
+			}
+		}
+		
+		$addedName = $this->cleanText($receiver->firstname);
+		$this->AddAddress($this->cleanText($receiver->email),$addedName);
+		if(!isset($this->forceVersion)){
+			//$this->sendHTML = $receiver->html && $this->defaultMail[$email_id]->html;
+                        //$this->sendHTML = $this->defaultMail[$email_id]->mail_format;
+                        $this->sendHTML = "html";
+			$this->IsHTML($this->sendHTML);
+		}else{
+			$this->sendHTML = (bool) $this->forceVersion;
+			$this->IsHTML($this->sendHTML);
+		}
+		$this->Subject = $this->defaultMail[$email_id]->subject;
+		if($this->sendHTML){
+			$this->Body =  nl2br($this->defaultMail[$email_id]->body);
+			if($this->config->getValue('multiple_part',false)){
+				$this->AltBody = $this->defaultMail[$email_id]->altbody;
+			}
+		}else{
+			$this->Body =  $this->defaultMail[$email_id]->altbody;
+		}
+		$this->setFrom($this->defaultMail[$email_id]->from_email,$this->defaultMail[$email_id]->from_name);
+		if(!empty($this->defaultMail[$email_id]->replyto_email)){
+			$replyToName = $this->cleanText($this->defaultMail[$email_id]->replyto_name) ;
+			$this->AddReplyTo($this->cleanText($this->defaultMail[$email_id]->replyto_email),$replyToName);
+		}
+		if(!empty($this->defaultMail[$email_id]->attachments)){
+			if(true /*$this->config->getValue('embed_files')*/){
+				foreach($this->defaultMail[$email_id]->attachments as $attachment){
+					$this->AddAttachment($attachment->filename);
+				}
+			}else{
+				$attachStringHTML = '<br/><fieldset><legend>'.__("Attachments",WYSIJA).'</legend><table>';
+				$attachStringText = "\n"."\n".'------- '.__("Attachments",WYSIJA).' -------';
+				foreach($this->defaultMail[$email_id]->attachments as $attachment){
+					$attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
+					$attachStringText .= "\n".'-- '.$attachment->name.' ( '.$attachment->url.' )';
+				}
+				$attachStringHTML .= '</table></fieldset>';
+				if($this->sendHTML){
+					$this->Body .= $attachStringHTML;
+					if(!empty($this->AltBody)) $this->AltBody .= "\n".$attachStringText;
+				}else{
+					$this->Body .= $attachStringText;
+				}
+			}
+		}
+		if(!empty($this->parameters)){
+			$keysparams = array_keys($this->parameters);
+			$this->Subject = str_replace($keysparams,$this->parameters,$this->Subject);
+			$this->Body = str_replace($keysparams,$this->parameters,$this->Body);
+			if(!empty($this->AltBody)) $this->AltBody = str_replace($keysparams,$this->parameters,$this->AltBody);
+		}
+                
+                $this->Body=stripslashes($this->Body);
+                $this->Subject=stripslashes($this->Subject);
+                
+                
+                
+		$mailforTrigger = null;
+		$mailforTrigger->body = &$this->Body;
+		//$mailforTrigger->altbody = &$this->AltBody;
+		$mailforTrigger->subject = &$this->Subject;
+		$mailforTrigger->from = &$this->From;
+		$mailforTrigger->fromName = &$this->FromName;
+		$mailforTrigger->replyto = &$this->ReplyTo;
+		$mailforTrigger->replyname = &$this->defaultMail[$email_id]->replyname;
+		$mailforTrigger->replyemail = &$this->defaultMail[$email_id]->replyemail;
+		$mailforTrigger->email_id = $this->defaultMail[$email_id]->email_id;
+                $mailforTrigger->type = &$this->defaultMail[$email_id]->type;
+                $mailforTrigger->sendHTML = true;
+		/*$mailforTrigger->key = $this->defaultMail[$email_id]->key;
+		$mailforTrigger->alias = $this->defaultMail[$email_id]->alias;
+		$mailforTrigger->sendHTML = $this->sendHTML;
+		$mailforTrigger->type = $this->defaultMail[$email_id]->type;
+		$mailforTrigger->tempid = $this->defaultMail[$email_id]->tempid;*/
+		//$this->dispatcher->trigger('acymailing_replaceusertags',array(&$mailforTrigger,&$receiver));
+                
+                add_action('wysija_replaceusertags', array($this,'replaceusertags'),10,2);
+                add_action('wysija_replaceusertags', array($this,'tracker_replaceusertags'),11,2);
+                add_action('wysija_replaceusertags', array($this,'openrate_replaceusertags'),12,2);
+                
+                do_action( 'wysija_replaceusertags', $mailforTrigger,$receiver);
+
+		if(!empty($mailforTrigger->customHeaders)){
+			foreach($mailforTrigger->customHeaders as $oneHeader){
+				$this->addCustomHeader( $oneHeader );
+			}
+		}
+		if($this->sendHTML){
+                    $this->AltBody = $this->textVersion($this->Body,true);
+                    //if(!empty($this->AltBody)) $this->AltBody = $this->textVersion($this->AltBody,false);
+		}else{
+			$this->Body = $this->textVersion($this->Body,false);
+		}
+		return $this->send();
+	}
+	function embedImages(){
+	    preg_match_all('/(src|background)="([^"]*)"/Ui', $this->Body, $images);
+	   	$result = true;
+	    if(!empty($images[2])) {
+	   		$mimetypes = array('bmp'   =>  'image/bmp',
+						      'gif'   =>  'image/gif',
+						      'jpeg'  =>  'image/jpeg',
+						      'jpg'   =>  'image/jpeg',
+						      'jpe'   =>  'image/jpeg',
+						      'png'   =>  'image/png',
+						      'tiff'  =>  'image/tiff',
+						      'tif'   =>  'image/tiff');
+	   		$allimages = array();
+	      foreach($images[2] as $i => $url) {
+	      	if(isset($allimages[$url])) continue;
+	      	$allimages[$url] = 1;
+	      	$path = str_replace(array($this->config->getValue('uploadurl'),'/'),array($this->config->getValue('uploadfolder'),DS),urldecode($url));
+	        $filename  = basename($url);
+	        $md5 = md5($filename);
+	        $cid       = 'cid:' . $md5;
+	        $fileParts = explode(".", $filename);
+	        $ext       = strtolower($fileParts[1]);
+	        if(!isset($mimetypes[$ext])) continue;
+	        $mimeType  = $mimetypes[$ext];
+	        if($this->AddEmbeddedImage($path, $md5, $filename, 'base64', $mimeType)){
+	       		$this->Body = preg_replace("/".$images[1][$i]."=\"".preg_quote($url, '/')."\"/Ui", $images[1][$i]."=\"".$cid."\"", $this->Body);
+	        }else{
+	        	$result = false;
+	        }
+	      }
+	    }
+	    return $result;
+	}
+	function textVersion($html,$fullConvert = true){
+		//$html = acymailing_absoluteURL($html);
+		if($fullConvert){
+			$html = preg_replace('# +#',' ',$html);
+			$html = str_replace(array("\n","\r","\t"),'',$html);
+		}
+		$removepictureslinks = "#< *a[^>]*> *< *img[^>]*> *< *\/ *a *>#isU";
+		$removeScript = "#< *script(?:(?!< */ *script *>).)*< */ *script *>#isU";
+		$removeStyle = "#< *style(?:(?!< */ *style *>).)*< */ *style *>#isU";
+		$removeStrikeTags =  '#< *strike(?:(?!< */ *strike *>).)*< */ *strike *>#iU';
+		$replaceByTwoReturnChar = '#< *(h1|h2)[^>]*>#Ui';
+		$replaceByStars = '#< *li[^>]*>#Ui';
+		$replaceByReturnChar1 = '#< */ *(li|td|tr|div|p)[^>]*> *< *(li|td|tr|div|p)[^>]*>#Ui';
+		$replaceByReturnChar = '#< */? *(br|p|h1|h2|legend|h3|li|ul|h4|h5|h6|tr|td|div)[^>]*>#Ui';
+		$replaceLinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.*)< *\/ *a *>/Uis';
+		$text = preg_replace(array($removepictureslinks,$removeScript,$removeStyle,$removeStrikeTags,$replaceByTwoReturnChar,$replaceByStars,$replaceByReturnChar1,$replaceByReturnChar,$replaceLinks),array('','','','',"\n\n","\n* ","\n","\n",'${2} ( ${1} )'),$html);
+		$text = str_replace(array(" ","&nbsp;"),' ',strip_tags($text));
+		$text = trim(@html_entity_decode($text,ENT_QUOTES,'UTF-8'));
+		if($fullConvert){
+			$text = preg_replace('# +#',' ',$text);
+			$text = preg_replace('#\n *\n\s+#',"\n\n",$text);
+		}
+		return $text;
+	}
+	function cleanText($text){
+		return trim( preg_replace( '/(%0A|%0D|\n+|\r+)/i', '', (string) $text ) );
+	}
+	function setFrom($email,$name=''){
+		if(!empty($email)){
+			$this->From = $this->cleanText($email);
+		}
+		if(!empty($name)){
+			$this->FromName = $this->cleanText($name);
+		}
+	}
+	function addParamInfo(){
+		if(!empty($_SERVER)){
+			$serverinfo = array();
+			foreach($_SERVER as $oneKey => $oneInfo){
+				$serverinfo[] = $oneKey.' => '.strip_tags(print_r($oneInfo,true));
+			}
+			$this->addParam('serverinfo',implode('<br />',$serverinfo));
+		}
+		if(!empty($_REQUEST)){
+			$postinfo = array();
+			foreach($_REQUEST as $oneKey => $oneInfo){
+				$postinfo[] = $oneKey.' => '.strip_tags(print_r($oneInfo,true));
+			}
+			$this->addParam('postinfo',implode('<br />',$postinfo));
+		}
+	}
+	function addParam($name,$value){
+		$tagName = '{'.$name.'}';
+		$this->parameters[$tagName] = $value;
+	}
+        
+        function sendSimple($sendto,$subject,$body,$params=array()){
+            $modelConfig=&WYSIJA::get("config","model");
+            $emailObj=null;
+            $emailObj->email_id=0;
+            $emailObj->subject=$subject;
+            $emailObj->body=$body;
+            $emailObj->status=1;
+            $emailObj->attachments="";
+            
+            if(isset($params['from_name']))    $emailObj->from_name=$params['from_name'];
+            else $emailObj->from_name=$modelConfig->getValue("from_name");
+            if(isset($params['from_email']))    $emailObj->from_email=$params['from_email'];
+            else $emailObj->from_email=$modelConfig->getValue("from_email");
+            if(isset($params['replyto_name']))    $emailObj->replyto_name=$params['replyto_name'];
+            else $emailObj->replyto_name=$modelConfig->getValue("replyto_name");
+            if(isset($params['replyto_email']))    $emailObj->replyto_email=$params['replyto_email'];
+            else $emailObj->replyto_email=$modelConfig->getValue("replyto_email");
+            //dbg($emailObj);
+            $emailObj->mail_format="text";
+            $emailObj->simple=1;
+            $this->autoAddUser=true;
+            
+            /* no need to check the doubleoptin */
+            $this->checkConfirmField=false;
+            
+            if(!$this->testemail){
+                if($emailObj->email_id!=$this->config->getValue('confirm_email_id')) {
+                    $emailObj->body.="[subscriptions_links]";
+                    $emailObj->body.="\n[footer_address]";
+                }
+
+                add_action('wysija_replacetags', array($this,'replacetags'));
+                do_action( 'wysija_replacetags', array(&$emailObj));
+            }
+            
+            /*$receiverObj=null;
+            $receiverObj->email=$sendto;
+            $receiverObj->firstname="";
+            $receiverObj->keyuser="";
+            $receiverObj->user_id=0;*/
+            return $this->sendOne($emailObj,$sendto);
+        }
+        
+        function replacetags($email_id){
+
+            $find=array("[footer_address]");
+            $companyaddress=$this->config->getValue('company_address');
+            if(!$companyaddress) $companyaddress="";
+            $replace=array($companyaddress);
+            
+            $this->defaultMail[$email_id]->body=str_replace($find,$replace,$this->defaultMail[$email_id]->body);
+
+        }
+        
+        function replaceusertags($email,$receiver){
+            /* if it is a confirmation email replace the activation shortcode */
+            
+            $find=array("[subscriptions_links]");
+            $subscriptions_links='
                 <div>'.$this->subscriberClass->getUnsubLink($receiver).'
-                '.$this->subscriberClass->getEditsubLink($receiver).'</div>'; $replace=array($subscriptions_links); if($email->email_id == $this->config->getValue('confirm_email_id')){ $this->subscriberClass->reset(); $activation_link=$this->subscriberClass->getConfirmLink($receiver,"subscribe",false,true); $find[]="[activation_link]"; $replace[]='<a href="'.$activation_link.'" target="_blank">'; $find[]="[/activation_link]"; $replace[]='</a>'; } $email->body=str_replace($find,$replace,$email->body); } function tracker_replaceusertags($email,$user){ if(empty($user->user_id)) return; $urls = array(); if(!preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:)([^"]+)"#Ui',$email->body,$results)) return; $modelConf=&WYSIJA::get("config","model"); foreach($results[1] as $i => $url){ $coreUrl=false; if(isset($urls[$results[0][$i]])) continue; if( isset($email->params['trackingcode'])){ $args = array(); $args['utm_source'] = 'newsletter_'.@$email->email_id; $args['utm_medium'] = 'email'; $args['utm_campaign'] = $email->params['trackingcode']; }else{ $Wysijaurls=array(); $Wysijaurls["action=unsubscribe"]="[unsubscribe_link]"; $Wysijaurls["action=subscriptions"]="[subscriptions_link]"; $urlsportions=array_keys($Wysijaurls); if(preg_match('#'.implode('|',$urlsportions).'|\{|%7B#i',$url)){ foreach($Wysijaurls as $k =>$v){ if(strpos($url, $k)!==false){ $urlencoded=base64_encode($v); break; } } }else{ $urlencoded=base64_encode($url); } $args = array(); $args['email_id'] = $email->email_id; $args['user_id'] = $user->user_id; $args['urlencoded'] = $urlencoded; $args['controller'] = 'stats'; $args['action'] = 'analyse'; $args['wysija-page'] = 1; } $mytracker=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$args); $urls[$results[0][$i]] = str_replace($url,$mytracker,$results[0][$i]); } $email->body = str_replace(array_keys($urls),$urls,$email->body); } function openrate_replaceusertags($email,$user){ $typemails=array(1,2,3); if(empty($email->type) OR !in_array($email->type,$typemails) OR strpos($email->body,'[nostatpicture]')){ $email->body = str_replace(array('[statpicture]','[nostatpicture]'),'',$email->body); return; } $widths = range(1, 50); shuffle($widths); $heights = range(1, 3); shuffle($heights); $altTxt=array(__('Footer image',WYSIJA),__('Footer',WYSIJA),__('My footer image',WYSIJA)); shuffle($altTxt); $widthsize = $widths[0]; $heightsize = $heights[0]; $width = empty($widthsize) ? '' : ' width="'.$widthsize.'" '; $height = empty($heightsize) ? '' : ' height="'.$heightsize.'" '; $modelConf=&WYSIJA::get("config","model"); $args = array(); $args['email_id'] = $email->email_id; $args['user_id'] = $user->user_id; $args['controller'] = 'stats'; $args['action'] = 'analyse'; $args['wysija-page'] = 1; $args['render'] = 1; $mytracker=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$args); $statPicture = '<img alt="'.$altTxt[0].'" src="'.$mytracker.'"  border="0" '.$height.$width.'/>'; if(strpos($email->body,'[statpicture]')) $email->body = str_replace('[statpicture]',$statPicture,$email->body); elseif(strpos($email->body,'</body>')) $email->body = str_replace('</body>',$statPicture.'</body>',$email->body); else $email->body .= $statPicture; } function SetError($key,$var="") { if(count($this->language) < 1) { $this->SetLanguage('en'); } $this->error_count++; $this->ErrorInfo = $this->language[$key]; $this->ErrorInfoVar = $var; } } 
+                '.$this->subscriberClass->getEditsubLink($receiver).'</div>';
+            $replace=array($subscriptions_links);
+            if($email->email_id == $this->config->getValue('confirm_email_id')){
+                $this->subscriberClass->reset();
+                $activation_link=$this->subscriberClass->getConfirmLink($receiver,"subscribe",false,true);
+                $find[]="[activation_link]";
+                $replace[]='<a href="'.$activation_link.'" target="_blank">';
+                
+                $find[]="[/activation_link]";
+                $replace[]='</a>';
+            }
+            
+            $email->body=str_replace($find,$replace,$email->body);
+
+        }
+        
+        function tracker_replaceusertags($email,$user){
+            if(empty($user->user_id)) return;
+            //$urlClass = acymailing_get('class.url');
+            //if($urlClass === null) return;
+            $urls = array();
+            if(!preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:)([^"]+)"#Ui',$email->body,$results)) return;
+            
+            $modelConf=&WYSIJA::get("config","model");
+            //$urltracking=site_url()."?p=".$modelConf->getValue("confirm_email_link");
+            //$urltracking=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"));
+            
+            foreach($results[1] as $i => $url){
+                $coreUrl=false;
+                if(isset($urls[$results[0][$i]])) continue;
+
+                
+                if( isset($email->params['trackingcode'])){
+                    $args = array();
+                    $args['utm_source'] = 'newsletter_'.@$email->email_id;
+                    $args['utm_medium'] = 'email';
+                    $args['utm_campaign'] = $email->params['trackingcode'];
+                    /*$args = array();
+                    $args[] = 'utm_source=newsletter_'.@$email->email_id;
+                    $args[] = 'utm_medium=email';
+                    $args[] = 'utm_campaign='.$email->params['trackingcode'];
+                    //$args[] = 'utm_campaign='.@$email->alias;*/
+                    
+                }else{
+                    //$mytracker = $urlClass->getUrl($url,$email->email_id,$user->user_id);
+                    //if(empty($mytracker)) continue;
+                    $Wysijaurls=array();
+                    $Wysijaurls["action=unsubscribe"]="[unsubscribe_link]";
+                    $Wysijaurls["action=subscriptions"]="[subscriptions_link]";
+                    $urlsportions=array_keys($Wysijaurls);
+
+                    if(preg_match('#'.implode('|',$urlsportions).'|\{|%7B#i',$url)){
+                        foreach($Wysijaurls as $k =>$v){
+                            
+                            if(strpos($url, $k)!==false){
+                                
+                                $urlencoded=base64_encode($v);
+                                break;
+                            }
+                        }
+                    }else{
+                        $urlencoded=base64_encode($url);
+                    }
+                    
+
+                    $args = array();
+                    $args['email_id'] = $email->email_id;
+                    $args['user_id'] = $user->user_id;
+                    $args['urlencoded'] = $urlencoded;
+                    $args['controller'] = 'stats';
+                    $args['action'] = 'analyse';
+                    $args['wysija-page'] = 1;
+
+                    
+
+                }
+
+                /*if(strpos($url, "action=subscribe")!==false){
+                    $mytracker=$url;    
+                }else{*/
+                    $mytracker=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$args);
+                //}
+
+
+                $urls[$results[0][$i]] = str_replace($url,$mytracker,$results[0][$i]);
+            }
+
+            $email->body = str_replace(array_keys($urls),$urls,$email->body);
+            
+	}//endfct
+        
+        
+        function openrate_replaceusertags($email,$user){
+                //$typemails=array('news','autonews','followup')
+
+                $typemails=array(1,2,3);
+		if(empty($email->type) OR !in_array($email->type,$typemails) OR strpos($email->body,'[nostatpicture]')){
+			$email->body = str_replace(array('[statpicture]','[nostatpicture]'),'',$email->body);
+			return;
+		}
+                $widths = range(1, 50);
+                shuffle($widths);
+                $heights = range(1, 3);
+                shuffle($heights);
+                $altTxt=array(__('Footer image',WYSIJA),__('Footer',WYSIJA),__('My footer image',WYSIJA));
+                shuffle($altTxt);
+  
+		$widthsize = $widths[0];
+		$heightsize = $heights[0];
+		$width = empty($widthsize) ? '' : ' width="'.$widthsize.'" ';
+		$height = empty($heightsize) ? '' : ' height="'.$heightsize.'" ';
+                
+                $modelConf=&WYSIJA::get("config","model");
+
+                $args = array();
+                $args['email_id'] = $email->email_id;
+                $args['user_id'] = $user->user_id;
+                $args['controller'] = 'stats';
+                $args['action'] = 'analyse';
+                $args['wysija-page'] = 1;
+                $args['render'] = 1;
+                
+                $mytracker=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$args);
+		$statPicture = '<img alt="'.$altTxt[0].'" src="'.$mytracker.'"  border="0" '.$height.$width.'/>';
+
+                if(strpos($email->body,'[statpicture]')) $email->body = str_replace('[statpicture]',$statPicture,$email->body);
+		elseif(strpos($email->body,'</body>')) $email->body = str_replace('</body>',$statPicture.'</body>',$email->body);
+		else $email->body .= $statPicture;
+                
+	 }
+        
+        function SetError($key,$var="") {
+            if(count($this->language) < 1) {
+              $this->SetLanguage('en'); // set the default language
+            }
+            $this->error_count++;
+
+            $this->ErrorInfo = $this->language[$key];
+            $this->ErrorInfoVar = $var;
+        }
+        
+        /* to have more control over the messages returned better for kim's changes */
+        /*function reportMessage() {
+            $PHPMAILER_LANG = array();
+            $PHPMAILER_LANG["provide_address"]      = __('You must provide at least one ',WYSIJA);
+            $PHPMAILER_LANG["mailer_not_supported"] = __(' mailer is not supported.',WYSIJA);
+            $PHPMAILER_LANG["execute"]              = __('Could not execute: ',WYSIJA);
+            $PHPMAILER_LANG["instantiate"]          = __('Could not instantiate mail function.',WYSIJA);
+            $PHPMAILER_LANG["authenticate"]         = __('SMTP Error: Could not authenticate.',WYSIJA);
+            $PHPMAILER_LANG["from_failed"]          = __('The following From address failed: ',WYSIJA);
+            $PHPMAILER_LANG["recipients_failed"]    = __('SMTP Error: The following ',WYSIJA);
+            $PHPMAILER_LANG["data_not_accepted"]    = __('SMTP Error: Data not accepted.',WYSIJA);
+            $PHPMAILER_LANG["connect_host"]         = __('SMTP Error: Could not connect to SMTP host.',WYSIJA);
+            $PHPMAILER_LANG["file_access"]          = __('Could not access file: ',WYSIJA);
+            $PHPMAILER_LANG["file_open"]            = __('File Error: Could not open file: ',WYSIJA);
+            $PHPMAILER_LANG["encoding"]             = __('Unknown encoding: ',WYSIJA);
+            $PHPMAILER_LANG["signing"]              = __('Signing Error: ',WYSIJA);
+            parent::reportMessage();
+            if(!$this->testemail){
+                $this->reportMessage.=" | ".$PHPMAILER_LANG[$this->ErrorInfo].$this->ErrorInfoVar;
+                return;
+            }else{
+               $this->reportMessage.=" | ".$PHPMAILER_LANG[$this->ErrorInfo].$this->ErrorInfoVar;
+                /*switch($this->ErrorInfo){
+                    case "connect_host":
+                        if($this->config->getValue('sending_method')=="gmail"){
+                            $this->reportMessage= __("We couldn't connect to Gmail. Check your login or password again.",WYSIJA);
+                        }
+                        break;
+                    default:
+
+                       $this->reportMessage.=" | ".$PHPMAILER_LANG[$this->ErrorInfo].$this->ErrorInfoVar;
+                } 
+            }
+            
+        }*/
+}
