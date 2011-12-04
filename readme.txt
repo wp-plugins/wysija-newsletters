@@ -1,4 +1,4 @@
-=== Wysija Newsletters for WordPress ===
+=== Wysija Newsletters ===
 Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
