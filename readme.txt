@@ -1,4 +1,4 @@
-=== Wysija Newsletters ===
+=== Wysija Newsletters for WordPress ===
 Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
@@ -22,12 +22,13 @@ We update our code regularly. This plugin is still in beta. [Feedbacks welcomed]
 * Segment your lists based on opened, clicked & bounced
 * Your WordPress users have their own synced list
 * Quick and easy configuration
+* WordPress Multisite ready
 * We offer quick support
 * Free version is limited to 2000 subscribers
 
 = Premium version =
 
-[Wysija Premium](http://www.wysija.com/premium/) offers these nifty extra features:
+[Wysija Premium](http://www.wysija.com/wordpress-newsletter-plugin-premium/) offers these nifty extra features:
 
 * Unlimited number of subscribers
 * Stats for individual subscribers
@@ -57,12 +58,12 @@ There's 3 ways to install this plugin:
 1. Download the plugin (.zip file) on the right column of this page
 1. In your Admin, go to menu Plugins > Add
 1. Select the tab "Upload"
-1. Upload the .zip file you just uploaded
+1. Upload the .zip file you just downloaded
 1. Activate the plugin
 1. A new menu `Wysija` will appear in your Admin
 
 = The old way (FTP) =
-1. Upload `wysija` folder to the `/wp-content/plugins/` directory
+1. Upload `wysija-newsletters` folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. A new menu `Wysija` will appear in your Admin
 
