@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>{#subject|default:Wysija template}</title>
+
+    <style type="text/css">
+        {#css}
+    </style>
+</head>
+
+<body bgcolor="#{#styles.html.background}">
+    <div style="background-color:#{#styles.html.background};text-align:center;width:100%;">
+        <table align="center" width="600" border="0" cellpadding="0" cellspacing="0" style="margin:auto;color:#{#styles.body.color}; text-align:left;">
+            <tr>
+                <td width="600" valign="top" class="header" style="background-color:#{#styles.header.background}; color:#{#styles.body.color};">
+                    <table width="600" border="0" cellpadding="0" cellspacing="0" style="margin:auto;color:#{#styles.body.color}; text-align:left;">
+                        <tr class="header">
+                            {#header}
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="body">
+                    <table width="600" border="0" cellpadding="0" cellspacing="0" style="margin:auto;color:#{#styles.body.color}; text-align:left;">
+                        {#body}
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td class="footer" width="600" border="0" valign="top" style="background-color:#{#styles.footer.background}; color:#{#styles.footer.color};">
+                    {#footer}
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

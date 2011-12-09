@@ -1,0 +1,44 @@
+html {
+    background-color: #015687;
+}
+.header {
+    background-color: #015687;
+}
+body {
+    color:#5E5E5E;
+    font-family: Arial;
+    font-size: 12px;
+    background-color: #fff;
+}
+.footer {
+    color: #333333;
+    font-family: Arial;
+    font-size: 12px;
+    background-color: #ececec;
+}
+h1 {
+    color: #5C5C5C;
+    font-family: Impact;
+    font-size: 30px;
+}
+h2 {
+    color: #5C5C5C;
+    font-family: Impact;
+    font-size: 28px;
+}
+h3 {
+    color: #5C5C5C;
+    font-family: Impact;
+    font-size: 24px;
+}
+a {
+    color: #015687;
+    font-family: Arial;
+    font-size: 12px;
+    text-decoration:'underline';
+}
+.divider {
+    border-color: #b8b8b8;
+    border-size: 1px;
+    border-style: solid;
+}
