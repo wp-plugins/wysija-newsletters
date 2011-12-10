@@ -1,15 +1,15 @@
-=== Wysija Newsletters for WordPress ===
+=== Wysija Newsletters ===
 Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
 Tested up to: 3.2.1
-Stable tag: 0.9
+Stable tag: 0.9.1
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
 == Description ==
 
-We update our code regularly. This plugin is still in beta. [Feedbacks welcomed](http://www.wysija.com/contact/)
+We update our code regularly. This plugin is still in beta. [Feedbacks welcomed](http://www.wysija.com/contact/). We have a dedicated [support site](http://support.wysija.com/) where we'll be happy to help.
 
 = Features =
 
@@ -47,14 +47,16 @@ We update our code regularly. This plugin is still in beta. [Feedbacks welcomed]
 
 There's 3 ways to install this plugin:
 
-= The super easy way =
+Note: premium users don't need to reinstall anything
+
+= 1. The super easy way =
 1. In your Admin, go to menu Plugins > Add
 1. Search for Wysija
 1. Click to install
 1. Activate the plugin
 1. A new menu `Wysija` will appear in your Admin
 
-= The easy way =
+= 2. The easy way =
 1. Download the plugin (.zip file) on the right column of this page
 1. In your Admin, go to menu Plugins > Add
 1. Select the tab "Upload"
@@ -62,7 +64,7 @@ There's 3 ways to install this plugin:
 1. Activate the plugin
 1. A new menu `Wysija` will appear in your Admin
 
-= The old way (FTP) =
+= 3. The old way (FTP) =
 1. Upload `wysija-newsletters` folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. A new menu `Wysija` will appear in your Admin
@@ -83,9 +85,12 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 
 == Changelog ==
 
-= V.0.9 =
+= 0.9.1 =
+* fixed major issue with browser check preventing Safari users from using the plugin
+* fixed issue with wp_attachment function affecting Wordpress post insertion
+* fixed issue when importing subscribers (copy/paste from Gmail)
+* fixed issue related to Wordpress MU
+* minor bugfixes 
 
+= 0.9 =
 * Hello World. We just launched this plugin.
-
-
-

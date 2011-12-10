@@ -205,7 +205,7 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
             </div>
 
             <?php
- endif; }else{ if(count($data['charts']['stats'])>0 ){ echo '<p style="font-size:14px;font-weight:bold;">'; echo str_replace( array("[link]","[/link]"), array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'/img/wpspin_light.gif" alt="loader"/></a>'), __("We have detailed statistics concerning this user, if you want to consult it [link]Go premium now![/link]",WYSIJA)); echo '</p>'; } } $this->buttonsave=__('Save',WYSIJA); $this->add($data); } function globalActionsLists($data=false){ ?>
+ endif; }else{ if(count($data['charts']['stats'])>0 ){ echo '<p style="font-size:14px;font-weight:bold;">'; echo str_replace( array("[link]","[/link]"), array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'), __("We have detailed statistics concerning this user, if you want to consult it [link]Go premium now![/link]",WYSIJA)); echo '</p>'; } } $this->buttonsave=__('Save',WYSIJA); $this->add($data); } function globalActionsLists($data=false){ ?>
         <div class="tablenav">    
 
             <?php $this->pagination("&action=lists"); ?>
@@ -380,17 +380,18 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
                     <tbody class="list:<?php echo $this->model->table_name.' '.$this->model->table_name.'-list" id="wysija-'.$this->model->table_name.'"' ?>>
 
                         <?php
- $listingRows=""; $alt=true; $i=0; foreach($data['csv'] as $columns){ $classRow=""; if($alt) $classRow=' class="alternate" '; echo "<tr $classRow>"; if($i==0){ $valuefrow=''; if(isset($this->data['firstrowisdata'])){ $valuefrow='<input value="1" type="hidden" id="firstrowdata" name="firstrowisdata"  />'; }else{ } echo '<td>'.$valuefrow.'</td>'; } else echo "<td>".$i."</td>"; foreach($columns as $val){ if($i==0) echo '<td><strong>'.$val.'</strong></td>'; else echo '<td>'.$val.'</td>'; } echo "</tr>"; $alt=!$alt; $i++; } ?>
+ $listingRows=""; $alt=true; $i=0; foreach($data['csv'] as $columns){ $classRow=""; if($alt) $classRow=' class="alternate" '; echo "<tr $classRow>"; if(isset($data['firstrowisdata'])){ $j=$i+1; } if($i==0){ $valuefrow=''; if(isset($data['firstrowisdata'])){ $valuefrow='1<input value="1" type="hidden" id="firstrowdata" name="firstrowisdata"  />'; } echo '<td>'.$valuefrow.'</td>'; } else echo "<td>".$j."</td>"; foreach($columns as $val){ if($i==0 && !isset($data['firstrowisdata'])) echo '<td><strong>'.$val.'</strong></td>'; else echo '<td>'.$val.'</td>'; } echo "</tr>"; $alt=!$alt; $i++; } if($data['totalrows']>3){ ?>
                          
                            <tr class="alternate" >
                            <?php
- foreach($data['csv'][0] as $col){ echo "<td>...</td>"; } ?>
+ echo "<td>...</td>"; foreach($data['csv'][0] as $col){ echo "<td>...</td>"; } ?>
                             </tr>
                            <tr><td><?php echo $data['totalrows'] ?></td>
                                <?php
  foreach($data['lastrow'] as $val){ echo '<td>'.$val.'</td>'; } ?>
                            </tr>
-
+                           <?php
+ } ?>
                     </tbody>
                 </table>
             </div>
