@@ -5,10 +5,10 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_tmce exten
         <!--[if lte IE 7]>
         <link rel='stylesheet' id='ie-css'  href='<?php echo $urlblog ?>/wp-admin/css/ie.css' type='text/css' media='all' />
         <![endif]-->
-        <link rel='stylesheet'  href='<?php echo $urlblog ?>/wp-content/plugins/wysija/css/tmce/widget.css' type='text/css' media='all' />
+        <link rel='stylesheet'  href='<?php echo $urlblog ?>/wp-content/plugins/wysija-newsletters/css/tmce/widget.css' type='text/css' media='all' />
         <?php wp_print_scripts('jquery'); ?>
         <script type="text/javascript" src="<?php echo $urlblog; ?>/wp-includes/js/tinymce/tiny_mce_popup.js"></script>
-        <script type='text/javascript' src='<?php echo $urlblog ?>/wp-content/plugins/wysija/js/admin-tmce.js'></script>
+        <script type='text/javascript' src='<?php echo $urlblog ?>/wp-content/plugins/wysija-newsletters/js/admin-tmce.js'></script>
         <?php
  } function head(){ ?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
