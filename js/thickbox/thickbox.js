@@ -35,21 +35,19 @@ function tb_click(){
 	return false;
 }
 
-function tb_show(caption, url, imageGroup,classWindow) {//function called when the user clicks on a thickbox link
+function tb_show(caption, url, imageGroup) {//function called when the user clicks on a thickbox link
 
 	try {
-		
-                
-                if (typeof document.body.style.maxHeight === "undefined") {//if IE 6
+		if (typeof document.body.style.maxHeight === "undefined") {//if IE 6
 			jQuery("body","html").css({height: "100%", width: "100%"});
 			jQuery("html").css("overflow","hidden");
 			if (document.getElementById("TB_HideSelect") === null) {//iframe to hide select elements in ie6
-				jQuery("body").append("<iframe id='TB_HideSelect'>"+thickboxL10n.noiframes+"</iframe><div id='TB_overlay'></div><div id='TB_window' ></div>");
+				jQuery("body").append("<iframe id='TB_HideSelect'>"+thickboxL10n.noiframes+"</iframe><div id='TB_overlay'></div><div id='TB_window'></div>");
 				jQuery("#TB_overlay").click(tb_remove);
 			}
 		}else{//all others
 			if(document.getElementById("TB_overlay") === null){
-				jQuery("body").append("<div id='TB_overlay'></div><div id='TB_window' ></div>");
+				jQuery("body").append("<div id='TB_overlay'></div><div id='TB_window'></div>");
 				jQuery("#TB_overlay").click(tb_remove);
 			}
 		}
@@ -135,7 +133,7 @@ function tb_show(caption, url, imageGroup,classWindow) {//function called when t
 			TB_WIDTH = imageWidth + 30;
 			TB_HEIGHT = imageHeight + 60;
 			jQuery("#TB_window").append("<a href='' id='TB_ImageOff' title='"+thickboxL10n.close+"'><img id='TB_Image' src='"+url+"' width='"+imageWidth+"' height='"+imageHeight+"' alt='"+caption+"'/></a>" + "<div id='TB_caption'>"+caption+"<div id='TB_secondLine'>" + TB_imageCount + TB_PrevHTML + TB_NextHTML + "</div></div><div id='TB_closeWindow'><a href='#' id='TB_closeWindowButton' title='"+thickboxL10n.close+"'><img src='" + tb_closeImage + "' /></a></div>");
-                        
+
 			jQuery("#TB_closeWindowButton").click(tb_remove);
 
 			if (!(TB_PrevHTML === "")) {
@@ -160,31 +158,31 @@ function tb_show(caption, url, imageGroup,classWindow) {//function called when t
 
 			}
 
-			document.onkeydown = function(e){
-				if (e == null) { // ie
-					keycode = event.keyCode;
-				} else { // mozilla
-					keycode = e.which;
-				}
-				if(keycode == 27){ // close
-					tb_remove();
-				} else if(keycode == 190){ // display previous image
+			jQuery(document).bind('keydown.thickbox', function(e){
+				e.stopImmediatePropagation();
+
+				if ( e.which == 27 ){ // close
+					if ( ! jQuery(document).triggerHandler( 'wp_CloseOnEscape', [{ event: e, what: 'thickbox', cb: tb_remove }] ) )
+						tb_remove();
+
+				} else if ( e.which == 190 ){ // display previous image
 					if(!(TB_NextHTML == "")){
-						document.onkeydown = "";
+						jQuery(document).unbind('thickbox');
 						goNext();
 					}
-				} else if(keycode == 188){ // display next image
+				} else if ( e.which == 188 ){ // display next image
 					if(!(TB_PrevHTML == "")){
-						document.onkeydown = "";
+						jQuery(document).unbind('thickbox');
 						goPrev();
 					}
 				}
-			};
+				return false;
+			});
 
 			tb_position();
 			jQuery("#TB_load").remove();
 			jQuery("#TB_ImageOff").click(tb_remove);
-			jQuery("#TB_window").css({display:"block"}); //for safari using css instead of show
+			jQuery("#TB_window").css({'visibility':'visible'}); //for safari using css instead of show
 			};
 
 			imgPreloader.src = url;
@@ -208,7 +206,7 @@ function tb_show(caption, url, imageGroup,classWindow) {//function called when t
 						jQuery("#TB_window").append("<iframe frameborder='0' hspace='0' src='"+urlNoQuery[0]+"' id='TB_iframeContent' name='TB_iframeContent"+Math.round(Math.random()*1000)+"' onload='tb_showIframe()' style='width:"+(ajaxContentW + 29)+"px;height:"+(ajaxContentH + 17)+"px;'>"+thickboxL10n.noiframes+"</iframe>");
 					}
 			}else{// not an iframe, ajax
-					if(jQuery("#TB_window").css("display") != "block"){
+					if(jQuery("#TB_window").css("visibility") != "visible"){
 						if(params['modal'] != "true"){//ajax no modal
 						jQuery("#TB_window").append("<div id='TB_title'><div id='TB_ajaxWindowTitle'>"+caption+"</div><div id='TB_closeAjaxWindow'><a href='#' id='TB_closeWindowButton'><img src='" + tb_closeImage + "' /></a></div></div><div id='TB_ajaxContent' style='width:"+ajaxContentW+"px;height:"+ajaxContentH+"px'></div>");
 						}else{//ajax modal
@@ -227,43 +225,40 @@ function tb_show(caption, url, imageGroup,classWindow) {//function called when t
 
 				if(url.indexOf('TB_inline') != -1){
 					jQuery("#TB_ajaxContent").append(jQuery('#' + params['inlineId']).children());
-					jQuery("#TB_window").unload(function () {
+					jQuery("#TB_window").bind('tb_unload', function () {
 						jQuery('#' + params['inlineId']).append( jQuery("#TB_ajaxContent").children() ); // move elements back when you're finished
 					});
 					tb_position();
 					jQuery("#TB_load").remove();
-					jQuery("#TB_window").css({display:"block"});
+					jQuery("#TB_window").css({'visibility':'visible'});
 				}else if(url.indexOf('TB_iframe') != -1){
 					tb_position();
 					if(jQuery.browser.safari){//safari needs help because it will not fire iframe onload
 						jQuery("#TB_load").remove();
-						jQuery("#TB_window").css({display:"block"});
+						jQuery("#TB_window").css({'visibility':'visible'});
 					}
 				}else{
 					jQuery("#TB_ajaxContent").load(url += "&random=" + (new Date().getTime()),function(){//to do a post change this load method
 						tb_position();
 						jQuery("#TB_load").remove();
 						tb_init("#TB_ajaxContent a.thickbox");
-						jQuery("#TB_window").css({display:"block"});
+						jQuery("#TB_window").css({'visibility':'visible'});
 					});
 				}
 
 		}
-                
-                if (typeof classWindow === "undefined") classWindow="default";
-                jQuery("#TB_window").addClass(classWindow);
-                
+
 		if(!params['modal']){
-			document.onkeyup = function(e){
-				if (e == null) { // ie
-					keycode = event.keyCode;
-				} else { // mozilla
-					keycode = e.which;
+			jQuery(document).bind('keyup.thickbox', function(e){
+
+				if ( e.which == 27 ){ // close
+					e.stopImmediatePropagation();
+					if ( ! jQuery(document).triggerHandler( 'wp_CloseOnEscape', [{ event: e, what: 'thickbox', cb: tb_remove }] ) )
+						tb_remove();
+
+					return false;
 				}
-				if(keycode == 27){ // close
-					tb_remove();
-				}
-			};
+			});
 		}
 
 	} catch(e) {
@@ -274,25 +269,26 @@ function tb_show(caption, url, imageGroup,classWindow) {//function called when t
 //helper functions below
 function tb_showIframe(){
 	jQuery("#TB_load").remove();
-	jQuery("#TB_window").css({display:"block"});
+	jQuery("#TB_window").css({'visibility':'visible'});
 }
 
 function tb_remove() {
  	jQuery("#TB_imageOff").unbind("click");
 	jQuery("#TB_closeWindowButton").unbind("click");
-	jQuery("#TB_window").fadeOut("fast",function(){jQuery('#TB_window,#TB_overlay,#TB_HideSelect').trigger("unload").unbind().remove();});
+	jQuery("#TB_window").fadeOut("fast",function(){jQuery('#TB_window,#TB_overlay,#TB_HideSelect').trigger("tb_unload").unbind().remove();});
 	jQuery("#TB_load").remove();
 	if (typeof document.body.style.maxHeight == "undefined") {//if IE 6
 		jQuery("body","html").css({height: "auto", width: "auto"});
 		jQuery("html").css("overflow","");
 	}
-	if(typeof(WysijaPopup) != "undefined") {
-    	if(WysijaPopup.getInstance()) {
-    	    WysijaPopup.getInstance().close();
-    	}
-    }
-	document.onkeydown = "";
-	document.onkeyup = "";
+	jQuery(document).unbind('.thickbox');
+        
+        if(typeof(WysijaPopup) != "undefined") {
+            if(WysijaPopup.getInstance()) {
+                WysijaPopup.getInstance().close();
+            }
+        }
+        
 	return false;
 }
 
