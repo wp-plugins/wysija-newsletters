@@ -2,8 +2,8 @@
 Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
-Tested up to: 3.2.1
-Stable tag: 0.9.1
+Tested up to: 3.3
+Stable tag: 0.9.2
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
@@ -84,6 +84,12 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 0.9.2 =
+* fixed issue with synched users on multisite(each site synch its users only)
+* fixed compatibility issue with wordpress 3.3(thickbox z-index)
+* fixed issue with redundant messages after plugin import
+* fixed version number display
 
 = 0.9.1 =
 * fixed major issue with browser check preventing Safari users from using the plugin
