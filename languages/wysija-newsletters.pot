@@ -1,0 +1,4106 @@
+# Copyright (C) 2010 
+# This file is distributed under the same license as the  package.
+msgid ""
+msgstr ""
+"Project-Id-Version:  \n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/wysija-newsletters\n"
+"POT-Creation-Date: 2011-12-15 13:13:57+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: views/front/confirm.php:4
+msgid "Subscriber details"
+msgstr ""
+
+#: views/front/confirm.php:7 views/back/subscribers.php:141
+#: views/back/subscribers.php:376 helpers/install.php:2
+#: models/user_field.php:2
+msgid "First name"
+msgstr ""
+
+#: views/front/confirm.php:14 views/back/subscribers.php:150
+#: views/back/subscribers.php:376 helpers/install.php:2
+#: models/user_field.php:2
+msgid "Last name"
+msgstr ""
+
+#: views/front/confirm.php:21 views/back/subscribers.php:44
+#: views/back/subscribers.php:158 views/back/campaigns.php:64
+#: models/user.php:2 models/user_field.php:2
+msgid "Status"
+msgstr ""
+
+#: views/front/confirm.php:24 views/back/subscribers.php:4
+#: views/back/subscribers.php:55 views/back/subscribers.php:161
+#: views/back/subscribers.php:227 views/back/campaigns.php:165
+#: controllers/back/subscribers.php:10
+msgid "Unsubscribed"
+msgstr ""
+
+#: views/front/confirm.php:24 views/back/subscribers.php:4
+#: views/back/subscribers.php:55 views/back/subscribers.php:161
+#: views/back/subscribers.php:222 views/back/campaigns.php:165
+msgid "Subscribed"
+msgstr ""
+
+#: views/front/confirm.php:27
+msgid "List of newsletter subscriptions"
+msgstr ""
+
+#: views/front/confirm.php:32 views/back/subscribers.php:208
+#: views/back/campaigns.php:394 views/back/campaigns.php:431
+#: views/back/campaigns.php:446 views/back.php:74
+#: js/tinymce/langs/wp-langs.php:99
+msgid "Save"
+msgstr ""
+
+#: views/back/tmce.php:39 views/back/tmce.php:49
+#: js/tinymce/langs/wp-langs.php:85 js/tinymce/langs/wp-langs.php:351
+msgid "Preview"
+msgstr ""
+
+#: views/back/tmce.php:51
+msgid "Insert form"
+msgstr ""
+
+#: views/back/subscribers.php:2
+msgid "Search subscribers"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:241
+#: views/back/campaigns.php:1 views/back/campaigns.php:92
+#: views/back/campaigns.php:102 views/back.php:2
+#: controllers/back/subscribers.php:10
+msgid "Edit"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:244
+#: views/back/campaigns.php:1 views/back/campaigns.php:95
+#: views/back/campaigns.php:107
+msgid "Duplicate"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:249
+#: views/back/campaigns.php:1 views/back/campaigns.php:98 views/back.php:2
+msgid "Delete"
+msgstr ""
+
+#: views/back/subscribers.php:2
+msgid "Back to lists"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/campaigns.php:1
+msgid "Back"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:125
+#: controllers/back/subscribers.php:10
+msgid "Add Subscriber"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:298
+msgid "Add List"
+msgstr ""
+
+#: views/back/subscribers.php:2
+msgid "Edit List"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:362
+#: views/back/subscribers.php:417 views/back/subscribers.php:429
+msgid "Import"
+msgstr ""
+
+#: views/back/subscribers.php:2 views/back/subscribers.php:16
+#: views/back/subscribers.php:121
+msgid "Export"
+msgstr ""
+
+#: views/back/subscribers.php:4 views/back/subscribers.php:92
+#: views/back/campaigns.php:3 views/back/campaigns.php:28
+msgid "All"
+msgstr ""
+
+#: views/back/subscribers.php:4 views/back/subscribers.php:55
+#: views/back/subscribers.php:161 views/back/subscribers.php:224
+#: views/back/campaigns.php:165
+msgid "Unconfirmed"
+msgstr ""
+
+#: views/back/subscribers.php:4
+msgid "Unlisted"
+msgstr ""
+
+#: views/back/subscribers.php:12 views/back.php:22
+msgid "Bulk Actions"
+msgstr ""
+
+#: views/back/subscribers.php:13 views/back/campaigns.php:28 models/user.php:2
+msgid "Unsubscribe"
+msgstr ""
+
+#: views/back/subscribers.php:14
+msgid "Add to list %1$s"
+msgstr ""
+
+#: views/back/subscribers.php:19
+msgid "Delete users"
+msgstr ""
+
+#: views/back/subscribers.php:21 views/back/campaigns.php:51 views/back.php:25
+#: js/tinymce/langs/wp-langs.php:5
+msgid "Apply"
+msgstr ""
+
+#: views/back/subscribers.php:27 views/back/campaigns.php:18
+msgid "View by lists"
+msgstr ""
+
+#: views/back/subscribers.php:30 views/back/campaigns.php:21
+msgid "Filter"
+msgstr ""
+
+#: views/back/subscribers.php:44 views/back/subscribers.php:132
+#: views/back/subscribers.php:376 views/back/campaigns.php:154
+#: models/user_field.php:2
+msgid "Email"
+msgstr ""
+
+#: views/back/subscribers.php:44 views/back/subscribers.php:166
+#: views/back/campaigns.php:64 views/back/campaigns.php:154
+#: views/back/campaigns.php:190 views/back/campaigns.php:367
+msgid "Lists"
+msgstr ""
+
+#: views/back/subscribers.php:44 views/back/campaigns.php:154
+msgid "Subscribed on"
+msgstr ""
+
+#: views/back/subscribers.php:65 views/back/campaigns.php:171
+msgid "View stats or edit"
+msgstr ""
+
+#: views/back/subscribers.php:89
+msgid "Pick a list"
+msgstr ""
+
+#: views/back/subscribers.php:100
+msgid "Export confirmed subscribers only"
+msgstr ""
+
+#: views/back/subscribers.php:101
+msgid "Only export subscribers who have activated their subscription by email."
+msgstr ""
+
+#: views/back/subscribers.php:110
+msgid "List of fields to export"
+msgstr ""
+
+#: views/back/subscribers.php:113
+msgid "Subscribed/unconfirmed"
+msgstr ""
+
+#: views/back/subscribers.php:171
+msgid ""
+"The user unsubscribed to this list. He needs to subscribe himself to be "
+"added to this list.You cannot forcefully add him yourself!"
+msgstr ""
+
+#: views/back/subscribers.php:171
+msgid "Why can’t I add him?"
+msgstr ""
+
+#: views/back/subscribers.php:189
+msgid "%1$s emails received."
+msgstr ""
+
+#: views/back/subscribers.php:193 views/back/campaigns.php:416
+msgid "Added"
+msgstr ""
+
+#: views/back/subscribers.php:198
+msgid "Total of %1$s clicks:"
+msgstr ""
+
+#: views/back/subscribers.php:200 controllers/back/campaigns.php:14
+msgid "%1$s hit"
+msgid_plural "%1$s hits"
+msgstr[0] ""
+msgstr[1] ""
+
+#: views/back/subscribers.php:208 views/back/campaigns.php:110
+#: views/back/campaigns.php:141 controllers/back/config.php:2
+#: controllers/back.php:2
+msgid "Get Premium now"
+msgstr ""
+
+#: views/back/subscribers.php:208
+msgid ""
+"We have detailed statistics concerning this user, if you want to consult it "
+"[link]Go premium now![/link]"
+msgstr ""
+
+#: views/back/subscribers.php:220 views/back/subscribers.php:282
+#: views/back/campaigns.php:64 models/list.php:2
+msgid "Name"
+msgstr ""
+
+#: views/back/subscribers.php:221
+msgid "Total subscribers"
+msgstr ""
+
+#: views/back/subscribers.php:228
+msgid "Newsletters sent"
+msgstr ""
+
+#: views/back/subscribers.php:229
+msgid "Date created"
+msgstr ""
+
+#: views/back/subscribers.php:290 models/list.php:2
+msgid "Description"
+msgstr ""
+
+#: views/back/subscribers.php:298
+msgid "Update List"
+msgstr ""
+
+#: views/back/subscribers.php:315
+msgid "How do you want to import?"
+msgstr ""
+
+#: views/back/subscribers.php:331
+msgid "Then paste your list here"
+msgstr ""
+
+#: views/back/subscribers.php:332 views/back/subscribers.php:343
+msgid ""
+"This needs to be in CSV style. See examples in [link]this page[/link] in our "
+"support site."
+msgstr ""
+
+#: views/back/subscribers.php:342
+msgid "Upload a file"
+msgstr ""
+
+#: views/back/subscribers.php:346
+msgid "total max upload file size : %1$s"
+msgstr ""
+
+#: views/back/subscribers.php:353
+msgid "Warning..."
+msgstr ""
+
+#: views/back/subscribers.php:354
+msgid ""
+"The emails you are importing need to come from people who requested to be "
+"subscribed. Otherwise, your emails will quickly be filtered by spam engines. "
+"Don’t fool yourself! [link]Read more here[/link]."
+msgstr ""
+
+#: views/back/subscribers.php:374
+msgid "Match the data"
+msgstr ""
+
+#: views/back/subscribers.php:376
+msgid "Ignore column..."
+msgstr ""
+
+#: views/back/subscribers.php:376 models/user_field.php:2
+msgid "IP address"
+msgstr ""
+
+#: views/back/subscribers.php:403
+msgid "Pick one or many lists"
+msgstr ""
+
+#: views/back/subscribers.php:404
+msgid "Pick the lists  you want to import those subscribers to."
+msgstr ""
+
+#: views/back/subscribers.php:407
+msgid "New list"
+msgstr ""
+
+#: views/back/subscribers.php:407
+msgid "Name for new list:"
+msgstr ""
+
+#: views/back/subscribers.php:425
+msgid "Import the %1$s subscribers from the plugin: %2$s "
+msgstr ""
+
+#: views/back/subscribers.php:425 views/back/config.php:2
+#: views/back/config.php:54 views/back/config.php:148
+#: views/back/config.php:207
+msgid "Yes"
+msgstr ""
+
+#: views/back/subscribers.php:425 views/back/config.php:2
+#: views/back/config.php:54 views/back/config.php:138
+#: views/back/config.php:148 views/back/config.php:207
+msgid "No"
+msgstr ""
+
+#: views/back/config.php:2
+msgid "When someone subscribes"
+msgstr ""
+
+#: views/back/config.php:2
+msgid "When someone unsubscribes"
+msgstr ""
+
+#: views/back/config.php:2
+msgid "Daily summary of emails sent"
+msgstr ""
+
+#: views/back/config.php:5
+msgid "The Basics"
+msgstr ""
+
+#: views/back/config.php:6
+msgid "Subscription Activation Email"
+msgstr ""
+
+#: views/back/config.php:7
+msgid "Sending Method"
+msgstr ""
+
+#: views/back/config.php:8
+msgid "Automated Bounce Handling"
+msgstr ""
+
+#: views/back/config.php:9 js/tinymce/langs/wp-langs.php:347
+msgid "Advanced"
+msgstr ""
+
+#: views/back/config.php:23
+msgid "Purchase Wysija PREMIUM"
+msgstr ""
+
+#: views/back/config.php:23
+msgid ""
+"[link]Purchase the premium version[/link] and get access to the "
+"<strong>Automated Bounce Handling</strong> system."
+msgstr ""
+
+#: views/back/config.php:33
+msgid "Save settings"
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Premium Account Serial Key"
+msgstr ""
+
+#: views/back/config.php:39
+msgid ""
+"Get immediate support, add your own marketing tracking codes, enable "
+"automated bounce handling. [link]Click here to purchase.[/link]"
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Purchase the premium version."
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Your company's address"
+msgstr ""
+
+#: views/back/config.php:39
+msgid ""
+"The address will be added to your newsletters' footer. This helps avoid spam "
+"filters."
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Email notifications"
+msgstr ""
+
+#: views/back/config.php:39
+msgid ""
+"Put in the emails of the person who should received all notifications, comma "
+"separated."
+msgstr ""
+
+#: views/back/config.php:39 views/back/campaigns.php:190
+#: views/back/campaigns.php:367
+msgid "From name"
+msgstr ""
+
+#: views/back/config.php:39
+msgid ""
+"The plugin sends automated notifications, but also to your subscribers, like "
+"the subscription activation email. Put in the name that should show up in "
+"these emails."
+msgstr ""
+
+#: views/back/config.php:39 views/back/campaigns.php:190
+#: views/back/campaigns.php:367
+msgid "From email"
+msgstr ""
+
+#: views/back/config.php:39
+msgid "And the email."
+msgstr ""
+
+#: views/back/config.php:39
+msgid "You are using the premium version."
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Click [link]here[/link] to login to your Wysija account."
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Log in to Wysija.com"
+msgstr ""
+
+#: views/back/config.php:39
+msgid "You are using the free version."
+msgstr ""
+
+#: views/back/config.php:39
+msgid ""
+"Send to more than 2000 subscribers, get immediate support, enable automated "
+"bounce handling and more. [link]Click here to purchase.[/link]"
+msgstr ""
+
+#: views/back/config.php:39
+msgid "Find out what's on offer."
+msgstr ""
+
+#: views/back/config.php:54
+msgid "Send Activation Email"
+msgstr ""
+
+#: views/back/config.php:54
+msgid ""
+"Subscribers will not receive any emails until they activate their "
+"subscriptions. Keep this activated to stop fake subscriptions by humans and "
+"robots."
+msgstr ""
+
+#: views/back/config.php:54 views/back/config.php:216
+msgid "Read more."
+msgstr ""
+
+#: views/back/config.php:54
+msgid "Email subject"
+msgstr ""
+
+#: views/back/config.php:54
+msgid "Email content"
+msgstr ""
+
+#: views/back/config.php:54
+msgid "Confirmation page title"
+msgstr ""
+
+#: views/back/config.php:54
+msgid ""
+"When subscribers click on the activation link, they are redirected to this "
+"[link]confirmation page[/link]"
+msgstr ""
+
+#: views/back/config.php:54 views/back/config.php:216
+msgid "Preview page"
+msgstr ""
+
+#: views/back/config.php:54
+msgid "Confirmation page content"
+msgstr ""
+
+#: views/back/config.php:69
+msgid "Your own website"
+msgstr ""
+
+#: views/back/config.php:69
+msgid ""
+"Second best option for small lists. Your host sets the limit of emails per "
+"day."
+msgstr ""
+
+#: views/back/config.php:72
+msgid ""
+"The simplest of all solutions. Limited to 500 emails a day. We recommend "
+"that you open a dedicated Gmail account for this purpose."
+msgstr ""
+
+#: views/back/config.php:75
+msgid "SMTP server"
+msgstr ""
+
+#: views/back/config.php:75
+msgid ""
+"You can use your own mail server or use a professional emailing SMTP. Good "
+"idea for lists over 2500 subscribers. We negotiated promotional offers with "
+"a few providers for you."
+msgstr ""
+
+#: views/back/config.php:75
+msgid "Find out more."
+msgstr ""
+
+#: views/back/config.php:84
+msgid "Delivery method"
+msgstr ""
+
+#: views/back/config.php:84
+msgid ""
+"Send yourself some test emails to confirm which method works with your "
+"server."
+msgstr ""
+
+#: views/back/config.php:88 views/back/config.php:89 views/back/config.php:154
+msgid "Send a test mail"
+msgstr ""
+
+#: views/back/config.php:88
+msgid "This email engine works on 95% of servers"
+msgstr ""
+
+#: views/back/config.php:89
+msgid "This method works on 5% of servers"
+msgstr ""
+
+#: views/back/config.php:89
+msgid "Sendmail path"
+msgstr ""
+
+#: views/back/config.php:95
+msgid "SMTP Hostname"
+msgstr ""
+
+#: views/back/config.php:104 views/back/config.php:207
+msgid "Login"
+msgstr ""
+
+#: views/back/config.php:114 views/back/config.php:207
+msgid "Password"
+msgstr ""
+
+#: views/back/config.php:124
+msgid "SMTP port"
+msgstr ""
+
+#: views/back/config.php:134
+msgid "Secure connection"
+msgstr ""
+
+#: views/back/config.php:144
+msgid "Authentication"
+msgstr ""
+
+#: views/back/config.php:144
+msgid ""
+"Leave this option to Yes. Only a tiny portion of SMTP services ask "
+"Authentication to be turned off."
+msgstr ""
+
+#: views/back/config.php:164
+msgid "Send..."
+msgstr ""
+
+#: views/back/config.php:168
+msgid "emails every"
+msgstr ""
+
+#: views/back/config.php:168 views/back/config.php:211
+msgid "15 minutes"
+msgstr ""
+
+#: views/back/config.php:168 views/back/config.php:211
+msgid "30 minutes"
+msgstr ""
+
+#: views/back/config.php:168 views/back/config.php:211
+msgid "1 hour"
+msgstr ""
+
+#: views/back/config.php:168 views/back/config.php:211
+msgid "2 hours"
+msgstr ""
+
+#: views/back/config.php:168 views/back/config.php:211
+msgid "Twice daily"
+msgstr ""
+
+#: views/back/config.php:168 views/back/config.php:211
+msgid "Day"
+msgstr ""
+
+#: views/back/config.php:174
+msgid "What the hell should I put here?"
+msgstr ""
+
+#: views/back/config.php:174
+msgid ""
+"Leave this setting to 70 emails per 15 minutes, if you're unsure. To "
+"increase this value, get in touch with your host to find out the limit per "
+"hour of emails sent."
+msgstr ""
+
+#: views/back/config.php:180
+msgid "What should I pick?"
+msgstr ""
+
+#: views/back/config.php:180
+msgid ""
+"This is tough question because that doesn’t depend on us, but on your "
+"server. Get in touch with your hosting provider. Otherwise, we have a great "
+"guide for you. "
+msgstr ""
+
+#: views/back/config.php:188
+msgid "How does it work?"
+msgstr ""
+
+#: views/back/config.php:188
+msgid ""
+"Create an email account dedicated solely to bounce handling, like on Gmail "
+"or your own domain. "
+msgstr ""
+
+#: views/back/config.php:188
+msgid "Fill out the form below so we can connect to it. "
+msgstr ""
+
+#: views/back/config.php:188
+msgid "Take it easy, the plugin does the rest."
+msgstr ""
+
+#: views/back/config.php:188
+msgid "Need help?"
+msgstr ""
+
+#: views/back/config.php:188
+msgid "Check out [link]our guide[/link] on how to fill out the form."
+msgstr ""
+
+#: views/back/config.php:191 helpers/back.php:2
+msgid "Settings"
+msgstr ""
+
+#: views/back/config.php:192
+msgid "Actions & Notifications"
+msgstr ""
+
+#: views/back/config.php:199
+msgid ""
+"There are plenty of reasons for bounces. Configure what to do in each "
+"scenario."
+msgstr ""
+
+#: views/back/config.php:207 views/back/config.php:216
+msgid "Bounce Email"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "Hostname"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "Port"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "POP3 without imap extension"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "Connection method"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "Secure connection(SSL)"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "Self-signed certificates"
+msgstr ""
+
+#: views/back/config.php:207 views/back/config.php:216
+msgid "Unsubscribe the user"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "Delete the subscriber"
+msgstr ""
+
+#: views/back/config.php:207 views/back/config.php:216
+msgid "Do nothing"
+msgstr ""
+
+#: views/back/config.php:207
+msgid "When email does not exist... "
+msgstr ""
+
+#: views/back/config.php:207
+msgid "When mailbox full..."
+msgstr ""
+
+#: views/back/config.php:212
+msgid "Process bounce automatically"
+msgstr ""
+
+#: views/back/config.php:212
+msgid "each"
+msgstr ""
+
+#: views/back/config.php:212
+msgid "Does it work? Try to connect."
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Delete the user"
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Unsubscribe the user and add him to the list \"%1$s\" "
+msgstr ""
+
+#: views/back/config.php:216
+msgid "(after %1$s try)"
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Who can create newsletters?"
+msgstr ""
+
+#: views/back/config.php:216
+msgid "These are based on Wordpress user accounts."
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Default reply name"
+msgstr ""
+
+#: views/back/config.php:216
+msgid ""
+"You can change the default reply-to name and email for your newsletters. "
+"This option is also used for the activation emails and Admin notifications "
+"(in Basics)."
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Default reply email address"
+msgstr ""
+
+#: views/back/config.php:216 views/back/campaigns.php:367
+msgid ""
+"When the subscribers hit \"reply\", this is where they will send their email."
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Unsubscribe page title"
+msgstr ""
+
+#: views/back/config.php:216
+msgid ""
+"This is the [link]unsubscription confirmation[/link] page a user is directed "
+"to after clicking on the unsubscribe link at the bottom of a newsletter."
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Unsubscribe page content"
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Charset"
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Squares or weird characters are displayed in your emails?"
+msgstr ""
+
+#: views/back/config.php:216
+msgid "Debug mode"
+msgstr ""
+
+#: views/back/campaigns.php:1
+msgid "All Newsletters"
+msgstr ""
+
+#: views/back/campaigns.php:1 controllers/back/subscribers.php:2
+msgid "Please select some users first!"
+msgstr ""
+
+#: views/back/campaigns.php:1
+msgid "Search newsletters"
+msgstr ""
+
+#: views/back/campaigns.php:1
+msgid "Create a new newsletter"
+msgstr ""
+
+#: views/back/campaigns.php:1
+msgid "Send %1$s queued emails right now."
+msgstr ""
+
+#: views/back/campaigns.php:1
+msgid "... or duplicate one below to copy its design."
+msgstr ""
+
+#: views/back/campaigns.php:3
+msgid "Sent"
+msgstr ""
+
+#: views/back/campaigns.php:3
+msgid "Sending"
+msgstr ""
+
+#: views/back/campaigns.php:3 views/back/campaigns.php:75
+msgid "Draft"
+msgstr ""
+
+#: views/back/campaigns.php:3
+msgid "Paused"
+msgstr ""
+
+#: views/back/campaigns.php:11
+msgid "Show all dates"
+msgstr ""
+
+#: views/back/campaigns.php:28
+msgid "All Sent"
+msgstr ""
+
+#: views/back/campaigns.php:28
+msgid "Not Sent"
+msgstr ""
+
+#: views/back/campaigns.php:28 controllers/back/subscribers.php:10
+msgid "Unopened"
+msgstr ""
+
+#: views/back/campaigns.php:28 controllers/back/subscribers.php:10
+msgid "Opened"
+msgstr ""
+
+#: views/back/campaigns.php:28 controllers/back/subscribers.php:10
+msgid "Bounced"
+msgstr ""
+
+#: views/back/campaigns.php:28 controllers/back/subscribers.php:10
+msgid "Clicked"
+msgstr ""
+
+#: views/back/campaigns.php:39
+msgid "With this segment"
+msgstr ""
+
+#: views/back/campaigns.php:42
+msgid "Remove from the queue"
+msgstr ""
+
+#: views/back/campaigns.php:45
+msgid "Create a new list"
+msgstr ""
+
+#: views/back/campaigns.php:46
+msgid "Unsubscribe from all lists"
+msgstr ""
+
+#: views/back/campaigns.php:47
+msgid "Unsubscribe from list: %1$s"
+msgstr ""
+
+#: views/back/campaigns.php:48
+msgid "Export to csv"
+msgstr ""
+
+#: views/back/campaigns.php:64
+msgid "Open, clicks, unsubscribed"
+msgstr ""
+
+#: views/back/campaigns.php:64 models/user.php:2
+msgid "Created on"
+msgstr ""
+
+#: views/back/campaigns.php:75
+msgid "Sent to %1$s out of %2$s"
+msgstr ""
+
+#: views/back/campaigns.php:75
+msgid "Sending to %1$s out of %2$s"
+msgstr ""
+
+#: views/back/campaigns.php:105
+msgid "View Newsletter"
+msgstr ""
+
+#: views/back/campaigns.php:106
+msgid "View stats"
+msgstr ""
+
+#: views/back/campaigns.php:110
+msgid "Pause"
+msgstr ""
+
+#: views/back/campaigns.php:110
+msgid "Estimated remaining time: %1$s"
+msgstr ""
+
+#: views/back/campaigns.php:110
+msgid "To resume send [link]Go premium now![/link]"
+msgstr ""
+
+#: views/back/campaigns.php:110
+msgid "Resume"
+msgstr ""
+
+#: views/back/campaigns.php:110
+msgid "Not sent yet"
+msgstr ""
+
+#: views/back/campaigns.php:123
+msgid "Search recipients"
+msgstr ""
+
+#: views/back/campaigns.php:127
+msgid "%1$s emails sent %2$s ago"
+msgstr ""
+
+#: views/back/campaigns.php:127
+msgid "No emails have been sent yet."
+msgstr ""
+
+#: views/back/campaigns.php:139
+msgid "What got clicked?"
+msgstr ""
+
+#: views/back/campaigns.php:141
+msgid "Nothing yet!"
+msgstr ""
+
+#: views/back/campaigns.php:141
+msgid ""
+"We have detailed statistics concerning this campaign, if you want to know "
+"what has been clicked [link]Go premium now![/link]"
+msgstr ""
+
+#: views/back/campaigns.php:154
+msgid "Email Status"
+msgstr ""
+
+#: views/back/campaigns.php:154
+msgid "User Status"
+msgstr ""
+
+#: views/back/campaigns.php:190 views/back/campaigns.php:367
+msgid "Subject line"
+msgstr ""
+
+#: views/back/campaigns.php:190 views/back/campaigns.php:367
+msgid ""
+"This is the subject of the email. Be creative since it’s the first thing "
+"your subscribers will see."
+msgstr ""
+
+#: views/back/campaigns.php:190 views/back/campaigns.php:367
+msgid "The list of subscribers which will be used for that campaign."
+msgstr ""
+
+#: views/back/campaigns.php:190 views/back/campaigns.php:367
+msgid "This is name of the sender. ie, yourself or your company."
+msgstr ""
+
+#: views/back/campaigns.php:190 views/back/campaigns.php:367
+msgid ""
+"This is the email of the sender. ie, your organization or its president. "
+msgstr ""
+
+#: views/back/campaigns.php:192
+msgid ""
+"Yikes! Your browser might not be supported. Get the latest [linkchrome]Chrome"
+"[/linkchrome], [linkff]Firefox[/linkff], [linkie]Internet Explorer[/linkie] "
+"or [linksafari]Safari[/linksafari]. It seems to work?[link_ignore]Ignore "
+"message[/link_ignore]."
+msgstr ""
+
+#: views/back/campaigns.php:205 views/back/campaigns.php:271
+msgid "Next step"
+msgstr ""
+
+#: views/back/campaigns.php:223
+msgid "Drag the widgets below into your newsletter."
+msgstr ""
+
+#: views/back/campaigns.php:224 helpers/wj_engine.php:2
+msgid "Plain text"
+msgstr ""
+
+#: views/back/campaigns.php:225 helpers/wj_engine.php:2
+msgid "Wordpress post"
+msgstr ""
+
+#: views/back/campaigns.php:226 helpers/wj_engine.php:2
+msgid "Horizontal line"
+msgstr ""
+
+#: views/back/campaigns.php:232
+msgid "Add images"
+msgstr ""
+
+#: views/back/campaigns.php:252
+msgid "Download Photoshop files..."
+msgstr ""
+
+#: views/back/campaigns.php:265 views/back/campaigns.php:380
+msgid "Send preview"
+msgstr ""
+
+#: views/back/campaigns.php:367
+msgid "Reply-to name"
+msgstr ""
+
+#: views/back/campaigns.php:367
+msgid ""
+"When the subscribers hit \"reply\", this is to who they will send their "
+"email "
+msgstr ""
+
+#: views/back/campaigns.php:367
+msgid "Reply-to email"
+msgstr ""
+
+#: views/back/campaigns.php:388
+msgid "Send now"
+msgstr ""
+
+#: views/back/campaigns.php:391
+msgid "Send later"
+msgstr ""
+
+#: views/back/campaigns.php:396
+msgid "Save and resume send"
+msgstr ""
+
+#: views/back/campaigns.php:400
+msgid "or simply [link]go back to design[/link]."
+msgstr ""
+
+#: views/back/campaigns.php:436
+msgid "Address:"
+msgstr ""
+
+#: views/back/campaigns.php:441
+msgid "Alternative text:"
+msgstr ""
+
+#: views/back/campaigns.php:444
+msgid ""
+"This text is displayed when email clients block images, which is most of the "
+"time."
+msgstr ""
+
+#: views/back/campaigns.php:471
+msgid "Search"
+msgstr ""
+
+#: views/back/campaigns.php:492
+msgid "Done"
+msgstr ""
+
+#: views/back/campaigns.php:502
+msgid "&laquo;"
+msgstr ""
+
+#: views/back/campaigns.php:502
+msgid "&raquo;"
+msgstr ""
+
+#: views/back/campaigns.php:542
+msgid "Sorry, you have filled your storage quota (%s MB)."
+msgstr ""
+
+#: views/back/campaigns.php:548
+msgid "Select Files"
+msgstr ""
+
+#: views/back/campaigns.php:595
+msgid "Choose files to upload"
+msgstr ""
+
+#: views/back/campaigns.php:597
+msgid "Cancel Upload"
+msgstr ""
+
+#: views/back/campaigns.php:599 views/back/campaigns.php:612
+msgid "Maximum upload file size: %d%s"
+msgstr ""
+
+#: views/back/campaigns.php:601
+msgid "After a file has been uploaded, you can add titles and descriptions."
+msgstr ""
+
+#: views/back/campaigns.php:608 views/back/campaigns.php:609
+#: controllers/back/campaigns.php:15
+msgid "Upload"
+msgstr ""
+
+#: views/back/campaigns.php:609 js/tinymce/langs/wp-langs.php:8
+msgid "Cancel"
+msgstr ""
+
+#: views/back/campaigns.php:614
+msgid ""
+"If you want to use all capabilities of the uploader, like uploading multiple "
+"files at once, please upgrade to lighttpd 1.5."
+msgstr ""
+
+#: views/back/campaigns.php:630
+msgid ""
+"This tab will be filled with images from your current and previous "
+"newsletters."
+msgstr ""
+
+#: views/back.php:2
+msgid "View"
+msgstr ""
+
+#: views/back.php:35
+msgid "Displaying %1$d-%2$d of %3$d."
+msgstr ""
+
+#: views/back.php:35
+msgid "%1$d Items"
+msgstr ""
+
+#: views/back.php:37
+msgid "Page %1$s"
+msgstr ""
+
+#: views/back.php:40
+msgid "Will split records into %1$s pages."
+msgstr ""
+
+#: views/back.php:42
+msgid "Records to show per page:"
+msgstr ""
+
+#: views/back.php:55
+msgid "Modify"
+msgstr ""
+
+#: views/back.php:55
+msgid "Add"
+msgstr ""
+
+#: core/controller.php:2
+msgid "Security failure during request."
+msgstr ""
+
+#: core/controller.php:2
+msgid "Your request is not safe."
+msgstr ""
+
+#: core/base.php:2
+msgid "An error occured. [link]Show more details.[/link]"
+msgstr ""
+
+#: core/base.php:2
+msgid "[link]Show more details.[/link]"
+msgstr ""
+
+#: core/base.php:2
+msgid "Once every fifteen minutes"
+msgstr ""
+
+#: core/base.php:2
+msgid "Once every thirty minutes"
+msgstr ""
+
+#: core/base.php:2
+msgid "Once every two hours"
+msgstr ""
+
+#: core/base.php:2 controllers/back/campaigns.php:2
+#: controllers/ajax/config.php:2
+msgid "Successfully connected to %1$s"
+msgstr ""
+
+#: core/base.php:2 controllers/back/campaigns.php:2
+#: controllers/ajax/config.php:2
+msgid "There are no messages"
+msgstr ""
+
+#: core/base.php:2 controllers/back/campaigns.php:2
+#: controllers/ajax/config.php:2
+msgid "There are %1$s messages in your mailbox"
+msgstr ""
+
+#: core/base.php:2
+msgid "%1$s year "
+msgid_plural "%1$s years "
+msgstr[0] ""
+msgstr[1] ""
+
+#: core/base.php:2
+msgid "%1$s week "
+msgid_plural "%1$s weeks "
+msgstr[0] ""
+msgstr[1] ""
+
+#: core/base.php:2
+msgid "%1$s day "
+msgid_plural "%1$s days "
+msgstr[0] ""
+msgstr[1] ""
+
+#: core/base.php:2
+msgid "%1$s hour "
+msgid_plural "%1$s hours "
+msgstr[0] ""
+msgstr[1] ""
+
+#: core/base.php:2
+msgid "%1$s minute "
+msgid_plural "%1$s minutes "
+msgstr[0] ""
+msgstr[1] ""
+
+#: core/base.php:2
+msgid "Wysija page"
+msgstr ""
+
+#: core/base.php:2
+msgid "Wysija Subscription"
+msgstr ""
+
+#: core/base.php:2
+msgid "Subscription form for your newsletters."
+msgstr ""
+
+#: core/base.php:2
+msgid "Check your inbox now to confirm your subscription."
+msgstr ""
+
+#: core/base.php:2
+msgid "You’ve successfully subscribed."
+msgstr ""
+
+#: core/base.php:2
+msgid "Title:"
+msgstr ""
+
+#: core/base.php:2
+msgid "Newsletter subscription"
+msgstr ""
+
+#: core/base.php:2
+msgid ""
+"To subscribe to our dandy newsletter simply add your email below. A "
+"confirmation email will be sent to you!"
+msgstr ""
+
+#: core/base.php:2
+msgid "Subscribe to..."
+msgstr ""
+
+#: core/base.php:2
+msgid "Button label:"
+msgstr ""
+
+#: core/base.php:2
+msgid "Subscribe!"
+msgstr ""
+
+#: core/base.php:2
+msgid "Success message:"
+msgstr ""
+
+#: core/model.php:2
+msgid "Error Validating the fields"
+msgstr ""
+
+#: core/model.php:2
+msgid "Field \"%1$s\" is required in table \"%2$s\"."
+msgstr ""
+
+#: core/model.php:2
+msgid "Field \"%1$s\" needs to be a valid Email."
+msgstr ""
+
+#: controllers/front/confirm.php:2
+msgid "Page does not exists."
+msgstr ""
+
+#: controllers/front/confirm.php:2
+msgid "Please verify your link to this page."
+msgstr ""
+
+#: controllers/front/confirm.php:2
+msgid "You are already subscribed."
+msgstr ""
+
+#: controllers/front/confirm.php:2
+msgid "You are already unsubscribed."
+msgstr ""
+
+#: controllers/front/confirm.php:2
+msgid "Edit your newsletter profile: %1$s"
+msgstr ""
+
+#: controllers/front/confirm.php:2
+msgid "Newsletter profile has been updated."
+msgstr ""
+
+#: controllers/front/subscribers.php:2 controllers/ajax/subscribers.php:2
+msgid "User has been inserted."
+msgstr ""
+
+#: controllers/front/subscribers.php:2 controllers/ajax/subscribers.php:2
+msgid "User has not been inserted."
+msgstr ""
+
+#: controllers/front/subscribers.php:2 controllers/ajax/subscribers.php:2
+msgid "User has been updated."
+msgstr ""
+
+#: controllers/front/subscribers.php:2 controllers/ajax/subscribers.php:2
+msgid "User has not been updated."
+msgstr ""
+
+#: controllers/front/subscribers.php:2 controllers/ajax/subscribers.php:2
+msgid "The email %1$s is not valid!"
+msgstr ""
+
+#: controllers/front/subscribers.php:2 controllers/ajax/subscribers.php:2
+msgid "Oops! You're already subscribed."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Subscribers per page:"
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Yikes! Couldn't find any subscriber."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Subscriber has been saved."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Subscriber has not been saved."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Subscriber has been modified."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Subscriber has not been modified."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Subscribers have been added to \"%1$s\"."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "%1$d Subscribers have been unsubscribed."
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "Editing list %1$s"
+msgstr ""
+
+#: controllers/back/subscribers.php:2
+msgid "How about a new list?"
+msgstr ""
+
+#: controllers/back/subscribers.php:7 controllers/back/campaigns.php:3
+#: controllers/back/campaigns.php:5
+msgid "Copy of "
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "List \"%1$s\" has been duplicated."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "No subscriber found, most probably because he was deleted."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "List \"%1$s\" has been deleted."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "The list does not exists or cannot be deleted."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "List has been updated."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Your brand-new list awaits its first subscriber."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Import from plugin %1$s has been completed."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Import from plugin %1$s has been cancelled."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Import subscribers from plugins"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "There is no plugin to import from."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Import subscribers"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "which you have pasted"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Upload error, file %1$s is too large! (MAX:%2$s)"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid ""
+"The list you've pasted is to big for the browser. <strong>Upload the file</"
+"strong> instead."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid ""
+"The data you are trying to import doesn't appear to be in the CSV format "
+"(Comma Separated Values). [link]Read more[/link]."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid ""
+"The first line of a CSV file should be the column headers : \"email\","
+"\"lastname\",\"firstname\"."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid ""
+"The second line of a CSV file should be a set of values : \"joeeg@example.com"
+"\",\"Average\",\"Joe\"."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "The two first lines of the file you've uploaded are as follow:"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Line is empty"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid ""
+"There might be a problem with the list you are trying to import. We have "
+"identified %1$s emails out of %2$s rows."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "We have identified email addresses in the column(s) named \"%1$s\"."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "You need to select at least one list."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Cannot access csv file verify access rights to this directory \"%1$s\""
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "%1$s subscribers have been added to \"%2$s\"."
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Export subscribers"
+msgstr ""
+
+#: controllers/back/subscribers.php:10
+msgid "Exporting %1$s subscribers"
+msgstr ""
+
+#: controllers/back/subscribers.php:12
+msgid ""
+"%1$s subscribers were exported. Get the exported file [link]here[/link]."
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid "Sending a test email"
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid "Bounce handling connection test"
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid "Bounce handling processing"
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid ""
+"Subscribers will now need to activate their subscription by email in order "
+"to receive your newsletters. This is recommended."
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid ""
+"Unconfirmed subscribers will receive your newslettters from now on without "
+"the need to activate their subscriptions."
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid "Process bounce handling Now!"
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid ""
+"When setting up the bounce system, you need to have a different address for "
+"the bounce email and the forward to address"
+msgstr ""
+
+#: controllers/back/config.php:2
+msgid ""
+"You're almost there. Click this [link]link[/link] to activate the licence "
+"you have just purchased."
+msgstr ""
+
+#: controllers/back/campaigns.php:2 helpers/licence.php:2
+msgid "Premium version is valid for your site."
+msgstr ""
+
+#: controllers/back/campaigns.php:2 helpers/licence.php:2
+msgid "Premium version licence does not exists for your site."
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Queue is empty!"
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Go premium, you cannot send anymore!"
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "First step : main details"
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Step 1"
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Saving newsletter..."
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Error Saving newsletter..."
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Newsletter has been saved."
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Image Manager"
+msgstr ""
+
+#: controllers/back/campaigns.php:2 controllers/back/campaigns.php:8
+msgid "Sending preview..."
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Second step : design \"%1$s\""
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "Step 2"
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "The campaign queue has been paused."
+msgstr ""
+
+#: controllers/back/campaigns.php:2
+msgid "The campaign queue has been resumed."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "The campaign has been duplicated."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Final step : last details"
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "[#] emails are about to be sent to [#nms]."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Step 3"
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Newsletter deleted."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Newsletter can't be deleted."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Campaign created."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Information is missing."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Campaign has been saved as a draft."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Campaign is being sent."
+msgstr ""
+
+#: controllers/back/campaigns.php:8 helpers/back.php:2
+msgid "Newsletters"
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Please select some campaigns first!"
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Delete this newsletter for ever?"
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "Queue sending process."
+msgstr ""
+
+#: controllers/back/campaigns.php:8
+msgid "View newsletter"
+msgstr ""
+
+#: controllers/back/campaigns.php:12
+msgid ""
+"We looked everywhere, but we couldn't find the newsletter you're looking for."
+msgstr ""
+
+#: controllers/back/campaigns.php:12
+msgid "Stats : %1$s"
+msgstr ""
+
+#: controllers/back/campaigns.php:14
+msgid "Your request can't retrieve any subscribers. Change your filters!"
+msgstr ""
+
+#: controllers/back/campaigns.php:14
+msgid "Segment of %1$s"
+msgstr ""
+
+#: controllers/back/campaigns.php:14
+msgid "List created based on a campaign segment."
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "A new list \"%1$s\" has been created out of this segment."
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "The segment has been unbsubscribed from all the lists."
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "The segment has been removed from the queue of this newsletter."
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "The segment has been unbsubscribed from the list \"%1$s\""
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "The segment cannot be unbsubscribed from an [IMPORT] list."
+msgstr ""
+
+#: controllers/back/campaigns.php:15 helpers/wj_engine.php:2
+msgid "Article Selection"
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "Newsletter Images"
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "WordPress Posts' Images"
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "Delete image for all newsletters?"
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "This image might be in an article. Delete anyway?"
+msgstr ""
+
+#: controllers/back/campaigns.php:15 controllers/ajax/campaigns.php:2
+msgid "Image has been deleted."
+msgstr ""
+
+#: controllers/back/campaigns.php:15
+msgid "Saved."
+msgstr ""
+
+#: controllers/back.php:2
+msgid ""
+"Yikes. You're over the limit of 2000 subscribers for the free version of "
+"Wysija (%1$s in total). Sending is disabled now. Please upgrade your version "
+"to [link]premium[/link] to send without limits."
+msgstr ""
+
+#: controllers/back.php:2
+msgid ""
+"Yikes. You're near the limit of %1$s subscribers in total for the free "
+"version of Wysija. Sending will be disabled when you reach that limit. Rest "
+"assured, your visitors will still be able to subscribe. Go [link]premium[/"
+"link] to send without limits."
+msgstr ""
+
+#: controllers/back.php:2
+msgid "Elements deleted"
+msgstr ""
+
+#: controllers/back.php:2
+msgid "Element has been deleted."
+msgstr ""
+
+#: controllers/ajax/tmce.php:2
+msgid "Insert Newsletter Registration Form"
+msgstr ""
+
+#: controllers/ajax/tmce.php:2
+msgid "Edit Newsletter Registration Form"
+msgstr ""
+
+#: controllers/ajax/config.php:2
+msgid "There are no bounced messages to process right now!"
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "The theme you selected could not be loaded."
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "Your email could not be saved"
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "Your email has been saved"
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "Styles could not be saved"
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "Styles have been saved"
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "Image selection has not been saved."
+msgstr ""
+
+#: controllers/ajax/campaigns.php:2
+msgid "Image selection has been saved."
+msgstr ""
+
+#: controllers/ajax/campaigns.php:15
+msgid "Click here to view media."
+msgstr ""
+
+#: controllers/ajax/campaigns.php:15
+msgid "Read online."
+msgstr ""
+
+#: controllers/ajax/campaigns.php:15
+msgid "There are no posts corresponding to that search."
+msgstr ""
+
+#: controllers/ajax/campaigns.php:15
+msgid "Your email preview has been sent to %1$s"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:4
+msgid "Do you want to use the WYSIWYG mode for this textarea?"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:6
+msgid "Insert"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:7
+msgid "Update"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:9 helpers/backloader.php:2
+msgid "Close"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:10
+msgid "Browse"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:11 js/tinymce/langs/wp-langs.php:356
+msgid "Class"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:12
+msgid "-- Not set --"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:13 js/tinymce/langs/wp-langs.php:279
+msgid "Copy/Cut/Paste is not available in Mozilla and Firefox."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:14
+msgid ""
+"Currently not supported by your browser, use keyboard shortcuts instead."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:15
+msgid ""
+"Sorry, but we have noticed that your popup-blocker has disabled a window "
+"that provides application functionality. You will need to disable popup "
+"blocking on this site in order to fully utilize this tool."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:16
+msgid "Error: Invalid values entered, these are marked in red."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:17
+msgid "{#field} must be a number"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:18
+msgid "{#field} must be a number greater than {#min}"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:19
+msgid "{#field} must be a number or percentage"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:20 js/tinymce/langs/wp-langs.php:283
+msgid "More colors"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:23
+msgid "Black"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:24
+msgid "Burnt orange"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:25
+msgid "Dark olive"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:26
+msgid "Dark green"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:27
+msgid "Dark azure"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:28
+msgid "Navy Blue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:29
+msgid "Indigo"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:30
+msgid "Very dark gray"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:31
+msgid "Maroon"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:32
+msgid "Orange"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:33
+msgid "Olive"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:34
+msgid "Green"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:35
+msgid "Teal"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:36
+msgid "Blue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:37
+msgid "Grayish blue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:38
+msgid "Gray"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:39
+msgid "Red"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:40
+msgid "Amber"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:41
+msgid "Yellow green"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:42
+msgid "Sea green"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:43
+msgid "Turquoise"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:44
+msgid "Royal blue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:45
+msgid "Purple"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:46
+msgid "Medium gray"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:47
+msgid "Magenta"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:48
+msgid "Gold"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:49
+msgid "Yellow"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:50
+msgid "Lime"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:51
+msgid "Aqua"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:52
+msgid "Sky blue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:53
+msgid "Brown"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:54
+msgid "Silver"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:55
+msgid "Pink"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:56
+msgid "Peach"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:57
+msgid "Light yellow"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:58
+msgid "Pale green"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:59
+msgid "Pale cyan"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:60
+msgid "Light sky blue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:61
+msgid "Plum"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:62
+msgid "White"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:65 js/tinymce/langs/wp-langs.php:322
+msgid "Alignment"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:66 js/tinymce/langs/wp-langs.php:329
+#: js/tinymce/langs/wp-langs.php:428
+msgid "Left"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:67 js/tinymce/langs/wp-langs.php:408
+#: js/tinymce/langs/wp-langs.php:429
+msgid "Center"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:68 js/tinymce/langs/wp-langs.php:330
+#: js/tinymce/langs/wp-langs.php:426
+msgid "Right"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:69
+msgid "Full"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:72
+msgid "%Y-%m-%d"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:73
+msgid "%H:%M:%S"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:74
+msgid "Insert date"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:75
+msgid "Insert time"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "January"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "February"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "March"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "April"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "May"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "June"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "July"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "August"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "September"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "October"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "November"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:76
+msgid "December"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Jan_January_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Feb_February_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Mar_March_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Apr_April_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "May_May_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Jun_June_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Jul_July_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Aug_August_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Sep_September_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Oct_October_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Nov_November_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:77
+msgid "Dec_December_abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Sunday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Monday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Tuesday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Wednesday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Thursday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Friday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:78
+msgid "Saturday"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Sun"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Mon"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Tue"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Wed"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Thu"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Fri"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:79
+msgid "Sat"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:82
+msgid "Print"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:88
+msgid "Direction left to right"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:89
+msgid "Direction right to left"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:92
+msgid "Insert new layer"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:93
+msgid "Move forward"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:94
+msgid "Move backward"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:95
+msgid "Toggle absolute positioning"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:96
+msgid "New layer..."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:100
+msgid "Cancel all changes"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:103
+msgid "Insert non-breaking space character"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:106
+msgid "Run spell checking"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:107
+msgid "ieSpell not detected. Do you want to install it now?"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:110
+msgid "Horizontale rule"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:113
+msgid "Emotions"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:116
+msgid "Find"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:117
+msgid "Find/Replace"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:120 js/tinymce/langs/wp-langs.php:260
+#: js/tinymce/langs/wp-langs.php:314
+msgid "Insert/edit image"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:123 js/tinymce/langs/wp-langs.php:258
+#: js/tinymce/langs/wp-langs.php:331
+msgid "Insert/edit link"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:126
+msgid "Citation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:127
+msgid "Abbreviation"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:128
+msgid "Acronym"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:129
+msgid "Deletion"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:130
+msgid "Insertion"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:131
+msgid "Insert/Edit Attributes"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:134
+msgid "Edit CSS Style"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:137
+msgid "Paste as Plain Text"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:138
+msgid "Paste from Word"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:139
+msgid "Select All"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:140
+msgid ""
+"Paste is now in plain text mode. Click again to toggle back to regular paste "
+"mode. After you paste something you will be returned to regular paste mode."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:141
+msgid ""
+"Paste is now in plain text mode. Click again to toggle back to regular paste "
+"mode."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:144 js/tinymce/langs/wp-langs.php:146
+msgid "Use CTRL+V on your keyboard to paste the text into the window."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:145
+msgid "Keep linebreaks"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:149
+msgid "Inserts a new table"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:150
+msgid "Insert row before"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:151
+msgid "Insert row after"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:152
+msgid "Delete row"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:153
+msgid "Insert column before"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:154
+msgid "Insert column after"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:155
+msgid "Remove column"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:156
+msgid "Split merged table cells"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:157
+msgid "Merge table cells"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:158
+msgid "Table row properties"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:159
+msgid "Table cell properties"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:160
+msgid "Table properties"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:161
+msgid "Paste table row before"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:162
+msgid "Paste table row after"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:163
+msgid "Cut table row"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:164
+msgid "Copy table row"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:165
+msgid "Delete table"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:166
+msgid "Row"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:167
+msgid "Column"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:168
+msgid "Cell"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:171
+msgid "The changes you made will be lost if you navigate away from this page."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:174
+msgid "Toggle fullscreen mode"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:177 js/tinymce/langs/wp-langs.php:345
+msgid "Insert / edit embedded media"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:178
+msgid "Edit embedded media"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:181
+msgid "Document properties"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:184
+msgid "Insert predefined template content"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:187
+msgid "Visual control characters on/off."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:190
+msgid "Toggle spellchecker"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:191
+msgid "Spellchecker settings"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:192
+msgid "Ignore word"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:193
+msgid "Ignore all"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:194
+msgid "Languages"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:195
+msgid "Please wait..."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:196
+msgid "Suggestions"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:197
+msgid "No suggestions"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:198
+msgid "No misspellings found."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:199
+msgid "Learn word"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:202
+msgid "Insert Page Break"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:205
+msgid "Types"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:206
+msgid "Default"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:207
+msgid "Lower alpha"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:208
+msgid "Lower greek"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:209
+msgid "Lower roman"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:210
+msgid "Upper alpha"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:211
+msgid "Upper roman"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:212
+msgid "Circle"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:213
+msgid "Disc"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:214
+msgid "Square"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:217 js/tinymce/langs/wp-langs.php:286
+msgid "Rich Text Area"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:220
+msgid "Words:"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:225
+msgctxt "TinyMCE font styles"
+msgid "Styles"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:226
+msgid "Font size"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:227
+msgid "Font family"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:228
+msgid "Format"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:229
+msgid "Paragraph"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:230
+msgid "Div"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:231
+msgid "Address"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:232
+msgid "Preformatted"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:233 helpers/wj_engine.php:2
+msgid "Heading 1"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:234 helpers/wj_engine.php:2
+msgid "Heading 2"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:235 helpers/wj_engine.php:2
+msgid "Heading 3"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:236
+msgid "Heading 4"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:237
+msgid "Heading 5"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:238
+msgid "Heading 6"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:239 js/tinymce/langs/wp-langs.php:278
+msgid "Blockquote"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:240
+msgid "Code"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:241
+msgid "Code sample"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:242
+msgid "Definition term "
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:243
+msgid "Definition description"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:244
+msgid "Bold"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:245
+msgid "Italic"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:246
+msgid "Underline"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:247
+msgid "Strikethrough"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:248
+msgid "Align Left"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:249
+msgid "Align Center"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:250
+msgid "Align Right"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:251
+msgid "Align Full"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:252
+msgid "Unordered list"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:253
+msgid "Ordered list"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:254
+msgid "Outdent"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:255
+msgid "Indent"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:256
+msgid "Undo"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:257
+msgid "Redo"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:259
+msgid "Unlink"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:261
+msgid "Cleanup messy code"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:262
+msgid "Edit HTML Source"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:263
+msgid "Subscript"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:264
+msgid "Superscript"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:265
+msgid "Insert horizontal ruler"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:266
+msgid "Remove formatting"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:267
+msgid "Select text color"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:268
+msgid "Select background color"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:269
+msgid "Insert custom character"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:270
+msgid "Toggle guidelines/invisible elements"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:271 js/tinymce/langs/wp-langs.php:300
+msgid "Insert/edit anchor"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:272
+msgid "Cut"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:273
+msgid "Copy"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:274
+msgid "Paste"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:275
+msgid "Image properties"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:276
+msgid "New document"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:277 js/tinymce/langs/wp-langs.php:293
+#: js/tinymce/langs/wp-langs.php:458
+msgid "Help"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:280
+msgid "Path"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:281
+msgid "Are you sure you want to clear all contents?"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:282
+msgid ""
+"Jump to tool buttons - Alt+Q, Jump to editor - Alt-Z, Jump to element path - "
+"Alt-X"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:284 js/tinymce/langs/wp-langs.php:340
+msgid "Accessibility Help"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:285
+msgid "Press ALT F10 for toolbar. Press ALT 0 for help."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:287
+msgid "Toolbar"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:291
+msgid "About TinyMCE"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:292
+msgid "About"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:294
+msgid "License"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:295
+msgid "Plugins"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:296
+msgid "Plugin"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:297
+msgid "Author"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:298
+msgid "Version"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:299
+msgid "Loaded plugins"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:301
+msgid "Anchor name"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:302
+msgid "HTML Source Editor"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:303
+msgid "Word wrap"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:304
+msgid "Select a color"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:305
+msgid "Picker"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:306
+msgid "Color picker"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:307
+msgid "Palette"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:308
+msgid "Palette colors"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:309
+msgid "Named"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:310
+msgid "Named colors"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:311
+msgid "Color:"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:312
+msgctxt "html attribute"
+msgid "Name:"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:313
+msgid "Select custom character"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:315
+msgid "Image URL"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:316
+msgid "Image description"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:317
+msgid "Image list"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:318
+msgid "Border"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:319 js/tinymce/langs/wp-langs.php:350
+msgid "Dimensions"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:320
+msgid "Vertical space"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:321
+msgid "Horizontal space"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:323
+msgid "Baseline"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:324 js/tinymce/langs/wp-langs.php:425
+msgid "Top"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:325
+msgid "Middle"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:326 js/tinymce/langs/wp-langs.php:427
+msgid "Bottom"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:327
+msgid "Text top"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:328
+msgid "Text bottom"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:332
+msgid "Link URL"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:333 js/tinymce/langs/wp-langs.php:384
+msgid "Target"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:334
+msgid "Open link in the same window"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:335
+msgid "Open link in a new window"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:336 js/tinymce/langs/wp-langs.php:500
+msgid "Title"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:337
+msgid ""
+"The URL you entered seems to be an email address, do you want to add the "
+"required mailto: prefix?"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:338
+msgid ""
+"The URL you entered seems to external link, do you want to add the required "
+"http:// prefix?"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:339
+msgid "Link list"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:341
+msgid "General Usage"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:346
+msgid "General"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:348
+msgid "File/URL"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:349
+msgid "List"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:352
+msgid "Constrain proportions"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:353
+msgid "Type"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:354
+msgid "Id"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:355
+msgctxt "html attribute"
+msgid "Name"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:357
+msgid "V-Space"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:358
+msgid "H-Space"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:359
+msgid "Auto play"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:360 js/tinymce/langs/wp-langs.php:442
+msgid "Loop"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:361
+msgid "Show menu"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:362
+msgid "Quality"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:363
+msgid "Scale"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:364
+msgid "Align"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:365
+msgid "SAlign"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:366
+msgid "WMode"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:367
+msgid "Background"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:368
+msgid "Base"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:369
+msgid "Flashvars"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:370
+msgid "SWLiveConnect"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:371
+msgid "AutoHREF"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:372
+msgid "Cache"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:373
+msgid "Hidden"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:374
+msgid "Controller"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:375
+msgid "Kiosk mode"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:376
+msgid "Play every frame"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:377
+msgid "Target cache"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:378
+msgid "No correction"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:379
+msgid "Enable JavaScript"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:380 js/tinymce/langs/wp-langs.php:438
+msgid "Start time"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:381
+msgid "End time"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:382
+msgid "href"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:383
+msgid "Choke speed"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:385
+msgid "Volume"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:386 js/tinymce/langs/wp-langs.php:441
+msgid "Auto start"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:387 models/list.php:2
+msgid "Enabled"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:388
+msgid "Fullscreen"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:389
+msgid "Invoke URLs"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:390
+msgid "Mute"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:391
+msgid "Stretch to fit"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:392
+msgid "Windowless video"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:393
+msgid "Balance"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:394
+msgid "Base URL"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:395
+msgid "Captioning id"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:396
+msgid "Current marker"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:397
+msgid "Current position"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:398
+msgid "Default frame"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:399
+msgid "Play count"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:400
+msgid "Rate"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:401
+msgid "UI Mode"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:402
+msgid "Flash options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:403
+msgid "Quicktime options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:404
+msgid "Windows media player options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:405
+msgid "Real media player options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:406
+msgid "Shockwave options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:407
+msgid "Auto goto URL"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:409
+msgid "Image status"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:410
+msgid "Maintain aspect"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:411
+msgid "No java"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:412
+msgid "Prefetch"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:413
+msgid "Shuffle"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:414
+msgid "Console"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:415
+msgid "Num loops"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:416
+msgid "Controls"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:417
+msgid "Script callbacks"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:418
+msgid "Stretch style"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:419
+msgid "Stretch H-Align"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:420
+msgid "Stretch V-Align"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:421
+msgid "Sound"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:422
+msgid "Progress"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:423
+msgid "QT Src"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:424
+msgid ""
+"Streamed rtsp resources should be added to the QT Src field under the "
+"advanced tab."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:430
+msgid "Top left"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:431
+msgid "Top right"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:432
+msgid "Bottom left"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:433
+msgid "Bottom right"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:434
+msgid "Flash video options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:435
+msgid "Scale mode"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:436
+msgid "Buffer"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:437
+msgid "Start image"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:439
+msgid "Default volume"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:440
+msgid "Hidden GUI"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:443
+msgid "Show scale modes"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:444
+msgid "Smooth video"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:445
+msgid "JS Callback"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:446
+msgid "HTML5 Video Options"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:447
+msgid "Alternative source 1"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:448
+msgid "Alternative source 2"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:449
+msgid "Preload"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:450
+msgid "Poster"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:451 js/tinymce/langs/wp-langs.php:482
+msgid "Source"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:455
+msgid "Show/Hide Kitchen Sink"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:456
+msgid "Insert More Tag"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:457
+msgid "Insert Page break"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:459
+msgid "More..."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:460
+msgid "Next page..."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:461
+msgid "Add Media"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:462
+msgid "Add an Image"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:463
+msgid "Add Video"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:464
+msgid "Add Audio"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:465
+msgid "Edit Gallery"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:466
+msgid "Delete Gallery"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:470
+msgid "Edit Image"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:471
+msgid "Delete Image"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:472
+msgid "Advanced Settings"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:473
+msgid "None"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:474
+msgid "Size"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:475
+msgid "Thumbnail"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:476
+msgid "Medium"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:477
+msgid "Full Size"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:478
+msgid "Current Link"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:479
+msgid "Link to Image"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:480
+msgid "Enter a link URL or click above for presets."
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:481
+msgid "Advanced Image Settings"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:483
+msgid "Width"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:484 js/tinymce/langs/wp-langs.php:489
+msgid "Height"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:485 js/tinymce/langs/wp-langs.php:490
+msgid "Original Size"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:486 js/tinymce/langs/wp-langs.php:491
+msgid "CSS Class"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:487
+msgid "Advanced Link Settings"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:488
+msgid "Link Rel"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:492
+msgid "60%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:493
+msgid "70%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:494
+msgid "80%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:495
+msgid "90%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:496
+msgid "100%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:497
+msgid "110%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:498
+msgid "120%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:499
+msgid "130%"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:501
+msgid "Caption"
+msgstr ""
+
+#: js/tinymce/langs/wp-langs.php:502
+msgid "Alternate Text"
+msgstr ""
+
+#: helpers/install.php:2
+msgid ""
+"Wysija has been installed successfully. Go to the [link]settings page[/link] "
+"now, and start blasting emails."
+msgstr ""
+
+#: helpers/install.php:2
+msgid "My first list"
+msgstr ""
+
+#: helpers/install.php:2
+msgid "The list created automatically on install of the Wysija."
+msgstr ""
+
+#: helpers/install.php:2
+msgid "Example Newsletter"
+msgstr ""
+
+#: helpers/install.php:2
+msgid "Default Campaign created automatically during installation."
+msgstr ""
+
+#: helpers/install.php:2
+msgid "Please enter first name"
+msgstr ""
+
+#: helpers/install.php:2
+msgid "Please enter last name"
+msgstr ""
+
+#: helpers/install.php:2
+msgid "Subscription confirmation"
+msgstr ""
+
+#: helpers/forms.php:8 helpers/forms.php:11
+msgid "HTML"
+msgstr ""
+
+#: helpers/forms.php:9 helpers/forms.php:12
+msgid "Visual"
+msgstr ""
+
+#: helpers/import.php:2
+msgid "Synched"
+msgstr ""
+
+#: helpers/import.php:2
+msgid "%1$s's import list"
+msgstr ""
+
+#: helpers/import.php:2
+msgid ""
+"The list created automatically on import of the plugin's subscribers : \"%1$s"
+msgstr ""
+
+#: helpers/import.php:2
+msgid "%1$s subscribers from %2$s have been imported into the new list %3$s"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "bounced"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "unopened"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "opened"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "clicked"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "unsubscribed"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "Today's statistics"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "Today you have sent %1$s emails"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid ", %1$s of which were %2$s"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "Here is the list bounced emails."
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "Cheers, your Wysija Newsletter Plugin"
+msgstr ""
+
+#: helpers/stats.php:5
+msgid "Wysija's Daily Report"
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid "[send_method] works with Wysija"
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid "Yup, it works. You can start blasting away emails to the moon."
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid "Test email successfully sent to <b><i>%s</i></b>"
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid ""
+"The PHP Extension openssl is not enabled on your server, this extension is "
+"required to use an SSL connection, please enable it."
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid ""
+"The specified bounce e-mail address \"%1$s\" might cause the problem, please "
+"delete it (leave the field bounce address empty) and try again."
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid ""
+"You specified an SMTP password but you don't require an authentification, "
+"you might want to turn the SMTP authentification ON."
+msgstr ""
+
+#: helpers/toolbox.php:2
+msgid ""
+"Your local website may not have a mail server. Please make sure you can send "
+"e-mails with Wordpress first (password request, registration "
+"confirmation...)."
+msgstr ""
+
+#: helpers/toolbox.php:2 helpers/file.php:2
+msgid "File does not exists."
+msgstr ""
+
+#: helpers/queue.php:2
+msgid "Send Process"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid "Next try in %s minutes"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid "Process refreshed to avoid a time limit"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid "Process refreshed to avoid a possible loss of connection"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid ""
+"Send process running in parallel detected, the system stopped but you will "
+"be able to resume it"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid "The Send Process stopped because there are too many errors"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid ""
+"The system kept all non delivered e-mails in the queue, so you will be able "
+"to resume the send process later"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid ""
+"Please verify your mail configuration and make sure you can send a test of "
+"this e-mail"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid ""
+"If you recently, successfully, sent a lot of e-mails, those errors may also "
+"be due to your server limitations"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid "Your server apparently refuses to send more e-mails"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid ""
+"Using one of our commercial versions, the system would be able to continue "
+"automatically the send process using a Cron"
+msgstr ""
+
+#: helpers/queue.php:17
+msgid ""
+"If you configured a cron task, the system will automatically continue the "
+"send process"
+msgstr ""
+
+#: helpers/user.php:2
+msgid "Page is not accessible."
+msgstr ""
+
+#: helpers/user.php:2
+msgid "%1$d emails have been sent to unconfirmed users."
+msgstr ""
+
+#: helpers/user.php:2
+msgid " %1$s users have been deleted."
+msgstr ""
+
+#: helpers/user.php:2
+msgid " %1$s user has been deleted."
+msgstr ""
+
+#: helpers/user.php:2
+msgid "New subscriber to %1$s"
+msgstr ""
+
+#: helpers/user.php:2
+msgid "One less subscriber to %1$s"
+msgstr ""
+
+#: helpers/bounce.php:2
+msgid "Bounce Handling"
+msgstr ""
+
+#: helpers/bounce.php:2
+msgid "Subject"
+msgstr ""
+
+#: helpers/bounce.php:2
+msgid "Rules"
+msgstr ""
+
+#: helpers/bounce.php:2
+msgid "We received %1$s messages from the user %2$s"
+msgstr ""
+
+#: helpers/bounce.php:2
+msgid "Actions will be executed after %1$s messages"
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "Please make a selection first!"
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "Deleting a list will not delete any subscribers."
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "Loading..."
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "Next &gt;"
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "&lt; Prev"
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "Image"
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid "of"
+msgstr ""
+
+#: helpers/backloader.php:2
+msgid ""
+"This feature requires inline frames. You have iframes disabled or your "
+"browser does not support them."
+msgstr ""
+
+#: helpers/back.php:2
+msgid ""
+"It doesn't always work the way we want it to, doesn't it? We have a [link]"
+"dedicated support website[/link] with documentation and a ticketing system."
+msgstr ""
+
+#: helpers/back.php:2
+msgid "Wysija Version: "
+msgstr ""
+
+#: helpers/back.php:2
+msgid "Wysija"
+msgstr ""
+
+#: helpers/back.php:2
+msgid "Subscribers"
+msgstr ""
+
+#: helpers/back.php:2
+msgid ""
+"The folder \"%1$s\" is not writable, please change the access rights to this "
+"folder so that Wysija can setup itself properly."
+msgstr ""
+
+#: helpers/back.php:2
+msgid "Read documentation"
+msgstr ""
+
+#: helpers/back.php:2
+msgid ""
+"Hurray! Add a form to your site using [link_widgget]the Widget[/"
+"link_widgget] and confirm your site can send emails in the [link]Settings[/"
+"link]. [link_ignore]Ignore[/link_ignore]."
+msgstr ""
+
+#: helpers/back.php:2
+msgid ""
+"The CRON system is disabled on your wordpress site. This might affect the "
+"configuration of Wysija."
+msgstr ""
+
+#: helpers/back.php:2
+msgid ""
+"The plugin %1$s has been found. If you wish to import into Wysija the %2$s "
+"subscribers from that plugin click [link]here[/link]."
+msgstr ""
+
+#: helpers/back.php:2
+msgid "User has been removed from the <b>Synched</b> Wordpress user list."
+msgstr ""
+
+#: helpers/back.php:2
+msgid "Go Premium Now!"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "Action Required"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When you need to confirm you're a human being, forward to:"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "Mailbox Full"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When mailbox is full"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "Blocked IP"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When you are flagged as a spammer forward the bounced message to"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "Message delayed"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When message is delayed"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "Mailbox not available"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When mailbox is not available"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "Failed Permanently"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When failed permanently"
+msgstr ""
+
+#: helpers/rules.php:2
+msgid "When the bounce is weird and we're not sure what to do, forward to:"
+msgstr ""
+
+#: helpers/mailer.php:2
+msgid "There is no Subject or Body in this e-mail"
+msgstr ""
+
+#: helpers/mailer.php:2
+msgid "Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>"
+msgstr ""
+
+#: helpers/mailer.php:2
+msgid "Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>"
+msgstr ""
+
+#: helpers/mailer.php:2
+msgid "The e-mail ID %s is not published"
+msgstr ""
+
+#: helpers/mailer.php:2
+msgid "User not found : <b><i>%s</i></b>"
+msgstr ""
+
+#: helpers/mailer.php:2
+msgid "Attachments"
+msgstr ""
+
+#: helpers/mailer.php:4
+msgid "Footer image"
+msgstr ""
+
+#: helpers/mailer.php:4
+msgid "Footer"
+msgstr ""
+
+#: helpers/mailer.php:4
+msgid "My footer image"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Drop your logo or title in this header."
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Click here to add a title or text."
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Align left"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Align center"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Align right"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Add link / Alternative text"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Remove link"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Remove image"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Edit text"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Remove text"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Custom horizontal line"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Text"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Links"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Underline links"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Footer text"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Footer background"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Newsletter color"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Background color"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Header background color"
+msgstr ""
+
+#: helpers/wj_engine.php:2
+msgid "Add Link & Alternative text"
+msgstr ""
+
+#: helpers/uninstall.php:2
+msgid "Wysija has been uninstalled with success."
+msgstr ""
+
+#: models/list.php:2
+msgid "Ordering"
+msgstr ""
+
+#: models/queue.php:10
+msgid "Queue is empty."
+msgstr ""
+
+#: models/user.php:2
+msgid " Oops! This user already exists.Find him [link]here[/link]."
+msgstr ""
+
+#: models/user.php:2
+msgid "Click here to subscribe"
+msgstr ""
+
+#: models/user.php:2
+msgid "Edit your subscriptions"
+msgstr ""
+
+#: models/user_field.php:2
+msgid "Subscription date"
+msgstr ""
+
+#: models/config.php:2
+msgid "Confirm your subscription to %1$s"
+msgstr ""
+
+#: models/config.php:2
+msgid ""
+"Hello! \r\n"
+"            \r\n"
+"Hurray! You've subscribed to our site. \r\n"
+"We need you to activate your \r\n"
+"subscription by clicking the link \r\n"
+"below: \r\n"
+"\r\n"
+"[activation_link]Click here to confirm your subscription.[/activation_link]"
+"\r\n"
+"\r\n"
+"Thank you, \r\n"
+"\r\n"
+"The team!\r\n"
+msgstr ""
+
+#: models/config.php:14
+msgid "You've subscribed!"
+msgstr ""
+
+#: models/config.php:14
+msgid "Yup, we've added you to our list. You'll hear from us shortly."
+msgstr ""
+
+#: models/config.php:14
+msgid "You've unsubscribed!"
+msgstr ""
+
+#: models/config.php:14
+msgid "Great, you'll never hear from us again!"
+msgstr ""
+
+#: models/config.php:14
+msgid "Your Wysija settings have been updated!"
+msgstr ""

@@ -3,7 +3,7 @@ Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 0.9.2
+Stable tag: 0.9.6
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
@@ -84,6 +84,22 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 0.9.6 =
+* fixed subscribe from a wysija confirmation page bug
+* fixed campaigns "Column does not exists in model .."
+* fixed address and unsubscribe links appearing at bottom of newsletter a second time
+* fixed menu submenu no wysija but newsletters no js
+* fixed bug statistics opened_at not inserted
+* fixed bug limit subscribers updated on subscribers delete
+* fixed daily cron scandir empty dir 
+* fixed subscribe from frontend without javascript error
+* fixed subscribe IP server validation when trying in local
+* fixed CSS issues with Wordpress 3.3
+* improving interface of email sending in the newsletter's listing
+* added delete newsletter option
+* added language pot file
+* added french translation
 
 = 0.9.2 =
 * fixed issue with synched users on multisite(each site synch its users only)

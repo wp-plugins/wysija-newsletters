@@ -4,4 +4,4 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_front_widget_nl
                     <input type="hidden" name="action" value="save" />
                 <input type="hidden" name="wysija[user_list][list_ids]" value="'.$listexploded.'" />
                 <input type="hidden" name="message_success" value="'.esc_attr($params["success"]).'" />
-                <input type="hidden" name="controller" value="subscribers" />'; $data.='<input type="hidden" value="'.wp_create_nonce("wysija_ajax").'" id="wysijax" />'; } $data.='</form>'; if($echo) echo $data; else return $data; } function customFields(){ } } 
+                <input type="hidden" name="controller" value="subscribers" />'; $data.=$this->secure(array('action'=>'save','controller'=>'subscribers'),false,false); $data.='<input type="hidden" value="1" name="wysija-page" />'; $data.='<input type="hidden" value="'.wp_create_nonce("wysija_ajax").'" id="wysijax" />'; } $data.='</form>'; if($echo) echo $data; else return $data; } function customFields(){ } } 

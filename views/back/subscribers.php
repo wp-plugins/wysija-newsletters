@@ -205,7 +205,7 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
             </div>
 
             <?php
- endif; }else{ if(count($data['charts']['stats'])>0 ){ echo '<p style="font-size:14px;font-weight:bold;">'; echo str_replace( array("[link]","[/link]"), array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'), __("We have detailed statistics concerning this user, if you want to consult it [link]Go premium now![/link]",WYSIJA)); echo '</p>'; } } $this->buttonsave=__('Save',WYSIJA); $this->add($data); } function globalActionsLists($data=false){ ?>
+ endif; }else{ if(count($data['charts']['stats'])>0 ){ echo '<p>'; echo str_replace( array("[link]","[/link]"), array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'), __("Note: Find out what this subscribers opens and clicks with our [link]Premium version.[/link]",WYSIJA)); echo '</p>'; } } $this->buttonsave=__('Save',WYSIJA); $this->add($data); } function globalActionsLists($data=false){ ?>
         <div class="tablenav">    
 
             <?php $this->pagination("&action=lists"); ?>
@@ -329,7 +329,7 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
                             <tr class="csvmode copy">
                                 <th scope="row" >
                                     <label for="csvtext"><?php _e('Then paste your list here'); ?> </label>
-                                    <p class="description"><?php echo str_replace(array("[link]","[/link]"),array('<a href="http://support.wysija.com/knowledgebase/importing-subscribers-with-a-csv-file/">','</a>'),__('This needs to be in CSV style. See examples in [link]this page[/link] in our support site.',WYSIJA)) ?></p>
+                                    <p class="description"><?php echo str_replace(array("[link]","[/link]"),array('<a target="_blank" href="http://support.wysija.com/knowledgebase/importing-subscribers-with-a-csv-file/">','</a>'),__('This needs to be in CSV style or a simple paste from Gmail, Hotmail or Yahoo. See [link]examples in our support site[/link].',WYSIJA)) ?></p>
                                 </th>
                                 <td>
                                     <textarea type="text" cols="40" rows="15" class="validate[required]" id="csvtext" name="wysija[user_list][csv]" /></textarea>
@@ -340,7 +340,7 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
                             <tr class="csvmode upload">
                                 <th scope="row" >
                                     <label for="csvfile"><?php _e('Upload a file'); ?> </label>
-                                    <p class="description"><?php echo str_replace(array("[link]","[/link]"),array('<a href="http://support.wysija.com/knowledgebase/importing-subscribers-with-a-csv-file/">','</a>'),__('This needs to be in CSV style. See examples in [link]this page[/link] in our support site.',WYSIJA)) ?></p>
+                                    <p class="description"><?php echo str_replace(array("[link]","[/link]"),array('<a target="_blank" href="http://support.wysija.com/knowledgebase/importing-subscribers-with-a-csv-file/">','</a>'),__('This needs to be in CSV style. See [link]examples in our support site[/link].',WYSIJA)) ?></p>
                                 </th>
                                 <td>
                                     <input type="file" name="importfile" size="50" />( <?php  echo sprintf(__('total max upload file size : %1$s',WYSIJA),$bytes)?> )
