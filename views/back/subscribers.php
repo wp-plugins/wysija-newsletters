@@ -312,15 +312,15 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
                             
                             <tr>
                                 <th scope="row">
-                                    <label for="redirect"><?php _e('How do you want to import?'); ?> </label>
+                                    <label for="redirect"><?php _e('How do you want to import ?',WYSIJA); ?> </label>
                                 </th>
                                 <td>
                                     <p>
                                         <label for="copy-paste">
-                                            <input type="radio" class="validate[required]" id="copy-paste" value="copy" name="wysija[import][type]" >Copy paste in a text box
+                                            <input type="radio" class="validate[required]" id="copy-paste" value="copy" name="wysija[import][type]" ><?php _e('Copy paste in a text box',WYSIJA); ?>
                                         </label>
                                         <label for="upload-file">
-                                            <input type="radio" class="validate[required]" id="upload-file" value="upload" name="wysija[import][type]">Upload a file
+                                            <input type="radio" class="validate[required]" id="upload-file" value="upload" name="wysija[import][type]"><?php _e('Upload a file',WYSIJA); ?>
                                         </label>
                                     </p>
                                 </td>
@@ -328,7 +328,7 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
                             
                             <tr class="csvmode copy">
                                 <th scope="row" >
-                                    <label for="csvtext"><?php _e('Then paste your list here'); ?> </label>
+                                    <label for="csvtext"><?php _e('Then paste your list here',WYSIJA); ?> </label>
                                     <p class="description"><?php echo str_replace(array("[link]","[/link]"),array('<a target="_blank" href="http://support.wysija.com/knowledgebase/importing-subscribers-with-a-csv-file/">','</a>'),__('This needs to be in CSV style or a simple paste from Gmail, Hotmail or Yahoo. See [link]examples in our support site[/link].',WYSIJA)) ?></p>
                                 </th>
                                 <td>
@@ -380,7 +380,7 @@ defined('WYSIJA') or die('Restricted access'); class WYSIJA_view_back_subscriber
                     <tbody class="list:<?php echo $this->model->table_name.' '.$this->model->table_name.'-list" id="wysija-'.$this->model->table_name.'"' ?>>
 
                         <?php
- $listingRows=""; $alt=true; $i=0; foreach($data['csv'] as $columns){ $classRow=""; if($alt) $classRow=' class="alternate" '; echo "<tr $classRow>"; if(isset($data['firstrowisdata'])){ $j=$i+1; } if($i==0){ $valuefrow=''; if(isset($data['firstrowisdata'])){ $valuefrow='1<input value="1" type="hidden" id="firstrowdata" name="firstrowisdata"  />'; } echo '<td>'.$valuefrow.'</td>'; } else echo "<td>".$j."</td>"; foreach($columns as $val){ if($i==0 && !isset($data['firstrowisdata'])) echo '<td><strong>'.$val.'</strong></td>'; else echo '<td>'.$val.'</td>'; } echo "</tr>"; $alt=!$alt; $i++; } if($data['totalrows']>3){ ?>
+ $listingRows=""; $alt=true; $i=0; foreach($data['csv'] as $columns){ $classRow=""; if($alt) $classRow=' class="alternate" '; echo "<tr $classRow>"; if(isset($data['firstrowisdata'])){ $j=$i+1; }else $j=$i; if($i==0){ $valuefrow=''; if(isset($data['firstrowisdata'])){ $valuefrow='1<input value="1" type="hidden" id="firstrowdata" name="firstrowisdata"  />'; } echo '<td>'.$valuefrow.'</td>'; } else echo "<td>".$j."</td>"; foreach($columns as $val){ if($i==0 && !isset($data['firstrowisdata'])) echo '<td><strong>'.$val.'</strong></td>'; else echo '<td>'.$val.'</td>'; } echo "</tr>"; $alt=!$alt; $i++; } if($data['totalrows']>3){ ?>
                          
                            <tr class="alternate" >
                            <?php

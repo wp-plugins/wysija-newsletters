@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wysija Newsletters 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-12-19 00:26+0100\n"
-"PO-Revision-Date: 2011-12-19 03:19+0100\n"
+"POT-Creation-Date: 2011-12-27 15:09+0100\n"
+"PO-Revision-Date: 2011-12-28 17:19+0100\n"
 "Last-Translator: Wysija <kim@wysija.com>\n"
 "Language-Team: Wysija Team <team@wysija.com>\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +74,7 @@ msgstr "Les styles ont été sauvegardés"
 
 # @ wysija-newsletters
 #: ../controllers/ajax/campaigns.php:110
-#: ../controllers/back/campaigns.php:1232
+#: ../controllers/back/campaigns.php:1237
 msgid "Image has been deleted."
 msgstr "L'image a été supprimé."
 
@@ -89,22 +89,22 @@ msgid "Image selection has been saved."
 msgstr "La sélection a été sauvegardé."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/campaigns.php:266
+#: ../controllers/ajax/campaigns.php:264
 msgid "Click here to view media."
 msgstr "Cliquez ici pour voir "
 
 # @ wysija-newsletters
-#: ../controllers/ajax/campaigns.php:280
+#: ../controllers/ajax/campaigns.php:278
 msgid "Read online."
 msgstr "Lire la suite."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/campaigns.php:299
+#: ../controllers/ajax/campaigns.php:297
 msgid "There are no posts corresponding to that search."
 msgstr "Aucun article correspond à votre recherche."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/campaigns.php:340
+#: ../controllers/ajax/campaigns.php:338
 #, php-format
 msgid "Your email preview has been sent to %1$s"
 msgstr "Votre test a été envoyé à %1$s"
@@ -114,7 +114,7 @@ msgstr "Votre test a été envoyé à %1$s"
 #: ../controllers/ajax/config.php:69
 #: ../controllers/ajax/config.php:113
 #: ../controllers/back/campaigns.php:75
-#: ../core/base.php:360
+#: ../core/base.php:362
 #, php-format
 msgid "Successfully connected to %1$s"
 msgstr "Connexion réussie à %1$s"
@@ -124,7 +124,7 @@ msgstr "Connexion réussie à %1$s"
 #: ../controllers/ajax/config.php:70
 #: ../controllers/ajax/config.php:122
 #: ../controllers/back/campaigns.php:84
-#: ../core/base.php:369
+#: ../core/base.php:371
 #, php-format
 msgid "There are %1$s messages in your mailbox"
 msgstr "Il y a %1$s messages dans votre boîte de réception"
@@ -137,43 +137,43 @@ msgstr "Aucun message de rebond à traiter à ce moment."
 # @ default
 #: ../controllers/ajax/config.php:118
 #: ../controllers/back/campaigns.php:80
-#: ../core/base.php:365
+#: ../core/base.php:367
 msgid "There are no messages"
 msgstr "Il n'y a aucun message."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/subscribers.php:13
+#: ../controllers/ajax/subscribers.php:17
 #: ../controllers/front/subscribers.php:13
 msgid "User has been inserted."
 msgstr "Un utilisateur a été ajouté."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/subscribers.php:16
+#: ../controllers/ajax/subscribers.php:20
 #: ../controllers/front/subscribers.php:16
 msgid "User has not been inserted."
 msgstr "L'utilisateur n'a pas été ajouté."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/subscribers.php:17
+#: ../controllers/ajax/subscribers.php:21
 #: ../controllers/front/subscribers.php:17
 msgid "User has been updated."
 msgstr "L'utilisateur a été mis à jour."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/subscribers.php:18
+#: ../controllers/ajax/subscribers.php:22
 #: ../controllers/front/subscribers.php:18
 msgid "User has not been updated."
 msgstr "L'utilisateur n'a pas été mis à jour."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/subscribers.php:32
+#: ../controllers/ajax/subscribers.php:36
 #: ../controllers/front/subscribers.php:25
 #, php-format
 msgid "The email %1$s is not valid!"
 msgstr "L'email %1$s n'est pas valide."
 
 # @ wysija-newsletters
-#: ../controllers/ajax/subscribers.php:49
+#: ../controllers/ajax/subscribers.php:53
 #: ../controllers/front/subscribers.php:38
 msgid "Oops! You're already subscribed."
 msgstr "Vous êtes déjà inscrit!"
@@ -191,7 +191,7 @@ msgstr "Editez le formulaire d'abonnement."
 # @ wysija-newsletters
 #: ../controllers/back/campaigns.php:20
 msgid "Premium version is valid for your site."
-msgstr "La version premium est activé et valide pour votre site."
+msgstr "La version premium est activée et valide pour votre site."
 
 # @ wysija-newsletters
 #: ../controllers/back/campaigns.php:23
@@ -347,18 +347,18 @@ msgid "View newsletter"
 msgstr "Voir la newsletter"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:779
+#: ../controllers/back/campaigns.php:784
 msgid "We looked everywhere, but we couldn't find the newsletter you're looking for."
 msgstr "On a regardé partout. Sous le tapis, sur l'étagère la plus haute. Hélas, on ne trouve pas votre la newsletter que vous cherchez. "
 
 # @ default
-#: ../controllers/back/campaigns.php:828
+#: ../controllers/back/campaigns.php:833
 #, php-format
 msgid "Stats : %1$s"
 msgstr "Statistiques : %1$s"
 
 # @ default
-#: ../controllers/back/campaigns.php:995
+#: ../controllers/back/campaigns.php:1000
 #, php-format
 msgid "%1$s hit"
 msgid_plural "%1$s hits"
@@ -366,81 +366,81 @@ msgstr[0] "%1$s clic"
 msgstr[1] "%1$s clics"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1003
+#: ../controllers/back/campaigns.php:1008
 msgid "Your request can't retrieve any subscribers. Change your filters!"
 msgstr "Il n'y a pas d'abonné!"
 
 # @ default
-#: ../controllers/back/campaigns.php:1045
+#: ../controllers/back/campaigns.php:1050
 #, php-format
 msgid "Segment of %1$s"
 msgstr "Segment de %1$s"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1049
+#: ../controllers/back/campaigns.php:1054
 msgid "List created based on a newsletter segment."
 msgstr "Liste crée suite à une segmentation."
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1059
+#: ../controllers/back/campaigns.php:1064
 #, php-format
 msgid "A new list \"%1$s\" has been created out of this segment."
 msgstr "La liste \"%1$s\" a été créée à partir du segment."
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1074
+#: ../controllers/back/campaigns.php:1079
 msgid "The segment has been unbsubscribed from all the lists."
 msgstr "Les abonnés de ce segment ont été désabonnés de toutes les listes. "
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1102
+#: ../controllers/back/campaigns.php:1107
 msgid "The segment has been removed from the queue of this newsletter."
 msgstr "Le segment a été enlever de la file d'attente.  "
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1129
+#: ../controllers/back/campaigns.php:1134
 #, php-format
 msgid "The segment has been unbsubscribed from the list \"%1$s\""
 msgstr "Les abonnés de ce segment ont été désabonnés de la liste \"%1$s\""
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1131
+#: ../controllers/back/campaigns.php:1136
 msgid "The segment cannot be unbsubscribed from an [IMPORT] list."
 msgstr "Les abonnés de ce segment ne peut être désabonné de la liste [IMPORT]."
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1148
+#: ../controllers/back/campaigns.php:1153
 msgid "Article Selection"
 msgstr "Choisissez un article"
 
 # @ wysija-newsletters
 # @ default
-#: ../controllers/back/campaigns.php:1173
+#: ../controllers/back/campaigns.php:1178
 msgid "Upload"
 msgstr "Télécharger"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1174
+#: ../controllers/back/campaigns.php:1179
 msgid "Newsletter Images"
 msgstr "Images des newsletters"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1175
+#: ../controllers/back/campaigns.php:1180
 msgid "WordPress Posts' Images"
 msgstr "Images de vos articles"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1211
+#: ../controllers/back/campaigns.php:1216
 msgid "Delete image for all newsletters?"
 msgstr "Supprimez cette image pour toutes les newsletters?"
 
 # @ wysija-newsletters
-#: ../controllers/back/campaigns.php:1217
+#: ../controllers/back/campaigns.php:1222
 msgid "This image might be in an article. Delete anyway?"
 msgstr "Cette image est peut-être utilisée dans un article. Supprimez tout de même? "
 
 # @ default
-#: ../controllers/back/campaigns.php:1286
+#: ../controllers/back/campaigns.php:1291
 msgid "Saved."
 msgstr "Sauvegardé."
 
@@ -765,22 +765,22 @@ msgid "[link]Show more details.[/link]"
 msgstr "[link]Lire les détails[/link]"
 
 # @ wysija-newsletters
-#: ../core/base.php:314
+#: ../core/base.php:316
 msgid "Once every fifteen minutes"
 msgstr "Toutes les 15 minutes"
 
 # @ wysija-newsletters
-#: ../core/base.php:318
+#: ../core/base.php:320
 msgid "Once every thirty minutes"
 msgstr "Toutes les demi heures"
 
 # @ wysija-newsletters
-#: ../core/base.php:322
+#: ../core/base.php:324
 msgid "Once every two hours"
 msgstr "Toutes les 2 heures"
 
 # @ wysija-newsletters
-#: ../core/base.php:475
+#: ../core/base.php:477
 #, php-format
 msgid "%1$s year "
 msgid_plural "%1$s years "
@@ -788,7 +788,7 @@ msgstr[0] "%1$s année"
 msgstr[1] "%1$s années"
 
 # @ wysija-newsletters
-#: ../core/base.php:476
+#: ../core/base.php:478
 #, php-format
 msgid "%1$s week "
 msgid_plural "%1$s weeks "
@@ -796,7 +796,7 @@ msgstr[0] "%1$s semaine"
 msgstr[1] "%1$s semaines"
 
 # @ wysija-newsletters
-#: ../core/base.php:477
+#: ../core/base.php:479
 #, php-format
 msgid "%1$s day "
 msgid_plural "%1$s days "
@@ -804,7 +804,7 @@ msgstr[0] "%1$s jour"
 msgstr[1] "%1$s jours"
 
 # @ wysija-newsletters
-#: ../core/base.php:478
+#: ../core/base.php:480
 #, php-format
 msgid "%1$s hour "
 msgid_plural "%1$s hours "
@@ -812,7 +812,7 @@ msgstr[0] "%1$s heure"
 msgstr[1] "%1$s heures"
 
 # @ wysija-newsletters
-#: ../core/base.php:479
+#: ../core/base.php:481
 #, php-format
 msgid "%1$s minute "
 msgid_plural "%1$s minutes "
@@ -820,63 +820,63 @@ msgstr[0] "%1$s minute"
 msgstr[1] "%1$s minutes"
 
 # @ default
-#: ../core/base.php:490
-#: ../core/base.php:491
+#: ../core/base.php:492
+#: ../core/base.php:493
 msgid "Wysija page"
 msgstr "Wysija page"
 
 # @ wysija-newsletters
-#: ../core/base.php:563
+#: ../core/base.php:565
 msgid "Wysija Subscription"
 msgstr "Abonnement Wysija"
 
 # @ default
-#: ../core/base.php:564
+#: ../core/base.php:566
 msgid "Subscription form for your newsletters."
 msgstr "Formulaire d'abonnement pour vos newsletters."
 
 # @ wysija-newsletters
-#: ../core/base.php:568
+#: ../core/base.php:570
 msgid "Check your inbox now to confirm your subscription."
 msgstr "Vérifiez votre boîte de réception afin de confirmer votre abonnement."
 
 # @ wysija-newsletters
-#: ../core/base.php:569
+#: ../core/base.php:571
 msgid "You’ve successfully subscribed."
 msgstr "Vous êtes abonné(e)!"
 
 # @ wysija-newsletters
-#: ../core/base.php:578
+#: ../core/base.php:580
 msgid "Title:"
 msgstr "Titre:"
 
 # @ default
-#: ../core/base.php:578
+#: ../core/base.php:580
 msgid "Subscribe to our Newsletter"
 msgstr "Abonnez-vous!"
 
 # @ wysija-newsletters
-#: ../core/base.php:579
+#: ../core/base.php:581
 msgid "To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!"
 msgstr "Recevez nos dernières nouvelles directement dans votre boîte de réception. Vous recevrez un email d'activation!"
 
 # @ wysija-newsletters
-#: ../core/base.php:580
+#: ../core/base.php:582
 msgid "Select a list"
 msgstr "Sélectionnez une liste"
 
 # @ wysija-newsletters
-#: ../core/base.php:581
+#: ../core/base.php:583
 msgid "Button label:"
 msgstr "Texte du bouton: "
 
 # @ wysija-newsletters
-#: ../core/base.php:581
+#: ../core/base.php:583
 msgid "Subscribe!"
 msgstr "Je m'abonne"
 
 # @ wysija-newsletters
-#: ../core/base.php:582
+#: ../core/base.php:584
 msgid "Success message:"
 msgstr "Message "
 
@@ -946,7 +946,7 @@ msgstr "Lisez la documentation (en anglais)."
 
 #: ../helpers/back.php:81
 msgid "Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] and confirm your site can send emails in the [link]Settings[/link]. [link_ignore]Ignore[/link_ignore]."
-msgstr "Bravo! Ajoutez un formulaire d'abonnement à votre site grâce au [link_widget]widget[/link_widget]. Double vérifiez que vous pouvez envoyer des emails dans votre  [link]page de Configuration[/link]. [link_ignore]Fermer.[/link_ignore]."
+msgstr "Bravo! Ajoutez un formulaire d'abonnement à votre site grâce au [link_widget]widget[/link_widget]. Double vérifiez que vous pouvez envoyer des emails dans votre  [link]page de Configuration[/link]. [link_ignore]Ne plus afficher ce message.[/link_ignore]."
 
 # @ wysija-newsletters
 #: ../helpers/back.php:93
@@ -1060,27 +1060,27 @@ msgid "Visual"
 msgstr "Visual"
 
 # @ wysija-newsletters
-#: ../helpers/import.php:63
+#: ../helpers/import.php:66
 msgid "Synched"
 msgstr "Synchronisé"
 
 # @ wysija-newsletters
-#: ../helpers/import.php:64
+#: ../helpers/import.php:67
 #, php-format
 msgid "%1$s's import list"
 msgstr "La liste d'importation %1$s"
 
 # @ wysija-newsletters
-#: ../helpers/import.php:68
+#: ../helpers/import.php:71
 #, php-format
 msgid "The list created automatically on import of the plugin's subscribers : \"%1$s"
 msgstr "La liste \"%1$s créée automatiquement suite à l'importation."
 
 # @ wysija-newsletters
-#: ../helpers/import.php:121
+#: ../helpers/import.php:130
 #, php-format
-msgid "%1$s subscribers from %2$s have been imported into the new list %3$s"
-msgstr "%1$s abonnés de %2$s ont été importé dans %3$s"
+msgid "%1$s users from %2$s have been imported into the new list %3$s"
+msgstr "%1$s comptes de %2$s ont été importé dans %3$s"
 
 # @ wysija-newsletters
 #: ../helpers/install.php:59
@@ -1168,27 +1168,6 @@ msgid " The subscriber <b><i>%s</i></b> is not confirmed"
 msgstr " L'abonné <b><i>%s</i></b> n'a pas confirmé son abonnement"
 
 # @ wysija-newsletters
-#: ../helpers/mailer.php:315
-#: ../helpers/mailer.php:316
-msgid "Attachments"
-msgstr "Attachments"
-
-# @ wysija-newsletters
-#: ../helpers/mailer.php:634
-msgid "Footer image"
-msgstr "Image"
-
-# @ wysija-newsletters
-#: ../helpers/mailer.php:634
-msgid "Footer"
-msgstr "Pied"
-
-# @ wysija-newsletters
-#: ../helpers/mailer.php:634
-msgid "My footer image"
-msgstr "L'image du pied"
-
-# @ wysija-newsletters
 #: ../helpers/queue.php:55
 #: ../helpers/queue.php:59
 msgid "Send Process"
@@ -1210,40 +1189,30 @@ msgstr "La procédure a été reinitiée afin de ne pas dépasser la limite de t
 msgid "Process refreshed to avoid a possible loss of connection."
 msgstr "La procédure a été reinitiée afin de ne pas perdre la connexion."
 
-# @ wysija-newsletters
-#: ../helpers/queue.php:207
-msgid "Send process running in parallel detected, the system stopped but you will be able to resume it."
-msgstr "Une procédure d'envoi en parallèle a été détectée et arrêtée. Vous pourrez la reprendre par la suite."
+#: ../helpers/queue.php:208
+msgid "Newsletters are already being sent. Your latest newsletter will be sent afterwards."
+msgstr "Il y a déjà un envoi en cours. Votre dernière newsletter sera envoyée ensuite."
 
 # @ wysija-newsletters
-#: ../helpers/queue.php:243
+#: ../helpers/queue.php:245
 msgid "The Send Process stopped because there are too many errors."
 msgstr "L'envoi a été arrêté car il y a trop d'erreurs signalées."
 
-#: ../helpers/queue.php:245
+#: ../helpers/queue.php:247
 msgid "We kept all non delivered emails in the queue, so you will be able to resume the send process later."
 msgstr "Tous les emails qui n'ont pu être livrés sont toujours dans la file d'attente et seront renvoyés plus tard."
 
-#: ../helpers/queue.php:249
+#: ../helpers/queue.php:251
 msgid "Please verify your mail configuration and make sure you can send a test of this email."
 msgstr "Vérifiez votre configuration et assurez-vous que vous pouvez envoyer des emails."
 
-#: ../helpers/queue.php:251
+#: ../helpers/queue.php:253
 msgid "If you recently, successfully, sent a lot of emails, those errors may also be due to your server limitations."
 msgstr "Si vous avez pu envoyés des emails dans le passé, ces erreurs proviennent peut-être de la limitation du nombre d'envoi mail par heure ou par jour."
 
-#: ../helpers/queue.php:253
+#: ../helpers/queue.php:255
 msgid "Your server apparently refuses to send more emails."
 msgstr "Apparemment, votre serveur refuse d'envoyer plus d'emails."
-
-# @ wysija-newsletters
-#: ../helpers/queue.php:256
-msgid "Using one of our commercial versions, the system would be able to continue automatically the send process using a Cron"
-msgstr ""
-
-#: ../helpers/queue.php:258
-msgid "If you configured a cron task, the system will automatically continue the send process."
-msgstr ""
 
 # @ wysija-newsletters
 #: ../helpers/rules.php:12
@@ -1423,7 +1392,7 @@ msgstr "%1$d emails ont été envoyés aux abonnés non confirmés."
 #: ../helpers/user.php:139
 #, php-format
 msgid " %1$s users have been deleted."
-msgstr " %1$s abonnées ont été supprimés have been sent to unconfirmed users."
+msgstr " %1$s abonnés ont été supprimés."
 
 # @ wysija-newsletters
 #: ../helpers/user.php:140
@@ -1623,52 +1592,50 @@ msgstr "Confirmez votre abonnement à %1$s"
 
 #: ../models/config.php:40
 msgid ""
-"Hello! \r\n"
-"            \r\n"
-"Hurray! You've subscribed to our site. \r\n"
-"We need you to activate your \r\n"
-"subscription by clicking the link \r\n"
-"below: \r\n"
-"\r\n"
-"[activation_link]Click here to confirm your subscription.[/activation_link]\r\n"
-"\r\n"
-"Thank you, \r\n"
-"\r\n"
-"The team!\r\n"
+"Hello!\n"
+"\n"
+"Hurray! You've subscribed to our site.\n"
+"We need you to activate your subscription by clicking the link below: \n"
+"\n"
+"[activation_link]Click here to confirm your subscription.[/activation_link]\n"
+"\n"
+"Thank you,\n"
+"\n"
+" The team!\n"
 msgstr ""
-"Bonjour! \r\n"
-"            \r\n"
+"Bonjour! \n"
+"            \n"
 "Félicitations! Vous êtes bientôt abonné à notre site. \r\n"
 "Vous devez activer votre abonnement en cliquant sur le lien ci-dessous: \r\n"
-"\r\n"
+"\n"
 "[activation_link]Je confirme mon abonnement.[/activation_link]\r\n"
-"\r\n"
-"Merci, \r\n"
-"\r\n"
-"L'équipe!\r\n"
+"\n"
+"Merci, \n"
+"\n"
+"L'équipe!\n"
 
 # @ wysija-newsletters
-#: ../models/config.php:54
+#: ../models/config.php:41
 msgid "You've subscribed!"
 msgstr "Vous êtes abonné(e)!"
 
 # @ wysija-newsletters
-#: ../models/config.php:55
+#: ../models/config.php:42
 msgid "Yup, we've added you to our list. You'll hear from us shortly."
 msgstr "Nous vous avons ajoutez à notre liste. Vous allez recevoir notre prochaine newsletter."
 
 # @ wysija-newsletters
-#: ../models/config.php:56
+#: ../models/config.php:43
 msgid "You've unsubscribed!"
 msgstr "Vous êtes désabonné(e)!"
 
 # @ wysija-newsletters
-#: ../models/config.php:57
+#: ../models/config.php:44
 msgid "Great, you'll never hear from us again!"
 msgstr "Parfait, vous n'allez plus jamais rien recevoir de nous."
 
 # @ wysija-newsletters
-#: ../models/config.php:173
+#: ../models/config.php:160
 msgid "Your Wysija settings have been updated!"
 msgstr "Votre configuration a été sauvegardée."
 
@@ -1733,11 +1700,11 @@ msgstr "Modifier vos abonnements"
 #: ../models/user.php:121
 #: ../views/back/campaigns.php:165
 msgid "Unsubscribe"
-msgstr "Desabonné"
+msgstr "Désabonnez-vous"
 
 # @ wysija-newsletters
 #: ../models/user_field.php:21
-#: ../views/back/campaigns.php:531
+#: ../views/back/campaigns.php:542
 msgid "Email"
 msgstr "Email"
 
@@ -1753,7 +1720,7 @@ msgstr "Date d'abonnement"
 
 # @ wysija-newsletters
 #: ../views/back.php:13
-#: ../views/back/campaigns.php:350
+#: ../views/back/campaigns.php:369
 msgid "View"
 msgstr "Voir"
 
@@ -1762,8 +1729,8 @@ msgstr "Voir"
 #: ../views/back.php:15
 #: ../views/back/campaigns.php:13
 #: ../views/back/campaigns.php:343
-#: ../views/back/campaigns.php:354
-#: ../views/back/campaigns.php:365
+#: ../views/back/campaigns.php:356
+#: ../views/back/campaigns.php:372
 msgid "Delete"
 msgstr "Supprimer"
 
@@ -1824,9 +1791,9 @@ msgstr "Ajouter"
 # @ default
 # @ wysija-newsletters
 #: ../views/back.php:730
-#: ../views/back/campaigns.php:961
-#: ../views/back/campaigns.php:1063
-#: ../views/back/campaigns.php:1084
+#: ../views/back/campaigns.php:972
+#: ../views/back/campaigns.php:1074
+#: ../views/back/campaigns.php:1095
 msgid "Save"
 msgstr "Sauvegarder"
 
@@ -1843,8 +1810,8 @@ msgstr "Rechercher"
 # @ wysija-newsletters
 #: ../views/back/campaigns.php:13
 #: ../views/back/campaigns.php:340
-#: ../views/back/campaigns.php:352
-#: ../views/back/campaigns.php:363
+#: ../views/back/campaigns.php:354
+#: ../views/back/campaigns.php:370
 msgid "Duplicate"
 msgstr "Dupliquer"
 
@@ -1861,7 +1828,7 @@ msgstr "Créer une nouvelle newsletter"
 # @ wysija-newsletters
 #: ../views/back/campaigns.php:50
 msgid "... or duplicate one below to copy its design."
-msgstr "... ou bien dupliquez une newsletter existante."
+msgstr "... ou bien dupliquer une newsletter existante."
 
 # @ wysija-newsletters
 #: ../views/back/campaigns.php:74
@@ -1948,9 +1915,9 @@ msgstr "Exportez en CSV"
 
 # @ wysija-newsletters
 #: ../views/back/campaigns.php:277
-#: ../views/back/campaigns.php:535
-#: ../views/back/campaigns.php:624
-#: ../views/back/campaigns.php:893
+#: ../views/back/campaigns.php:546
+#: ../views/back/campaigns.php:635
+#: ../views/back/campaigns.php:904
 msgid "Lists"
 msgstr "Listes"
 
@@ -1972,308 +1939,308 @@ msgid "%1$s out of %2$s sent."
 msgstr "%1$s sur %2$s envoyés."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:351
+#: ../views/back/campaigns.php:364
 msgid "Stats"
 msgstr "Stats"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:380
+#: ../views/back/campaigns.php:390
 msgid "Pause"
 msgstr "Pause"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:390
+#: ../views/back/campaigns.php:401
 #, php-format
 msgid "Time remaining: %1$s"
 msgstr "Terminé dans: %1$s"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:391
+#: ../views/back/campaigns.php:402
 msgid "Show more details"
 msgstr "Voir les détails"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:393
+#: ../views/back/campaigns.php:404
 #, php-format
 msgid "Next batch of %1$s emails will be sent in %2$s. "
 msgstr "Prochain paquet de %1$s emails sera envoyé dans %2$s. "
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:394
+#: ../views/back/campaigns.php:405
 msgid "Don't wait & send right now."
 msgstr "Envoyez maintenant."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:401
+#: ../views/back/campaigns.php:412
 msgid "To resume send [link]Go premium now![/link]"
 msgstr "Pour envoyer, achetez la version [link]premium[/link]."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:409
+#: ../views/back/campaigns.php:420
 msgid "Resume"
 msgstr "Reprendre."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:412
+#: ../views/back/campaigns.php:423
 msgid "Not sent yet"
 msgstr "Pas encore envoyé"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:444
+#: ../views/back/campaigns.php:455
 msgid "Search recipients"
 msgstr "Recherchez"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:451
+#: ../views/back/campaigns.php:462
 #, php-format
 msgid "%1$s emails sent %2$s ago"
 msgstr "%1$s emails envoyé il y a %2$s"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:452
+#: ../views/back/campaigns.php:463
 msgid "No emails have been sent yet."
 msgstr "Aucun email n'a été encore envoyé."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:472
+#: ../views/back/campaigns.php:483
 msgid "What got clicked?"
 msgstr "Les liens visités"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:481
+#: ../views/back/campaigns.php:492
 msgid "Nothing yet!"
 msgstr "Rien à signaler!"
 
-#: ../views/back/campaigns.php:488
+#: ../views/back/campaigns.php:499
 msgid "Just a few clicks. No need to reinstall. Easy."
 msgstr "Passez au Premium en quelques clics, et sans devoir réinstaller. Facile."
 
-#: ../views/back/campaigns.php:489
+#: ../views/back/campaigns.php:500
 msgid "Detailed view of links and their number of clicks is available in the Premium version. [link]Get it now.[/link]"
 msgstr "Les liens et leur nombre de clics est disponible dans la version Premium du plugin. [link]Découvrez les autres avantages.[/link]"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:534
+#: ../views/back/campaigns.php:545
 msgid "Email Status"
 msgstr "Statut"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:536
+#: ../views/back/campaigns.php:547
 msgid "Subscriber Status"
 msgstr "Statut de l'abonné"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:540
+#: ../views/back/campaigns.php:551
 msgid "Subscribed on"
 msgstr "Date d'inscription"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:557
+#: ../views/back/campaigns.php:568
 msgid "Unconfirmed"
 msgstr "Non confirmé"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:557
+#: ../views/back/campaigns.php:568
 msgid "Subscribed"
 msgstr "Abonné"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:580
+#: ../views/back/campaigns.php:591
 msgid "View stats or edit"
 msgstr "Voir statistiques / modifier"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:616
-#: ../views/back/campaigns.php:885
+#: ../views/back/campaigns.php:627
+#: ../views/back/campaigns.php:896
 msgid "Subject line"
 msgstr "Sujet"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:618
-#: ../views/back/campaigns.php:887
+#: ../views/back/campaigns.php:629
+#: ../views/back/campaigns.php:898
 msgid "This is the subject of the email. Be creative since it’s the first thing your subscribers will see."
 msgstr "Le sujet de l'email. Soyez original au risque d'avoir un faible taux d'ouverture.  "
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:625
-#: ../views/back/campaigns.php:894
+#: ../views/back/campaigns.php:636
+#: ../views/back/campaigns.php:905
 msgid "The list of subscribers which will be used for that campaign."
 msgstr "La liste d'abonnés qui recevront votre newsletter."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:631
-#: ../views/back/campaigns.php:902
+#: ../views/back/campaigns.php:642
+#: ../views/back/campaigns.php:913
 #: ../views/back/config.php:145
 msgid "From name"
 msgstr "Nom de l'expéditeur"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:632
-#: ../views/back/campaigns.php:903
+#: ../views/back/campaigns.php:643
+#: ../views/back/campaigns.php:914
 msgid "This is name of the sender. ie, yourself or your company."
 msgstr "Choisissez votre nom ou celle de votre organisme ou société."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:637
-#: ../views/back/campaigns.php:908
+#: ../views/back/campaigns.php:648
+#: ../views/back/campaigns.php:919
 #: ../views/back/config.php:150
 msgid "From email"
 msgstr "Email de l'expéditeur"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:638
-#: ../views/back/campaigns.php:909
+#: ../views/back/campaigns.php:649
+#: ../views/back/campaigns.php:920
 msgid "This is the email of the sender. ie, your organization or its president. "
 msgstr "L'adresse de l'expéditeur. "
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:649
+#: ../views/back/campaigns.php:660
 msgid "Yikes! Your browser might not be supported. Get the latest [linkchrome]Chrome[/linkchrome], [linkff]Firefox[/linkff], [linkie]Internet Explorer[/linkie] or [linksafari]Safari[/linksafari]. It seems to work?[link_ignore]Ignore message[/link_ignore]."
 msgstr "Oula! Votre navigateur n'est pas pris en charge! Téléchargez la dernière version de [linkchrome]Chrome[/linkchrome], [linkff]Firefox[/linkff], [linkie]Internet Explorer[/linkie] ou [linksafari]Safari[/linksafari]. [link_ignore]Ignorer ce message et continuer.[/link_ignore]"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:665
-#: ../views/back/campaigns.php:774
+#: ../views/back/campaigns.php:676
+#: ../views/back/campaigns.php:785
 msgid "Next step"
 msgstr "Suivant"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:708
+#: ../views/back/campaigns.php:719
 msgid "Drag the widgets below into your newsletter."
 msgstr "Déplacer les widgets dans votre newsletter. "
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:717
+#: ../views/back/campaigns.php:728
 msgid "Add images"
 msgstr "Ajoutez des images"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:748
+#: ../views/back/campaigns.php:759
 msgid "Download Photoshop files..."
 msgstr "Téléchargez les fichiers Photoshop..."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:768
-#: ../views/back/campaigns.php:944
+#: ../views/back/campaigns.php:779
+#: ../views/back/campaigns.php:955
 msgid "Send preview"
 msgstr "Envoyez un aperçu"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:914
+#: ../views/back/campaigns.php:925
 msgid "Reply-to name"
 msgstr "Adresse de réponse"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:915
+#: ../views/back/campaigns.php:926
 msgid "When the subscribers hit \"reply\", this is to who they will send their email "
 msgstr "L'adresse de réponse si vos abonnés répondent à votre newsletter."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:920
+#: ../views/back/campaigns.php:931
 msgid "Reply-to email"
 msgstr "Adresse de réponse"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:921
+#: ../views/back/campaigns.php:932
 #: ../views/back/config.php:835
 msgid "When the subscribers hit \"reply\", this is where they will send their email."
 msgstr "Quand les abonnés cliquent sur \"répondre\", c'est la personne a qui ils écriront."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:954
+#: ../views/back/campaigns.php:965
 msgid "Send now"
 msgstr "Envoyer maintenant"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:957
+#: ../views/back/campaigns.php:968
 msgid "Send later"
 msgstr "Envoyer plus tard"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:963
+#: ../views/back/campaigns.php:974
 msgid "Save and resume send"
 msgstr "Sauvegarder et envoyer"
 
 # @ default
-#: ../views/back/campaigns.php:971
+#: ../views/back/campaigns.php:982
 msgid "or simply [link]go back to design[/link]."
 msgstr "ou retourner [link]au design[/link]."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1041
+#: ../views/back/campaigns.php:1052
 msgid "Added"
 msgstr "Ajouté"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1074
+#: ../views/back/campaigns.php:1085
 msgid "Address:"
 msgstr "Adresse:"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1079
+#: ../views/back/campaigns.php:1090
 msgid "Alternative text:"
 msgstr "Texte alternatif:"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1082
+#: ../views/back/campaigns.php:1093
 msgid "This text is displayed when email clients block images, which is most of the time."
 msgstr "Ce texte est affiché lorsque les images sont bloquées par le client mail. La majorité du temps."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1113
+#: ../views/back/campaigns.php:1124
 msgid "Search"
 msgstr "Rechercher"
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1151
+#: ../views/back/campaigns.php:1162
 msgid "Done"
 msgstr "Terminé"
 
 # @ default
-#: ../views/back/campaigns.php:1186
+#: ../views/back/campaigns.php:1197
 msgid "&laquo;"
 msgstr "&laquo;"
 
 # @ default
-#: ../views/back/campaigns.php:1187
+#: ../views/back/campaigns.php:1198
 msgid "&raquo;"
 msgstr "&raquo;"
 
 # @ default
-#: ../views/back/campaigns.php:1271
+#: ../views/back/campaigns.php:1282
 #, php-format
 msgid "Sorry, you have filled your storage quota (%s MB)."
 msgstr "Désolé, la limite de %s mo a été atteinte pour votre site."
 
 # @ default
-#: ../views/back/campaigns.php:1283
+#: ../views/back/campaigns.php:1294
 msgid "Select Files"
 msgstr "Sélectionner"
 
 # @ default
-#: ../views/back/campaigns.php:1330
+#: ../views/back/campaigns.php:1341
 msgid "Choose files to upload"
 msgstr "Sélectionnez des fichiers à télécharger"
 
 # @ default
-#: ../views/back/campaigns.php:1334
-#: ../views/back/campaigns.php:1346
+#: ../views/back/campaigns.php:1345
+#: ../views/back/campaigns.php:1357
 #, php-format
 msgid "Maximum upload file size: %d%s"
 msgstr "Taille maximale: %d%s"
 
 # @ default
-#: ../views/back/campaigns.php:1343
+#: ../views/back/campaigns.php:1354
 msgid "Cancel"
 msgstr "Annuler"
 
 # @ default
-#: ../views/back/campaigns.php:1348
+#: ../views/back/campaigns.php:1359
 msgid "If you want to use all capabilities of the uploader, like uploading multiple files at once, please upgrade to lighttpd 1.5."
 msgstr "Si vous voulez mettre en ligne plus d'une image à la fois, demandez à votre hébergeur d'installer la version de lighttpd 1.5."
 
 # @ wysija-newsletters
-#: ../views/back/campaigns.php:1398
+#: ../views/back/campaigns.php:1409
 msgid "This tab will be filled with images from your current and previous newsletters."
 msgstr "Les images de toutes vos newsletters apparaiteront ici."
 
@@ -2334,7 +2301,7 @@ msgstr "Gestion de rebond automatique"
 # @ wysija-newsletters
 #: ../views/back/config.php:83
 msgid "Advanced"
-msgstr "Avancées"
+msgstr "Paramètres avancés"
 
 # @ wysija-newsletters
 #: ../views/back/config.php:101
@@ -2485,8 +2452,8 @@ msgstr "Serveur SMTP"
 
 # @ wysija-newsletters
 #: ../views/back/config.php:340
-msgid "Perfect for professional SMTP providers. Good idea for lists over 2500 subscribers. We negotiated promotional offers with a few providers for you."
-msgstr "Idéal pour les services SMTP professionnels, avec des listes au-delà de 2500 abonnés. Nous avons négocié des offres promotionnelles avec quelques fournisseurs pour vous."
+msgid "Perfect for sending with a professional SMTP providers, which we highly recommended for big and small lists. We negotiated promotional offers with a few providers for you."
+msgstr "Idéal pour les services SMTP professionnels, soit la méthode idéale d'envoi. Nous avons négocié des offres pour vous permettre de faire le saut."
 
 # @ wysija-newsletters
 #: ../views/back/config.php:340
@@ -2973,7 +2940,7 @@ msgstr "Votre liste doit être en CSV. Voir [link]des exemples[/link] dans le si
 #: ../views/back/subscribers.php:702
 #, php-format
 msgid "total max upload file size : %1$s"
-msgstr "Taille maximum de fichier à envoyer :%1$s"
+msgstr "Taille maximum de fichier à envoyer: %1$s"
 
 # @ default
 #: ../views/back/subscribers.php:709

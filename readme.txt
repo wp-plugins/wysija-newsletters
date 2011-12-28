@@ -3,13 +3,13 @@ Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 0.9.6
+Stable tag: 1.0
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
 == Description ==
 
-We update our code regularly. This plugin is still in beta. [Feedbacks welcomed](http://www.wysija.com/contact/). We have a dedicated [support site](http://support.wysija.com/) where we'll be happy to help.
+Sending newsletters from WordPress has just gotten a lot easier. Our editor let’s you drag and drop your articles, images, dividers and logo into your newsletter. Pick a theme and change its fonts and colors directly while you’re editing. Managing your lists and subscription forms is straightforward. Configuration is dummy proof. And if you’re astray or lost, [we’re here](http://support.wysija.com/) to help.
 
 = Features =
 
@@ -20,7 +20,7 @@ We update our code regularly. This plugin is still in beta. [Feedbacks welcomed]
 * Put a subscription form as a sidebar widget or in your pages
 * Import your lists like a breeze. Manage them without pain
 * Segment your lists based on opened, clicked & bounced
-* Your WordPress users have their own synced list
+* your site's users have their own synced list
 * Quick and easy configuration
 * WordPress Multisite ready
 * We offer quick support
@@ -84,6 +84,18 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 1.0 =
+* Premium upgrade available
+* fix image selector width in editor
+* fix front stats of email when email preview and show errors all
+* fix front stats of email when show errors all
+* fix import ONLY subscribed from external plugins such as Tribulant or Satollo
+* fix retrieve wp.posts when time is different on mysql server and apache server
+* fix changing encoding from utf8 to another was not sending
+* newsletter background colour now displays in new Gmail
+* less confusing queue sending status 
+* updated language file (pot) with 20 or so modifications
 
 = 0.9.6 =
 * fixed subscribe from a wysija confirmation page bug
