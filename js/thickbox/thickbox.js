@@ -35,23 +35,23 @@ function tb_click(){
 	return false;
 }
 
-function tb_show(caption, url, imageGroup) {//function called when the user clicks on a thickbox link
-
+function tb_show(caption, url, imageGroup,classname) {//function called when the user clicks on a thickbox link
+        if(typeof classname === "undefined") classname="default";
 	try {
 		if (typeof document.body.style.maxHeight === "undefined") {//if IE 6
 			jQuery("body","html").css({height: "100%", width: "100%"});
 			jQuery("html").css("overflow","hidden");
 			if (document.getElementById("TB_HideSelect") === null) {//iframe to hide select elements in ie6
-				jQuery("body").append("<iframe id='TB_HideSelect'>"+thickboxL10n.noiframes+"</iframe><div id='TB_overlay'></div><div id='TB_window'></div>");
+				jQuery("body").append("<iframe id='TB_HideSelect'>"+thickboxL10n.noiframes+"</iframe><div id='TB_overlay'></div><div id='TB_window' class='"+classname+"'></div>");
 				jQuery("#TB_overlay").click(tb_remove);
 			}
 		}else{//all others
 			if(document.getElementById("TB_overlay") === null){
-				jQuery("body").append("<div id='TB_overlay'></div><div id='TB_window'></div>");
+				jQuery("body").append("<div id='TB_overlay'></div><div id='TB_window' class='"+classname+"'></div>");
 				jQuery("#TB_overlay").click(tb_remove);
 			}
 		}
-
+                
 		if(tb_detectMacXFF()){
 			jQuery("#TB_overlay").addClass("TB_overlayMacFFBGHack");//use png overlay so hide flash
 		}else{
