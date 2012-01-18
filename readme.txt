@@ -11,8 +11,6 @@ This plugin does one thing well: create and send newsletters from WordPress. Eas
 
 Sending newsletters from WordPress has just gotten a lot easier. Our editor let’s you drag and drop your articles, images, dividers and logo into your newsletter. Pick a theme and change its fonts and colors directly while you’re editing. Managing your lists and subscription forms is straightforward. Configuration is dummy proof. And if you're lost, [we’re here](http://support.wysija.com/) to help.
 
-Check out the [Google Analytics for WordPress video](http://www.youtube.com/watch?v=tnUXzbvXxSQ):
-
 = One minute video demo =
 
 http://vimeo.com/35054446
