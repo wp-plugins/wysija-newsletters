@@ -27,11 +27,11 @@ jQuery(function($){
               data.addColumn('string', 'Topping');
               data.addColumn('number', 'Slices');
               data.addRows([
-                <?php  foreach($data['stats'] as $stats){ echo "['".$stats['name']."',   ".$stats['number']."],"; } ?>
+                <?php  foreach($data['stats'] as $stats){ if (!is_string($stats['name']) OR preg_match('|[^a-z0-9#_. -]|i',$stats['name']) !== 0 ) $stats['name']="Default"; echo "['".$stats['name']."',   ".(int)$stats['number']."],"; } ?>
               ]);
 
               // Set chart options
-              var options = {'title':'<?php echo $data['title'];?>',
+              var options = {'title':'<?php  if (!is_string($stats['title']) OR preg_match('|[^a-z0-9#_. -]|i',$stats['title']) !== 0 ) $stats['title']="Default"; echo $data['title'];?>',
                              'width':400,
                              'height':200,
                              'backgroundColor':'transparent'};
