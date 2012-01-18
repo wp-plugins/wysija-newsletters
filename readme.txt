@@ -3,13 +3,19 @@ Contributors: wysija
 Tags: newsletter, email, emailing, smtp
 Requires at least: 3.0
 Tested up to: 3.3
-Stable tag: 1.0
+Stable tag: 1.0.1
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
 == Description ==
 
-Sending newsletters from WordPress has just gotten a lot easier. Our editor let’s you drag and drop your articles, images, dividers and logo into your newsletter. Pick a theme and change its fonts and colors directly while you’re editing. Managing your lists and subscription forms is straightforward. Configuration is dummy proof. And if you’re astray or lost, [we’re here](http://support.wysija.com/) to help.
+Sending newsletters from WordPress has just gotten a lot easier. Our editor let’s you drag and drop your articles, images, dividers and logo into your newsletter. Pick a theme and change its fonts and colors directly while you’re editing. Managing your lists and subscription forms is straightforward. Configuration is dummy proof. And if you're lost, [we’re here](http://support.wysija.com/) to help.
+
+Check out the [Google Analytics for WordPress video](http://www.youtube.com/watch?v=tnUXzbvXxSQ):
+
+= One minute video demo =
+
+http://vimeo.com/35054446
 
 = Features =
 
@@ -20,7 +26,7 @@ Sending newsletters from WordPress has just gotten a lot easier. Our editor let�
 * Put a subscription form as a sidebar widget or in your pages
 * Import your lists like a breeze. Manage them without pain
 * Segment your lists based on opened, clicked & bounced
-* your site's users have their own synced list
+* Your site's users have their own synced list
 * Quick and easy configuration
 * WordPress Multisite ready
 * We offer quick support
@@ -84,6 +90,22 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 1.0.1 =
+
+* added SMTP TLS support, useful for instance with live.com smtp
+* added support for special Danish chars in email subscriptions
+* fixed menu position conflict with other themes and plugins
+* fixed subscription form works with jquery 1.3, compatible for themes that use it
+* fixed issue of drag & drop of WP post not working with php magic quotes
+* fixed permissions issue. Only admins could use the plugin despite changing the permissions in Settings > Advanced. 
+* fixed display of successful subscription in widget displays better in most theme
+* fixed synching of WordPress user registering through frontend /wp-login.php?action=register
+* fixed redirection unsubscribe link from preview emails
+* fixed cross site scripting security threat
+* fixed pagination on newsletter statistics's page
+* fixed javascript conflict with Tribulant's javascript's includes
+* improved detection of errors during installation
 
 = 1.0 =
 * Premium upgrade available

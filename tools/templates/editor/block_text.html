@@ -1,5 +1,5 @@
 <div class="wysija_text">
-    <div class="editable {if ! #text}text_placeholder empty{/if}">{#text.value}</div>
+    <div class="editable {if ! #text}text_placeholder empty{/if}">{#text.value|base64_decode}</div>
     <ul style="display: none;" class="wysija_tools">
         <li><a href="javascript:;" class="remove"><span></span></a></li>
     </ul>
