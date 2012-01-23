@@ -82,7 +82,7 @@ class WYSIJA_help_install extends WYSIJA_object{
   PRIMARY KEY (`list_id`,`user_id`)
 ) ENGINE=MyISAM";
         global $wpdb;
-        
+        $query=str_replace("CREATE TABLE IF NOT EXISTS `","CREATE TABLE IF NOT EXISTS `".$modelObj->getPrefix(),$query);
         if(!$wpdb->query($query)){
             $this->wp_error(__("The MySQL user you have setup on your Wordpress site (wp-config.php) doesn't have enough privileges to CREATE MySQL tables. Please change this user yourself or contact the administrator of your site in order to complete Wysija's installation.",WYSIJA));
             $haserrors=true;
