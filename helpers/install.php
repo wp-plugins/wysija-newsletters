@@ -74,7 +74,8 @@ class WYSIJA_help_install extends WYSIJA_object{
         $haserrors=false;
         
         /* test that we can create tables on the mysql server */
-        $query="CREATE TABLE IF NOT EXISTS `user_list` (
+        $modelObj=&WYSIJA::get("user","model");
+        $query="CREATE TABLE `".$modelObj->getPrefix()."user_list` (
   `list_id` INT unsigned NOT NULL,
   `user_id` INT unsigned NOT NULL,
   `sub_date` INT unsigned DEFAULT 0,
@@ -82,14 +83,21 @@ class WYSIJA_help_install extends WYSIJA_object{
   PRIMARY KEY (`list_id`,`user_id`)
 ) ENGINE=MyISAM";
         global $wpdb;
-        $modelObj=&WYSIJA::get("user","model");
-        $query=str_replace("CREATE TABLE IF NOT EXISTS `","CREATE TABLE IF NOT EXISTS `".$modelObj->getPrefix(),$query);
-        if(!$wpdb->query($query)){
-            $this->wp_error(__("The MySQL user you have setup on your Wordpress site (wp-config.php) doesn't have enough privileges to CREATE MySQL tables. Please change this user yourself or contact the administrator of your site in order to complete Wysija's installation.",WYSIJA));
-            $haserrors=true;
 
+        //DB_USER, DB_PASSWORD, DB_NAME, DB_HOST
+        $con = @mysql_connect( DB_HOST, DB_USER, DB_PASSWORD, true );
+        if (!$con){
+            die('Could not connect: ' . mysql_error());
+        }else{
+            @mysql_select_db( DB_NAME ,$con);
+            if(!mysql_query($query,$con)){
+                $this->wp_error(sprintf(
+                        __('The MySQL user you have setup on your Wordpress site (wp-config.php) doesn\'t have enough privileges to CREATE MySQL tables. Please change this user yourself or contact the administrator of your site in order to complete Wysija\'s installation. mysql errors:(%1$s)',WYSIJA),  mysql_error()));
+                $haserrors=true;
+            }
         }
-        
+
+        mysql_close($con);
         /* test that we can create folder in the uploads folder */
         $helperF=&WYSIJA::get('file',"helper");
         if(!$helperF->makeDir()){
@@ -514,7 +522,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         
         
         $dataEmail['params']=base64_encode(serialize($dataEmail['params']));
-        $dataEmail['wj_styles']=unserialize(base64_decode($dataEmail['wj_styles']));
+        $dataEmail['wj_styles']=base64_encode(serialize($dataEmail['wj_styles']));
         $dataEmail['wj_data']=base64_encode(serialize($dataEmail['wj_data']));
             
         $dataEmail['replyto_name']=$dataEmail['from_name']=$valuesconfig['from_name'];
