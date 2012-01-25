@@ -5,7 +5,13 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
     function WYSIJA_view_front_widget_nl(){
         $this->model=&WYSIJA::get("user","model");
     }
-    
+    /**
+     *
+     * @param type $title
+     * @param type $params
+     * @param type $echo
+     * @return string 
+     */
     function display($title="",$params,$echo=true){
         $this->addScripts();
         $data="";
