@@ -40,7 +40,6 @@ CREATE TABLE IF NOT EXISTS `user` (
 CREATE TABLE IF NOT EXISTS `list` (
   `list_id` INT unsigned NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
-  `namekey` VARCHAR(255) NULL,
   `description` TEXT NULL,
   `unsub_mail_id` INT unsigned NOT NULL DEFAULT 0,
   `welcome_mail_id` INT unsigned NOT NULL DEFAULT 0,
