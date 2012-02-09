@@ -40,7 +40,8 @@ CREATE TABLE IF NOT EXISTS `user` (
 CREATE TABLE IF NOT EXISTS `list` (
   `list_id` INT unsigned NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
-  `description` TEXT NOT NULL DEFAULT '',
+  `namekey` VARCHAR(255) NULL,
+  `description` TEXT NULL,
   `unsub_mail_id` INT unsigned NOT NULL DEFAULT 0,
   `welcome_mail_id` INT unsigned NOT NULL DEFAULT 0,
   `is_enabled` TINYINT unsigned  NOT NULL DEFAULT 0,
@@ -58,7 +59,7 @@ CREATE TABLE IF NOT EXISTS `list` (
 CREATE TABLE IF NOT EXISTS `campaign` (
   `campaign_id` INT unsigned AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
-  `description` TEXT NOT NULL DEFAULT '',
+  `description` TEXT NULL,
   PRIMARY KEY (`campaign_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/ COMMENT='A campaign is a private name to manage e-mails';
 
@@ -71,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `campaign` (
 CREATE TABLE IF NOT EXISTS `campaign_list` (
   `list_id` INT unsigned NOT NULL,
   `campaign_id` INT unsigned NOT NULL,
-  `filter` TEXT NOT NULL DEFAULT '',
+  `filter` TEXT NULL,
   PRIMARY KEY (`list_id`,`campaign_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/ COMMENT='attach a campaign to one or several lists';
 
@@ -85,14 +86,14 @@ CREATE TABLE IF NOT EXISTS `email` (
   `email_id` INT unsigned AUTO_INCREMENT,
   `campaign_id` INT unsigned NOT NULL DEFAULT 0,
   `subject` VARCHAR(250) NOT NULL DEFAULT '',
-  `body` LONGTEXT NOT NULL DEFAULT '',
+  `body` LONGTEXT NULL,
   `created_at` INT unsigned NULL,
   `sent_at` INT unsigned NULL,
   `from_email` VARCHAR(250) NULL,
   `from_name` VARCHAR(250) NULL,
   `replyto_email` VARCHAR(250) NULL,
   `replyto_name` VARCHAR(250) NULL,
-  `attachments` TEXT NOT NULL DEFAULT '',
+  `attachments` TEXT NULL,
   `status` TINYINT NOT NULL DEFAULT 0,
   `type` TINYINT NOT NULL DEFAULT 1,
   `number_sent` INT unsigned NOT NULL DEFAULT 0,
@@ -101,9 +102,9 @@ CREATE TABLE IF NOT EXISTS `email` (
   `number_unsub` INT unsigned NOT NULL DEFAULT 0,
   `number_bounce` INT unsigned NOT NULL DEFAULT 0,
   `number_forward` INT unsigned NOT NULL DEFAULT 0,
-  `params` TEXT NOT NULL DEFAULT '',
-  `wj_data` LONGTEXT NULL DEFAULT NULL,
-  `wj_styles` LONGTEXT NULL DEFAULT NULL,
+  `params` TEXT NULL,
+  `wj_data` LONGTEXT NULL,
+  `wj_styles` LONGTEXT NULL,
   PRIMARY KEY (`email_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/ COMMENT='this table stores all the e-mails';
 
@@ -119,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `user_field` (
   `name` VARCHAR(250) NULL,
   `column_name` VARCHAR(250) NOT NULL DEFAULT '',
   `type` TINYINT unsigned DEFAULT 0,
-  `values` TEXT NOT NULL DEFAULT '',
+  `values` TEXT NULL,
   `default` VARCHAR(250) NOT NULL DEFAULT '',
   `is_required` TINYINT unsigned NOT NULL DEFAULT 0,
   `error_message` VARCHAR(250) NOT NULL DEFAULT '',
@@ -185,7 +186,7 @@ CREATE TABLE IF NOT EXISTS `email_user_stat` (
 CREATE TABLE IF NOT EXISTS `url` (
   `url_id` INT unsigned AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
-  `url` TEXT NOT NULL DEFAULT '',
+  `url` TEXT NULL,
   PRIMARY KEY (`url_id`)
 ) ENGINE=MyISAM /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci*/ COMMENT='all urls';
 
