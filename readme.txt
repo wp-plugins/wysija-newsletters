@@ -28,7 +28,7 @@ http://vimeo.com/35054446
 * Single or double opt-in, your choice
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
-* We offer quick[support](http://support.wysija.com/)
+* We offer quick [support](http://support.wysija.com/)
 * Free version is limited to 2000 subscribers
 
 = Premium version =
@@ -59,7 +59,7 @@ http://vimeo.com/35054446
 
 = Translations in your language =
 
-* Your language: get a Premium license in exchange for your hard work
+* Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
 * Czech (děkuji Ondra)
 * Dutch (dank je wel John)
 * French (our bird did it)
@@ -133,12 +133,12 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * 14 new themes. First Premium themes
 * added social bookmarks widget
 * added new divider widget
-* added first name and last name feature in subscrition form, newsletter content and email subject
+* added first name and last name feature in subscription form, newsletter content and email subject
 * header is now image only and not text/image
 * small changes in Styles tab of visual editor
 * new full width footer image area (600px)
 * added transparency feature to header, footer, newsletter
-* newsletter width for content narrowed to 564px. 
+* newsletter width for content narrowed to 564px 
 * improved line-height for titles in text editor
 * fixed Outlook and Hotmail padding issue with images
 * improved speed of editor
