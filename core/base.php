@@ -52,12 +52,16 @@ class WYSIJA_object{
         echo $msgs;
     }
     
-    function error($msg,$public=false){
-        $this->setInfo("error",$msg,$public);
+    function error($msg,$public=false,$global=false){
+        $status="error";
+        if($global) $status="g-".$status;
+        $this->setInfo($status,$msg,$public);
     }
 
-    function notice($msg,$public=true){
-        $this->setInfo("updated",$msg,$public);
+    function notice($msg,$public=true,$global=false){
+        $status="updated";
+        if($global) $status="g-".$status;
+        $this->setInfo($status,$msg,$public);
     }
 
     function setInfo($status,$msg,$public=false){
@@ -100,6 +104,20 @@ class WYSIJA_object{
 class WYSIJA_help extends WYSIJA_object{
     var $controller=null;
     function WYSIJA_help(){
+
+        if(!defined('DOING_AJAX')){
+            add_action('init', array($this, 'register_scripts'), 1);
+
+        }
+        
+        add_action('widgets_init', array($this, 'widgets_init'), 1);
+    }
+    
+    function widgets_init() {
+        register_widget('WYSIJA_NL_Widget');
+    }
+    
+    function register_scripts(){
         if(defined('WPLANG') && WPLANG!=''){
             $locale=explode("_",WPLANG);
             $wplang=$locale[0];
@@ -107,34 +125,22 @@ class WYSIJA_help extends WYSIJA_object{
             $wplang='en';
         }
         
-        if(!defined('DOING_AJAX')){
-            if(file_exists(WYSIJA_DIR."js".DS."validate".DS."languages".DS."jquery.validationEngine-".$wplang.".js")){
-                wp_register_script('wysija-validator-lang',WYSIJA_URL."js/validate/languages/jquery.validationEngine-".$wplang.".js", array( 'jquery' ), true);
-            }else{
-                wp_register_script('wysija-validator-lang',WYSIJA_URL."js/validate/languages/jquery.validationEngine-en.js", array( 'jquery' ), true);
-            }
-
-            wp_register_script('wysija-validator',WYSIJA_URL."js/validate/jquery.validationEngine.js", array( 'jquery' ), true );
-            wp_register_script('wysija-form', WYSIJA_URL."js/forms.js", array( 'jquery' ), true);
-            wp_register_style('validate-engine-css',WYSIJA_URL."css/validationEngine.jquery.css");
-            
-            
-
-            wp_register_script('wysija-admin-ajax', WYSIJA_URL."js/admin-ajax.js");
-            wp_register_script('wysija-admin-ajax-proto', WYSIJA_URL."js/admin-ajax-proto.js");
-            wp_register_script('wysija-front-subscribers', WYSIJA_URL."js/front-subscribers.js", array( 'jquery' ), true);
-            
+        if(file_exists(WYSIJA_DIR."js".DS."validate".DS."languages".DS."jquery.validationEngine-".$wplang.".js")){
+            wp_register_script('wysija-validator-lang',WYSIJA_URL."js/validate/languages/jquery.validationEngine-".$wplang.".js", array( 'jquery' ),WYSIJA::get_version(),true );
+        }else{
+            wp_register_script('wysija-validator-lang',WYSIJA_URL."js/validate/languages/jquery.validationEngine-en.js", array( 'jquery' ),WYSIJA::get_version(),true );
         }
+        wp_register_script('wysija-validator',WYSIJA_URL."js/validate/jquery.validationEngine.js", array( 'jquery' ),WYSIJA::get_version(),true );
+        wp_register_script('wysija-front-subscribers', WYSIJA_URL."js/front-subscribers.js", array( 'jquery' ),WYSIJA::get_version(),true);
+
         
-        add_action('widgets_init', array($this, 'widgets_init'), 1);
+        wp_register_script('wysija-form', WYSIJA_URL."js/forms.js", array( 'jquery' ),WYSIJA::get_version());
+        wp_register_style('validate-engine-css',WYSIJA_URL."css/validationEngine.jquery.css",array(),WYSIJA::get_version());
+        wp_register_script('wysija-admin-ajax', WYSIJA_URL."js/admin-ajax.js",array(),WYSIJA::get_version());
+        wp_register_script('wysija-admin-ajax-proto', WYSIJA_URL."js/admin-ajax-proto.js",array(),WYSIJA::get_version());
 
     }
-    
-    function widgets_init() {
-        register_widget('WYSIJA_NL_Widget');
-    }
-    
-    
+
     
     /**
      * when doing an ajax request in admin this is the first place where we come
@@ -209,6 +215,8 @@ class WYSIJA extends WYSIJA_object{
         static $extensionloaded = false;
         
         if(!$extendedplugin) return $extensionloaded;
+        
+        if(!$extensionloaded)   add_action('init', array("WYSIJA","load_lang_init"));
         /*load the language file*/
         if ( !$extensionloaded || !isset($extensionloaded[$extendedplugin])) {
             
@@ -222,10 +230,26 @@ class WYSIJA extends WYSIJA_object{
                 case "wysijacrons":
                     $transstring=WYSIJACRONS;
                     break;
+                case "get_all":
+                    return $extensionloaded;
             }
-            if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
+            //if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
             $extensionloaded[$extendedplugin] = $transstring;
             
+        }
+        
+    }
+    
+    /**
+     * this function exists just to fix the issue with qtranslate :/ (it only fix it partially)
+     * @param type $extendedplugin 
+     */
+    function load_lang_init($extendedplugin=false){
+        $extensionloaded=WYSIJA::load_lang("get_all");
+
+        foreach($extensionloaded as $extendedplugin => $transstring){
+            
+            load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
         }
     }
 /*    
@@ -249,6 +273,7 @@ class WYSIJA extends WYSIJA_object{
         static $arrayOfObjects;
         
         WYSIJA::load_lang($extendedplugin);
+        
         /*store all the objects made so that we can reuse them accross the application*/
         if(isset($arrayOfObjects[$extendedplugin][$type.$name])) {
             return $arrayOfObjects[$extendedplugin][$type.$name];
@@ -335,7 +360,15 @@ class WYSIJA extends WYSIJA_object{
             'two_hours' => array(
                 'interval' => 7200,
                 'display' => __( 'Once every two hours',WYSIJA)
-                ) 
+                ),
+            'eachweek' => array(
+                'interval' => 2419200, 
+                'display' => __( 'Once a week',WYSIJA)
+                ),
+            'each28days' => array(
+                'interval' => 604800, 
+                'display' => __( 'Once every 28 days',WYSIJA)
+                ),
             );
     }  
     
@@ -372,16 +405,16 @@ class WYSIJA extends WYSIJA_object{
                 $res['result']=false;
                 return $res;
         }
-        $this->notice(sprintf(__('Successfully connected to %1$s'),$config->getValue('bounce_login')));
+        $this->notice(sprintf('Successfully connected to %1$s',$config->getValue('bounce_login')));
         $nbMessages = $bounceClass->getNBMessages();
         
 
         if(empty($nbMessages)){
-            $this->error(__('There are no messages'),true);
+            $this->error('There are no messages',true);
             $res['result']=false;
             return $res;
         }else{
-            $this->notice(sprintf(__('There are %1$s messages in your mailbox'),$nbMessages));
+            $this->notice(sprintf('There are %1$s messages in your mailbox',$nbMessages));
         }
         
 
@@ -410,43 +443,43 @@ class WYSIJA extends WYSIJA_object{
             $helperS->sendDailyReport();
         }
         
+        
+    }
+    
+    function croned_weekly() {
+        @ini_set('max_execution_time',0);
+
+        /* send daily report about emails sent */
+        $modelC=&WYSIJA::get("config","model");
         /* if premium let's do a licence check */
-        if($modelC->getValue("emails_notified_when_dailysummary")){
-            $helperS=&WYSIJA::get("stats","helper");
-            $helperS->sendDailyReport();
+        if($modelC->getValue("premium_key")){
+            $helperS=&WYSIJA::get("licence","helper");
+            $helperS->check();
         }
         
+    }
+    
+    function croned_monthly() {
+        @ini_set('max_execution_time',0);
+
+        /* send daily report about emails sent */
+        $modelC=&WYSIJA::get("config","model");
+        if($modelC->getValue("sharedata")){
+            $helperS=&WYSIJA::get("stats","helper");
+            $helperS->share();
+        }
+
     }
 
     function deactivate() {
         wp_clear_scheduled_hook('wysija_cron_queue');
         wp_clear_scheduled_hook('wysija_cron_bounce');
         wp_clear_scheduled_hook('wysija_cron_daily');
+        wp_clear_scheduled_hook('wysija_cron_weekly');
+        wp_clear_scheduled_hook('wysija_cron_monthly');
     }
     
-    function activate() {
-        //WYSIJA::redirect('admin.php?page=wysija_config');
-    }
-    function return_bytes($size_str)
-    {
-        switch (substr ($size_str, -1))
-        {
-            case 'M': case 'm': return (int)$size_str * 1048576;
-            case 'K': case 'k': return (int)$size_str * 1024;
-            case 'G': case 'g': return (int)$size_str * 1073741824;
-            default: return $size_str;
-        }
-    }
-    function get_max_file_upload(){
-        $u_bytes = ini_get( 'upload_max_filesize' );
-        $p_bytes = ini_get( 'post_max_size' );
-        $data=array();
-        
-        $data['maxbytes']=WYSIJA::return_bytes(min($u_bytes, $p_bytes));
-        $data['maxmegas'] = apply_filters( 'upload_size_limit', min($u_bytes, $p_bytes), $u_bytes, $p_bytes );
-        $data['maxchars'] =(int)floor(($p_bytes*1024*1024)/200);
-        return $data;
-    }
+    
     
     function redirect($redirectTo){
          /* save the messages */
@@ -456,47 +489,6 @@ class WYSIJA extends WYSIJA_object{
         wp_redirect($redirectTo);
         exit;
     }
-    
-    function _make_domain_name($url){
-        $domain_name=str_replace(array("http://","www."),"",$url);
-        $domain_name=explode('/',$domain_name);
-        return $domain_name[0];
-    }
-    
-    function duration($s,$durationin=false,$level=1){
-        $t=mktime();
-        
-        if($durationin){
-            $e=$t+$s;
-            $s=$t;
-            /* Find out the seconds between each dates */
-            $timestamp = $e - $s;
-
-        }else{
-            $timestamp = $t - $s;
-        }
-        
-
-        /* Cleaver Maths! */
-        $years=floor($timestamp/(60*60*24*365));$timestamp%=60*60*24*365;
-        $weeks=floor($timestamp/(60*60*24*7));$timestamp%=60*60*24*7;
-        $days=floor($timestamp/(60*60*24));$timestamp%=60*60*24;
-        $hrs=floor($timestamp/(60*60));$timestamp%=60*60;
-        $mins=floor($timestamp/60);$secs=$timestamp%60;
-
-        /* Display for date, can be modified more to take the S off */
-        $str="";
-        $mylevel=0;
-        if ($mylevel<$level && $years >= 1) { $str.= sprintf(_n( '%1$s year ', '%1$s years ', $years, WYSIJA ),$years);$mylevel++; }
-        if ($mylevel<$level && $weeks >= 1) { $str.= sprintf(_n( '%1$s week ', '%1$s weeks ', $weeks, WYSIJA ),$weeks);$mylevel++; }
-        if ($mylevel<$level && $days >= 1) { $str.=sprintf(_n( '%1$s day ', '%1$s days ', $days, WYSIJA ),$days);$mylevel++; }
-        if ($mylevel<$level && $hrs >= 1) { $str.=sprintf(_n( '%1$s hour ', '%1$s hours ', $hrs, WYSIJA ),$hrs);$mylevel++; }
-        if ($mylevel<$level && $mins >= 1) { $str.=sprintf(_n( '%1$s minute ', '%1$s minutes ', $mins, WYSIJA ),$mins);$mylevel++; }
-
-        return $str;
-
-    }
-    
     
     function create_post_type() {
         register_post_type( 'wysijap',
@@ -572,6 +564,7 @@ class WYSIJA extends WYSIJA_object{
         
         //check first if a subscribers exists if it doesn't then let's insert it
         $modelUser=&WYSIJA::get("user","model");
+
         $subscriber_exists=$modelUser->getOne(array("user_id"),array("email"=>$data->user_email));
         $modelUser->reset();
         if($subscriber_exists){
@@ -594,10 +587,38 @@ class WYSIJA extends WYSIJA_object{
         $modelConf=&WYSIJA::get("config","model");
         $modelUser=&WYSIJA::get("user","model");
         $data=$modelUser->getOne(array("user_id"),array("wpuser_id"=>$user_id));
+        $modelUser->delete(array("wpuser_id"=>$user_id));
         $modelUser=&WYSIJA::get("user_list","model");
         $modelUser->delete(array("user_id"=>$data['user_id'],"list_id"=>$modelConf->getValue("importwp_list_id")));
 
         //WYSIJA::wp_notice(__("User has been removed from the <b>Synched</b> Wordpress user list.",WYSIJA));
+    }
+    
+    function uninstall(){
+        $helperUS=&WYSIJA::get("uninstall","helper");
+        $helperUS->uninstall();
+    }
+    
+    function activate(){
+        $encoded_option=get_option("wysija");
+        $installApp=false;
+        if($encoded_option){
+            $values=unserialize(base64_decode($encoded_option));
+            if(isset($values['installed'])) $installApp=true;
+        }
+
+        /*test again for plugins on reactivation*/
+        if($installApp){
+            $importHelp=&WYSIJA::get("import","helper");
+            $importHelp->testPlugins();
+            
+            /*resynch wordpress list*/
+            $helperU=&WYSIJA::get("user","helper");
+            $helperU->synchList($values['importwp_list_id']);
+
+        }
+        
+        
     }
     
 }
@@ -606,38 +627,82 @@ class WYSIJA extends WYSIJA_object{
  * widget class for user registration
  */
 class WYSIJA_NL_Widget extends WP_Widget {
-    public $classid="";
+    var $classid="";
 
 
     function WYSIJA_NL_Widget($coreOnly=false) {
-
+        static $scriptregistered;
         if(WYSIJA_SIDE=="front"){
-            if(!isset($_REQUEST['controller']) || (isset($_REQUEST['controller']) && $_REQUEST['controller']=="confirm" && isset($_REQUEST["wysija-key"]))){
-                $controller="subscribers";
-            }else $controller=$_REQUEST['controller'];
             
-            $ajaxurl=get_home_url();
-            $lastchar=substr($ajaxurl, -1);
-            
-            if($lastchar!="/")$ajaxurl.="/";
-            $ajaxurl.='wp-admin/admin-ajax.php';
-            $paramsajax=array(
-                'action' => 'wysija_ajax',
-                'controller' => $controller,
-                'ajaxurl'=>$ajaxurl,
-                'loadingTrans'  =>'Loading...'
-            );
+            if(!$scriptregistered){
+                if(!isset($_REQUEST['controller']) || (isset($_REQUEST['controller']) && $_REQUEST['controller']=="confirm" && isset($_REQUEST["wysija-key"]))){
+                    $controller="subscribers";
+                }else $controller=$_REQUEST['controller'];
+                $siteurl=get_site_url();
 
-            if(is_user_logged_in()) $paramsajax['wysilog']=1;
-            wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$paramsajax );
+                /*try to find the domain part in the site url*/
+                if(strpos($siteurl, $_SERVER['HTTP_HOST'])===false){
+                    //if we don't find it then we need to create a new siteadminurl
+                    //by replacing the part between http// and the first slash with the one from request uri
+                    $siteurlarray=explode("/",
+                            str_replace(array("http://"),"",$siteurl)
+                            );
+
+                    $ajaxurl=str_replace($siteurlarray[0], $_SERVER['HTTP_HOST'], $siteurl);
+                    /* old solution
+                     * $homeurl=get_home_url();
+                    $siteurlarr=explode("/",str_replace("http://","",$homeurl));
+                    $homeurlarr=explode("/",str_replace("http://","",$homeurl));
+                    
+                    if($homeurlarr[0]==$siteurlarr[0]){
+                        $ajaxurl=$siteurl;
+                    }else $ajaxurl=$homeurl;*/
+
+
+                }else{
+                    $ajaxurl=$siteurl;
+                }
+
+                $lastchar=substr($ajaxurl, -1);
+
+                if($lastchar!="/")$ajaxurl.="/";
+                $ajaxurl.='wp-admin/admin-ajax.php';
+                $paramsajax=array(
+                    'action' => 'wysija_ajax',
+                    'controller' => $controller,
+                    'ajaxurl'=>$ajaxurl,
+                    'loadingTrans'  =>'Loading...'
+                );
+
+                if(is_user_logged_in()) $paramsajax['wysilog']=1;
+                wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$paramsajax );
+                $scriptregistered=true;
+            }
+            
         }
         
         if($coreOnly) $this->coreOnly=true;
         $namekey='wysija';
         $title=__("Wysija Subscription",WYSIJA);
-        $params=array( 'description' => __('Subscription form for your newsletters.'));
+        $params=array( 'description' => __('Subscription form for your newsletters.',WYSIJA));
         $sizeWindow=array('width' => 400);
         
+        $this->add_translated_default();
+        
+        if(defined('WP_ADMIN')){
+            add_action('admin_menu', array($this,'add_translated_default'),96);
+        }
+        
+        $this->classid=strtolower(str_replace(__CLASS__."_","",get_class($this)));
+        //parent::__construct( $namekey, $title, $params,$sizeWindow );
+        $this->WP_Widget( $namekey, $title, $params,$sizeWindow );
+
+    }
+    
+    function add_translated_default(){
+        $this->name=__("Wysija Subscription",WYSIJA);
+        $this->widget_options['description']=__('Subscription form for your newsletters.',WYSIJA);
+
         $config=&WYSIJA::get("config","model");
         $this->successmsgconf=__('Check your inbox now to confirm your subscription.',WYSIJA);
         $this->successmsgsub=__('You’ve successfully subscribed.',WYSIJA);
@@ -646,25 +711,53 @@ class WYSIJA_NL_Widget extends WP_Widget {
         }else{
             $successmsg=$this->successmsgsub;
         }
-        
-        
         $this->fields=array(
             "title" =>array("label"=>__("Title:",WYSIJA),'default'=>__('Subscribe to our Newsletter',WYSIJA))
             ,"instruction" =>array("label"=>"",'default'=>__('To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!',WYSIJA))
             ,"lists" =>array("core"=>1,"label"=>__("Select a list",WYSIJA),'default'=>array(1))
+            ,"customfields" =>array("core"=>1,"label"=>__("Collect extra data from users:",WYSIJA),'default'=>"")
             ,"submit" =>array("core"=>1,"label"=>__("Button label:",WYSIJA),'default'=>__('Subscribe!',WYSIJA))
             ,"success"=>array("core"=>1,"label"=>__("Success message:",WYSIJA),'default'=>$successmsg));
-
-        $this->classid=strtolower(str_replace(__CLASS__."_","",get_class($this)));
-        //parent::__construct( $namekey, $title, $params,$sizeWindow );
-        $this->WP_Widget( $namekey, $title, $params,$sizeWindow );
-
     }
 
 
     function update( $new_instance, $old_instance ) {
         $instance = $old_instance;
+        
+        /* check if custom fields are set in the new instance, it if is not then we remove it from the old instance */
+        if(isset($instance['customfields']) && !isset($new_instance['customfields'])) unset($instance['customfields']);
+        if(isset($instance['labelswithin']) && !isset($new_instance['labelswithin'])) unset($instance['labelswithin']);
+        
+        /* for each new instance we update the current instance */
         foreach($new_instance as $key => $value) $instance[$key]=$value;
+        
+        
+        /*get the custom fields*/
+        $modelCustomF=&WYSIJA::get("user_field","model");
+        $customs=$modelCustomF->get(false,array('type'=>"0"));
+        
+        /*set an array of custom fields easy to read*/
+        $custombyid=array();
+        foreach($customs as $customf)   $custombyid[$customf['column_name']]=$customf;
+        
+        /* if there were custom fields set in the previous instance*/
+        if(isset($instance['customfields']) && $instance['customfields']){
+            foreach($instance['customfields'] as $keycf => &$custom){
+                /* make sure we remove the label data if the field is not selected anymore */
+                if(!isset($custom['column_name']) && $keycf!="email") unset($instance['customfields'][$keycf]);
+                else{
+                    /*if a custom field is select but has no default label then we just set the default label for that field*/
+                    if(!isset($custom['label']) || !$custom['label']) $custom['label']=$custombyid[$custom['column_name']]['name'];
+                }
+            }
+            
+            /* if the email label and field are not set we add them this can happend after just the first save*/
+            if(!isset($instance['customfields']['email'])){
+                $instance['customfields']['email']['column_name']='email';
+                $instance['customfields']['email']['label']='Email';
+            /*otherwise if the email custom field is set and is the only one set we can just unset it*/
+            }elseif(count($instance['customfields'])==1) unset($instance['customfields']);
+        }
 
         return $instance;
     }
@@ -676,7 +769,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         foreach($this->fields as $field => $fieldParams){
             $valuefield="";
-
+            
             if(isset($this->coreOnly) && !isset($fieldParams['core'])) continue;
             if(isset($instance[$field]))  {
                 
@@ -698,7 +791,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
                     
                     $classDivLabel='style="float:left"';
-                    $fieldHTML= '<div style="max-height:116px;overflow:auto;float:right;">';
+                    $fieldHTML= '<div style="max-height: 116px; overflow: auto; float: left; margin-left: 10px;">';
                     
                     if(!$valuefield) {
                         $modelConfig=&WYSIJA::get("config","model");
@@ -708,11 +801,84 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     foreach($lists as $list){
                         if(in_array($list['list_id'], $valuefield)) $checked=true;
                         else $checked=false;
-                        $fieldHTML.= '<p style="margin:0 0 5px 0;"><label for="'.$this->get_field_id($field.$list['list_id']).'">'.$formObj->checkbox( array('id'=>$this->get_field_id($field.$list['list_id']),'name'=>$this->get_field_name($field)."[]"),$list['list_id'],$checked).$list['name'].'</label></p>';
+                        $fieldHTML.= '<p style="margin:0 0 5px 0; float:left; margin-left:5px;"><label for="'.
+                                $this->get_field_id($field.$list['list_id']).'">'.$formObj->checkbox( array('id'=>$this->get_field_id($field.$list['list_id']),
+                                    'name'=>$this->get_field_name($field)."[]"),
+                                        $list['list_id'],$checked).$list['name'].'</label></p>';
                     }
                     $fieldHTML .= '</div>';
                     
                     break;
+                case "customfields":
+                    $modelCustomF=&WYSIJA::get("user_field","model");
+                    $modelCustomF->orderBy("field_id","ASC");
+                    $customs=$modelCustomF->get(false,array('type'=>"0"));
+
+                    $custombyid=array();
+                    $classDivLabel='style="float:left"';
+                    $fieldHTML= '<div style="max-height: 116px; overflow: auto; float: left; margin-left: 10px;">';
+     
+
+                    foreach($customs as $customf){
+                        $custombyid[$customf['column_name']]=$customf;
+
+                        if(is_array($valuefield) && isset($valuefield[$customf['column_name']])) $checked=true;
+                        else $checked=false;
+
+                        $fieldHTML.= '<p style="margin:0 0 5px 0; float:left; margin-left:5px;"><label for="'.$this->get_field_id($field.$customf['field_id']).'">'.
+                                $formObj->checkbox( array('id'=>$this->get_field_id($field.$customf['field_id']),
+                                    'name'=>$this->get_field_name($field)."[".$customf['column_name']."][column_name]"),
+                                        $customf['column_name'],$checked).$customf['name'].'</label></p>';
+                    }
+                    $fieldHTML .= '</div>';
+                    
+                   
+
+                    /*custom fields management for labels*/
+                    if(isset($instance["customfields"]) && $instance["customfields"]){
+                         /* set label as default value */
+                        if(is_array($valuefield) && isset($instance["labelswithin"])) $checked=true;
+                        else $checked=false;
+                        
+                        $fieldHTML.= "<div style='clear:both;'>";
+                        $fieldHTML.= '<p><label for="'.$this->get_field_id("labelswithin").'">'.__("Display labels in inputs",WYSIJA).
+                                    $formObj->checkbox( array('id'=>$this->get_field_id("labelswithin"),
+                                        'name'=>$this->get_field_name("labelswithin")),
+                                            "labels_within",$checked).'</label></p>';
+                        $fieldHTML .= "<div style='clear:both;'></div></div>";
+                        
+                        $fieldParamsLabels["email"]=array("core"=>1,
+                                "label"=>__('Label for email:',WYSIJA),
+                                'default'=>__("Email",WYSIJA));
+                         $custombyid["email"]["name"]="email";
+
+                        foreach($instance["customfields"] as $cf_id => $customfield){
+                            $defaultvalue="";
+                            if(isset($valuefield[$cf_id]["label"])) $defaultvalue=$valuefield[$cf_id]["label"];
+                            if(!$defaultvalue) $defaultvalue=$custombyid[$cf_id]["name"];
+                            $fieldParamsLabels[$cf_id]=array("core"=>1,
+                                "label"=>sprintf(__('Label for %1$s:',WYSIJA),$custombyid[$cf_id]["name"]),
+                                'default'=>$defaultvalue);
+                        }
+
+                        if($fieldParamsLabels){
+                            $fieldHTML2="<div style='clear:both;'>";
+                            foreach($fieldParamsLabels as $cfield_id => $customlabel){
+                                $valuef=$valuefield[$cfield_id]['label'];
+                                if(!$valuef)    $valuef=$customlabel['default'];
+                                $fieldHTML2.= '<p><label for="'.$this->get_field_id($field.$cfield_id).'">'.$customlabel['label'].
+                                    $formObj->input( array('id'=>$this->get_field_id($field.$cfield_id),'name'=>$this->get_field_name($field)."[".$cfield_id."][label]"),$valuef).
+                                    '</label></p>';
+                            }
+                            $fieldHTML2.="<div style='clear:both;'></div></div>";
+                        }
+
+                        $fieldHTML.=$fieldHTML2;
+                    }
+                   
+
+                    break;
+
                 case "instruction":
                 case "success":
                     $fieldHTML= $formObj->textarea( array('id'=>$this->get_field_id($field),'name'=>$this->get_field_name($field),'value'=>$valuefield,"cols"=>46,"rows"=>4,"style"=>'width:404px'),$valuefield);
@@ -763,7 +929,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         $glob.= $after_widget;
 
-        if($this->coreOnly) return $glob;
+        if(isset($this->coreOnly) && $this->coreOnly) return $glob;
         else echo $glob;
     }
 }
@@ -772,12 +938,17 @@ class WYSIJA_NL_Widget extends WP_Widget {
 add_action('user_register', array("WYSIJA", 'add_WP_subscriber'), 1);
 add_action('profile_update', array("WYSIJA", 'edit_WP_subscriber'), 1);
 add_action('delete_user', array("WYSIJA", 'del_WP_subscriber'), 1);
+/*add image size for emails*/
+add_image_size( 'wysija-newsletters-max', 600, 99999 );
 
 /* some processing for cron management */
 add_filter( 'cron_schedules', array( "WYSIJA", 'filter_cron_schedules' ) );
 add_action( 'wysija_cron_queue', array( "WYSIJA", 'croned_queue' ) );
 add_action( 'wysija_cron_bounce', array( "WYSIJA", 'croned_bounce' ) ); 
 add_action( 'wysija_cron_daily', array( "WYSIJA", 'croned_daily' ) ); 
+add_action( 'wysija_cron_weekly', array( "WYSIJA", 'croned_weekly' ) ); 
+add_action( 'wysija_cron_monthly', array( "WYSIJA", 'croned_monthly' ) ); 
+
 if(!wp_next_scheduled('wysija_cron_daily')) wp_schedule_event( mktime() , 'daily', 'wysija_cron_daily' );
 
 
@@ -794,15 +965,22 @@ if(!wp_next_scheduled('wysija_cron_bounce')){
     wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('bouncing_emails_each'), 'wysija_cron_bounce' );
 }
 
+if(!wp_next_scheduled('wysija_cron_weekly')){
+    $modelConf=&WYSIJA::get("config","model");
+    wp_schedule_event( $modelConf->getValue('last_save') , 'eachweek', 'wysija_cron_weekly' );
+}
 
-register_activation_hook( WYSIJA_FILE, array('WYSIJA', 'activate') );
+if(!wp_next_scheduled('wysija_cron_monthly')){
+    $modelConf=&WYSIJA::get("config","model");
+    wp_schedule_event( $modelConf->getValue('last_save') , 'each28days', 'wysija_cron_monthly' );
+}
+
+
 register_deactivation_hook(WYSIJA_FILE, array( "WYSIJA", 'deactivate' ));
+register_activation_hook(WYSIJA_FILE, array( "WYSIJA", 'activate' ));
+//register_uninstall_hook(WYSIJA_FILE,array("WYSIJA",'uninstall'));
 add_action( 'init', array('WYSIJA','create_post_type') );
 
-register_uninstall_hook(__FILE__,'wysija_uninstall');
-function wysija_uninstall(){
-    /*$helperUS=&WYSIJA::get("uninstall","helper");
-    $helperUS->uninstall();*/
-}
+
 
 $helper=&WYSIJA::get(WYSIJA_SIDE,"helper");

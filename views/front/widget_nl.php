@@ -8,14 +8,12 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
     
     function display($title="",$params,$echo=true){
         $this->addScripts();
-        $data="";
+        $data=$labelemail="";
         $formidreal="form-".$params['id_form'];
         if(isset($_POST['wysija']['user']['email']) && isset($_POST['formid'])){
             if($formidreal==$_POST['formid'])    $data.= $this->messages();
         }
         $data.= $title;
-        //unset($this->model->columns['email']['req']);
-        $classValidate=$this->getClassValidate($this->model->columns['email']);
 
         $disabledSubmit=$msgsuccesspreview='';
         if(isset($params['preview'])){
@@ -26,10 +24,17 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>
         <form id="'.$formidreal.'" method="post" action="" class="widget_wysija form-valid-sub">';
             if(isset($params['instruction']))   $data.='<p class="wysija-instruct">'.$params['instruction'].'</p>';
-            $data.='<p><input type="text" id="'.$formidreal.'wysija-email" '.$classValidate.' name="wysija[user][email]" />';
-            $data.=$this->customFields();
-            $data.='<br />';
-            $data.='<input type="submit" '.$disabledSubmit.' class="wysija-submit-field" name="submit" value="'.esc_attr($params['submit']).'"/></p>';
+            $submitbutton='<input type="submit" '.$disabledSubmit.' class="wysija-submit wysija-submit-field" name="submit" value="'.esc_attr($params['submit']).'"/>';
+            $dataCf=$this->customFields($params,$formidreal,$submitbutton);
+            if($dataCf){
+                $data.=$dataCf;
+            }else{
+                $classValidate="wysija-email ".$this->getClassValidate($this->model->columns['email'],true);
+                $data.='<p><input type="text" id="'.$formidreal.'-wysija-to" class="'.$classValidate.'" name="wysija[user][email]" />';
+                if(!isset($params['preview'])) $data.=$this->honey($params,$formidreal);
+                $data.=$submitbutton.'</p>';
+            }
+            
             
             if(isset($params["lists"])) $listexploded=esc_attr(implode(',',$params["lists"]));
             else $listexploded="";
@@ -53,8 +58,56 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         else return $data;
     }
     
-    function customFields(){
+    function customFields($params,$formidreal,$submitbutton){
+        $html="";
+        $validationsCF=array(
+            'email' => array("req"=>true,"type"=>"email","defaultLabel"=>__("Email",WYSIJA)),
+            'firstname' => array("req"=>true,"defaultLabel"=>__("First name",WYSIJA)),
+            'lastname' => array("req"=>true,"defaultLabel"=>__("Last name",WYSIJA)),
+        );
+        if(isset($params['customfields']) && $params['customfields']){
+            foreach($params['customfields'] as $fieldKey=> $field){
+                $classField='wysija-'.$fieldKey;
+                $classValidate=$classField." ".$this->getClassValidate($validationsCF[$fieldKey],true);
+                if(!isset($field['label']) || !$field['label']) $field['label']=$validationsCF[$fieldKey]['defaultLabel'];
+                if($fieldKey=="email") $fieldid=$formidreal."-wysija-to";
+                else $fieldid=$formidreal.'-'.$fieldKey;
+                
+                if(isset($params['labelswithin'])){
+                    $fieldstring='<input type="text" id="'.$fieldid.'" value="'.$field['label'].'" class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                }else{
+                    $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                }
+                $html.='<p class="wysija-p-'.$fieldKey.'">'.$fieldstring.'</p>';
+            }
+            
+            if(!isset($params['preview'])) $html.=$this->honey($params,$formidreal);
+            
+            if($html) $html.=$submitbutton;
+        }
         
+        return $html;
+    }
+    
+    function honey($params,$formidreal){
+        $arrayhoney=array(
+            "firstname"=>array('label'=>__("First name",WYSIJA),"type"=>"req"),
+            "lastname"=>array('label'=>__("Last name",WYSIJA),"type"=>"req"),
+            "email"=>array('label'=>__("Email",WYSIJA),"type"=>"email")
+            
+            );
+        $html="";
+        foreach($arrayhoney as $fieldKey=> $field){
+            $fieldid=$formidreal.'-abs-'.$fieldKey;
+
+            if(isset($params['labelswithin'])){
+                $fieldstring='<input type="text" id="'.$fieldid.'" value="'.$field['label'].'" class="defaultlabels validated[abs]['.$field['type'].']" name="wysija[user][abs]['.$fieldKey.']" />';
+            }else{
+                $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="validated[abs]['.$field['type'].']" name="wysija[user][abs]['.$fieldKey.']" />';
+            }
+            $html.='<span class="wysija-p-'.$fieldKey.' abs-req">'.$fieldstring.'</span>';
+        }
+        return $html;
     }
     
 }

@@ -1,13 +1,20 @@
-<div wysija_ratio="{#image|ratio}" class="wysija_image" {if ! #image.static}style="width:{#image.width|default:300}px;"{/if}>
+<div wysija_ratio="{#image|ratio}" class="wysija_image{if ! #text} alone{/if}{if ! #image} empty{/if}" {if ! #image.static}style="width:{#image.width|default:150}px;"{/if}>
     {if ! #image}
         {set var="#image_src" concat="#WYSIJA_EDITOR_IMG,transparent.png"}
-        <img class="image_placeholder empty" src="{#image_src}" height="{#image.height|default:300}" width="{#image.width|default:300}" />
+        <img class="image_placeholder empty" src="{#image_src}" height="{#image.height|default:85}" width="{#image.width|default:150}" />
     {/if}
     
     {if #image}
         {if #image.static}
             {set var="#image_src" concat="#WYSIJA_EDITOR_IMG,transparent.png"}
-            <span class="introduction">{$i18n.dropLogoHere}</span><img class="image_placeholder static active" src="{#image_src}" height="{#image.height}" width="{#image.width}" />
+            <div class="banner">
+                <div class="banner-message">
+                    {if #type == 'header'}{$i18n.dropHeaderNotice}{/if}
+                    {if #type == 'footer'}{$i18n.dropFooterNotice}{/if}
+                </div>
+                <div class="banner-notice">{$i18n.dropBannerNotice}</div>
+            </div>
+            <img class="image_placeholder static active" src="{#image_src}" height="{#image.height}" width="{#image.width}" />
         {/if}
         {if ! #image.static}<img class="image_placeholder" src="{#image.src}" height="{#image.height}" width="{#image.width}" alt="{#image.alt}" />{/if}
         

@@ -1,1 +1,9 @@
-{if #image.url}<a href="{#image.url}">{/if}<img src="{#image.src}" height="{#image.height}" width="{#image.width}" class="image {#image.alignment}" {if #image.alignment != 'center'}align="{#image.alignment}"{/if} alt="{#image.alt}" />{if #image.url}</a>{/if}
+{if #image.alignment != 'center'}<!--[if gte mso 9]><table height="{#image.height}" align="{#image.alignment}" width="{#image.width}" style="border-collapse: collapse; border-spacing: 0; float:{#image.alignment}; margin: auto;"><tr><td style="clear: both; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;"><![endif]-->{/if}
+{if #image.alignment == 'center'}<table align="{#image.alignment}" style="border-collapse: collapse; border-spacing: 0; margin: auto;" width="{#image.width}"><tr><td valign="top" height="{#image.height}" width="{#image.width}" style="clear: both; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;">{/if}
+<div class="wysija-image-container align-{#image.alignment}" style="height:{#image.height}px;max-height:{#image.height}px;overflow:hidden;">
+{if #image.url}<a href="{#image.url}" style="display:block;height:{#image.height}px;width:{#image.width}px;">{/if}
+<img src="{#image.src}" height="{#image.height}" alt="{#image.alt}" width="{#image.width}" style="border:0;line-height:0.1em;" />
+{if #image.url}</a>{/if}
+</div>
+{if #image.alignment == 'center'}</td></tr></table>{/if}
+{if #image.alignment != 'center'}<!--[if gte mso 9]></td></tr></table><![endif]-->{/if}

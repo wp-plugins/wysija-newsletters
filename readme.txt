@@ -1,15 +1,16 @@
 === Wysija Newsletters ===
 Contributors: wysija
-Tags: newsletter, email, emailing, smtp
+Tags: newsletter, newsletters, email, emailing, smtp
 Requires at least: 3.0
-Tested up to: 3.3
-Stable tag: 1.0.1
+Tested up to: 3.3.1
+Stable tag: 1.1
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
 == Description ==
 
-Sending newsletters from WordPress has just gotten a lot easier. Our editor let’s you drag and drop your articles, images, dividers and logo into your newsletter. Pick a theme and change its fonts and colors directly while you’re editing. Managing your lists and subscription forms is straightforward. Configuration is dummy proof. And if you're lost, [we’re here](http://support.wysija.com/) to help.
+Drag and drop your articles, images, social bookmarks and dividers in your newsletter. Pick one of 20 themes. Change fonts and colors on the fly. Manage your lists and subscription forms with a few clicks. Configuration is dummy proof. And if you're lost, [we're here](http://support.wysija.com/) to help. Sending newsletters from WordPress is finally fun.
+
 
 = One minute video demo =
 
@@ -17,17 +18,17 @@ http://vimeo.com/35054446
 
 = Features =
 
-* Pick a theme. Modify its design
-* Simple one column design. Looks good everywhere, mobile phones included
-* Drag & drop your articles, free form text, images and horizontal lines
-* Get stats for each campaign: open, clicks, unreads
-* Put a subscription form as a sidebar widget or in your pages
-* Import your lists like a breeze. Manage them without pain
+* Drag & drop visual editor. This is an html-free experience
+* Pick one of 20 themes. Photoshop files included
+* Get stats for each newsletter: opens, clicks, unreads, unsubscribes
+* Add a subscription form as a sidebar widget or in your pages
+* Your newsletters look the same in Gmail, iPhone, Android, Outlook, Yahoo, Hotmail, etc.
+* Your WordPress users have their own list
+* Import subscribers with CSV, or in one click from MailPress, Tribulant, Satollo, Subscribe2, etc.
+* Single or double opt-in, your choice
+* Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
-* Your site's users have their own synced list
-* Quick and easy configuration
-* WordPress Multisite ready
-* We offer quick support
+* We offer quick[support](http://support.wysija.com/)
 * Free version is limited to 2000 subscribers
 
 = Premium version =
@@ -35,27 +36,50 @@ http://vimeo.com/35054446
 [Wysija Premium](http://www.wysija.com/wordpress-newsletter-plugin-premium/) offers these nifty extra features:
 
 * Unlimited number of subscribers
-* Stats for individual subscribers
-* Automated bounce handling. Keeps your list clean
+* Stats for individual subscribers (opened, clicked)
+* Total clicks for each link in your newsletter
+* Access to Premium themes
+* Automated bounce handling. Keeps your list clean, avoid being labeled a spammer
 * We trigger your email queue, like a real cron job
+* Don't reinstall. Simply activate!
 * Priority support
 
-= Future release =
+= Upcoming major release =
 
-* Auto newsletters, like Feedburner email alerts
-* Possibility to add marketing tracking codes (Premium feature)
-* Add social bookmark icons to your newsletter
+* Subscription to post notifications, like Feedburner email alerts
+* Schedule sending of newsletter in future
+* Autoresponder, i.e. "Send email in 3 days after X event"
 * Add galleries to your newsletter
+
+= Future releases =
+
+* Possibility to add marketing tracking codes (Premium feature)
+* Support for custom post types
+* Display a list of newsletters sent in a page of your site (shortcode)
+
+= Translations in your language =
+
+* Your language: get a Premium license in exchange for your hard work
+* Czech (děkuji Ondra)
+* Dutch (dank je wel John)
+* French (our bird did it)
+* German (danke Wolfgang & others)
+* Greek - 75% complete (Ευχαριστώ Giorgio)
+* Italian - 75% complete (grazie Nick)
+* Polish (thx to Marcin)
+* Portuguese - partial (obrigado Alvaro)
+* Romanian (multumesc Silviu)
+* Spanish (gracias Fernando)
 
 == Installation ==
 
 There's 3 ways to install this plugin:
 
-Note: premium users don't need to reinstall anything
+Note: premium users don't need to reinstall anything. It's the same plugin.
 
 = 1. The super easy way =
 1. In your Admin, go to menu Plugins > Add
-1. Search for Wysija
+1. Search for `Wysija`
 1. Click to install
 1. Activate the plugin
 1. A new menu `Wysija` will appear in your Admin
@@ -75,6 +99,20 @@ Note: premium users don't need to reinstall anything
 
 == Frequently Asked Questions ==
 
+= Where's the "View in your browser link" ? =
+
+There isn't any. Newsletters made with Wysija look good in all major email clients, so we avoided adding it. We're considering including it later.
+
+= Can I drop custom post types ? =
+
+Not yet. We're working on it for our 1.3 release.
+
+= Submit your feature resquest =
+
+We got a User Voice page where you can [add or vote for new features](http://wysija.uservoice.com/forums/150107-feature-request).
+
+= Get in touch with our responsive support team =
+
 Our [support site](http://support.wysija.com/) has articles and a responsive ticketing system to submit bugs.
 
 == Screenshots ==
@@ -89,7 +127,30 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 
 == Changelog ==
 
-= 1.0.1 =
+= 1.1 - 2012/03/03 =
+
+* support for first and last names
+* 14 new themes. First Premium themes
+* added social bookmarks widget
+* added new divider widget
+* added first name and last name feature in subscrition form, newsletter content and email subject
+* header is now image only and not text/image
+* small changes in Styles tab of visual editor
+* new full width footer image area (600px)
+* added transparency feature to header, footer, newsletter
+* newsletter width for content narrowed to 564px. 
+* improved line-height for titles in text editor
+* fixed Outlook and Hotmail padding issue with images
+* improved speed of editor
+* possibility to import automatically and keep in Sync lists from all major plugins: MailPress, Satollo, WP-Autoresponder, Tribulant, Subscribe2, etc. 
+* possibility to change "Unsubscribe" link text in footer
+* choose which role can edit subscribers
+* preview of newsletter in new window and not in popup
+* added possibility to choose between excerpt or full article on inserting WP post
+* theme management with API. Themes are now externalized from plugin.
+* removed numbered lists from text editor because of inconsistent display, notably Outlook
+
+= 1.0.1 - 2012/01/18 =
 
 * added SMTP TLS support, useful for instance with live.com smtp
 * added support for special Danish chars in email subscriptions
@@ -105,7 +166,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed javascript conflict with Tribulant's javascript's includes
 * improved detection of errors during installation
 
-= 1.0 =
+= 1.0 - 2011/12/23 =
 * Premium upgrade available
 * fix image selector width in editor
 * fix front stats of email when email preview and show errors all
@@ -117,7 +178,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * less confusing queue sending status 
 * updated language file (pot) with 20 or so modifications
 
-= 0.9.6 =
+= 0.9.6 - 2011/12/18 =
 * fixed subscribe from a wysija confirmation page bug
 * fixed campaigns "Column does not exists in model .."
 * fixed address and unsubscribe links appearing at bottom of newsletter a second time
@@ -133,18 +194,18 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * added language pot file
 * added french translation
 
-= 0.9.2 =
+= 0.9.2 - 2011/12/12 =
 * fixed issue with synched users on multisite(each site synch its users only)
 * fixed compatibility issue with wordpress 3.3(thickbox z-index)
 * fixed issue with redundant messages after plugin import
 * fixed version number display
 
-= 0.9.1 =
+= 0.9.1 - 2011/12/7 =
 * fixed major issue with browser check preventing Safari users from using the plugin
 * fixed issue with wp_attachment function affecting Wordpress post insertion
 * fixed issue when importing subscribers (copy/paste from Gmail)
 * fixed issue related to Wordpress MU
 * minor bugfixes 
 
-= 0.9 =
-* Hello World. We just launched this plugin.
+= 0.9 - 2011/12/23 =
+* Hello World.
