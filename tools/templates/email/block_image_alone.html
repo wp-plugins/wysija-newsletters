@@ -1,0 +1,14 @@
+<div style="clear: both; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;">
+    <table style="border-collapse: collapse; border-spacing: 0; margin: auto;" width="{#block_width|default:564}">
+        <tr>
+            {if #image.alignment == 'right'}<td style="margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;" width="{#block_width|dec:#image.width}">&nbsp;</td>{/if}
+            <td style="margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;" width="{if #image.alignment == 'center'}{#block_width|default:564}{/if}{if #image.alignment != 'center'}{#image.width}{/if}">
+                <div class="wysija-image-container alone-{#image.alignment}" style="height:{#image.height}px; max-height:{#image.height}px;overflow:hidden;">
+                    {if #image.url}<a href="{#image.url}" style="margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;">{/if}<img class="wysija-image-{#image.alignment}" src="{#image.src}" height="{#image.height}" alt="{#image.alt}" width="{#image.width}" hspace="0" vspace="0" style="border:0;">{if #image.url}</a>{/if}
+                </div>
+                {if #image.alignment != 'center'}<div style="page-break-after:always; clear:both;">&nbsp;</div>{/if}
+            </td>
+            {if #image.alignment == 'left'}<td style="margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;" width="{#block_width|dec:#image.width}">&nbsp;</td>{/if}
+        </tr>
+    </table>
+</div>

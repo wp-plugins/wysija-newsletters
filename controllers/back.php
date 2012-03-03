@@ -17,6 +17,24 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysija_msg=$wysija_msgTemp;
         }
         
+        /* 
+         * let's fix all the conflict that we may have
+         */
+        $modelConfig=&WYSIJA::get('config','model');
+        $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
+
+        $conflictingPlugins=array();
+        foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
+            if (is_plugin_active($conflictPlug['file'])) {
+                //plugin is activated
+                $conflictingPlugins[$keyPlg]=$conflictPlug;
+            }
+        }
+
+        if($conflictingPlugins){
+            $helperConflicts=&WYSIJA::get("conflicts","helper");
+            $helperConflicts->resolve($conflictingPlugins);
+        }
         
         $wysija_qryTemp=get_option("wysija_queries");
         if(is_array($wysija_qryTemp) && count($wysija_qryTemp)>0){
@@ -36,19 +54,18 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->pref=array();
         }
        
-        if(!$this->action) $action="default";
-        else $action=$this->action;
+        if(!isset($_GET['action'])) $action="default";
+        else $action=$_GET['action'];
         
-
         if(isset($_REQUEST['limit_pp'])){
             $this->pref[$_REQUEST['page']][$action]['limit_pp']=$_REQUEST['limit_pp'];
         }
-        
+
         if($this->pref && isset($_REQUEST['page']) && $_REQUEST['page'] && isset($this->pref[$_REQUEST['page']][$action]['limit_pp'])){
             $this->viewObj->limit_pp=$this->pref[$_REQUEST['page']][$action]['limit_pp'];
             $this->modelObj->limit_pp=$this->pref[$_REQUEST['page']][$action]['limit_pp'];
         }
-        
+
         if($prefupdate){
             update_user_meta(get_current_user_id(),'wysija_pref',base64_encode(serialize($this->pref)));
         }else{
@@ -75,6 +92,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         }
         
     } 
+    
     
     function errorInstall(){
        $this->viewObj->renderErrorInstall();
@@ -174,6 +192,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(method_exists($this, $action)){ 
             /* in some bulk actions we need to specify the action name and one or few variables*/
             $this->action=$action;
+
             $this->viewShow=$this->action;
             
             if(strpos($action, "bulk_")===false)$this->$action();
@@ -237,7 +256,7 @@ class WYSIJA_control_back extends WYSIJA_control{
                 $this->notice(str_replace(array('[link]','[/link]'),
                     array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
                     sprintf(__('Yikes. You\'re near the limit of %1$s subscribers in total for the free version of Wysija. Sending will be disabled when you reach that limit. Rest assured, your visitors will still be able to subscribe. Go [link]premium[/link] to send without limits.',WYSIJA)
-                            ,$totalSubscribers)));
+                            ,"2000")));
             }
             
         }
@@ -399,6 +418,70 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysi_location=$this->getDefaultUrl();
         }
         WYSIJA::redirect($wysi_location);
+
+    }
+    
+    function popupReturn($viewFunc) {
+        return wp_iframe( array($this->viewObj,"popup_".$viewFunc), $this->data);
+    }
+    
+    function _addTab($defaulttab){
+        return $this->iframeTabs;
+    }
+    
+    function popupContent(){
+        wp_enqueue_style('custom_popup_css', WYSIJA_URL.'css/adminPopup.css');
+        global $viewMedia;
+        $viewMedia=$this->viewObj;
+        $_GET['type']=$_REQUEST['type']='image';
+        
+        $config=&WYSIJA::get('config','model');
+        $_GET['post_id']=$_REQUEST['post_id']=$config->getValue('confirm_email_link');
+        $post_id = isset($_GET['post_id'])? (int) $_GET['post_id'] : 0;
+        require_once(ABSPATH."wp-admin".DS.'admin.php');
+
+        @header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset')); 
+        
+        add_filter('media_upload_tabs', array($this,'_addTab'));
+        
+        if(!isset($this->iframeTabs)) {
+            $this->iframeTabs=array(
+            'special_wp_upload'=>__("Upload",WYSIJA),
+            'special_wysija_browse'=>__("Newsletter Images",WYSIJA),
+            'special_wp_browse'=>__("WordPress Posts' Images",WYSIJA));
+            foreach($this->iframeTabs as $actionKey =>$actionTitle)
+                add_action("media_upload_".$actionKey, array($this,$actionKey));
+        }else   add_action("media_upload_standard", array($this,"popupReturn"));
+
+        // upload type: image, video, file, ..?
+        if ( isset($_GET['type']) )
+                $type = strval($_GET['type']);
+        else
+                $type = apply_filters('media_upload_default_type', 'file');
+
+        // tab: gallery, library, or type-specific
+        if ( isset($_GET['tab']) )
+                $tab = strval($_GET['tab']);
+        else
+                $tab ='special_wysija_browse';
+
+        $body_id = 'media-upload';
+        // let the action code decide how to handle the request
+        if ( $tab == 'type' || $tab == 'type_url' )
+            //i'm not so sure we need that line    
+            do_action("media_upload_$type");
+        else{
+            if(strpos($tab, "special_")!==false){
+
+                do_action("media_upload_$tab");
+            }else{
+                do_action("media_upload_standard",$tab);
+            }
+            
+            //do_action("media_upload_$tab"); 
+        }
+                
+        exit;
 
     }
     

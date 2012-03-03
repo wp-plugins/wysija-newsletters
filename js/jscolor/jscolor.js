@@ -848,7 +848,17 @@ var jscolor = {
 
 		// target
 		jscolor.addEvent(target, 'focus', function() {
-			if(THIS.pickerOnfocus) { THIS.showPicker(); }
+			if(THIS.pickerOnfocus) {
+			    // check if input is disabled
+                var classes = THIS.styleElement.classNames().entries();
+                for(var i = 0; i < classes.length; i++) {
+                    if(classes[i] == 'disabled') {
+                        return false;
+                    }
+                }
+                // if not, show picker
+			    THIS.showPicker(); 
+			}
 		});
 		jscolor.addEvent(target, 'blur', function() {
 			if(!abortBlur) {
@@ -889,6 +899,5 @@ var jscolor = {
 	}
 
 };
-
 
 jscolor.install();

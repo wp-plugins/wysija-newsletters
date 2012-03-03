@@ -12,8 +12,8 @@
                        ed.windowManager.open({
                            /*file : url + '/wysija_register.php',*/
                             file : ajaxurl+"?action=wysija_ajax&wysilog=1&controller=tmce&task=registerAdd",
-                            width : 750,
-                            height : 390 ,
+                            width : 780,
+                            height : 420 ,
                             inline : 1
                         }, {
                             plugin_url : url
@@ -25,8 +25,8 @@
                             ed.windowManager.open({
                                /*file : url + '/wysija_register.php?'+t.editValue,*/
                                file : ajaxurl+"?action=wysija_ajax&wysilog=1&controller=tmce&task=registerEdit&widget-data64="+t.editValue,
-                                width : 750 ,
-                                height : 390,
+                                width : 780 ,
+                                height : 420,
                                 inline : 1
                             }, {
                                 plugin_url : url
@@ -34,7 +34,7 @@
                     });
 
                     ed.addButton('wysija_register', {
-				title : 'Wysija Registration NL',
+				title : 'Wysija Registration',
 				image : url+'/wysija_register.png',
                                 cmd: 'wysijaRegister'
 			});
@@ -82,7 +82,7 @@
 		},
 		getInfo : function() {
 			return {
-				longname : "Tap Tablebook Shortcode",
+				longname : "Wysija registration Shortcode",
 				version : "1.0"
 			};
 		},

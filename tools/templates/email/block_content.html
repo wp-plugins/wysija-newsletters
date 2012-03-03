@@ -1,18 +1,14 @@
-{if #alignment == 'center'}
-    {if #image.src && ! #image.static}
-        <td class="content-container" valign="top" align="{#alignment}" width="580">{include file="templates/email/block_image.html"}</td>
-    </tr>
-    <tr class="body">
-    {/if}
-    {if #text}
-        <td class="content-container" valign="top" width="580">
-            {include file="templates/email/block_text.html"}
-        </td>
-    {/if}
+{if #image.src && !#text.value}
+{include file="templates/email/block_image_alone.html"}
 {/if}
-{if #alignment != 'center'}
-    <td class="content-container" valign="top" width="580">
-        {include file="templates/email/block_image.html"}
-        {include file="templates/email/block_text.html"}
-    </td>
+{if #text.value}
+<div style="clear:both; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;">
+    <table style="border-collapse: collapse; border-spacing: 0; margin: auto;" width="{#block_width|default:564}">
+        <tr colspan="2"><td style="clear:both; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;" width="{#block_width|default:564}">
+            {if #image.src}{include file="templates/email/block_image.html"}{/if}
+            {include file="templates/email/block_text.html"}
+            {if #image.src && #image.alignment != 'center'}<div style="page-break-after:always; clear:both;">&nbsp;</div>{/if}
+        </td></tr>
+    </table>
+</div>
 {/if}

@@ -91,19 +91,35 @@ function WYSIJAsetParams(result,fileObj){
     var wpid=0;
     var dims="";
     var imgdimensions=null;
-    
+
     wpid=jQuery('#media-item-'+fileObj.id).attr('alt');
     dims=jQuery('#media-dims-'+wpid).html();
     imgdimensions=dims.split('&nbsp;×&nbsp;');
+    /*if(parseInt(imgdimensions[0])>1024){//if the image is bigger than 1024 we will use the 1024 image as original
 
-    var insertArray={
-        identifier:"wp-"+wpid,
-        width:imgdimensions[0],
-        height:imgdimensions[1],
-        /*url:jQuery('#media-item-'+fileObj.id+' tbody input.urlfield').val(),*/
-        url:jQuery('#media-item-'+fileObj.id+' tbody button.urlfile').attr('title'),
-        thumb_url:jQuery('#thumbnail-head-'+wpid+' img.thumbnail').attr('src')
-    };
+        var dimsstring=jQuery('#image-size-large-'+wpid).siblings('label.help').html();
+        dimsstring=dimsstring.replace("(","").replace(")","");
+
+        imgdimensions=dimsstring.split('&nbsp;×&nbsp;');
+        var fullurl=jQuery('#media-item-'+fileObj.id+' tbody button.urlfile').attr('title').replace(fileObj.type.toLowerCase(),"-"+imgdimensions[0]+"x"+imgdimensions[1]+fileObj.type.toLowerCase());
+        var insertArray={
+            identifier:"wp-"+wpid,
+            width:imgdimensions[0],
+            height:imgdimensions[1],
+            url:fullurl,
+            thumb_url:jQuery('#thumbnail-head-'+wpid+' img.thumbnail').attr('src')
+        };
+    }else{*/
+        var insertArray={
+            identifier:"wp-"+wpid,
+            width:imgdimensions[0],
+            height:imgdimensions[1],
+            /*url:jQuery('#media-item-'+fileObj.id+' tbody input.urlfield').val(),*/
+            url:jQuery('#media-item-'+fileObj.id+' tbody button.urlfile').attr('title'),
+            thumb_url:jQuery('#thumbnail-head-'+wpid+' img.thumbnail').attr('src')
+        };
+    /*}*/
+    
 
     insert(insertArray);
     if ( swfu.getStats().files_queued == 0 ) {
@@ -112,8 +128,3 @@ function WYSIJAsetParams(result,fileObj){
 	}
     return true;
 }
-
- jQuery(document).ready(function($){
-     $('.upload-flash-bypass').hide();
-     $('.howto').hide();
- });

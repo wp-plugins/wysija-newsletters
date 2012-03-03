@@ -294,6 +294,8 @@ function tb_remove() {
 
 function tb_position() {
 var isIE6 = typeof document.body.style.maxHeight === "undefined";
+if(typeof TB_WIDTH =="undefined") TB_WIDTH=600;
+if(typeof TB_HEIGHT =="undefined") TB_HEIGHT=800;
 jQuery("#TB_window").css({marginLeft: '-' + parseInt((TB_WIDTH / 2),10) + 'px', width: TB_WIDTH + 'px'});
 	if ( ! isIE6 ) { // take away IE6
 		jQuery("#TB_window").css({marginTop: '-' + parseInt((TB_HEIGHT / 2),10) + 'px'});

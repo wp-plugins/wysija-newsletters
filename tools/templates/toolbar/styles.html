@@ -16,7 +16,7 @@
 
 <p>
     <span id="h1Color">
-        <input type="text" class="color" size="6" maxlength="6" name="h1-color" value="{#h1.color}" id="h1ColorInput">
+        <input type="text" class="color" size="6" maxlength="6" name="h1-color" value="{#h1.color}" id="h1ColorInput" />
     </span>
     <select id="h1[family]" name="h1-family">
         {foreach name="#FONTS" value="value"}
@@ -32,7 +32,7 @@
 
 <p>
     <span id="h2Color">
-        <input type="text" class="color" size="6" maxlength="6" name="h2-color" value="{#h2.color}" id="h2ColorInput">
+        <input type="text" class="color" size="6" maxlength="6" name="h2-color" value="{#h2.color}" id="h2ColorInput" />
     </span>
     <select id="h2[family]" name="h2-family">
         {foreach name="#FONTS" value="value"}
@@ -48,7 +48,7 @@
 
 <p>
     <span id="h3Color">
-        <input type="text" class="color" size="6" maxlength="6" name="h3-color" value="{#h3.color}" id="h3ColorInput">
+        <input type="text" class="color" size="6" maxlength="6" name="h3-color" value="{#h3.color}" id="h3ColorInput" />
     </span>
     <select id="h3[family]" name="h3-family">
         {foreach name="#FONTS" value="value"}
@@ -64,53 +64,31 @@
 
 <p>
     <span id="linksColor">
-        <input type="text" class="color" size="6" maxlength="6" name="a-color" value="{#a.color}" id="linksColorInput">
+        <input type="text" class="color" size="6" maxlength="6" name="a-color" value="{#a.color}" id="linksColorInput" />
     </span>
-    <select id="a[family]" name="a-family">
-        {foreach name="#FONTS" value="value"}
-        <option {if #a.family == #value}selected="selected"{/if} value="{#value}">{#value}</option>
-        {/foreach}
-    </select>
-    <select id="a[size]" name="a-size" class="size">
-        {foreach name="#TEXT_SIZES" value="value"}
-        <option {if #a.size == #value}selected="selected"{/if} value="{#value}">{#value}px</option>
-        {/foreach}
-    </select><label for="linksColorInput">{$i18n.styleLinksLabel}</label>
+    <label for="linksColorInput">{$i18n.styleLinksLabel}</label>
 </p>
 
-<p><input type="checkbox" value="1" name="a-underline" id="aUnderlineInput" {if #a.underline == "1"}checked="checked"{/if}><label for="aUnderlineInput">{$i18n.styleLinksDecorationLabel}</label></p>
-
-<p>
-    <span id="footerColor">
-        <input type="text" class="color" size="6" maxlength="6" name="footer-color" value="{#footer.color}" id="footerColorInput">
-    </span>
-    <select id="footer[family]" name="footer-family">
-        {foreach name="#FONTS" value="value"}
-        <option {if #footer.family == #value}selected="selected"{/if} value="{#value}">{#value}</option>
-        {/foreach}
-    </select>
-    <select id="footer[size]" name="footer-size" class="size">
-        {foreach name="#TEXT_SIZES" value="value"}
-        <option {if #footer.size == #value}selected="selected"{/if} value="{#value}">{#value}px</option>
-        {/foreach}
-    </select><label for="footerColorInput">{$i18n.styleFooterLabel}</label>
-</p>
+<p><input type="checkbox" class="checkbox" value="1" name="a-underline" id="aUnderlineInput" {if #a.underline == "1"}checked="checked"{/if} /><label for="aUnderlineInput">{$i18n.styleLinksDecorationLabel}</label></p>
 
 <p>
     <span id="headerBgColor">
-        <input type="text" class="color" size="6" maxlength="6" name="header-background" value="{#header.background}" id="headerBgColorInput">
+        <input type="text" class="color{if #header.background == 'transparent'} disabled{/if}" size="6" maxlength="6" name="header-background" value="{#header.background}" id="headerBgColorInput" />
+        <input type="checkbox" class="transparent" name="header-background-transparent" title="{$i18n.styleTransparent}" value="1" {if #header.background == 'transparent'}checked="checked"{/if} />
     </span><label for="headerBgColorInput">{$i18n.styleHeaderBackgroundLabel}</label>
 </p>
 
 <p>
     <span id="bodyBgColor">
-        <input type="text" class="color" size="6" maxlength="6" name="body-background" value="{#body.background}" id="bodyBgColorInput">
+        <input type="text" class="color{if #body.background == 'transparent'} disabled{/if}" size="6" maxlength="6" name="body-background" value="{#body.background}" id="bodyBgColorInput" />
+        <input type="checkbox" class="transparent" name="body-background-transparent" title="{$i18n.styleTransparent}" value="1" {if #body.background == 'transparent'}checked="checked"{/if} />
     </span><label for="bodyBgColorInput">{$i18n.styleBodyBackgroundLabel}</label>
 </p>
 
 <p>
     <span id="footerBgColor">
-        <input type="text" class="color" size="6" maxlength="6" name="footer-background" value="{#footer.background}" id="footerBgColorInput">
+        <input type="text" class="color{if #footer.background == 'transparent'} disabled{/if}" size="6" maxlength="6" name="footer-background" value="{#footer.background}" id="footerBgColorInput" />
+        <input type="checkbox" class="transparent" name="footer-background-transparent" title="{$i18n.styleTransparent}" value="1" {if #footer.background == 'transparent'}checked="checked"{/if} />
     </span><label for="footerBgColorInput">{$i18n.styleFooterBackgroundLabel}</label>
 </p>
 
@@ -119,20 +97,8 @@
         <input type="text" class="color" size="6" maxlength="6" name="html-background" value="{#html.background}" id="htmlBgColorInput">
     </span><label for="htmlBgColorInput">{$i18n.styleHtmlBackgroundLabel}</label>
 </p>
-
 <p>
-    <span id="dividerColor">
-        <input type="text" class="color" size="6" maxlength="6" name="divider-border-color" value="{#divider.border.color}" id="dividerColorInput">
-    </span>
-    <select id="divider[style]" name="divider-border-style" class="type">
-        {foreach name="#DIVIDER_TYPES" value="value"}
-        <option {if #divider.border.style == #value}selected="selected"{/if} value="{#value}">{#value}</option>
-        {/foreach}
-    </select>
-    <select id="divider[size]" name="divider-border-size" class="small-size">
-        {foreach name="#DIVIDER_SIZES" value="value"}
-        <option {if #divider.border.size == #value}selected="selected"{/if} value="{#value}">{#value}px</option>
-        {/foreach}
-    </select>
-    <label for="dividerColorInput">{$i18n.styleDividerLabel}</label>
+    <span id="unsubscribeColor">
+        <input type="text" class="color" size="6" maxlength="6" name="unsubscribe-color" value="{#unsubscribe.color}" id="unsubscribeColorInput">
+    </span><label for="unsubscribeColorInput">{$i18n.styleUnsubscribeColorLabel}</label>
 </p>

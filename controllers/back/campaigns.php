@@ -11,24 +11,24 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function WYSIJA_control_back_campaigns(){
         
     }
-       function licok(){
-         parent::WYSIJA_control_back();
-         $dt=get_option("wysijey");
+    function licok(){
+        parent::WYSIJA_control_back();
+        $dt=get_option("wysijey");
 
-         if(isset($_REQUEST['xtz']) && $dt==$_REQUEST['xtz']){
-            $dataconf=array('premium_key'=>base64_encode(get_option('home').mktime()),'premium_val'=>mktime());
-            $this->notice(__("Premium version is valid for your site.",WYSIJA));
-         }else{
-            $dataconf=array('premium_key'=>"",'premium_val'=>"");
-            //$datadomain=unserialize(base64_decode($dt));
-            $this->error(str_replace(array("[link]","[/link]"),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$dt.'" target="_blank">','</a>'),
-                    __("Premium version licence does not exists for your site.Purchase it [link]here[/link].",WYSIJA)),1);
-         }
-         WYSIJA::update_option("wysicheck",false);
-         $modelConf=&WYSIJA::get("config","model");
-         $modelConf->save($dataconf);
-         
-         $this->redirect();
+        if(isset($_REQUEST['xtz']) && $dt==$_REQUEST['xtz']){
+        $dataconf=array('premium_key'=>base64_encode(get_option('home').mktime()),'premium_val'=>mktime());
+        $this->notice(__("Premium version is valid for your site.",WYSIJA));
+        }else{
+        $dataconf=array('premium_key'=>"",'premium_val'=>"");
+        //$datadomain=unserialize(base64_decode($dt));
+        $this->error(str_replace(array("[link]","[/link]"),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$dt.'" target="_blank">','</a>'),
+        __("Premium version licence does not exists for your site. Purchase it [link]here[/link].",WYSIJA)),1);
+        }
+        WYSIJA::update_option("wysicheck",false);
+        $modelConf=&WYSIJA::get("config","model");
+        $modelConf->save($dataconf);
+
+        $this->redirect();
     }
     
     function validateLic(){
@@ -74,16 +74,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 $res['result']=false;
                 return $res;
         }
-        $this->notice(sprintf(__('Successfully connected to %1$s'),$config->getValue('bounce_login')));
+        $this->notice(sprintf(__('Successfully connected to %1$s',WYSIJA),$config->getValue('bounce_login')));
         $nbMessages = $bounceClass->getNBMessages();
         
 
         if(empty($nbMessages)){
-            $this->error(__('There are no messages'),true);
+            $this->error(__('There are no messages',WYSIJA),true);
             $res['result']=false;
             return $res;
         }else{
-            $this->notice(sprintf(__('There are %1$s messages in your mailbox'),$nbMessages));
+            $this->notice(sprintf(__('There are %1$s messages in your mailbox',WYSIJA),$nbMessages));
         }
         
 
@@ -94,7 +94,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
     
     function add($dataPost=false){
-        $this->title="Step 1";
+        $this->title=sprintf(__('Step %1$s',WYSIJA),1);
         $this->js[]='wysija-validator';
         $this->js['admin-campaigns-edit']='admin-campaigns-edit';
         
@@ -142,10 +142,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelEmail=&WYSIJA::get("email","model");
         
         $this->data['email']=$modelEmail->getOne(false,array("campaign_id"=>$_REQUEST['id']));
+        
         if($this->data['email']['status']>0){
             $this->redirect();
         }
-        $this->title=__('Step 1')." | ".$this->data['email']['subject'];
+        $this->title=sprintf(__('Step %1$s',WYSIJA),1)." | ".$this->data['email']['subject'];
         $modelCamp=&WYSIJA::get("campaign","model");
         $this->data['campaign']=$modelCamp->getOne(false,array("campaign_id"=>$_REQUEST['id']));
         
@@ -166,11 +167,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['savingnl']=__("Saving newsletter...",WYSIJA);
         $this->jsTrans['errorsavingnl']=__("Error Saving newsletter...",WYSIJA);
         $this->jsTrans['savednl']=__("Newsletter has been saved.",WYSIJA);
-        $this->jsTrans['imgmediamanager']=__("Image Manager",WYSIJA);
         $this->jsTrans['previewemail']=__("Sending preview...",WYSIJA);
+        $this->jsTrans['alertshowcase']=__("Would you like to have your theme design featured on Wysija's blog?",WYSIJA);
+        $this->jsTrans['alertshowcaseextra']=__("If so, click Ok to submit the newsletter you're currently working on for our showcase on www.wysija.com",WYSIJA);
         
-        
-
         /* WJ editor JS */
         $this->js[]='wysija-editor';
         $this->js[]='wysija-admin-ajax-proto';
@@ -186,7 +186,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }
         
         $this->viewObj->title=sprintf(__('Second step : design "%1$s"',WYSIJA),$this->data['email']['subject']);
-        $this->title=__('Step 2')." | ".$this->data['email']['subject'];
+        $this->title=sprintf(__('Step %1$s',WYSIJA),2)." | ".$this->data['email']['subject'];
     }
     
     function pause(){
@@ -206,7 +206,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         if(isset($_REQUEST['id']) && $_REQUEST['id']){
             $modelEmail=&WYSIJA::get("email","model");
             $modelEmail->update(array("status"=>1),array("campaign_id"=>$_REQUEST['id']));
-
             $this->notice(__("Sending has resumed.",WYSIJA));
         }
 
@@ -244,7 +243,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->viewShow='editDetails';
         $this->js[]='wysija-validator';
         $this->jsTrans['previewemail']=__("Sending preview...",WYSIJA);
-        $this->jsTrans['alertsend']=__('[#] emails are about to be sent to [#nms].',WYSIJA);
+        $this->jsTrans['alertsend']=__('[#] emails are about to be sent to the list(s) [#nms].',WYSIJA);
+        
         
         $modelList=&WYSIJA::get("list","model");
         $modelList->limitON=false;
@@ -256,7 +256,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         if($this->data['email']['status']>0){
             $this->redirect();
         }
-        $this->title=__('Step 3')." | ".$this->data['email']['subject'];
+        $this->title=sprintf(__('Step %1$s',WYSIJA),3)." | ".$this->data['email']['subject'];
         
         $modelCL=&WYSIJA::get("campaign_list","model");
         $this->data['campaign_list']=$modelCL->get(false,array("campaign_id"=>$_REQUEST['id']));
@@ -293,8 +293,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->requireSecurity();
         /* update email */
         $data=array();
-        
-        
+
         if(isset($_REQUEST['id'])){
             $modelCampaign=&WYSIJA::get("campaign","model");
             $modelCampaign->update(array("name"=>$_POST['wysija']['email']['subject'],"description"=>""),array("campaign_id"=>$_REQUEST['id']));
@@ -411,7 +410,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function savelast(){
         $this->redirectAfterSave=false;
         $this->requireSecurity();
-        
+ 
         if(!isset($_POST['wysija']['email']['from_name'])|| !isset($_POST['wysija']['email']['from_email']) || !isset($_POST['wysija']['email']['replyto_name']) || !isset($_POST['wysija']['email']['replyto_email'])){
             $this->error(__("Information is missing.",WYSIJA));
             return $this->editDetails();
@@ -425,8 +424,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             "replyto_name"=>$_POST['wysija']['email']['replyto_name'],
             "replyto_email"=>$_POST['wysija']['email']['replyto_email'],
             "subject"=>$_POST['wysija']['email']['subject'],
-            );
+        );
         
+        if(isset($_POST['wysija']['email']['params']))  $updateemail["params"]=$_POST['wysija']['email']['params'];
         
         
         $this->_saveLists($_POST['wysija']['campaign']['campaign_id']);
@@ -443,6 +443,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 $modelQ->queueCampaign($_POST['wysija']['campaign']['campaign_id']);
             }
             $updateemail["status"]=1;
+            $updateemail["sent_at"]=mktime();
             $this->notice(__("Your latest newsletter is being sent.",WYSIJA));
             
         }
@@ -482,7 +483,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     
     
     function defaultDisplay(){
-        $this->title=__('Newsletters');
+        $this->title=__('Newsletters',WYSIJA);
         $this->viewShow=$this->action='main';
         $this->js[]='wysija-admin-list';
         $this->jsTrans["selecmiss"]=__('Please select a newsletter.',WYSIJA);
@@ -627,7 +628,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
             if($monthstart>0){
                for($i=$monthstart;$i<$now;$i=strtotime("+1 month",$i)){
-                    $this->data['dates'][$i]=date('F Y',$i);
+                    $this->data['dates'][$i]=date_i18n('F Y',$i);//date('F Y',$i);
                 } 
             }
             
@@ -729,21 +730,25 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
                 $timesec=$schedules[wp_get_schedule('wysija_cron_queue')]['interval'];
                 $status_sent_complete=array();
- 
-               foreach($this->data['sent'] as $key => $camp){
+               
+               if(isset($this->data['sent'])){
+                   foreach($this->data['sent'] as $key => $camp){
 
-                    if($this->data['sent'][$key]['left']>0){
-                        $cronsneeded=ceil($this->data['sent'][$key]['left']/$modelC->getValue('sending_emails_number'));
-                        $this->data['sent'][$key]['remaining_time']=$cronsneeded *$timesec;
-                        
-                        //$schedules=wp_get_schedules();
-                        $this->data['sent'][$key]['next_batch']=(int)wp_next_scheduled( 'wysija_cron_queue')-mktime();
-                        $this->data['sent'][$key]['remaining_time']=$this->data['sent'][$key]['remaining_time']-($timesec)+$this->data['sent'][$key]['next_batch'];
-                    }else{
-                        if($this->data['sent'][$key]['status']==1) $status_sent_complete[]=$key;
-                    }
-                } 
+                        if($this->data['sent'][$key]['left']>0){
+                            $cronsneeded=ceil($this->data['sent'][$key]['left']/$modelC->getValue('sending_emails_number'));
+                            $this->data['sent'][$key]['remaining_time']=$cronsneeded *$timesec;
 
+                            //$schedules=wp_get_schedules();
+                            $this->data['sent'][$key]['next_batch']=(int)wp_next_scheduled( 'wysija_cron_queue')-mktime();
+                            $this->data['sent'][$key]['remaining_time']=$this->data['sent'][$key]['remaining_time']-($timesec)+$this->data['sent'][$key]['next_batch'];
+                        }else{
+                            if($this->data['sent'][$key]['status']==1) $status_sent_complete[]=$key;
+                        }
+                    } 
+
+                   
+               }
+               
                 
                 
                 if(count($status_sent_complete)>0){
@@ -828,16 +833,21 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->js[]='wysija-admin-list';
         $this->js[]='wysija-charts';
         $this->viewShow='viewstats';
+        $limit_pp=false;
+        if($this->modelObj->limit_pp)   $limit_pp=$this->modelObj->limit_pp;
+        $this->modelObj->limitON=false;
         $campaign=$this->modelObj->getOne(false,array("campaign_id"=>$_REQUEST['id']));
+        
         $this->viewObj->namecampaign=$campaign['name'];
-        $this->viewObj->title=sprintf(__('Stats : %1$s'),$campaign['name']);
+        $this->viewObj->title=sprintf(__('Stats : %1$s',WYSIJA),$campaign['name']);
         
         $this->modelObj=&WYSIJA::get("email","model");
+        $this->modelObj->limitON=false;
+        
         $emailObj=$this->modelObj->getOne(false,array("campaign_id"=>$_REQUEST['id']));
         $this->viewObj->model=$this->modelObj;
         
         $this->setviewStatsfilter();
-        
 
         $this->modelObj->reset();
         $this->modelObj->noCheck=true;
@@ -912,8 +922,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }else{
             $orderby.=$this->modelObj->pk." desc";
         }
+        $this->modelObj->limitON=true;
 
-        $this->data['subscribers']=$this->modelObj->getResults($query.$queryFinal." GROUP BY A.user_id".$orderby.$this->modelObj->setLimit());
+        $this->data['subscribers']=$this->modelObj->getResults($query.$queryFinal." GROUP BY A.user_id".$orderby.$this->modelObj->setLimit(0,$limit_pp));
         $this->modelObj->reset();
         
         /*make the data object for the listing view*/
@@ -997,7 +1008,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
         foreach($this->data['clicks'] as $k => $v){
-            $this->data['clicks'][$k]['name']="<strong>".sprintf(_n('%1$s hit', '%1$s hits', $v['count']), $v['count'])."</strong> ";
+            $this->data['clicks'][$k]['name']="<strong>".sprintf(_n('%1$s hit', '%1$s hits', $v['count'],WYSIJA), $v['count'])."</strong> ";
         }
    
         $this->data['email']=$emailObj;
@@ -1047,7 +1058,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         /* set the name of the new list*/
         $prefix="";
         if(isset($_REQUEST['link_filter'])) $prefix=" (".$this->viewObj->getTransStatusEmail($_REQUEST['link_filter']).")";
-        $listname=sprintf(__('Segment of %1$s'),$campaign['name'].$prefix);
+        $listname=sprintf(__('Segment of %1$s',WYSIJA),$campaign['name'].$prefix);
         
         /*insert new list*/
         $modelL=&WYSIJA::get("list","model");
@@ -1114,9 +1125,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $result=$this->modelObj->query("get_res",$query);
         $user_ids=array();
         foreach($result as $user) $user_ids[]=$user['user_id'];
+        
+        $fileHelp=&WYSIJA::get("file","helper");
+        $tempfilename=$fileHelp->temp(implode(",",$user_ids),"export_userids",".txt");
 
         //$this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']."&user_ids=".serialize($result));
-        $this->redirect("admin.php?page=wysija_subscribers&action=exportcampaign&camp_id=".$_REQUEST['id']."&user_ids=".  base64_encode(serialize($user_ids)));
+        $this->redirect("admin.php?page=wysija_subscribers&action=exportcampaign&camp_id=".$_REQUEST['id']."&file_name=".  base64_encode($tempfilename['path']));
     }
 
     
@@ -1140,87 +1154,151 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
     
     
-    function image_data() {
-        $data = array(
-            'url' => (isset($_GET['url']) && $_GET['url'] !== '') ? trim($_GET['url']) : null,
-            'alt' => (isset($_GET['alt'])) ? trim($_GET['alt']) : '',
-        );
-        wp_iframe( array($this->viewObj,'media_image_data'), $data);
-        exit;
-    }
     
     function articles(){
-       $this->iframeTabs=array('article_selection'=>__("Article Selection",WYSIJA)); 
+       $this->iframeTabs=array('articles'=>__("Article Selection",WYSIJA)); 
        $this->js[]='wysija-admin-ajax';
        $this->js[]='wysija-base64';
        
-       $_GET['tab']='article_selection';
-       $this->medias();
+       $_GET['tab']='articles';
+       return $this->popupContent();
     }
+    
+    function themeupload(){
+        $helperToolbox=&WYSIJA::get("toolbox","helper");
+        $bytes=$helperToolbox->get_max_file_upload();
+
+        if(isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH']>$bytes['maxbytes']){
+            if(isset($_FILES['my-theme']['name']) && $_FILES['my-theme']['name']){
+                $filename=$_FILES['my-theme']['name'];
+            }else{
+                $filename="";
+            }
+
+            $this->error(sprintf(__('Upload error, file %1$s is too large! (MAX:%2$s)',WYSIJA),$filename,$bytes['maxmegas']),true);
+            $this->redirect('admin.php?page=wysija_campaigns&action=themes');
+
+            return false;
+        }
+
+        if($_FILES['my-theme']['type']=="application/zip"){
+            $ZipfileResult=trim(file_get_contents($_FILES['my-theme']['tmp_name']));
+        
+            $themesHelp=&WYSIJA::get("themes","helper");
+            $result=$themesHelp->installTheme($_FILES['my-theme']['tmp_name'],true);
+            $this->redirect('admin.php?page=wysija_campaigns&action=themes');
+
+            return true;
+        }else{
+            $this->error(__("Wysija themes need to be in the zip format.",WYSIJA),1);
+            $this->redirect('admin.php?page=wysija_campaigns&action=themes');
+            return false;
+        }
+        
+    }
+    
+    function themes(){
+       $this->iframeTabs=array('themes'=>__("Install Themes",WYSIJA)); 
+       $this->js[]='wysija-admin-ajax';
+       $this->js[]='wysija-base64';
+       $this->jsTrans['viewinfos']=__("View details",WYSIJA);
+       $this->jsTrans['viewback']=__("<< Back",WYSIJA);
+       $this->jsTrans['install']=__("Install",WYSIJA);
+       $this->jsTrans['reinstall']=__("Reinstall",WYSIJA);
+       $this->jsTrans['premiumonly']=__("Premium Only",WYSIJA);
+       
+       $configM=&WYSIJA::get("config","model");
+       if($configM->getValue("premium_key"))$this->jsTrans['ispremium']=1;
+       else $this->jsTrans['ispremium']=0;
+       
+       $this->jsTrans['premiumfiles']=__('Photoshop file available for Premium users. [link]Get Premium Now![/link]',WYSIJA);
+       $helperLicence=&WYSIJA::get("licence","helper");
+       $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&testprod=1&controller=orders&action=checkout&popformat=1&wysijadomain=".$helperLicence->getDomainInfo();
+
+       $this->jsTrans['premiumfiles']=str_replace(array('[link]','[/link]'),array('<a href="'.$urlpremium.'">','</a>'),$this->jsTrans['premiumfiles']);
+
+       $this->jsTrans['showallthemes']=__('Show all themes',WYSIJA);
+       $this->jsTrans['totalvotes']=__('(%1$s votes)',WYSIJA);
+       $this->jsTrans['voterecorded']=__("Your vote has been recorded.",WYSIJA);
+       $this->jsTrans['votenotrecorded']=__("Your vote could not be recorded.",WYSIJA);
+       $this->jsTrans['reinstallwarning']=__('Watch out! If you reinstall this theme all the files which are in the folder:/wp-content/uploads/wysija/themes/%1$s will be overwritten. Are you sure you want to reinstall?',WYSIJA);
+       $this->jsTrans['errorconnecting']=__("We were unable to contact the API, the site may be down. Please try again later.",WYSIJA);
+       
+       $this->jsTrans['viewallthemes']=__('View all themes by %1$s',WYSIJA);
+       $this->jsTrans['downloadpsd']=__("Download original Photoshop file",WYSIJA);
+       $this->jsTrans['viewauthorsite']=__("View author's website",WYSIJA);
+       $this->jsTrans['stars']=__('Average rating: %1$s',WYSIJA);
+       $this->jsTrans['starsyr']=__('My rating: %1$s',WYSIJA);
+       $this->jsTrans['downloads']=__('Downloads: %1$s',WYSIJA);
+       $this->jsTrans['tags']=__('Tags: %1$s',WYSIJA);
+       $this->jsTrans['lastupdated']=__('Last updated: %1$s',WYSIJA);
+       $this->jsTrans['includes']=__('Includes: %1$s',WYSIJA);
+       
+       $themesHelp=&WYSIJA::get("themes","helper");
+       
+       $this->jsTrans['installedthemes']=$themesHelp->getInstalled();
+       
+        $url=admin_url('admin.php');
+        $helperToolbox=&WYSIJA::get("toolbox","helper");
+        $domain_name=$helperToolbox->_make_domain_name($url);
+       $this->jsTrans['domainname']=$domain_name;
+
+       $_GET['tab']='themes';
+       
+       return $this->popupContent();
+    }
+    
+    function bookmarks() {
+        $this->iframeTabs=array('bookmarks'=>__("Bookmarks Selection",WYSIJA));
+        $this->js[]='wysija-admin-ajax';
+        $_GET['tab']='bookmarks';
+       return $this->popupContent();
+    }
+    
+    function dividers() {
+        $this->iframeTabs=array('dividers'=>__("Dividers Selection",WYSIJA));
+        $this->js[]='wysija-admin-ajax';
+        $this->js[]='wysija-base64';
+        
+        $_GET['tab']='dividers';
+        
+        // get dividers
+        $dividersHelper =& WYSIJA::get('dividers', 'helper');
+        $this->data['dividers'] = $dividersHelper->getAll();
+        
+        $modelEmail =& WYSIJA::get('email', 'model');
+        $this->data['email'] = $modelEmail->getOne(false, array('campaign_id' => $_REQUEST['campaignId']));
+        
+        
+       return $this->popupContent();
+    }
+
+    function image_data() {
+        $_GET['url']=(isset($_GET['url']) && $_GET['url'] !== '') ? trim($_GET['url']) : null;
+        $_GET['alt']=(isset($_GET['alt'])) ? trim($_GET['alt']) : '';
+        $this->iframeTabs=array('image_data'=>__("Image Parameters",WYSIJA)); 
+       
+       $_GET['tab']='image_data';
+       return $this->popupContent();
+    }
+    
+    
     
     function medias(){
-        
-        global $viewMedia;
-        $viewMedia=$this->viewObj;
-        $_GET['type']=$_REQUEST['type']='image';
-        
-        $config=&WYSIJA::get('config','model');
-        $_GET['post_id']=$_REQUEST['post_id']=$config->getValue('confirm_email_link');
-        $post_id = isset($_GET['post_id'])? (int) $_GET['post_id'] : 0;
-        require_once(ABSPATH."wp-admin".DS.'admin.php');
-
-        @header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset')); 
-        
-        add_filter('media_upload_tabs', array($this,'_addTab'));
-        
-        if(!isset($this->iframeTabs)) {
-            $this->iframeTabs=array(
-            'wp_upload'=>__("Upload",WYSIJA),
-            'wysija_browse'=>__("Newsletter Images",WYSIJA),
-            'wp_browse'=>__("WordPress Posts' Images",WYSIJA));
-        }
-        foreach($this->iframeTabs as $actionKey =>$actionTitle)
-                add_action("media_upload_".$actionKey, array($this,$actionKey));
-
-
-        // upload type: image, video, file, ..?
-        if ( isset($_GET['type']) )
-                $type = strval($_GET['type']);
-        else
-                $type = apply_filters('media_upload_default_type', 'file');
-
-        // tab: gallery, library, or type-specific
-        if ( isset($_GET['tab']) )
-                $tab = strval($_GET['tab']);
-        else
-                $tab ='wysija_browse';
-
-        $body_id = 'media-upload';
-        
-        
-        
-        // let the action code decide how to handle the request
-        if ( $tab == 'type' || $tab == 'type_url' )
-                do_action("media_upload_$type");
-        else
-                do_action("media_upload_$tab");
-        exit;
-
+       $this->popupContent();
     }
     
-    function article_selection() {
-        return wp_iframe( array($this->viewObj,'media_article_selection'), array() );
-    }
-    function wysija_browse() {
+    
+    function special_wysija_browse() {
         $this->_wysija_subaction();
         $this->jsTrans['deleteimg']=__("Delete image for all newsletters?",WYSIJA);
-        return wp_iframe( array($this->viewObj,'media_wysija_browse'), array() );
+        return wp_iframe( array($this->viewObj,'popup_wysija_browse'), array() );
     }
     
-    function wp_browse() {
+    function special_wp_browse() {
         $this->_wysija_subaction();
         $this->jsTrans['deleteimg']=__("This image might be in an article. Delete anyway?",WYSIJA);
-        return wp_iframe( array($this->viewObj,'media_wp_browse'), array() );
+        return wp_iframe( array($this->viewObj,'popup_wp_browse'), array() );
     }
     
     
@@ -1242,7 +1320,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         return true;
     }
     
-    function wp_upload() {
+    function special_wp_upload() {
         
         wp_enqueue_script('swfupload-all');
         wp_enqueue_script('swfupload-handlers');
@@ -1288,19 +1366,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 	}
 
 	if ( isset($_POST['save']) ) {
-		$errors['upload_notice'] = __('Saved.');
+		$errors['upload_notice'] = __('Saved.',WYSIJA);
 		return media_upload_gallery();
 	}
         
         
-        return wp_iframe( array($this->viewObj,'media_wp_upload'), $errors );
+        return wp_iframe( array($this->viewObj,'popup_wp_upload'), $errors );
     }
-    
-    function _addTab($defaulttab){
-        //return array_merge(array('wysija_browse'=>__("Select Image",WYSIJA)), $defaulttab);
-
-        return $this->iframeTabs;
-    }
-    
     
 }
