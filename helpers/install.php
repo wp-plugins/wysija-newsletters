@@ -120,7 +120,8 @@ class WYSIJA_help_install extends WYSIJA_object{
         $wjEngine =& WYSIJA::get('wj_engine', 'helper');
         $defaultStyles = $wjEngine->getDefaultStyles();
         $defaultStyles['html']['background']=$defaultStyles['header']['background']=$defaultStyles['footer']['background']="E8E8E8";
-
+        
+        $dividersHelper =& WYSIJA::get('dividers', 'helper');
         $defaultDivider = $dividersHelper->getDefault();
         $dataEmail['wj_data']=array (
           'version' => '1.1.0',
