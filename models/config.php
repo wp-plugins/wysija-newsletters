@@ -41,9 +41,10 @@ class WYSIJA_model_config extends WYSIJA_object{
     var $values=array();
     
     function WYSIJA_model_config(){
+        $this->add_translated_default();
         if(defined('WP_ADMIN')){
             add_action('admin_menu', array($this,'add_translated_default'),96);
-        }else $this->add_translated_default();
+        }
         $encoded_option=get_option($this->name_option);
         global $wysija_installing;
         $installApp=false;
@@ -225,6 +226,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                     $this->values[$key][$tablename]=array_merge($helperImport->getPluginsInfo($tablename),$this->values[$key][$tablename]);
                 }
             }
+
             return $this->values[$key];
         }else{
             /* special case for the confirmation email */
@@ -243,6 +245,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
                 
             }else{
+
                 if($default===false && isset($this->defaults[$key])) return $this->defaults[$key];
                 elseif(!($default===false)){
                     return $default;
