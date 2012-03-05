@@ -123,7 +123,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         }
         $output = array();
         for($i=0; $i<count($keys);$i++) {
-            $output = array_merge($output, $this->_styles[$keys[$i]]);
+            if(isset($this->_styles[$keys[$i]])) {
+                $output = array_merge($output, $this->_styles[$keys[$i]]);
+            }
         }
         return $output;
     }
