@@ -216,7 +216,10 @@ class WYSIJA extends WYSIJA_object{
         
         if(!$extendedplugin) return $extensionloaded;
         
-        if(!$extensionloaded)   add_action('init', array("WYSIJA","load_lang_init"));
+        if(!$extensionloaded){
+            
+            add_action('init', array("WYSIJA","load_lang_init"));
+        }
         /*load the language file*/
         if ( !$extensionloaded || !isset($extensionloaded[$extendedplugin])) {
             
@@ -235,7 +238,7 @@ class WYSIJA extends WYSIJA_object{
             }
             //if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
             $extensionloaded[$extendedplugin] = $transstring;
-            
+            WYSIJA::load_lang_init();
         }
         
     }
@@ -252,16 +255,7 @@ class WYSIJA extends WYSIJA_object{
             load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
         }
     }
-/*    
-    function init_lang(){
-        $extensionloaded=WYSIJA::load_lang();
-        foreach($extensionloaded as $extendedplugin => $transstring){
-            
-            load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
-        }
 
-    }*/
-    
     /**
      * function to generate objects of different types, managing file requiring in order to be the most efficient
      * @staticvar array $arrayOfObjects
