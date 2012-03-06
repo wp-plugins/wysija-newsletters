@@ -145,16 +145,26 @@ class WYSIJA_help_back extends WYSIJA_help{
             $submenu[$parentmenu][0][0]=$submenu[$parentmenu][0][3]=$textmenu;
         }
     }
+    
+    
     function add_help_tab($params){
-        $screen = get_current_screen();
-        if(method_exists($screen, "add_help_tab")){
-            $screen->add_help_tab(array(
-            'id'	=> 'wysija_help_tab',
-            'title'	=> __('Get Help!',WYSIJA),
-            'content'=> $this->menuHelp));
-        }else{
+        $tabfunc=false;
+        if(function_exists('get_current_screen')){
+            $screen = get_current_screen();
+        
+            if(method_exists($screen, "add_help_tab")){
+                $screen->add_help_tab(array(
+                'id'	=> 'wysija_help_tab',
+                'title'	=> __('Get Help!',WYSIJA),
+                'content'=> $this->menuHelp));
+                $tabfunc=true;
+            }
+        }
+        
+        if(!$tabfunc){
            add_contextual_help($hookname, $this->menuHelp ); 
         }
+
     }
     
     function add_js($hook) {
