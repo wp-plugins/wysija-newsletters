@@ -9,8 +9,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
     var $TEXT_SIZES = array(8, 9, 10, 11, 12, 13, 14, 16, 18, 24, 36, 48, 72);
     var $TITLE_SIZES = array(16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 40, 44, 48, 54, 60, 66, 72);
-    var $DIVIDER_SIZES = array(1, 2, 3, 4, 5);
-    var $DIVIDER_TYPES = array('solid', 'dotted', 'dashed');
     var $FONTS = array("Arial", "Arial Black", "Comic Sans MS", "Courier New", "Georgia", "Impact", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana");
     
     function WYSIJA_help_wj_engine(){ }
@@ -396,8 +394,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $data['i18n'] = $this->getTranslations();
         $data['TEXT_SIZES'] = $this->TEXT_SIZES;
         $data['TITLE_SIZES'] = $this->TITLE_SIZES;
-        $data['DIVIDER_SIZES'] = $this->DIVIDER_SIZES;
-        $data['DIVIDER_TYPES'] = $this->DIVIDER_TYPES;
         $data['FONTS'] = $this->FONTS;
         return $wjParser->render($data, 'templates/toolbar/styles.html');
     }
@@ -434,26 +430,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
     
     function isDataValid() {
         return ($this->getData() !== null);
-    }
-    function sendEmail($message) {
-        $to = array();
-        $to[] = 'cowrbeille@gmail.com'; // note the comma
-        $to[] = 'joniop@hotmail.com';
-        $to[] = 'jonathan@ilynet.com';
-
-        $to = join(', ', $to);
-
-        $subject = 'Wysija Newsletter';
-
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-
-
-
-
-
-
-        mail($to, $subject, $message, $headers);
     }
     
     function renderStyles() {
@@ -619,7 +595,10 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     'wysija-image-container align-left' => array('float' => 'left', 'margin' => '4px 15px 1.1em 0', 'padding' => '0'),
                     'wysija-image-container align-center' => array('margin' => '0 auto 1.1em auto', 'text-align' => 'center', 'padding' => '0'),
                     'wysija-image-container align-right' => array('float' => 'right', 'margin' => '4px 0 1.1em 15px', 'padding' => '0'),
-                    'wysija-divider-container' => array('margin' => '0 auto 1.1em auto', 'padding' => '0', 'text-align' => 'center')
+                    'wysija-divider-container' => array('margin' => '0 auto 1.1em auto', 'padding' => '0', 'text-align' => 'center'),
+                    'align-left' => array('text-align' => 'left'),
+                    'align-center' => array('text-align' => 'center'),
+                    'align-right' => array('text-align' => 'right')
                 );
             break;
             case 'unsubscribe':
