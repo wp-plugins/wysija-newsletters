@@ -71,12 +71,12 @@ class WYSIJA_model_queue extends WYSIJA_model{
                 /* let's load the emails to be sent */
                 $emails=$modelQ->query("get_res","SELECT * FROM `".$modelQ->getPrefix()."email` 
                     WHERE email_id IN ('".implode("','",$allemailids)."')",OBJECT_K);
-                foreach($emails as $emailid => $email){
+                /*foreach($emails as $emailid => $email){
                     if($emailid!=$modelC->getValue('confirm_email_id')) {
                         $emails[$emailid]->body.="[subscriptions_links]";
                         $emails[$emailid]->body.="\n[footer_address]";
                     }
-                }
+                }*/
                 
                 /* if there is double optin "on" we load the confirmation email to send to the people having not confirmed yet */
                 $mailer=&WYSIJA::get("mailer","helper");
