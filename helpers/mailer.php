@@ -90,7 +90,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->Subject = $this->encodingHelper->change($this->Subject,'UTF-8',$this->CharSet);
                     if(!empty($this->AltBody)) $this->AltBody = $this->encodingHelper->change($this->AltBody,'UTF-8',$this->CharSet);
             }
-            $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject);
+            $this->Subject = str_replace(array('â€™','â€œ','â€�','â€“'),array("'",'"','"','-'),$this->Subject);
             $this->Body = str_replace(chr(194),chr(32),$this->Body);
             ob_start();
             $result = parent::Send();
@@ -149,12 +149,16 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     }
             }
             $this->recordEmail($email_id);
-            
-            $this->parseUserTags($this->defaultMail[$email_id]);
-
-
             return $this->defaultMail[$email_id];
 	}
+
+        function recordEmail($email_id,$email_object=false){
+            if($email_object) $this->defaultMail[$email_id]=$email_object;
+            
+            $this->parseUserTags($this->defaultMail[$email_id]);
+            add_action('wysija_replacetags', array($this,'replacetags')); 
+            do_action('wysija_replacetags', $email_id);
+        }
         function parseUserTags(&$emailobj){
             if(!isset($emailobj->tags) || !$emailobj->tags){
                 preg_match_all("#\[user:([^\]|]*)([^\]]*)\]#Uis", $emailobj->body, $values_user);
@@ -182,11 +186,6 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->errorNumber = 0;
             $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name'));
 	}
-         function recordEmail($email_id,$email_object=false){
-            if($email_object) $this->defaultMail[$email_id]=$email_object;
-            add_action('wysija_replacetags', array($this,'replacetags')); 
-            do_action('wysija_replacetags', $email_id);
-        }
 	function sendOne($email_id,$receiverid){
             $this->clearAll();
                 if(is_object($email_id)){
@@ -204,7 +203,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                         return false;
                     }
 		}
-                
+
 		
 		$this->addCustomHeader( 'X-email_id: ' . $this->defaultMail[$email_id]->email_id );
 		if(!isset($this->forceVersion) AND empty($this->defaultMail[$email_id]->status)){
@@ -389,7 +388,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 		$replaceByReturnChar = '#< */? *(br|p|h1|h2|legend|h3|li|ul|h4|h5|h6|tr|td|div)[^>]*>#Ui';
 		$replaceLinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.*)< *\/ *a *>/Uis';
 		$text = preg_replace(array($removepictureslinks,$removeScript,$removeStyle,$removeStrikeTags,$replaceByTwoReturnChar,$replaceByStars,$replaceByReturnChar1,$replaceByReturnChar,$replaceLinks),array('','','','',"\n\n","\n* ","\n","\n",'${2} ( ${1} )'),$html);
-		$text = str_replace(array(" ","&nbsp;"),' ',strip_tags($text));
+		$text = str_replace(array("Â ","&nbsp;"),' ',strip_tags($text));
 		$text = trim(@html_entity_decode($text,ENT_QUOTES,'UTF-8'));
 		if($fullConvert){
 			$text = preg_replace('# +#',' ',$text);
@@ -434,7 +433,6 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $emailObj->email_id=0;
             $emailObj->subject=$subject;
             $emailObj->body=$body;
-            $this->parseUserTags($emailObj);
             $emailObj->status=1;
             $emailObj->attachments="";
 
