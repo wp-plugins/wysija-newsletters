@@ -90,7 +90,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->Subject = $this->encodingHelper->change($this->Subject,'UTF-8',$this->CharSet);
                     if(!empty($this->AltBody)) $this->AltBody = $this->encodingHelper->change($this->AltBody,'UTF-8',$this->CharSet);
             }
-            $this->Subject = str_replace(array('â€™','â€œ','â€�','â€“'),array("'",'"','"','-'),$this->Subject);
+            $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject);
             $this->Body = str_replace(chr(194),chr(32),$this->Body);
             ob_start();
             $result = parent::Send();
@@ -391,7 +391,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 		$replaceByReturnChar = '#< */? *(br|p|h1|h2|legend|h3|li|ul|h4|h5|h6|tr|td|div)[^>]*>#Ui';
 		$replaceLinks = '/< *a[^>]*href *= *"([^#][^"]*)"[^>]*>(.*)< *\/ *a *>/Uis';
 		$text = preg_replace(array($removepictureslinks,$removeScript,$removeStyle,$removeStrikeTags,$replaceByTwoReturnChar,$replaceByStars,$replaceByReturnChar1,$replaceByReturnChar,$replaceLinks),array('','','','',"\n\n","\n* ","\n","\n",'${2} ( ${1} )'),$html);
-		$text = str_replace(array("Â ","&nbsp;"),' ',strip_tags($text));
+		$text = str_replace(array(" ","&nbsp;"),' ',strip_tags($text));
 		$text = trim(@html_entity_decode($text,ENT_QUOTES,'UTF-8'));
 		if($fullConvert){
 			$text = preg_replace('# +#',' ',$text);
