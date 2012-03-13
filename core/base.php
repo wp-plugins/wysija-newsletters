@@ -14,9 +14,17 @@ class WYSIJA_object{
     function get_version() {
         static $version=false;
         if($version) return $version;
-        if ( ! function_exists( 'get_plugins' ) )   require_once( ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php' );
-        $plugin_data = get_plugin_data( WYSIJA_FILE );
-        $version = $plugin_data['Version'];
+        if ( ! function_exists( 'get_plugins' ) )   {
+            if(file_exists(ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php')){
+                require_once( ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php' );
+            }
+        }
+        if (function_exists( 'get_plugins' ) )  {
+            $plugin_data = get_plugin_data( WYSIJA_FILE );
+            $version = $plugin_data['Version'];
+        }else{
+            $version="undefined";
+        }
         return $version;
     }
     
