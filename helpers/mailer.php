@@ -153,8 +153,11 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	}
 
         function recordEmail($email_id,$email_object=false){
-            if($email_object) $this->defaultMail[$email_id]=$email_object;
-            
+            if($email_object && !isset($this->defaultMail[$email_id])){
+                 $this->defaultMail[$email_id]=$email_object;
+                 
+                
+            }
             $this->parseUserTags($this->defaultMail[$email_id]);
             add_action('wysija_replacetags', array($this,'replacetags')); 
             do_action('wysija_replacetags', $email_id);
@@ -170,9 +173,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     }
                 }
                 $emailobj->tags=$tags;
-            }else{
-                $emailobj->tags=array();
             }
+            if(!isset($emailobj->tags) || !$emailobj->tags)$emailobj->tags=array();
         }
 
 	function clearAll(){
@@ -332,11 +334,12 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 			}
 		}
 		if($this->sendHTML){
-                    $this->AltBody = $this->textVersion($this->Body,true);
+                    $this->AltBody = $this->textVersion($mailforTrigger->body,true);
 
 		}else{
-			$this->Body = $this->textVersion($this->Body,false);
+			$this->Body = $this->textVersion($mailforTrigger->body,false);
 		}
+
 		return $this->send();
 	}
 	function embedImages(){
@@ -508,6 +511,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             $email->body=str_replace($arrayfind,$arrayreplace,$email->body);
             $email->subject=str_replace($arrayfind,$arrayreplace,$email->subject);
+            
         }
         function tracker_replaceusertags($email,$user){
             if(empty($user->user_id)) return;
