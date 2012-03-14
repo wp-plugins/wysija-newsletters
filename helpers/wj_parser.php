@@ -455,6 +455,8 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     $image = $value;
                     $ratio = 1;
                     if(isset($image['width']) && isset($image['height'])) {
+                        
+                        if((int)$image['height']<=0)$image['height']=1; 
                         $ratio = round(($image['width'] / $image['height']) * 1000) / 1000;
                     }
                     $value = $ratio;
@@ -650,7 +652,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     $value = json_encode($value);
                 break;
                 case 'base64_decode':
-                    if(base64_decode($value, true)) {
+                    if($this->is_base64_encoded($value)) {
                         $value = base64_decode($value);
                     }
                 break;
@@ -748,6 +750,14 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
             }
         }
         return $value;
+    }
+    function is_base64_encoded($data)
+    {
+        if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
     
     protected function _formatDate ($value, $format)

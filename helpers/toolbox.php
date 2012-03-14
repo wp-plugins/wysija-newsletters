@@ -171,7 +171,10 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $weeks=floor($timestamp/(60*60*24*7));$timestamp%=60*60*24*7;
         $days=floor($timestamp/(60*60*24));$timestamp%=60*60*24;
         $hrs=floor($timestamp/(60*60));$timestamp%=60*60;
-        $mins=floor($timestamp/60);$secs=$timestamp%60;
+        $mins=floor($timestamp/60);
+        if($timestamp>60)$secs=$timestamp%60;
+        else $secs=$timestamp;
+
         
         $str="";
         $mylevel=0;
@@ -180,6 +183,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if ($mylevel<$level && $days >= 1) { $str.=sprintf(_n( '%1$s day', '%1$s days', $days, WYSIJA ),$days)." ";$mylevel++; }
         if ($mylevel<$level && $hrs >= 1) { $str.=sprintf(_n( '%1$s hour', '%1$s hours', $hrs, WYSIJA ),$hrs)." ";$mylevel++; }
         if ($mylevel<$level && $mins >= 1) { $str.=sprintf(_n( '%1$s minute', '%1$s minutes', $mins, WYSIJA ),$mins)." ";$mylevel++; }
+        if ($mylevel<$level && $secs >= 1) { $str.=sprintf(_n( '%1$s second', '%1$s seconds', $secs, WYSIJA ),$secs)." ";$mylevel++; }
         return $str;
     }
 }

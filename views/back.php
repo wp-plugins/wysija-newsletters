@@ -191,9 +191,9 @@ class WYSIJA_view_back extends WYSIJA_view{
      * helping function for listing management here is the pagination function
      */
     function pagination($paramsurl='',$second=false){
-
+        $numperofpages=1;
         $numperofpages=ceil($this->model->countRows/$this->model->limit);
-        
+
             ?>
             <div class="tablenav-pages">
                 <span class="displaying-num"><?php 

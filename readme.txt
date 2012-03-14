@@ -3,7 +3,7 @@ Contributors: wysija
 Tags: newsletter, newsletters, email, emailing, smtp
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.1
+Stable tag: 1.1.1
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
@@ -24,7 +24,8 @@ http://vimeo.com/35054446
 * Add a subscription form as a sidebar widget or in your pages
 * Your newsletters look the same in Gmail, iPhone, Android, Outlook, Yahoo, Hotmail, etc.
 * Your WordPress users have their own list
-* Import subscribers with CSV, or in one click from MailPress, Tribulant, Satollo, Subscribe2, etc.
+* Import subscribers from MailChimp, Aweber, etc.
+* One click import from MailPress, Tribulant, Satollo, Subscribe2, etc.
 * Single or double opt-in, your choice
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
@@ -126,6 +127,27 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 1.1.1 - 2012-03-13 =
+
+* fixed small IE8 and IE9 compatibility issues 
+* fixed fatal error for new installation
+* fixed wysija admin white screen on wordpres due to get_current_screen function
+* fixed unsubscribe link disappearing because of qtranslate fix
+* fixed old separators just blocked the email wizard
+* fixed unsubscribe link disappearing because of default color
+* fixed settings panel redirection
+* fixed update error message corrected :"An error occured during the update" sounding like update failed even though it succeeded
+* fixed rendering of aligned text
+* fixed daily report email information
+* fixed export: first line with comma, the rest with semi colon now is all semi colon
+* fixed filter by list on subscribers when going on next pages with pagination
+* fixed get_avatar during install completely irrelevant
+* fixed wordpress post in editor when an article had an image with height 0px
+* fixed when domain does not exist, trying to send email, we need to flag it as undelivered after 3 tries and remove it from the queue
+* fixed user tags [user:firstname | defaul:subscriber] left over when sent through queue and on some users
+* fixed get_version when wp-admin folder doesn't exists...
+* fixed Bulk Unsubscribe from all list "why can't I add him"
 
 = 1.1 - 2012/03/03 =
 

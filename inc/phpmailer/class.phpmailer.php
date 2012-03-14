@@ -2052,9 +2052,9 @@ class acymailingPHPMailer extends WYSIJA_object{
     $DKIMcanonicalization = 'relaxed/simple'; // Canonicalization of header/body
     $DKIMquery            = 'dns/txt'; // Query method
     $DKIMtime             = time() ; // Signature Timestamp = seconds since 00:00:00 - Jan 1, 1970 (UTC time zone)
-	if($this->Mailer == 'mail'){
-    	$subject = $this->EncodeHeader($this->SecureHeader($subject));
-    }
+
+    $subject = $this->EncodeHeader($this->SecureHeader($subject));
+
     $subjecta_header       = "Subject: $subject";
     $from = array();
     $from[0][0] = trim($this->From);

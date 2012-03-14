@@ -88,7 +88,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		$queueUpdate = array();
 		$statsAdd = array();
 		$actionSubscriber = array();
-		$maxTry = (int) $this->config->getValue('queue_try',0);
+		$maxTry = (int) $this->config->getValue('queue_try',3);
 		$currentMail = $this->start;
 		$this->nbprocess = 0;
 		if(count($queueElements) < $this->send_limit){
@@ -121,7 +121,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				$this->errorSend ++;
 				$newtry = false;
 				if(in_array($mailHelper->errorNumber,$mailHelper->errorNewTry)){
-					if(empty($maxTry) OR $oneQueue->try < $maxTry-1){
+					if(empty($maxTry) OR $oneQueue->number_try < $maxTry-1){
 						$newtry = true;
 						$otherMessage = sprintf(__("Next try in %s minutes.",WYSIJA),round($this->config->getValue('queue_delay')/60));
 					}

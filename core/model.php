@@ -23,6 +23,7 @@ class WYSIJA_model extends WYSIJA_object{
     var $tableWP=false;
     var $columns=array();
     var $joins=array();
+
     
     function WYSIJA_model($extensions=""){
         if(defined("WYSIJA_DBG") || defined("WYSIJA_DBG_ALL")) $this->dbg=true;

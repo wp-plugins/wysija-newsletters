@@ -62,10 +62,8 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $_REQUEST   = stripslashes_deep($_REQUEST);
         $_POST   = stripslashes_deep($_POST);
         $this->requireSecurity();
-        /*$_REQUEST   = stripslashes_deep($_REQUEST);
-        $_POST   = stripslashes_deep($_POST);*/
         $this->modelObj->save($_REQUEST['wysija']['config'],true);
-        $this->redirect('admin.php?page=wysija_config'.$_REQUEST['redirecttab']);
+        wp_redirect('admin.php?page=wysija_config'.$_REQUEST['redirecttab']);
 
     }
     

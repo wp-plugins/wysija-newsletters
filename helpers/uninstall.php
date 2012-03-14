@@ -2,7 +2,7 @@
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_uninstall extends WYSIJA_object{
     function WYSIJA_help_uninstall(){
-        require_once(ABSPATH . 'wp-admin'.DS.'includes'.DS.'upgrade.php');
+
     }
     function reinstall(){
         if($this->removeProcess()) $this->notice(__("Wysija has been reinstalled successfully using the same version. Your settings and data has been deleted.",WYSIJA));

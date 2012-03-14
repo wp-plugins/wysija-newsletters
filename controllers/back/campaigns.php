@@ -834,7 +834,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->js[]='wysija-charts';
         $this->viewShow='viewstats';
         $limit_pp=false;
-        if($this->modelObj->limit_pp)   $limit_pp=$this->modelObj->limit_pp;
+        if(isset($this->modelObj->limit_pp)) $limit_pp = $this->modelObj->limit_pp;
         $this->modelObj->limitON=false;
         $campaign=$this->modelObj->getOne(false,array("campaign_id"=>$_REQUEST['id']));
         

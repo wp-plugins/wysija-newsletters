@@ -18,6 +18,7 @@ class WYSIJA_object{
             if(file_exists(ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php')){
                 require_once( ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php' );
             }
+            
         }
         if (function_exists( 'get_plugins' ) )  {
             $plugin_data = get_plugin_data( WYSIJA_FILE );
@@ -351,6 +352,22 @@ class WYSIJA extends WYSIJA_object{
      */
     function filter_cron_schedules( $param ) {
         return array( 
+            'one_min' => array(
+                'interval' => 60, 
+                'display' => __( 'Once every minutes',WYSIJA)
+                ),
+            'two_min' => array(
+                'interval' => 120, 
+                'display' => __( 'Once every two minutes',WYSIJA)
+                ),
+            'five_min' => array(
+                'interval' => 300, 
+                'display' => __( 'Once every five minutes',WYSIJA)
+                ),
+            'ten_min' => array(
+                'interval' => 600, 
+                'display' => __( 'Once every ten minutes',WYSIJA)
+                ),
             'fifteen_min' => array(
                 'interval' => 900, 
                 'display' => __( 'Once every fifteen minutes',WYSIJA)
@@ -669,15 +686,18 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
                 if($lastchar!="/")$ajaxurl.="/";
                 $ajaxurl.='wp-admin/admin-ajax.php';
-                $paramsajax=array(
+                $this->paramsajax=array(
                     'action' => 'wysija_ajax',
                     'controller' => $controller,
                     'ajaxurl'=>$ajaxurl,
                     'loadingTrans'  =>'Loading...'
                 );
-
-                if(is_user_logged_in()) $paramsajax['wysilog']=1;
-                wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$paramsajax );
+                
+                
+                
+                
+                if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
+                
                 $scriptregistered=true;
             }
             
@@ -695,10 +715,19 @@ class WYSIJA_NL_Widget extends WP_Widget {
             add_action('admin_menu', array($this,'add_translated_default'),96);
         }
         
+        add_action('init', array($this,'recordWysijaAjax'));
+        
         $this->classid=strtolower(str_replace(__CLASS__."_","",get_class($this)));
         //parent::__construct( $namekey, $title, $params,$sizeWindow );
         $this->WP_Widget( $namekey, $title, $params,$sizeWindow );
 
+    }
+    
+    function recordWysijaAjax(){
+        if(isset($this->paramsajax)){
+            $this->paramsajax['ajaxurl'] = apply_filters('wysijaAjaxURL', $this->paramsajax['ajaxurl']);
+            wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$this->paramsajax );
+        }
     }
     
     function add_translated_default(){
@@ -986,3 +1015,4 @@ add_action( 'init', array('WYSIJA','create_post_type') );
 
 
 $helper=&WYSIJA::get(WYSIJA_SIDE,"helper");
+

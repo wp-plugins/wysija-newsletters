@@ -438,7 +438,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         $config=&WYSIJA::get('config','model');
         $_GET['post_id']=$_REQUEST['post_id']=$config->getValue('confirm_email_link');
         $post_id = isset($_GET['post_id'])? (int) $_GET['post_id'] : 0;
-        require_once(ABSPATH."wp-admin".DS.'admin.php');
+        if(file_exists(ABSPATH."wp-admin".DS.'admin.php')) require_once(ABSPATH."wp-admin".DS.'admin.php');
 
         @header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset')); 
         

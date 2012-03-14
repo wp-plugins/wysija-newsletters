@@ -51,8 +51,9 @@ class WYSIJA_model_list extends WYSIJA_model{
         
             $this->countRows=$this->count($query);
 
-            $query.=$this->setLimit();
+            //$query.=$this->setLimit();
             $listres=$this->getResults($query);
+            //dbg($listres);
             $listids=array();
             foreach($listres as $res) $listids[]=$res['list_id'];
 
@@ -109,9 +110,9 @@ class WYSIJA_model_list extends WYSIJA_model{
                 if(!isset($listres[$key]['unconfirmed'])) $listres[$key]['unconfirmed']=0;
                 if(!isset($listres[$key]['unsubscribers'])) $listres[$key]['unsubscribers']=0;
                 if(!isset($listres[$key]['subscribers'])) $listres[$key]['subscribers']=0;
-                 if(!isset($listres[$key]['totals'])) $listres[$key]['totals']=0;
+                if(!isset($listres[$key]['totals'])) $listres[$key]['totals']=0;
             }
-
+//dbg($listres);
             $this->escapeQuotesFromRes($listres);
             return $listres;
         }

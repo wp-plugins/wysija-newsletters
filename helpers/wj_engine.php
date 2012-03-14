@@ -603,7 +603,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             break;
             case 'unsubscribe':
                 $tags = array(
-                    'p' => array_merge($this->getStyles('unsubscribe'), array('padding' => '3px 0 0 0', 'margin' => '0 0 1.3em 0', 'line-height' => '1.5em', 'vertical-align' => 'top')),
                     'a' => $this->getStyles('unsubscribe')
                 );
             break;
