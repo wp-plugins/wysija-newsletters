@@ -49,7 +49,7 @@ class WYSIJA_help_zip extends WYSIJA_object{
                     $previous_encoding = mb_internal_encoding();
                     mb_internal_encoding('ISO-8859-1');
             }
-            require_once(ABSPATH . 'wp-admin/includes/class-pclzip.php');
+            if(file_exists(ABSPATH . 'wp-admin/includes/class-pclzip.php')) require_once(ABSPATH . 'wp-admin/includes/class-pclzip.php');
             $archive = new PclZip($file);
             $archive_files = $archive->extract(PCLZIP_OPT_EXTRACT_AS_STRING);
             if ( isset($previous_encoding) )

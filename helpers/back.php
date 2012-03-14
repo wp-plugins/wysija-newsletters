@@ -135,7 +135,15 @@ class WYSIJA_help_back extends WYSIJA_help{
                     $hookname=add_submenu_page($parentmenu,$menutemp['title'], $menutemp['subtitle'], $roleformenu, $actionFull , array($this->controller, 'render'));
                 }
                 
-                if(WYSIJA_ITF)add_action('load-'.$hookname, array($this,'add_help_tab'));
+                if(WYSIJA_ITF){
+                    
+                    if(version_compare(get_bloginfo('version'), '3.3.0')>= 0){
+                        add_action('load-'.$hookname, array($this,'add_help_tab'));
+                    }else{
+                        
+                        add_contextual_help($hookname, $this->menuHelp); 
+                    }
+                }
             }
             $count++;
         }
@@ -145,25 +153,15 @@ class WYSIJA_help_back extends WYSIJA_help{
             $submenu[$parentmenu][0][0]=$submenu[$parentmenu][0][3]=$textmenu;
         }
     }
-    
     function add_help_tab($params){
-        $tabfunc=false;
-        if(function_exists('get_current_screen')){
-            $screen = get_current_screen();
-        
-            if(method_exists($screen, "add_help_tab")){
-                $screen->add_help_tab(array(
-                'id'	=> 'wysija_help_tab',
-                'title'	=> __('Get Help!',WYSIJA),
-                'content'=> $this->menuHelp));
-                $tabfunc=true;
-            }
+        $screen = get_current_screen();
+        if(method_exists($screen, "add_help_tab")){
+            $screen->add_help_tab(array(
+            'id'	=> 'wysija_help_tab',
+            'title'	=> __('Get Help!',WYSIJA),
+            'content'=> $this->menuHelp));
+            $tabfunc=true;
         }
-        
-        if(!$tabfunc){
-           add_contextual_help($hookname, $this->menuHelp ); 
-        }
-
     }
     
     function add_js($hook) {

@@ -727,6 +727,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             $wjEngine->setStyles();
         }
         
+        // print "\n\n--------\n\n";
+        // echo '<div style="width:900px;margin:0 auto;">';
+        // echo $wjEngine->renderEmail();
+        // echo '</div>';
+        // print "\n\n--------\n\n";
+        // exit;
         ?>
             <style type="text/css" id="wj_css">
                 <?php echo $wjEngine->renderStyles(); ?>

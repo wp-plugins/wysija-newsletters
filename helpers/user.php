@@ -52,6 +52,10 @@ class WYSIJA_help_user extends WYSIJA_object{
             $cols=array($datecol=>$time);
             $modelU=&WYSIJA::get("queue","model");
             $modelU->delete(array("user_id"=>$user_id));
+            if($auto){
+                $modelU=&WYSIJA::get("user_list","model");
+                $modelU->delete(array("user_id"=>$user_id));
+            }
 
         }
         $modelUser=&WYSIJA::get("user","model");
