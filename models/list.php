@@ -38,7 +38,7 @@ class WYSIJA_model_list extends WYSIJA_model{
     function getLists($id=false){
         
         if($id){
-            $query="SELECT A.name, A.list_id, A.description, A.is_enabled
+            $query="SELECT A.name, A.list_id, A.description, A.is_enabled, A.namekey
                 FROM ".$this->getPrefix()."list as A
                 LEFT JOIN ".$this->getPrefix()."email as B on A.welcome_mail_id=B.email_id 
                 WHERE A.list_id=".(int)$id;
@@ -46,13 +46,14 @@ class WYSIJA_model_list extends WYSIJA_model{
                 $this->escapeQuotesFromRes($result);
                 return $result[0];
         }else{
-            $query="SELECT A.name, A.list_id, A.created_at, A.is_enabled, 0 as subscribers, 0 as campaigns_sent
+            $query="SELECT A.name, A.list_id, A.created_at, A.is_enabled, A.namekey, 0 as subscribers, 0 as campaigns_sent
             FROM ".$this->getPrefix()."list as A";
         
             $this->countRows=$this->count($query);
 
             $query.=$this->setLimit();
             $listres=$this->getResults($query);
+            //dbg($listres);
             $listids=array();
             foreach($listres as $res) $listids[]=$res['list_id'];
 
@@ -109,9 +110,9 @@ class WYSIJA_model_list extends WYSIJA_model{
                 if(!isset($listres[$key]['unconfirmed'])) $listres[$key]['unconfirmed']=0;
                 if(!isset($listres[$key]['unsubscribers'])) $listres[$key]['unsubscribers']=0;
                 if(!isset($listres[$key]['subscribers'])) $listres[$key]['subscribers']=0;
-                 if(!isset($listres[$key]['totals'])) $listres[$key]['totals']=0;
+                if(!isset($listres[$key]['totals'])) $listres[$key]['totals']=0;
             }
-
+//dbg($listres);
             $this->escapeQuotesFromRes($listres);
             return $listres;
         }

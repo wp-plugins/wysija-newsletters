@@ -415,6 +415,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $emailObject = $modelEmail->getOne(false,array('campaign_id' => $campaign_id));
         $mailer->testemail=true;
         
+        
         if(isset($_REQUEST['data'])){
            $dataTemp=$_REQUEST['data'];
             $_REQUEST['data']=array();
@@ -450,7 +451,23 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }else{
             $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
         }
-        
+        if(isset($emailObject->params)) {
+            $params['params']=$emailObject->params;
+
+            if(isset($configVal['params[googletrackingcode'])){
+                
+                $paramsemail=unserialize(base64_decode($emailObject->params));
+
+                if(trim($configVal['params[googletrackingcode'])) {
+                    $paramsemail['googletrackingcode']=$configVal['params[googletrackingcode'];
+                }
+                else {
+                    unset($paramsemail['googletrackingcode']);
+                }
+                $params['params']=base64_encode(serialize($paramsemail));
+            }
+
+        }
         foreach($receivers as $receiver){
             $res=$mailer->sendSimple($receiver,$emailObject->subject,$emailObject->body,$params);
             if($res)    $this->notice(sprintf($successmsg,$_REQUEST['receiver']));
@@ -570,9 +587,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             'alignment' => 'center'
         );
 
+        $width = 0;
         foreach($items as $key => $item) {
             $block['items'][] = array_merge($item, $icons[$key], array('alt' => ucfirst($key)));
+            $width += (int)$icons[$key]['width'];
         }
+        // add margin between icons
+        $width += (count($block['items']) - 1) * 10;
+        // set optimal width
+        $block['width'] = max(0, min($width, 564));
+        
         $helper_engine=&WYSIJA::get("wj_engine","helper");
         return base64_encode($helper_engine->renderEditorBlock($block));
     }

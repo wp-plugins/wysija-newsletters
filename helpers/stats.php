@@ -38,12 +38,12 @@ class WYSIJA_help_stats extends WYSIJA_object{
         if((int)$total<=0) return;
         $html="<h2>".__("Today's statistics",WYSIJA)."</h2>";
         $html.="<h3>".sprintf(__('Today you have sent %1$s emails',WYSIJA),$total);
-        foreach($statuscount as $count){
-            $html.=sprintf(__(', %1$s of which were %2$s',WYSIJA),$count['count'],$count['status']);
+        foreach($statuscount as $counting){
+            $html.=sprintf(__(', %1$s of which were %2$s',WYSIJA),$counting['count'],$counting['status']);
         }
         $html.=".</h3>";
         if(count($details)>0){
-            $html.="<h2>".sprintf(__('Here is the list bounced emails.',WYSIJA),$total)."</h2>";
+            $html.="<h2>".sprintf(__('Here is the list of bounced emails.',WYSIJA),$total)."</h2>";
             foreach($details as $email){
                 $html.="<h4>".$email['email']."</h4>";
             }

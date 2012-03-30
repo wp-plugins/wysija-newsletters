@@ -8,14 +8,8 @@ class WYSIJA_view_front extends WYSIJA_view{
     
     function addScripts($print=true){
         if($print){
-
-            wp_enqueue_script('wysija-validator-lang');
-            wp_enqueue_script('wysija-validator');
-             
-            wp_enqueue_script('wysija-front-subscribers');
-            
-            /* put that one in the head of your theme*/
             wp_print_styles('validate-engine-css');
+            add_action('wp_footer', array($this,'printScripts'));
         }else{
             wp_enqueue_script('wysija-validator-lang');
             wp_enqueue_script('wysija-validator');
@@ -24,6 +18,14 @@ class WYSIJA_view_front extends WYSIJA_view{
             
         }
         
+        
+    }
+    
+    function printScripts(){
+        
+        wp_print_scripts('wysija-validator-lang');
+        wp_print_scripts('wysija-validator');
+        wp_print_scripts('wysija-front-subscribers');
         
     }
 

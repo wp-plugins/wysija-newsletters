@@ -20,25 +20,25 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
     
     function save(){
         $config=&WYSIJA::get('config','model');
+        
         if(!$config->getValue("allow-no-js")){
             $this->notice(__("Subscription without JavaScript is disabled.",WYSIJA));
             return false;
         }
 
-        //if(isset($_REQUEST['wysija'][$this->model]['abs'])){
+        if(isset($_REQUEST['wysija'][$this->model]['abs'])){
             foreach($_REQUEST['wysija'][$this->model]['abs'] as $honeyKey => $honeyVal){
                 //if honey val then robotty is out !
                 if($honeyVal) return false;
                 
             }
             unset($_REQUEST['wysija'][$this->model]['abs']);
-        //}        
-        
+        }        
+
         /* validate the email*/
         $userHelper=&WYSIJA::get("user","helper");
         if(!$userHelper->validEmail($_REQUEST['wysija'][$this->model]['email'])) return $this->error(sprintf(__('The email %1$s is not valid!',WYSIJA),"<strong>".$_REQUEST['wysija'][$this->model]['email']."</strong>"),true);
-        
-        
+ 
         
         $dbloptin=$config->getValue('confirm_dbleoptin');
         

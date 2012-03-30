@@ -541,7 +541,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $value=$this->model->getValue($name);
                             
                             $field.=$formsHelp->dropdown('wysija[config]['.$name.']',
-                                    array("fifteen_min"=> __("15 minutes",WYSIJA),
+                                    array(
+                                        "one_min"=> __("1 minute",WYSIJA),
+                                        "two_min"=> __("2 minutes",WYSIJA),
+                                        "five_min"=> __("5 minutes",WYSIJA),
+                                        "ten_min"=> __("10 minutes",WYSIJA),
+                                        "fifteen_min"=> __("15 minutes",WYSIJA),
                                         "thirty_min"=> __("30 minutes",WYSIJA),
                                         "hourly"=> __("1 hour",WYSIJA),
                                         "two_hours"=> __("2 hours",WYSIJA),
@@ -549,6 +554,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                                         "daily"=> __("Day",WYSIJA)),
                                     $value);
                             echo $field;
+                            
+                            $msgfreqwarning='<li>'.__('The frequency is an estimate you\'ll need to select a value according to your traffic or set your own cron to make sure it is precise. [link]Read more[/link].',WYSIJA).'</li>';
+                            if($this->model->getValue('premium_key'))   $msgfreqwarning.='<li>'.__('As a premium user your cron frequency is precise up to each 15min.',WYSIJA).'</li>';
+                            $msgfreqwarning=str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">',"</a>"),$msgfreqwarning);
+                            echo '<div id="warning-msg-frequency"><ul>'.$msgfreqwarning.'</ul></div>';
                         ?>
                     </td>
                 </tr>

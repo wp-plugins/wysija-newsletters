@@ -8,6 +8,7 @@ class WYSIJA_control_back extends WYSIJA_control{
     var $jsTrans=array();
     var $msgOnSave=true;
     var $pref=array();
+    var $statuses=array();
     
     function WYSIJA_control_back(){
         parent::WYSIJA_control(); 
@@ -21,6 +22,24 @@ class WYSIJA_control_back extends WYSIJA_control{
          * let's fix all the conflict that we may have
          */
         $modelConfig=&WYSIJA::get('config','model');
+
+        // check conflictiing themes
+        $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
+        $conflictingTheme = null;
+        $currentTheme = strtolower(get_current_theme());
+        foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
+            if($keyTheme === $currentTheme) {
+                $conflictingTheme = $keyTheme;
+            }
+        }
+
+        // if the current theme is known to make troubles, let's resolve this
+        if($conflictingTheme !== null) {
+            $helperConflicts =& WYSIJA::get('conflicts', 'helper');
+            $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
+        }
+
+        // check conflicting plugins
         $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
 
         $conflictingPlugins=array();
@@ -127,8 +146,29 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->modelObj->setJoin($this->joins);
         }
 
-        $this->modelObj->countRows=$this->modelObj->count();
+        if($this->statuses){
+            //we count by statuses
+            $query="SELECT count(".$this->modelObj->pk.") as count, status FROM `".$this->modelObj->getPrefix().$this->modelObj->table_name."` GROUP BY status";
+            $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
+            $counts=array();
+            $this->modelObj->countRows=0;
 
+            foreach($countss as $count){
+                $mystat=(int)$count['status'];
+                $this->statuses[$mystat]['count']=$count['count'];
+                $this->statuses[$mystat]['uri']=$this->getDefaultUrl(false)."&link_filter=".$this->statuses[$mystat]['key'];
+
+                $this->modelObj->countRows=$this->modelObj->countRows+$count['count'];
+                $this->viewObj->statuses=$this->statuses;
+            }
+
+        }else{
+            $this->modelObj->countRows=$this->modelObj->count();
+        }
+        
+        
+        
+        
         if(isset($_REQUEST['orderby'])){
             $this->modelObj->orderBy($_REQUEST['orderby'],strtoupper($_REQUEST['ordert']));
         }else{
@@ -438,7 +478,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         $config=&WYSIJA::get('config','model');
         $_GET['post_id']=$_REQUEST['post_id']=$config->getValue('confirm_email_link');
         $post_id = isset($_GET['post_id'])? (int) $_GET['post_id'] : 0;
-        require_once(ABSPATH."wp-admin".DS.'admin.php');
+        if(file_exists(ABSPATH."wp-admin".DS.'admin.php')) require_once(ABSPATH."wp-admin".DS.'admin.php');
 
         @header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset')); 
         
@@ -485,28 +525,31 @@ class WYSIJA_control_back extends WYSIJA_control{
 
     }
     
-    function getDefaultUrl(){
+    function getDefaultUrl($filter=true){
         $location="admin.php?page=".$_REQUEST['page'];
-        
-        if(isset($_REQUEST['search']) && $_REQUEST['search']){
-            $location.='&search='.$_REQUEST['search'];
-        }
-        
-        if(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']){
-            $location.='&filter-list='.$_REQUEST['filter-list'];
-        }
 
-        if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']){
-            $location.='&link_filter='.$_REQUEST['link_filter'];
+        if($filter){
+            if(isset($_REQUEST['search']) && $_REQUEST['search']){
+                $location.='&search='.$_REQUEST['search'];
+            }
+
+            if(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']){
+                $location.='&filter-list='.$_REQUEST['filter-list'];
+            }
+            
+            if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']){
+                $location.='&link_filter='.$_REQUEST['link_filter'];
+            }
+
+            if(isset($_REQUEST['orderby']) && $_REQUEST['orderby']){
+                $location.='&orderby='.$_REQUEST['orderby'];
+            }
+
+            if(isset($_REQUEST['ordert']) && $_REQUEST['ordert']){
+                $location.='&ordert='.$_REQUEST['ordert'];
+            }
         }
         
-        if(isset($_REQUEST['orderby']) && $_REQUEST['orderby']){
-            $location.='&orderby='.$_REQUEST['orderby'];
-        }
-        
-        if(isset($_REQUEST['ordert']) && $_REQUEST['ordert']){
-            $location.='&ordert='.$_REQUEST['ordert'];
-        }
         return $location;
     }
 

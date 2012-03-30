@@ -2,11 +2,10 @@
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_install extends WYSIJA_object{
     function WYSIJA_help_install(){
-        require_once(ABSPATH . 'wp-admin'.DS.'includes'.DS.'upgrade.php');
+        if(file_exists(ABSPATH . 'wp-admin'.DS.'includes'.DS.'upgrade.php'))    require_once(ABSPATH . 'wp-admin'.DS.'includes'.DS.'upgrade.php');
     }
     function install(){
         $values=array();
-        get_avatar($id_or_email);
         
         if(!$this->testSystem()) return false;
         
@@ -120,7 +119,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         $wjEngine =& WYSIJA::get('wj_engine', 'helper');
         $defaultStyles = $wjEngine->getDefaultStyles();
         $defaultStyles['html']['background']=$defaultStyles['header']['background']=$defaultStyles['footer']['background']="E8E8E8";
-        
+
         $dividersHelper =& WYSIJA::get('dividers', 'helper');
         $defaultDivider = $dividersHelper->getDefault();
         $dataEmail['wj_data']=array (

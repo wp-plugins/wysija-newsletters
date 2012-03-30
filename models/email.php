@@ -61,7 +61,7 @@ class WYSIJA_model_email extends WYSIJA_model{
     
     function checkParams(){
 
-        if(isset($this->values["params"])){
+        if(isset($this->values["params"]) && is_array($this->values["params"])){
             $this->values["params"]=base64_encode(serialize($this->values["params"]));
         }
     }

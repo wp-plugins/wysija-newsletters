@@ -204,8 +204,12 @@ class WYSIJA_help_themes extends WYSIJA_object{
                 $helperF->rrmdir($dirthemetemp);
                 return false;
             }else{
-                $theme_key=$filename;
+                if(!in_array($filename, array('.','..',".DS_Store","Thumbs.db")))    $theme_key=$filename;
             }
+        }
+         if(!$theme_key){
+            $this->error('There was an error while unzipping the file :'.$tempzipfile.' to the folder: '.$dirthemetemp);
+            return false;
         }
         unlink($tempzipfile);
 
@@ -214,19 +218,21 @@ class WYSIJA_help_themes extends WYSIJA_object{
             return false;
         }
         
-        $listoffilestocheck=array($theme_key,"style.css");
         $result=true;
-        foreach($listoffilestocheck as $keyindex=> $fileexist){
-            if($keyindex==0)    $testfile=$listoffilestocheck[0];
-            else    $testfile=$listoffilestocheck[0].DS.$fileexist;
-            if(!file_exists($dirthemetemp.DS.$testfile)){
+            $listoffilestocheck=array($theme_key,"style.css");
+            foreach($listoffilestocheck as $keyindex=> $fileexist){
+                if($keyindex==0)    $testfile=$listoffilestocheck[0];
+                else    $testfile=$listoffilestocheck[0].DS.$fileexist;
+                if($manual){
+                    if(!file_exists($dirthemetemp.DS.$testfile)){
 
-                if($keyindex==0)    $this->error("Missing directory :".$testfile);
-                else    $this->error("Missing file :".$testfile);
-                $result=false;
+                        if($keyindex==0)    $this->error("Missing directory :".$testfile);
+                        else    $this->error("Missing file :".$dirthemetemp.DS.$testfile);
+                        $result=false;
+                    }
+                }
             }
-        }
-        
+
         
         if($result){
 

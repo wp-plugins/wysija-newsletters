@@ -74,10 +74,13 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 else $fieldid=$formidreal.'-'.$fieldKey;
                 
                 if(isset($params['labelswithin'])){
-                    $fieldstring='<input type="text" id="'.$fieldid.'" value="'.$field['label'].'" class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
-                }else{
-                    $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                     if($params['labelswithin']=='labels_within'){
+                        $fieldstring='<input type="text" id="'.$fieldid.'" value="'.$field['label'].'" class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                    }else{
+                        $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                    }
                 }
+               
                 $html.='<p class="wysija-p-'.$fieldKey.'">'.$fieldstring.'</p>';
             }
             
@@ -101,7 +104,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             $fieldid=$formidreal.'-abs-'.$fieldKey;
 
             if(isset($params['labelswithin'])){
-                $fieldstring='<input type="text" id="'.$fieldid.'" value="'.$field['label'].'" class="defaultlabels validated[abs]['.$field['type'].']" name="wysija[user][abs]['.$fieldKey.']" />';
+                $fieldstring='<input type="text" id="'.$fieldid.'" value="" class="defaultlabels validated[abs]['.$field['type'].']" name="wysija[user][abs]['.$fieldKey.']" />';
             }else{
                 $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="validated[abs]['.$field['type'].']" name="wysija[user][abs]['.$fieldKey.']" />';
             }

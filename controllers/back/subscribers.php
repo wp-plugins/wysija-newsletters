@@ -190,10 +190,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $listsDB=$modelList->getLists();
        
         $lists=array();
-        foreach($listsAll as $listobj){
-            $lists[$listobj["list_id"]]=$listobj;
+        foreach($listsAll as $listobje){
+            $lists[$listobje["list_id"]]=$listobje;
         }
-
+//dbg($listsDB);
         foreach($listsDB as $listobj){
             if($listobj['subscribers']) $lists[$listobj["list_id"]]['users']=$listobj['subscribers'];
         }
@@ -293,7 +293,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
      */
     function unsubscribemany(){
         $helperUser=&WYSIJA::get("user","helper");
-        foreach($_POST['wysija']['user']['user_id'] as $uid)    $helperUser->unsubscribe($uid);
+        foreach($_POST['wysija']['user']['user_id'] as $uid)    $helperUser->unsubscribe($uid,true);
         $count=count($_POST['wysija']['user']['user_id']);
         $this->notice(sprintf(__('%1$d Subscribers have been unsubscribed.',WYSIJA),$count));
         $this->redirect();
@@ -453,9 +453,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
          * 4 delete the list
          */
         $model=&WYSIJA::get("list","model");
-        $data=$model->getOne(array("name","welcome_mail_id"),array("list_id"=>(int)$_REQUEST['id'],"is_enabled"=>"1"));
+        $data=$model->getOne(array("name","welcome_mail_id"),array("list_id"=>(int)$_REQUEST['id']));
         
-        if($data){
+        if($data && ($data['namekey']!="users")){
             $modelRECYCLE=&WYSIJA::get("email","model");
             $modelRECYCLE->delete(array("email_id"=>$data['welcome_mail_id']));
 
@@ -1048,7 +1048,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         }
 
                 
-        $content=implode(",",$_POST['wysija']['export']['fields'])."\n";
+        $content=implode(";",$_POST['wysija']['export']['fields'])."\n";
         foreach($data as $row){
             $content.=implode(';',$row)."\n";
         }
