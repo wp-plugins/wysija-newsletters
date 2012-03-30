@@ -83,9 +83,8 @@ class WYSIJA_help_user extends WYSIJA_object{
         }
         $config=&WYSIJA::get('config','model');
         $mailer=&WYSIJA::get("mailer","helper");
-        $mailer->replacelinebreaks=true;
         foreach($users as $userObj){
-            $resultsend=$mailer->sendOne($config->getValue('confirm_email_id'),$userObj);
+            $resultsend=$mailer->sendOne($config->getValue('confirm_email_id'),$userObj,true);
         }
         if(!$sendone)$this->notice(sprintf(__('%1$d emails have been sent to unconfirmed subscribers.',WYSIJA),count($users)));
         else return $resultsend;

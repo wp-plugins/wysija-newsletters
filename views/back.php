@@ -8,6 +8,7 @@ class WYSIJA_view_back extends WYSIJA_view{
     var $arrayMenus=array();
     var $bulks=array();
     var $action='';
+    var $statuses=array();
     
     function WYSIJA_view_back(){
         /* the default actions to be linked in a listing */
@@ -74,13 +75,21 @@ class WYSIJA_view_back extends WYSIJA_view{
      * to help reproduce the standard listing of a wordpress admin, here is the list of links appearing on top
      */
     function filtersLink(){
-        if($this->links){
+        if($this->statuses){
             ?>
             <div class="filter">
                 <ul class="subsubsub">
                     <?php
-                        foreach($this->links as $link){
-                            echo '<li><a class="current" href="'.$link['uri'].'">'.$link['title'].' <span class="count">('.$link['count'].')</span></a> |</li>';
+                        
+                        $last_key = key(array_slice($this->statuses, -1, 1, TRUE));
+
+                        foreach($this->statuses as $keyst=>$status){
+                            $class='';
+                            if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']==$status['key']) $class='current';
+                            echo '<li><a class="'.$class.'" href="'.$status['uri'].'">'.$status['title'].' <span class="count">('.$status['count'].')</span></a>';
+                            if($last_key!=$keyst) echo ' | ';
+                            echo '</li>';
+                            
                         }
                     ?>
                 </ul>
@@ -379,6 +388,15 @@ class WYSIJA_view_back extends WYSIJA_view{
                 $wrap.='</td>';
 
                 break;
+            case "time":
+                
+                if(!isset($params['format']))$params['format']='';
+
+                $wrap='<td class="'.$key.' column-'.$key.'">';
+                $wrap.=$this->fieldListHTML_created_at($val,$params['format']);
+                $wrap.='</td>';
+
+                break;
             default:
                 $wrap='<td class="'.$key.' column-'.$key.'">';
                 $specialMethod="fieldListHTML_".$key;
@@ -393,8 +411,9 @@ class WYSIJA_view_back extends WYSIJA_view{
          return $wrap;
     }
     
-    function fieldListHTML_created_at($val){
-        return date_i18n(get_option('date_format'),$val);
+    function fieldListHTML_created_at($val,$format=''){
+        if($format) return date_i18n($format,$val);
+        else return date_i18n(get_option('date_format'),$val);
 
         //return date("Y-m-d",$val);
     }

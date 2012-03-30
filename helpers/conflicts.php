@@ -29,20 +29,23 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
     }
     function remove_actions($actionsToClear){
         global $wp_filter;
-        foreach($wp_filter[$actionsToClear] as $priority => $callbacks){
-            if(!isset($this->cleanHooks[$actionsToClear][$priority]))   continue;
+        foreach($wp_filter[$actionsToClear] as $priority => $callbacks) {
+            if(!isset($this->cleanHooks[$actionsToClear][$priority])) continue;
             foreach($callbacks as $identifier => $arrayInfo){
                 if(is_array($arrayInfo['function'])){
                     foreach($arrayInfo['function'] as $id =>$myobject){
-                        foreach($this->cleanHooks[$actionsToClear][$priority] as $infoCLear){
-                            if(isset($infoCLear["objects"]) && is_object($myobject) && in_array(get_class($myobject),$infoCLear["objects"])){
+                        foreach($this->cleanHooks[$actionsToClear][$priority] as $infoClear){
+                            if(isset($infoClear["objects"]) && is_object($myobject) && in_array(get_class($myobject),$infoClear["objects"])){
                                 unset($wp_filter[$actionsToClear][$priority][$identifier]);
                             }
                         }
                     }
-                }else{
-                    foreach($this->cleanHooks[$actionsToClear][$priority] as $infoCLear){
-                        if(isset($infoCLear["functions"]) && function_exists($arrayInfo['function']) && in_array($arrayInfo['function'],$infoCLear["functions"])){
+                } else {
+                    foreach($this->cleanHooks[$actionsToClear][$priority] as $infoClear){
+
+                        if(isset($infoClear["functions"]) && function_exists($arrayInfo['function']) && in_array($arrayInfo['function'],$infoClear["functions"])){
+                            unset($wp_filter[$actionsToClear][$priority][$identifier]);
+                        } else if(array_key_exists('function', $infoClear)) {
                             unset($wp_filter[$actionsToClear][$priority][$identifier]);
                         }
                     }

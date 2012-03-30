@@ -577,7 +577,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <th scope="row" colspan="2">
                         <?php 
                             $field=__('What should I pick?',WYSIJA);
-                            $field.='<p class="description">'.__('This is tough question because that doesn’t depend on us, but on your server. Get in touch with your hosting provider. Otherwise, we have a great guide for you. ',WYSIJA).'</p>';
+                            $field.='<p class="description">'.__('This is tough question because that doesnâ€™t depend on us, but on your server. Get in touch with your hosting provider. Otherwise, we have a great guide for you. ',WYSIJA).'</p>';
                             echo $field;
                         ?>
                     </th>

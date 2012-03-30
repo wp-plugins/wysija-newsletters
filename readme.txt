@@ -1,9 +1,9 @@
 === Wysija Newsletters ===
 Contributors: wysija
-Tags: newsletter, newsletters, email, emailing, smtp
+Tags: newsletter, newsletters, email, emailing, smtp, automatic, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
@@ -127,6 +127,22 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 1.1.2 - 2012-03-26 =
+
+* fixed automatically recreates the subscription page when accidentally deleted
+* fixed more accurate message about folder permissions in wp-content/uploads
+* fixed possibility to delete synchronisable lists
+* fixed pagination on subscribers lists' listing
+* fixed google analytics tracking code
+* fixed relative path to image in newsletter now forced to absolute path
+* fixed widget alignment when labels not within field default value is now within field
+* fixed automatic bounce handling error on some server.
+* fixed scripts enqueuing in frontend, will print as long as there is a wp_footer function call in your theme
+* fixed theme manager returns error on install
+* fixed conflict with the SmallBiz theme
+* fixed conflict with the Events plugin (wp-events)
+* fixed conflict with the Email Users plugin (email-users)
 
 = 1.1.1 - 2012-03-13 =
 

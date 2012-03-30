@@ -453,9 +453,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
          * 4 delete the list
          */
         $model=&WYSIJA::get("list","model");
-        $data=$model->getOne(array("name","welcome_mail_id"),array("list_id"=>(int)$_REQUEST['id'],"is_enabled"=>"1"));
+        $data=$model->getOne(array("name","welcome_mail_id"),array("list_id"=>(int)$_REQUEST['id']));
         
-        if($data){
+        if($data && ($data['namekey']!="users")){
             $modelRECYCLE=&WYSIJA::get("email","model");
             $modelRECYCLE->delete(array("email_id"=>$data['welcome_mail_id']));
 

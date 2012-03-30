@@ -42,9 +42,7 @@ class WYSIJA_model_config extends WYSIJA_object{
     
     function WYSIJA_model_config(){
         $this->add_translated_default();
-        if(defined('WP_ADMIN')){
-            add_action('admin_menu', array($this,'add_translated_default'),96);
-        }
+
         $encoded_option=get_option($this->name_option);
         global $wysija_installing;
         $installApp=false;
@@ -56,15 +54,20 @@ class WYSIJA_model_config extends WYSIJA_object{
 
 
         /*install the application because there is no option setup it's safer than the classic activation scheme*/
-        if($installApp && $wysija_installing!==true){
-            $wysija_installing=true;
-            $installer=&WYSIJA::get("install","helper");
-            add_action('admin_menu', array($installer,'install'),97);
-        }else{
-            $updater=&WYSIJA::get("update","helper");
-            add_action('admin_menu', array($updater,'check'),103);
+        if(defined('WP_ADMIN')){
+            add_action('admin_menu', array($this,'add_translated_default'),96);
             
+            if($installApp && $wysija_installing!==true){
+                $wysija_installing=true;
+                $installer=&WYSIJA::get("install","helper");
+                add_action('admin_menu', array($installer,'install'),97);
+            }else{
+                $updater=&WYSIJA::get("update","helper");
+                add_action('admin_menu', array($updater,'check'),103);
+
+            }
         }
+        
         
     }
     
@@ -82,18 +85,52 @@ class WYSIJA_model_config extends WYSIJA_object{
          * List of all the conflictive extensions which invite themselves on our interfaces and break some of our js:
          * tribulant newsletter
          */
-        $this->defaults["conflictivePlugins"]=array(
-            "tribulant-wp-mailinglist"=>array(
-                "file"=>"wp-mailinglist/wp-mailinglist.php",
-                "version"=>"3.8.7",
-                "clean"=>array(
-                    "admin_head"=>array(
-                        "10"=>array("objects"=>
-                                array("wpMail")
-                            )
+        $this->defaults['conflictivePlugins'] = array(
+            'tribulant-wp-mailinglist' => array(
+                'file' => 'wp-mailinglist/wp-mailinglist.php',
+                'version' => '3.8.7',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'objects' => array('wpMail')
                         )
                     )
                 )
+            ),
+            'wp-events' => array(
+                'file' => 'wp-events/wp-events.php',
+                'version' => '',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => array('events_editor_admin_head')
+                        )
+                    )
+                )
+            ),
+            'email-users' => array(
+                'file' => 'email-users/email-users.php',
+                'version' => '',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => array('editor_admin_head')
+                        )
+                    )
+                )
+            )
+        );
+        
+        $this->defaults['conflictiveThemes'] = array(
+            'smallbiz' => array(
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => array('smallbiz_on_admin_head')
+                        )
+                    )
+                )
+            )
         );
     }
     

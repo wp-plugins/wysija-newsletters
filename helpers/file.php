@@ -25,6 +25,10 @@ class WYSIJA_help_file extends WYSIJA_object{
     
     function makeDir($folder="temp",$mode=0755){
         $upload_dir = wp_upload_dir();
+        if(!isset($upload_dir['basedir'])){
+            if(isset($upload_dir['error'])) $this->wp_error("<b>WordPress error</b> : ".$upload_dir['error'],1);
+            return false;
+        }
         if(strpos(str_replace("/",DS,$folder),str_replace("/",DS,$upload_dir['basedir']))!==false){
             $dirname=$folder;
         }else{
@@ -34,6 +38,7 @@ class WYSIJA_help_file extends WYSIJA_object{
             if(!mkdir($dirname, $mode,true)){
                 $dirname=false;
             }
+            chmod($dirname,$mode);
         }
         return $dirname;
     }
@@ -103,11 +108,20 @@ class WYSIJA_help_file extends WYSIJA_object{
         }
     }
     function rrmdir($dir) {
+      if(strpos($dir, '..')!==false){
+          $this->error('Path is not safe, cannot contain ..');
+          return false;
+      }
       if (is_dir($dir)) {
         $files = scandir($dir);
-        foreach ($files as $file)
-        if ($file != "." && $file != "..") $this->rrmdir("$dir".DS."$file");
-        rmdir($dir);
+        foreach ($files as $file){
+            if ($file != "." && $file != "..") $this->rrmdir("$dir".DS."$file");
+        }
+        if(!rmdir($dir)){
+            chmod($dir, 0777);
+            rmdir($dir);
+        }
+        
       }
       else if (file_exists($dir)) {
           $dir=str_replace('/',DS,$dir);
@@ -115,12 +129,20 @@ class WYSIJA_help_file extends WYSIJA_object{
       }
     }
     function rcopy($src, $dst) {
-      if (file_exists($dst)) $this->rrmdir($dst);
+      if(strpos($src, '..')!==false || strpos($dir, '..')!==false){
+          $this->error('src : '.$src);
+          $this->error('dst : '.$dst);
+          $this->error('Path is not safe, cannot contain ..');
+          return false;
+      }else{
+          if (file_exists($dst)) $this->rrmdir($dst);
+      }
       if (is_dir($src)) {
         mkdir($dst);
         $files = scandir($src);
-        foreach ($files as $file)
-        if ($file != "." && $file != "..") $this->rcopy("$src/$file", "$dst/$file");
+        foreach ($files as $file){
+            if ($file != "." && $file != "..") $this->rcopy("$src/$file", "$dst/$file");
+        }
       }
       else if (file_exists($src)) {
           copy(str_replace('/',DS,$src), str_replace('/',DS,$dst));

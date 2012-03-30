@@ -64,22 +64,34 @@ class WYSIJA_help_zip extends WYSIJA_object{
                 $this->error("Archive is empty!");
                 return false;
             }
-            $helperF=&WYSIJA::get('file',"helper");
-            $dirthemetemp=$helperF->makeDir();
 
             foreach ( $archive_files as $file ) {
-                    $filedest=str_replace("/",DS,$to . $file['filename']);
-                    if ( $file['folder']){
-                        $folderTest=str_replace(array($dirthemetemp,"/"),array("",DS),$to . $file['filename']);
-                        $dirthemetemp=$helperF->makeDir($folderTest,0777);
+                $filedest=str_replace("/",DS,$to . $file['filename']);
+                if ( $file['folder']){
+                    $to=str_replace("/",DS,$to);
+                    if(file_exists($to))  chmod($to,0777);
+
+                    if(is_dir($to) ){
+
+                        if(!mkdir($filedest,0777)){
+                            $this->error('cannot created folder : '.$filedest);
+                            $to=dirname($to).DS;
+                            $filedest=str_replace("/",DS,$to . $file['filename']);
+                            if(!mkdir($filedest,0777)) {
+                                $this->error('Still cannot created folder : '.$filedest);
+                                return false;
+                            }
+                        }
+                    }
+                    if(file_exists($filedest))  chmod($filedest,0777);
+                    continue;
+                }
+                if ( '__MACOSX/' === substr($file['filename'], 0, 9) ) // Don't extract the OS X-created __MACOSX directory files
                         continue;
-                    }
-                    if ( '__MACOSX/' === substr($file['filename'], 0, 9) ) // Don't extract the OS X-created __MACOSX directory files
-                            continue;
-                    if ( ! $wp_filesystem->put_contents( $filedest, $file['content'], FS_CHMOD_FILE) ){
-                        $this->error('Could not copy file.'. $filedest);
-                        return false;
-                    }
+                if ( ! $wp_filesystem->put_contents( $filedest, $file['content'], 0644) ){
+                    $this->error('Could not copy file : '. $filedest);
+                    return false;
+                }           
             }
             return true;
     }

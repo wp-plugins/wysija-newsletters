@@ -572,12 +572,13 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                             <span class="duplicate">
                                                 <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=duplicatelist" class="submitduplicate"><?php _e('Duplicate',WYSIJA)?></a>
                                             </span>
-                                            <?php if($columns['is_enabled']): ?>
+                                            <?php if($columns['namekey']!="users"): ?>
                                              |
                                              <span class="delete">
                                                 <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=deletelist&_wpnonce=<?php echo $this->secure(array("action"=>"deletelist","id"=>$columns['list_id']),true); ?>" class="submitdelete"><?php _e('Delete',WYSIJA)?></a>
                                             </span>                                          
-                                            <?php else: ?>                                              
+                                            <?php endif;
+                                            if(!$columns['is_enabled']): ?>                                              
                                              |
                                             <span class="synch">
                                                 <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=synchlist&_wpnonce=<?php echo $this->secure(array("action"=>"synchlist","id"=>$columns['list_id']),true); ?>" class="submitsynch"><?php _e('Synch',WYSIJA)?></a>

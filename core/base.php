@@ -202,7 +202,17 @@ class WYSIJA extends WYSIJA_object{
         }*/
         
         $url=get_permalink($pageid);
-
+        if(!$url){
+            //we need to recreate the subscription page
+            $values=array();
+            $helperInstall=&WYSIJA::get("install",'helper');
+            $helperInstall->createPage($values);
+            
+            $modelConf=&WYSIJA::get("config","model");
+            $modelConf->save($values);
+            $url=get_permalink($values['confirm_email_link']);
+            if(!$url) $this->error('Error with the wysijap subscription confirmation page.');
+        }
         $params['wysijap']=str_replace("?wysijap=","",basename($url));
 
         if($params){
@@ -747,8 +757,10 @@ class WYSIJA_NL_Widget extends WP_Widget {
             ,"instruction" =>array("label"=>"",'default'=>__('To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!',WYSIJA))
             ,"lists" =>array("core"=>1,"label"=>__("Select a list",WYSIJA),'default'=>array(1))
             ,"customfields" =>array("core"=>1,"label"=>__("Collect extra data from users:",WYSIJA),'default'=>"")
+            ,'labelswithin'=>array('core'=>1,'default'=>true,"label"=>__("Display labels in inputs",WYSIJA),'hidden'=>1)
             ,"submit" =>array("core"=>1,"label"=>__("Button label:",WYSIJA),'default'=>__('Subscribe!',WYSIJA))
-            ,"success"=>array("core"=>1,"label"=>__("Success message:",WYSIJA),'default'=>$successmsg));
+            ,"success"=>array("core"=>1,"label"=>__("Success message:",WYSIJA),'default'=>$successmsg)
+        );
     }
 
 
@@ -800,8 +812,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         foreach($this->fields as $field => $fieldParams){
             $valuefield="";
-            
-            if(isset($this->coreOnly) && !isset($fieldParams['core'])) continue;
+            if($fieldParams['hidden'] || (isset($this->coreOnly) && !isset($fieldParams['core']))) continue;
             if(isset($instance[$field]))  {
                 
                 if($field=="success" && $instance[$field]==$this->successmsgsub." ".$this->successmsgconf){
@@ -840,6 +851,28 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $fieldHTML .= '</div>';
                     
                     break;
+                case "labelswithin":
+
+                    /*$classDivLabel='style="float:left"';
+                    $fieldHTML= '<div style="max-height: 116px; overflow: auto; float: left; margin-left: 10px;">';
+                    $value="labels_within";
+                    $checked=true;
+                    if(!isset($instance["labelswithin"]) || $instance["labelswithin"]!='labels_within') $checked=true;
+
+                    $id=str_replace("_",'-',$key).'-'.$value;
+                    $fieldHTML.='<label for="'.$id.'">';
+                    $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("labelswithin")),$value,$checked);
+                    $fieldHTML.=__('Yes',WYSIJA).'</label>';
+
+                    $value="labels_out";
+                    $checked=false;
+                    if((isset($instance["labelswithin"]) && $instance["labelswithin"]=='labels_out')) $checked=true;
+                    $id=str_replace("_",'-',$key).'-'.$value;
+                    $fieldHTML.='<label for="'.$id.'">';
+                    $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("labelswithin")),$value,$checked);
+                    $fieldHTML.=__('No',WYSIJA).'</label>';
+                    $fieldHTML .= '</div>';*/
+                    break;
                 case "customfields":
                     $modelCustomF=&WYSIJA::get("user_field","model");
                     $modelCustomF->orderBy("field_id","ASC");
@@ -848,8 +881,6 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $custombyid=array();
                     $classDivLabel='style="float:left"';
                     $fieldHTML= '<div style="max-height: 116px; overflow: auto; float: left; margin-left: 10px;">';
-     
-
                     foreach($customs as $customf){
                         $custombyid[$customf['column_name']]=$customf;
 
@@ -863,20 +894,29 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     }
                     $fieldHTML .= '</div>';
                     
-                   
+                    
 
                     /*custom fields management for labels*/
                     if(isset($instance["customfields"]) && $instance["customfields"]){
                          /* set label as default value */
-                        if(is_array($valuefield) && isset($instance["labelswithin"])) $checked=true;
-                        else $checked=false;
+                        $fieldHTML.= '<p style="margin:0 0 5px 0; float:left; ">'.$this->fields['labelswithin']['label'].' ';
+                        $value="labels_within";
+                        $checked=true;
+                        if(!isset($instance["labelswithin"]) || $instance["labelswithin"]!='labels_within') $checked=true;
                         
-                        $fieldHTML.= "<div style='clear:both;'>";
-                        $fieldHTML.= '<p><label for="'.$this->get_field_id("labelswithin").'">'.__("Display labels in inputs",WYSIJA).
-                                    $formObj->checkbox( array('id'=>$this->get_field_id("labelswithin"),
-                                        'name'=>$this->get_field_name("labelswithin")),
-                                            "labels_within",$checked).'</label></p>';
-                        $fieldHTML .= "<div style='clear:both;'></div></div>";
+                        $id=str_replace("_",'-',$key).'-'.$value;
+                        $fieldHTML.='<label for="'.$id.'">';
+                        $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("labelswithin")),$value,$checked);
+                        $fieldHTML.=__('Yes',WYSIJA).'</label>';
+
+                        $value="labels_out";
+                        $checked=false;
+                        if((isset($instance["labelswithin"]) && $instance["labelswithin"]=='labels_out')) $checked=true;
+                        $id=str_replace("_",'-',$key).'-'.$value;
+                        $fieldHTML.='<label for="'.$id.'">';
+                        $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("labelswithin")),$value,$checked);
+                        $fieldHTML.=__('No',WYSIJA).'</label>';
+                        $fieldHTML .= '</p>';
                         
                         $fieldParamsLabels["email"]=array("core"=>1,
                                 "label"=>__('Label for email:',WYSIJA),

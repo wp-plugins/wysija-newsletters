@@ -158,17 +158,15 @@ class Net_POP3 {
         * Include the Auth_SASL package.  If the package is not available,
         * we disable the authentication methods that depend upon it.
         */
-        if ((@include_once 'Auth/SASL.php') == false) {
+        if($this->_debug){
+            echo "AUTH_SASL NOT PRESENT!\n";
+        }
+        foreach($this->supportedSASLAuthMethods as $SASLMethod){
+            $pos = array_search( $SASLMethod, $this->supportedAuthMethods );
             if($this->_debug){
-                echo "AUTH_SASL NOT PRESENT!\n";
+                echo "DISABLING METHOD $SASLMethod\n";
             }
-            foreach($this->supportedSASLAuthMethods as $SASLMethod){
-                $pos = array_search( $SASLMethod, $this->supportedAuthMethods );
-                if($this->_debug){
-                    echo "DISABLING METHOD $SASLMethod\n";
-                }
-                unset($this->supportedAuthMethods[$pos]);
-            }
+            unset($this->supportedAuthMethods[$pos]);
         }
 
 

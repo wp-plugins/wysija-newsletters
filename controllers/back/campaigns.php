@@ -332,7 +332,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 )
             );
 
-            $emaildata['params']=base64_encode(serialize($newparams));
+            $emaildata['params']=$newparams;
             
             $newwjdata = array(
                 'version' => '0.9.1',

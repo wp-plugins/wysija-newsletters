@@ -7,7 +7,7 @@
         <tr colspan="2"><td style="clear:both; margin-bottom: 0; margin-left: 0; margin-right: 0; margin-top: 0; padding: 0;" width="{#block_width|default:564}">
             {if #image.src}{include file="templates/email/block_image.html"}{/if}
             {include file="templates/email/block_text.html"}
-            {if #image.src && #image.alignment != 'center'}<div style="page-break-after:always; clear:both;">&nbsp;</div>{/if}
+            {if #image.src}<div style="page-break-after:always; clear:both;">&nbsp;</div>{/if}
         </td></tr>
     </table>
 </div>

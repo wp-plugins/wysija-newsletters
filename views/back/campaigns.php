@@ -648,6 +648,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
        
             <?php
             echo $hiddenOrder;
+            $this->limitPerPage();
             echo '</form>';
     }
     
@@ -820,7 +821,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <div class="wj_themes" style="display:none;">
                     <div class="wj_button">
                         <a id="wysija-themes-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=themes"><?php _e('Install themes',WYSIJA) ?></a>
-                        <a id="wysija-themes-showcase" class="button" href="javascript:;"><?php _e('Showcase your theme',WYSIJA) ?></a>
+                        <?php /*<a id="wysija-themes-showcase" class="button" href="javascript:;"><?php xx_e('Showcase your theme',WYSIJA) ?></a> */ ?>
                     </div>
                     <ul id="wj_themes_list" class="clearfix">
                         <?php 
@@ -1037,8 +1038,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 'type'=>'input',
                 'isparams' => "params",
                 'class'=>'',
-                'label'=>__('Google Analytics tracking code',WYSIJA),
-                'desc'=>__('If you want to follow your campaigns statistics through Google Analytics enter the tracking code right here.',WYSIJA));
+                'label'=>__('Google Analytics Campaign',WYSIJA),
+                'desc'=>__('Give it a name, like "Spring newsletter". Find out how many visits this newsletter generates in GA > Traffic Sources > Campaigns',WYSIJA));
         }
         
         
