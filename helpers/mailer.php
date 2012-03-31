@@ -200,12 +200,12 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             if($mainurl !== $siteurl){
 
 
-                $replace[] = '#(href|src|action|background)[ ]*=[ ]*\"(?!(\{|%7B|\#|[a-z]{3,7}:|/))(?:\.\./)#i';
+                $replace[] = '#(href|src|action|background)[ ]*=[ ]*\"(?!(\{|%7B|\#|\[|[a-z]{3,7}:|/))(?:\.\./)#i';
                 $replaceBy[] = '$1="'.substr($siteurl,0,strrpos(rtrim($siteurl,'/'),'/')+1);
             }
-            $replace[] = '#(href|src|action|background)[ ]*=[ ]*\"(?!(\{|%7B|\#|[a-z]{3,7}:|/))(?:\.\./|\./)?#i';
+            $replace[] = '#(href|src|action|background)[ ]*=[ ]*\"(?!(\{|%7B|\#|\[|[a-z]{3,7}:|/))(?:\.\./|\./)?#i';
             $replaceBy[] = '$1="'.$siteurl;
-            $replace[] = '#(href|src|action|background)[ ]*=[ ]*\"(?!(\{|%7B|\#|[a-z]{3,7}:))/#i';
+            $replace[] = '#(href|src|action|background)[ ]*=[ ]*\"(?!(\{|%7B|\#|\[|[a-z]{3,7}:))/#i';
             $replaceBy[] = '$1="'.$mainurl;
 
             $replace[] = '#(background-image[ ]*:[ ]*url\(\'?"?(?!([a-z]{3,7}:|/|\'|"))(?:\.\./|\./)?)#i';
