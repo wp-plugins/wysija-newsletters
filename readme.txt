@@ -3,7 +3,7 @@ Contributors: wysija
 Tags: newsletter, newsletters, email, emailing, smtp, automatic, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing
 Requires at least: 3.0
 Tested up to: 3.3.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
@@ -127,6 +127,10 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 1.1.3 - 2012-03-31 =
+
+* fixed unsubscribe link redirection
 
 = 1.1.2 - 2012-03-26 =
 
