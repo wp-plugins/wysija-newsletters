@@ -79,6 +79,8 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                     }else{
                         $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                     }
+                }else{
+                    $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                 }
                
                 $html.='<p class="wysija-p-'.$fieldKey.'">'.$fieldstring.'</p>';
