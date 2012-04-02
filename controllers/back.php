@@ -93,7 +93,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         
         /* check the licence if we have a premium user once in a while like every 24hrs*/
         $modelC=&WYSIJA::get("config","model");
-        if(get_option("wysicheck") || (( (isset($_REQUEST['action']) && $_REQUEST['action']!="licok") || !isset($_REQUEST['action'])) && $modelC->getValue("premium_key"))){
+        if(get_option("wysicheck") || (( (isset($_REQUEST['action']) && $_REQUEST['action']!="licok")) && $modelC->getValue("premium_key"))){
             $onedaysec=7*24*3600;
             if(get_option("wysicheck") || (!$modelC->getValue("premium_val") || mktime() >((int)$modelC->getValue("premium_val")+$onedaysec))){
                 $helpLic=&WYSIJA::get("licence","helper");
