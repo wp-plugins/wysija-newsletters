@@ -1,6 +1,6 @@
 === Wysija Newsletters ===
 Contributors: wysija
-Tags: newsletter, newsletters, email, emailing, smtp, automatic, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing
+Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing, email, emailing, smtp, automatic, 
 Requires at least: 3.0
 Tested up to: 3.3.1
 Stable tag: 1.1.3
@@ -61,14 +61,18 @@ http://vimeo.com/35054446
 = Translations in your language =
 
 * Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
-* Czech (děkuji Ondra)
+* Chinese (thanks Michael!)
+* Czech (d?kuji Ondra)
 * Dutch (dank je wel John)
 * French (our bird did it)
 * German (danke Wolfgang & others)
-* Greek - 75% complete (Ευχαριστώ Giorgio)
+* Greek - 75% complete (????????? Giorgio)
+* Hungarian (K�sz�n�m Csaba!)
 * Italian - 75% complete (grazie Nick)
+* Norwegian (tysen takk Magnus)
 * Polish (thx to Marcin)
-* Portuguese - partial (obrigado Alvaro)
+* Portuguese PT - partial (obrigado Alvaro)
+* Portuguese BR - (Raphael & Djio)
 * Romanian (multumesc Silviu)
 * Spanish (gracias Fernando)
 
@@ -131,6 +135,8 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 = 1.1.3 - 2012-03-31 =
 
 * fixed unsubscribe link redirection
+* fixed rare issue preventing Mac users from uploading images
+* added Norwegian translation
 
 = 1.1.2 - 2012-03-26 =
 
@@ -147,6 +153,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed conflict with the SmallBiz theme
 * fixed conflict with the Events plugin (wp-events)
 * fixed conflict with the Email Users plugin (email-users)
+* fixed outlook 2007 rendering issue
 
 = 1.1.1 - 2012-03-13 =
 
@@ -166,7 +173,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed wordpress post in editor when an article had an image with height 0px
 * fixed when domain does not exist, trying to send email, we need to flag it as undelivered after 3 tries and remove it from the queue
 * fixed user tags [user:firstname | defaul:subscriber] left over when sent through queue and on some users
-* fixed get_version when wp-admin folder doesn't exists...
+* fixed get_version when wp-admin folder doesn't exist...
 * fixed Bulk Unsubscribe from all list "why can't I add him"
 
 = 1.1 - 2012/03/03 =
