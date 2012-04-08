@@ -1,4 +1,4 @@
-=== Wysija Newsletters ===
+﻿=== Wysija Newsletters ===
 Contributors: wysija
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing, email, emailing, smtp, automatic, 
 Requires at least: 3.0
@@ -62,19 +62,19 @@ http://vimeo.com/35054446
 
 * Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
 * Chinese (thanks Michael!)
-* Czech (d?kuji Ondra)
+* Czech (děkuji Ondra)
 * Dutch (dank je wel John)
 * French (our bird did it)
 * German (danke Wolfgang & others)
-* Greek - 75% complete (????????? Giorgio)
-* Hungarian (K�sz�n�m Csaba!)
+* Greek - 75% complete (Ευχαριστώ Giorgio)
+* Hungarian (Köszönöm Csaba!)
 * Italian - 75% complete (grazie Nick)
 * Norwegian (tysen takk Magnus)
 * Polish (thx to Marcin)
 * Portuguese PT - partial (obrigado Alvaro)
 * Portuguese BR - (Raphael & Djio)
 * Romanian (multumesc Silviu)
-* Slovak - 
+* Slovak (Ďakujem Ján)
 * Spanish (gracias Fernando)
 
 == Installation ==
