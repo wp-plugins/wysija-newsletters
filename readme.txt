@@ -74,6 +74,7 @@ http://vimeo.com/35054446
 * Portuguese PT - partial (obrigado Alvaro)
 * Portuguese BR - (Raphael & Djio)
 * Romanian (multumesc Silviu)
+* Slovak - 
 * Spanish (gracias Fernando)
 
 == Installation ==
@@ -137,6 +138,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed unsubscribe link redirection
 * fixed rare issue preventing Mac users from uploading images
 * added Norwegian translation
+* added Slovak translation
 
 = 1.1.2 - 2012-03-26 =
 
