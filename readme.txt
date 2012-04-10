@@ -50,13 +50,13 @@ http://vimeo.com/35054446
 * Subscription to post notifications, like Feedburner email alerts
 * Schedule sending of newsletter in future
 * Autoresponder, i.e. "Send email in 3 days after X event"
-* Add galleries to your newsletter
 
 = Future releases =
 
 * Possibility to add marketing tracking codes (Premium feature)
 * Support for custom post types
 * Display a list of newsletters sent in a page of your site (shortcode)
+* Add galleries to your newsletter
 
 = Translations in your language =
 
@@ -73,7 +73,7 @@ http://vimeo.com/35054446
 * Polish (thx to Marcin)
 * Portuguese PT - partial (obrigado Alvaro)
 * Portuguese BR - (Raphael & Djio)
-* Romanian (Multumesc Silviu)
+* Romanian (multumesc Silviu)
 * Slovak (?akujem Ján)
 * Spanish (gracias Fernando)
 
