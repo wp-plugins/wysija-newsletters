@@ -61,20 +61,21 @@ http://vimeo.com/35054446
 = Translations in your language =
 
 * Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
-* Chinese (thanks Michael!)
-* Czech (d?kuji Ondra)
+* Chinese - Mandarin (thanks Michael!)
+* Czech (thx Ondra)
+* Danish (thx Frederik)
 * Dutch (dank je wel John)
 * French (our bird did it)
 * German (danke Wolfgang & others)
-* Greek - 75% complete (????????? Giorgio)
-* Hungarian (Köszönöm Csaba!)
+* Greek - 75% complete (thx Giorgio)
+* Hungarian (thx Csaba!)
 * Italian - 75% complete (grazie Nick)
 * Norwegian (tysen takk Magnus)
 * Polish (thx to Marcin)
 * Portuguese PT - partial (obrigado Alvaro)
 * Portuguese BR - (Raphael & Djio)
 * Romanian (multumesc Silviu)
-* Slovak (?akujem Ján)
+* Slovak (thx Jan)
 * Spanish (gracias Fernando)
 
 == Installation ==
