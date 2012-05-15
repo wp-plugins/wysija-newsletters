@@ -370,7 +370,7 @@ class WYSIJA extends WYSIJA_object{
      * @return type 
      */
     function filter_cron_schedules( $param ) {
-        return array( 
+        $frequencies=array( 
             'one_min' => array(
                 'interval' => 60, 
                 'display' => __( 'Once every minutes',WYSIJA)
@@ -408,7 +408,9 @@ class WYSIJA extends WYSIJA_object{
                 'display' => __( 'Once every 28 days',WYSIJA)
                 ),
             );
-    }  
+        
+        return array_merge($param, $frequencies);
+    } 
     
     /**
      * cron where the frequency is decided by the administrator
