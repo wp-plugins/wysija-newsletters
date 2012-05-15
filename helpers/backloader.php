@@ -44,13 +44,15 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                     $controller->js[]="wysija-validator";
             }else{
                 if(file_exists($dirname."js".DS."admin-".$pagename."-default".".js"))
-                    wp_enqueue_script('wysija-'.$extension.'-admin-'.$pagename."-default", $urlname."/js/admin-".$pagename."-default.js",array(),WYSIJA::get_version());
+                    wp_enqueue_script('wysija-'.$extension.'-admin-'.$pagename."-default", $urlname."js/admin-".$pagename."-default.js",array(),WYSIJA::get_version());
                 if($pagename!="config")  wp_enqueue_script('wysija-admin-list');
             }
         return true;
     }
     
     function jsParse(&$controller,$pagename,$urlbase=WYSIJA_URL){
+
+        $plugin = substr(strrchr(substr($urlbase, 0, strlen($urlbase)-1), '/'), 1);
         
             if($controller->js){
                 foreach($controller->js as $kjs=> $js){
@@ -69,14 +71,21 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_enqueue_style('validate-engine-css');
                             break;
                         case "wysija-admin-ajax":
-                            wp_localize_script( 'wysija-admin-ajax', 'wysijaAJAX', array(
+                            if($plugin!='wysija-newsletters')   $ajaxvarname=$plugin;
+                            else $ajaxvarname='wysija';
+                            $dataajaxxx=array(
                                 'action' => 'wysija_ajax',
                                 'controller' => $pagename,
+                                'wysijaplugin' => $plugin,
                                 'dataType'=>"json",
                                 'ajaxurl'=>admin_url( 'admin-ajax.php' ),
-                                'adminurl'=>admin_url( 'admin.php' ),
                                 'loadingTrans'  =>__('Loading...',WYSIJA)
-                            ));
+                            );
+                            if(is_user_logged_in()){
+                                $dataajaxxx['adminurl']=admin_url( 'admin.php' );
+                                $dataajaxxx['wysilog']='1';
+                            }
+                            wp_localize_script( 'wysija-admin-ajax', $ajaxvarname.'AJAX',$dataajaxxx );
                             wp_enqueue_script("jquery-ui-dialog");
                             wp_enqueue_script($js);
                             wp_enqueue_style('wysija-tabs-css', WYSIJA_URL."css/smoothness/jquery-ui-1.8.15.custom.css",array(),WYSIJA::get_version());
@@ -112,8 +121,16 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_localize_script('wysija-editor', 'Wysija_i18n', $controller->jsTrans);
                             break;
                         default:
-                            if(is_string($kjs)) wp_enqueue_script($js,$urlbase."/js/".$js.".js");
-                            else wp_enqueue_script($js);
+                            if(is_string($kjs)) {
+
+                                if(substr($urlbase, -1) !== '/') $urlbase .= '/';
+
+                                if(substr($urlbase, -3) !== '.js') $js .= '.js';
+
+                                wp_enqueue_script($js, $urlbase.'js/'.$js);
+                            } else {
+                                wp_enqueue_script($js);
+                            }
                     }
                 }
             }

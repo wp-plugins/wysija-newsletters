@@ -154,6 +154,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             case "allsent":
                 $tradText=__('All Sent',WYSIJA);
                 break;
+            case "inqueue":
+                $tradText=__('In Queue',WYSIJA);
+                break;
             case "notsent":
                 $tradText=__('Not Sent',WYSIJA);
                 break;
@@ -440,7 +443,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                         echo $statusdata;
                                                         $link= str_replace(
                         array("[link]","[/link]"),
-                        array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
+                        array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
                         __("To resume send [link]Go premium now![/link]",WYSIJA));
                                                          echo '<p>'.$link.'</p>';
                                                     }
@@ -500,7 +503,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             <div id="wysistats2" class="left">
                 <ul>
                     <?php 
-
                     foreach($data['charts']['stats'] as $stats){
                         echo "<li>".$stats['name'].":".$stats['number']."</li>";
                     }
@@ -530,7 +532,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         echo '<p style="font-size:14px;font-weight:bold;">';
                         echo str_replace(
                                 array("[link]","[/link]"),
-                                array('<a title="'.__('Just a few clicks. No need to reinstall. Easy.',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
+                                array('<a title="'.__('Just a few clicks. No need to reinstall. Easy.',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
                                 __("Detailed view of links and their number of clicks is available in the Premium version. [link]Get it now.[/link]",WYSIJA));
                         echo '</p>';
                     }
@@ -766,12 +768,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             <!-- BEGIN: Wysija Toolbar -->
             <div id="wysija_toolbar">
                 <ul class="tabs">
-                    <li>
+                    <li class="wjt-content">
                         <a class="selected" href="javascript:;" rel="content"><?php _e("Content",WYSIJA)?></a>
                     </li>
-                    <li><a href="javascript:;" rel="images"><?php _e("Images",WYSIJA)?></a></li>
-                    <li><a href="javascript:;" rel="styles"><?php _e("Styles",WYSIJA)?></a></li>
-                    <li class="last"><a href="javascript:;" rel="themes"><?php _e("Themes",WYSIJA)?></a></li>
+                    <li class="wjt-images"><a href="javascript:;" rel="images"><?php _e("Images",WYSIJA)?></a></li>
+                    <li class="wjt-styles"><a href="javascript:;" rel="styles"><?php _e("Styles",WYSIJA)?></a></li>
+                    <li class="last wjt-themes"><a href="javascript:;" rel="themes"><?php _e("Themes",WYSIJA)?></a></li>
                 </ul>
 
                 <!-- CONTENT BAR -->
@@ -832,7 +834,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <div id="wj_themes_preview" style="display:none;"></div>
                 </div>
                 
-                <div id="wysija_notices" style="display:none;"><span id="wysija_notice_msg"></span><img alt="loader" style="display:none;" id="ajax-loading" src="<?php echo WYSIJA_URL ?>/img/wpspin_light.gif" /></div>
+                <div id="wysija_notices" style="display:none;"><span id="wysija_notice_msg"></span><img alt="loader" style="display:none;" id="ajax-loading" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
             </div>
         <!-- END: Wysija Toolbar -->
         <?php
@@ -978,7 +980,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <!-- END: Wysija Toolbar -->
         <div id="wysija-konami" >
             <div id="wysija-konami-overlay" style="display:none;width:100%; height:100%; position:fixed;top:0;left:0;background-color:#fff;z-index:99998;overflow:hidden;">
-                <img id="wysija-konami-bird" src="<?php echo WYSIJA_URL ?>/img/wysija_bird.jpg" style="display:none;z-index:99999;position:absolute;top:100px;left:100px;" width="597" height="483" />
+                <img id="wysija-konami-bird" src="<?php echo WYSIJA_URL ?>img/wysija_bird.jpg" style="display:none;z-index:99999;position:absolute;top:100px;left:100px;" width="597" height="483" />
             </div>
         </div>
         
@@ -1214,7 +1216,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     }
     
     function popup_themes($errors){
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>/img/wpspin_light.gif" /></div><?php
+        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         echo $this->messages(true);
         ?>  
         <form enctype="multipart/form-data" method="post" action="" class="wrap media-upload-form validate" id="gallery-form">
@@ -1410,7 +1412,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     
     function popup_wysija_browse($errors){
         echo $this->messages(true);
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>/img/wpspin_light.gif" /></div><?php
+        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         global $redir_tab, $type;
         
 	$redir_tab = 'wysija_browse';
@@ -1443,7 +1445,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     
     function popup_wp_browse($errors){
         echo $this->messages(true);
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>/img/wpspin_light.gif" /></div><?php
+        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         global $redir_tab, $wpdb, $wp_query, $wp_locale, $type, $tab, $post_mime_types;
         
 	$redir_tab = 'wp_browse';
@@ -1514,8 +1516,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
 	// If Mac and mod_security, no Flash. :(
 	$flash = true;
-	if ( false !== stripos($_SERVER['HTTP_USER_AGENT'], 'mac') && apache_mod_loaded('mod_security') )
-		$flash = false;
+        /*
+	if(false !== stripos($_SERVER['HTTP_USER_AGENT'], 'mac') && apache_mod_loaded('mod_security')) {
+            $flash = false;
+        }*/
 
 	$flash = apply_filters('flash_uploader', $flash);
 	$post_id = isset($_REQUEST['post_id']) ? intval($_REQUEST['post_id']) : 0;
@@ -1531,7 +1535,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 		$upload_size_unit = (int) $upload_size_unit;
 	}
         echo $this->messages(true);
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>/img/wpspin_light.gif" /></div>
+        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
         
         <script type="text/javascript">
         //<![CDATA[

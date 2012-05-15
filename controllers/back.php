@@ -18,42 +18,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysija_msg=$wysija_msgTemp;
         }
         
-        /* 
-         * let's fix all the conflict that we may have
-         */
-        $modelConfig=&WYSIJA::get('config','model');
-
-        // check conflictiing themes
-        $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
-        $conflictingTheme = null;
-        $currentTheme = strtolower(get_current_theme());
-        foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
-            if($keyTheme === $currentTheme) {
-                $conflictingTheme = $keyTheme;
-            }
-        }
-
-        // if the current theme is known to make troubles, let's resolve this
-        if($conflictingTheme !== null) {
-            $helperConflicts =& WYSIJA::get('conflicts', 'helper');
-            $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
-        }
-
-        // check conflicting plugins
-        $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
-
-        $conflictingPlugins=array();
-        foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
-            if (is_plugin_active($conflictPlug['file'])) {
-                //plugin is activated
-                $conflictingPlugins[$keyPlg]=$conflictPlug;
-            }
-        }
-
-        if($conflictingPlugins){
-            $helperConflicts=&WYSIJA::get("conflicts","helper");
-            $helperConflicts->resolve($conflictingPlugins);
-        }
+        
         
         $wysija_qryTemp=get_option("wysija_queries");
         if(is_array($wysija_qryTemp) && count($wysija_qryTemp)>0){
@@ -94,16 +59,15 @@ class WYSIJA_control_back extends WYSIJA_control{
         /* check the licence if we have a premium user once in a while like every 24hrs*/
         $modelC=&WYSIJA::get("config","model");
         if(get_option("wysicheck") || (( (isset($_REQUEST['action']) && $_REQUEST['action']!="licok")) && $modelC->getValue("premium_key"))){
+            //$this->notice('licence check');
             $onedaysec=7*24*3600;
             if(get_option("wysicheck") || (!$modelC->getValue("premium_val") || mktime() >((int)$modelC->getValue("premium_val")+$onedaysec))){
                 $helpLic=&WYSIJA::get("licence","helper");
                 $res=$helpLic->check(true);
                 if($res['nocontact']){
-                    /* redirect instantly to a page with a javascript file  where we check the domain is ok */
-                    
+                    /* redirect instantly to a page with a javascript file  where we check the domain is ok */      
                     $data=get_option("wysijey");
                     /* remotely connect to host */
-                    
                     wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), mktime());
                     
                 }
@@ -124,8 +88,7 @@ class WYSIJA_control_back extends WYSIJA_control{
     }
     function defaultDisplay(){
         $this->viewShow=$this->action='main';  
-        
-        
+
         /* if it has not been enqueud in the head we print it here(can happens based on the action after a save or so)*/
         $this->js[]='wysija-admin-list';
         
@@ -191,7 +154,7 @@ class WYSIJA_control_back extends WYSIJA_control{
     
     
     function render(){
-        
+
         $this->viewObj->render($this->viewShow,$this->data);
     }
     
@@ -204,7 +167,8 @@ class WYSIJA_control_back extends WYSIJA_control{
         if($this->model){
             if(isset($_REQUEST['action']))  $action=$_REQUEST['action'];
             else  $action="defaultDisplay";
-            
+            if(!$action) $action="defaultDisplay";
+
             if($action){
                 $this->_tryAction($action);
             }
@@ -234,7 +198,8 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->action=$action;
 
             $this->viewShow=$this->action;
-            
+            if(!$this->viewShow) $this->viewShow='defaultDisplay';
+
             if(strpos($action, "bulk_")===false)$this->$action();
             else {
                 $this->$action($_REQUEST['wysija'][$this->model][$this->modelObj->pk]);
@@ -289,12 +254,12 @@ class WYSIJA_control_back extends WYSIJA_control{
         if((int)$totalSubscribers>1900 && !$config->getValue('premium_key')){
             if((int)$totalSubscribers>2000){
                 $this->error(str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
                     sprintf(__('Yikes. You\'re over the limit of 2000 subscribers for the free version of Wysija (%1$s in total). Sending is disabled now. Please upgrade your version to [link]premium[/link] to send without limits.',WYSIJA)
                             ,$totalSubscribers)),true);
             }else{
                 $this->notice(str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
                     sprintf(__('Yikes. You\'re near the limit of %1$s subscribers in total for the free version of Wysija. Sending will be disabled when you reach that limit. Rest assured, your visitors will still be able to subscribe. Go [link]premium[/link] to send without limits.',WYSIJA)
                             ,"2000")));
             }

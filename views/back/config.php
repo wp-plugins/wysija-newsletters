@@ -97,16 +97,34 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 <li><a href="#sendingmethod"><?php _e('Sending Method',WYSIJA);?></a></li>
                 <li><a href="#bounce"><?php _e('Automated Bounce Handling',WYSIJA);?></a></li>
                 <li><a href="#advanced"><?php _e('Advanced',WYSIJA);?></a></li>
+                <li class="premium"><a href="#premium"><?php 
+                $modelC=&WYSIJA::get("config","model");
+                if($modelC->getValue("premium_key")){
+                   _e('Premium Activated!',WYSIJA);
+                }else{
+                   _e('Premium Upgrade',WYSIJA);
+                }
+                
+                ?></a></li>
             </ul>
             <form name="wysija-settings" method="post" id="wysija-settings" action="" class="form-valid" autocomplete="off">
                 <div id="basics">
                     <?php $this->basics(); ?>
+                    <p class="submit">
+                    <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
+                    </p>
                 </div>
                 <div id="emailactiv">
                     <?php $this->emailactiv(); ?>
+                    <p class="submit">
+                    <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
+                    </p>
                 </div>
                 <div id="sendingmethod">
                     <?php $this->sendingmethod(); ?>
+                    <p class="submit">
+                    <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
+                    </p>
                 </div>
                 
                 <div id="bounce">
@@ -114,20 +132,29 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     $config=&WYSIJA::get("config","model");
                     
                     if(!$config->getValue("premium_key")){
-                        echo str_replace(array('[link]','[/link]'),array('<a class="wysija-premium" href="javascript:;" title="'.__("Purchase Wysija PREMIUM",WYSIJA).'">','<img alt="loader" src="'.WYSIJA_URL.'img/wpspin_light.gif" /></a>'),__("[link]Purchase the premium version[/link] and get access to the <strong>Automated Bounce Handling</strong> system.",WYSIJA));
+                        echo str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;" title="'.__("Purchase Wysija PREMIUM",WYSIJA).'">','</a>'),__("[link]Purchase the premium version[/link] and get access to the <strong>Automated Bounce Handling</strong> system.",WYSIJA));
                     }else {
                         $this->bounce();
                     } ?>
+                    <p class="submit">
+                    <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
+                    </p>
                 </div>
                 <div id="advanced">
                     <?php $this->advanced(); ?>
+                    <p class="submit">
+                    <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
+                    </p>
+                </div>
+                <div id="premium">
+                    <?php $this->premium(); ?>
+                    
                 </div>
                 
-                <p class="submit">
+                <p class="submitee">
                     <?php $this->secure(array('action'=>"save")); ?>
                     <input type="hidden" value="save" name="action" />
                     <input type="hidden" value="" name="redirecttab" id="redirecttab" />
-                    <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija">
                 </p>
                 
             </form>
@@ -143,7 +170,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'input',
             'label'=>'Premium Account Serial Key',
             'desc'=>'Get immediate support, add your own marketing tracking codes, enable automated bounce handling. [link]Click here to purchase.[/link]',
-            'link'=>'<a class="wysija-premium" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
+            'link'=>'<a class="premium-tab" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
         }
 
         $step['company_address']=array(
@@ -187,10 +214,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         }else{
             $title=__('You are using the free version.',WYSIJA);
             $desc=__('Send to more than 2000 subscribers, get immediate support, enable automated bounce handling and more. [link]Click here to purchase.[/link]',WYSIJA);
-            $link='<a class="wysija-premium" href="javascript:;" title="'.__("Find out what's on offer.",WYSIJA).'">';
+            $link='<a class="premium-tab" href="javascript:;" title="'.__("Find out what's on offer.",WYSIJA).'">';
             $desc=str_replace(
                     array("[link]","[/link]"),
-                    array($link,'<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),$desc);
+                    array($link,'</a>'),$desc);
         }
         
         
@@ -520,7 +547,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <th scope="row">
                         <?php 
                             $field=__('Send...',WYSIJA);
-                            //$field.='<p class="description">'.__("Leave this setting to 70 emails per 15 minutes, if you're unsure. To increase this value, get in touch with your host to find out the limit per hour of emails sent.",WYSIJA).'</p>';
+                            
                             echo $field;
                         ?>
                     </th>
@@ -555,10 +582,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                                     $value);
                             echo $field;
                             
-                            $msgfreqwarning='<li>'.__('The frequency is an estimate you\'ll need to select a value according to your traffic or set your own cron to make sure it is precise. [link]Read more[/link].',WYSIJA).'</li>';
-                            if($this->model->getValue('premium_key'))   $msgfreqwarning.='<li>'.__('As a premium user your cron frequency is precise up to each 15min.',WYSIJA).'</li>';
-                            $msgfreqwarning=str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">',"</a>"),$msgfreqwarning);
-                            echo '<div id="warning-msg-frequency"><ul>'.$msgfreqwarning.'</ul></div>';
+                           
                         ?>
                     </td>
                 </tr>
@@ -567,7 +591,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <th scope="row" colspan="2">
                         <?php 
                             $field=__('What the hell should I put here?',WYSIJA);
-                            $field.='<p class="description">'.__("Leave this setting to 70 emails per 15 minutes, if you're unsure. To increase this value, get in touch with your host to find out the limit per hour of emails sent.",WYSIJA).'</p>';
+                            $field.='<p class="description">'.__('Leave this setting to 70 emails per 15 minutes, if you\'re unsure. Get in touch with your host to set up a "cron job" if your frequencies are 15 minutes or less. Wysija triggers its own cron every 15 minutes for Premium users.',WYSIJA).'</p>';
                             echo $field;
                         ?>
                     </th>
@@ -576,8 +600,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 <tr class="hidechoice choice-sending-method-smtp">
                     <th scope="row" colspan="2">
                         <?php 
-                            $field=__('What should I pick?',WYSIJA);
-                            $field.='<p class="description">'.__('This is tough question because that doesn’t depend on us, but on your server. Get in touch with your hosting provider. Otherwise, we have a great guide for you. ',WYSIJA).'</p>';
+                            $field=__('What the hell should I put here?',WYSIJA);
+                            $field.='<p class="description">'.__('Leave this setting to 70 emails per 15 minutes, if you\'re unsure. Get in touch with your host to set up a "cron job" if your frequencies are 15 minutes or less. Wysija triggers its own cron every 15 minutes for Premium users.',WYSIJA).'</p>';
                             echo $field;
                         ?>
                     </th>
@@ -834,7 +858,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'input',
             'label'=>__('Bounce Email',WYSIJA),
             "desc"=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
-            'link'=>'<a class="wysija-premium" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
+            'link'=>'<a class="premium-tab" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
         }
         
                 
@@ -891,6 +915,93 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             </tbody>
         </table>
         <?php
+    }
+    
+    function premium(){
+       $helperLicence=&WYSIJA::get("licence","helper");
+       $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1";
+       
+       $arrayPremiumBullets=array(
+           'more2000'=>array(
+               'title'=>__('Send to more than 2000 subscribers.',WYSIJA),
+               'desc'=>__('You have no more limits. Send to 100 000 if you want.',WYSIJA)
+               ),
+           'linksstats'=>array(
+               'title'=>__('Find out which links are clicked.',WYSIJA),
+               'desc'=>__('This is the most important engagement metric. You\'ll get hooked.',WYSIJA)
+               ),
+           'advlinkstats'=>array(
+               'title'=>__('Track clicked links for each subscriber.',WYSIJA),
+               'desc'=>__('Find out who is really addicted to your newsletters.',WYSIJA)
+               ),
+           'trackga'=>array(
+               'title'=>__('Track with Google Analytics.',WYSIJA),
+               'desc'=>__('Find out what your subscribers do once on your site.',WYSIJA)
+               ),
+           'cron'=>array(
+               'title'=>__('We activate a cron job for you.',WYSIJA),
+               'desc'=>__('We make sure your sending every 15 minutes to avoid unregular delivery.',WYSIJA)
+               ),
+           'bounces'=>array(
+               'title'=>__('Let us handle your bounces.',WYSIJA),
+               'desc'=>__('It\'s bad to send to invalid addresses. Wysija removes them for you. Your reputation stays clean.',WYSIJA)
+               ),
+           'themes'=>array(
+               'title'=>__('Download more beautiful themes.',WYSIJA),
+               'desc'=>__('We work with top notch designers. The latest and prettiest are exclusive.',WYSIJA)
+               ),
+           'support'=>array(
+               'title'=>__('Fast and efficient support.',WYSIJA),
+               'desc'=>__('It\'s like a valet service from the engineers themselves: Ben, Jo and Kim.',WYSIJA)
+               ),
+           'install'=>array(
+               'title'=>__('Upgrade in a few clicks.',WYSIJA),
+               'desc'=>__('You don\'t need to reinstall. We\'ll simply activate your site.',WYSIJA)
+               ),
+           'happy'=>array(
+               'title'=>__('Join our happy users.',WYSIJA),
+               'desc'=>__('Wysija is getting better everyday thanks to users like you. <br />Read [link]what they are saying[/link].',WYSIJA),
+               'link'=>'http://www.wysija.com/youre-the-best-newsletter-plugin-for-wordpress-ever/?utm_source=wpadmin&utm_campaign=premiumtab'
+               ),
+           'trynow'=>array(
+               'title'=>__('Try it now. Not happy? Get your money back.',WYSIJA),
+               'desc'=>__('30-Day money back guarantee. Good reason to try us out.',WYSIJA)
+               ),
+       );
+       
+        ?>
+            <div id="premium-content">
+                    <h2><?php echo __('11 Cool Reasons to Upgrade to Premium',WYSIJA)?></h2>
+                    <div class="bulletium">
+                        <?php 
+                            foreach($arrayPremiumBullets as $key => $bullet){
+
+                                ?>
+                                <div id="<?php echo $key ?>" class="bullet-hold clearfix">
+                                    <div class="feat-thumb"></div>
+                                    <div class="description">
+                                        <h3><?php echo $bullet['title'] ?></h3>
+                                        <p><?php
+                                        if(isset($bullet['link'])){
+                                            echo str_replace(array('[link]','[/link]'),array('<a href="'.$bullet['link'].'" target="_blank">','</a>'),$bullet['desc']);
+                                        }else   echo $bullet['desc'] ?></p>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                        ?>
+                    </div>
+                </div>
+            <p>
+                <a class="wysija-premium-btns wysija-premium" href="<?php echo $urlpremium; ?>" target="_blank"><?php echo __('Upgrade for $99 a year for 1 site.',WYSIJA).'<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/>'; ?></a>
+                Already paid? <a id="premium-activate" type="submit" class="wysija" href="javascript:;" /><?php echo esc_attr(__('Activate your Premium licence.',WYSIJA)); ?></a>
+            </p>
+            
+            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/" target="_blank">','</a>'),__('Got a sale\'s question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA));?></p>
+            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/terms-conditions/" target="_blank">','</a>'),__('Read our simple and easy [link]terms and conditions.[/link]',WYSIJA));?></p>
+            
+        <?php
+        
     }
    
 }

@@ -160,11 +160,15 @@ class WYSIJA_help extends WYSIJA_object{
         if(!$_REQUEST || !isset($_REQUEST['controller']) || !isset($_REQUEST['task'])){
             $resultArray=array("result"=>false);
         }else{
-            $this->controller=&WYSIJA::get($_REQUEST['controller'],"controller");
+            $wysijapp="wysija-newsletters";
+            if(isset($_REQUEST['wysijaplugin'])) $wysijapp=$_REQUEST['wysijaplugin'];
+            
+            $this->controller=&WYSIJA::get($_REQUEST['controller'],"controller", false, $wysijapp);
+
             if(method_exists($this->controller, $_REQUEST['task'])){
                 $resultArray["result"]=$this->controller->$_REQUEST['task']();
             }else{
-                $this->error("Method doesn't exists for controller:'".$_REQUEST['controller']."'.");
+                $this->error("Method '".$_REQUEST['task']."' doesn't exist for controller:'".$_REQUEST['controller']."'.");
             } 
             /*if(!check_ajax_referer('wysija_ajax','_wpnonce')){
                 die("security error");
@@ -177,8 +181,13 @@ class WYSIJA_help extends WYSIJA_object{
         //dbg($resultArray);
         //if(isset($resultArray['']))
         $resultArray["msgs"]=$this->getMsgs();
+
         header('Content-type: application/json');
-        echo json_encode($resultArray);
+        $response=json_encode($resultArray);
+        
+        //in some case scenario our client will have jquery forcing the jsonp so we need to adapt ourselves
+        if(isset($_REQUEST['callback'] ))   $response=$_REQUEST['callback'].'('.$response.')';
+        echo $response;
         die();
     }
 
@@ -424,26 +433,26 @@ class WYSIJA extends WYSIJA_object{
         if(!$config->getValue("bounce_process_auto")) return false;
         
         $bounceClass = &WYSIJA::get('bounce','helper');
-        $bounceClass->report = true;
+        $bounceClass->report = false;
         if(!$bounceClass->init()){
                 $res['result']=false;
                 return $res;
         }
         if(!$bounceClass->connect()){
-                $this->error($bounceClass->getErrors());
+                $bounceClass->error($bounceClass->getErrors());
                 $res['result']=false;
                 return $res;
         }
-        $this->notice(sprintf('Successfully connected to %1$s',$config->getValue('bounce_login')));
+        $bounceClass->notice(sprintf('Successfully connected to %1$s',$config->getValue('bounce_login')));
         $nbMessages = $bounceClass->getNBMessages();
         
 
         if(empty($nbMessages)){
-            $this->error('There are no messages',true);
+            $bounceClass->error('There are no messages',true);
             $res['result']=false;
             return $res;
         }else{
-            $this->notice(sprintf('There are %1$s messages in your mailbox',$nbMessages));
+            $bounceClass->notice(sprintf('There are %1$s messages in your mailbox',$nbMessages));
         }
         
 
@@ -576,7 +585,7 @@ class WYSIJA extends WYSIJA_object{
         $subscriber_exists=$modelUser->getOne(array("user_id"),array("email"=>$data->user_email));
         $modelUser->reset();
         if($subscriber_exists){
-            $uid=$subscriber_exists['uid'];
+            $uid=$subscriber_exists['user_id'];
         }else{
             $modelUser->noCheck=true;
             $uid=$modelUser->insert(array("email"=>$data->user_email,"wpuser_id"=>$data->ID,"firstname"=>$data->first_name,"lastname"=>$data->last_name,"status"=>1));
@@ -597,7 +606,7 @@ class WYSIJA extends WYSIJA_object{
         $subscriber_exists=$modelUser->getOne(array("user_id"),array("email"=>$data->user_email));
         $modelUser->reset();
         if($subscriber_exists){
-            $uid=$subscriber_exists['uid'];
+            $uid=$subscriber_exists['user_id'];
             $modelUser->update(array("email"=>$data->user_email,"firstname"=>$data->first_name,"lastname"=>$data->last_name),array("wpuser_id"=>$data->ID));
         }else{
             $modelUser->noCheck=true;

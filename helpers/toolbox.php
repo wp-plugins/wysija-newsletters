@@ -13,6 +13,18 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
             default: return $size_str;
         }
     }
+    function wp_get_editable_roles() {
+        global $wp_roles;
+        $all_roles = $wp_roles->roles;
+        $editable_roles = apply_filters('editable_roles', $all_roles);
+        $possible_values=array();
+        foreach ( $all_roles as $role => $details ) {
+            $name = translate_user_role($details['name'] ); 
+            $possible_values[$role]=$name;
+
+        }
+        return $possible_values;
+    }
     function get_max_file_upload(){
         $u_bytes = ini_get( 'upload_max_filesize' );
         $p_bytes = ini_get( 'post_max_size' );
@@ -58,13 +70,14 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $mailer=&WYSIJA::get("mailer","helper");
         $mailer->WYSIJA_help_mailer("",$values);
         
-        $datauser=wp_get_current_user();
+        global $current_user;
+
         $mailer->testemail=true;
-        $mailer->wp_user=&$datauser->data;
-        $res=$mailer->sendSimple($datauser->data->user_email,str_replace("[send_method]",$send_method,__("[send_method] works with Wysija",WYSIJA)),$content_email);
+        $mailer->wp_user=&$current_user->data;
+        $res=$mailer->sendSimple($current_user->data->user_email,str_replace("[send_method]",$send_method,__("[send_method] works with Wysija",WYSIJA)),$content_email);
         
         if($res){
-            $this->notice(sprintf(__("Test email successfully sent to <b><i>%s</i></b>",WYSIJA),$datauser->data->user_email));
+            $this->notice(sprintf(__("Test email successfully sent to <b><i>%s</i></b>",WYSIJA),$current_user->data->user_email));
             return true;
         }else{
             $config=&WYSIJA::get("config","model");

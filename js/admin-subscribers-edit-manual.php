@@ -1,5 +1,5 @@
 <?php 
-$data=unserialize(base64_decode($_REQUEST['data']));
+$data=json_decode(base64_decode($_REQUEST['data']),true);
 
 ?>
 jQuery(function($){
