@@ -36,7 +36,7 @@ class WYSIJA_help_rules extends WYSIJA_help{
             $this->defaultrules[]=array("order_display"=>3,"key"=>"blocked_ip","name"=>__('Blocked IP',WYSIJA),
                                         "forward"=>1,
                                         "title"=>__('When you are flagged as a spammer forward the bounced message to',WYSIJA),
-                                        "regex"=>'is *(currently)? *blocked *by|(unacceptable|banned|offensive|filtered|blocked) *(content|message|e-?mail)',
+                                        "regex"=>'is *(currently)? *blocked *by|block *list|spam *detected|(unacceptable|banned|offensive|filtered|blocked) *(content|message|e-?mail)|administratively *denied',
                                          "executed_on"=>array(
                                             "body"=>1
                                             ), 

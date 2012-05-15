@@ -263,7 +263,9 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		@flush();
 	}
 	function _subscriberAction($subid){
-		if($this->config->getValue('bounce_action_maxtry') == 'delete'){
+            return '';
+            
+                if($this->config->getValue('bounce_action_maxtry') == 'delete'){
 			$this->subClass->delete($subid);
 			return ' user '.$subid.' deleted';
 		}

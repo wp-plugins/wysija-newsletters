@@ -19,11 +19,21 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
                case "admin_head":
                    add_action("admin_init",array($this,"remove_admin_head"),999);
                    break;
+               case "init":
+                   add_action("after_setup_theme",array($this,"remove_init"),999);
+                   break;
                default:
+                   add_action("admin_footer",array($this,"remove_default"),999);
             }
         }
     }
-    
+    function remove_init(){
+        global $wp_filter;
+        $this->remove_actions('init');
+    }
+    function remove_default() {
+        $this->remove_actions('admin_init');
+    }
     function remove_admin_head(){
         $this->remove_actions('admin_head');
     }
@@ -45,7 +55,8 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
 
                         if(isset($infoClear["functions"]) && function_exists($arrayInfo['function']) && in_array($arrayInfo['function'],$infoClear["functions"])){
                             unset($wp_filter[$actionsToClear][$priority][$identifier]);
-                        } else if(array_key_exists('function', $infoClear)) {
+
+                        } else if(array_key_exists('function', $infoClear) && $infoClear['function'] === $arrayInfo['function']) {
                             unset($wp_filter[$actionsToClear][$priority][$identifier]);
                         }
                     }

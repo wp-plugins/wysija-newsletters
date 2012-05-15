@@ -9,7 +9,10 @@ class WYSIJA_view_front extends WYSIJA_view{
     function addScripts($print=true){
         if($print){
             wp_print_styles('validate-engine-css');
-            add_action('wp_footer', array($this,'printScripts'));
+            
+            /*in some case we don't want to have an ajax subscription*/
+            $modelC=&WYSIJA::get('config','model');
+            if(!$modelC->getValue('no_js_val'))  add_action('wp_footer', array($this,'printScripts'));
         }else{
             wp_enqueue_script('wysija-validator-lang');
             wp_enqueue_script('wysija-validator');

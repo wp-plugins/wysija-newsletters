@@ -429,9 +429,13 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $query.=$modelEUS->makeWhere();
             $query.="ORDER BY A.number_clicked DESC";
             $this->data['clicks']=$modelEUS->query("get_res",$query,ARRAY_A);
+            
+            foreach($this->data['clicks'] as $k => &$v){
+                $v['url']=urldecode(utf8_encode($v['url']));
+            }
 
             
-            $chartsencoded=base64_encode(serialize($this->data['charts']));
+            $chartsencoded=base64_encode(json_encode($this->data['charts']));
             wp_enqueue_script('wysija-admin-subscribers-edit-manual', WYSIJA_URL."js/admin-subscribers-edit-manual.php?data=".$chartsencoded, array( 'wysija-charts' ), true);
 
             $this->viewObj->title=__('Edit',WYSIJA)." ".$this->data['user']['details']['email'];
@@ -901,10 +905,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $i=1;
             $values='';
             if(isset($datatoinsert['status'])) $line['status']=1;
-           foreach($line as $kl => $vl){
+           foreach($line as $kl => &$vl){
                 if(isset($datatoinsert[$kl])){
                     if($emailKey===$kl){
-
+                        $vl=trim($vl);
                         if($helperUser->validEmail($vl)){
                             $allEmails[]=$vl;
                         }else{
@@ -1164,4 +1168,3 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
 
 }
-

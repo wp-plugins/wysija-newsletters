@@ -427,94 +427,35 @@ class WYSIJA_help_install extends WYSIJA_object{
                 }
             }
         }
-        
-
-        $dataEmail['params']=array (
-          'quickselection' => 
-          array (
-            'wp-301' => 
-            array (
-              'identifier' => 'wp-301',
-              'width' => '281',
-              'height' => '190',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_07.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/sample-newsletter-01_07-150x150.png",
-              'IS_PAIR' => 0,
-              'IS_LAST' => false,
-              'IS_FIRST' => false,
-            ),
-            'wp-302' => 
-            array (
-              'identifier' => 'wp-302',
-              'width' => '482',
-              'height' => '30',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_10.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/sample-newsletter-01_10-150x30.png",
-              'IS_PAIR' => 1,
-              'IS_LAST' => false,
-              'IS_FIRST' => false,
-            ),
-            'wp-303' => 
-            array (
-              'identifier' => 'wp-303',
-              'width' => '52',
-              'height' => '45',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_14.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_14.png",
-              'IS_PAIR' => 0,
-              'IS_LAST' => false,
-              'IS_FIRST' => false,
-            ),
-            'wp-304' => 
-            array (
-              'identifier' => 'wp-304',
-              'width' => '70',
-              'height' => '42',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_16.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_16.png",
-              'IS_PAIR' => 1,
-              'IS_LAST' => false,
-              'IS_FIRST' => false,
-            ),
-            'wp-305' => 
-            array (
-              'identifier' => 'wp-305',
-              'width' => '546',
-              'height' => '16',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_21.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/sample-newsletter-01_21-150x16.png",
-              'IS_PAIR' => 0,
-              'IS_LAST' => false,
-              'IS_FIRST' => false,
-            ),
-            'wp-306' => 
-            array (
-              'identifier' => 'wp-306',
-              'width' => '321',
-              'height' => '236',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_25.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/sample-newsletter-01_25-150x150.png",
-              'IS_PAIR' => 1,
-              'IS_LAST' => false,
-              'IS_FIRST' => false,
-            ),
-            'wp-307' => 
-            array (
-              'identifier' => 'wp-307',
-              'width' => '140',
-              'height' => '140',
-              'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/white-label-logo.png",
-              'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/full/white-label-logo.png",
-              'IS_PAIR' => 0,
-              'IS_LAST' => true,
-              'IS_FIRST' => false,
-            ),
-          ),
+        $dataEmail['params'] = array(
+            'quickselection' => array(
+                'wp-301' => array(
+                    'identifier' => 'wp-301',
+                    'width' => 281,
+                    'height' => 190,
+                    'url' => WYSIJA_EDITOR_IMG.'default-newsletter/full/sample-newsletter-01_07.png',
+                    'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/sample-newsletter-01_07-150x150.png'
+                ),
+                'wp-302' => array(
+                    'identifier' => 'wp-302',
+                    'width' => 482,
+                    'height' => 30,
+                    'url' => WYSIJA_EDITOR_IMG.'default-newsletter/full/sample-newsletter-01_10.png',
+                    'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/sample-newsletter-01_10-150x30.png'
+                ),
+                'wp-303' => array(
+                    'identifier' => 'wp-303',
+                    'width' => 321,
+                    'height' => 236,
+                    'url' => WYSIJA_EDITOR_IMG.'default-newsletter/full/sample-newsletter-01_25.png',
+                    'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/sample-newsletter-01_25-150x150.png'
+                )
+            )
         );
         $dataEmail['wj_styles'] = $defaultStyles;
-        $dataEmail['params']=base64_encode(serialize($dataEmail['params']));
-        $dataEmail['wj_styles']=base64_encode(serialize($dataEmail['wj_styles']));
-        $dataEmail['wj_data']=base64_encode(serialize($dataEmail['wj_data']));
+        $dataEmail['params'] = base64_encode(serialize($dataEmail['params']));
+        $dataEmail['wj_styles'] = base64_encode(serialize($dataEmail['wj_styles']));
+        $dataEmail['wj_data'] = base64_encode(serialize($dataEmail['wj_data']));
             
         $dataEmail['replyto_name']=$dataEmail['from_name']=$valuesconfig['from_name'];
         $dataEmail['replyto_email']=$dataEmail['from_email']=$valuesconfig['from_email'];
@@ -631,9 +572,10 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
     function defaultSettings(&$values){
         
-        $datauser=wp_get_current_user();
-        $values['replyto_name']=$values['from_name']=$datauser->user_login;
-        $values['emails_notified']=$values['replyto_email']=$values['from_email']=$datauser->user_email;
+
+        global $current_user;
+        $values['replyto_name']=$values['from_name']=$current_user->user_login;
+        $values['emails_notified']=$values['replyto_email']=$values['from_email']=$current_user->user_email;
     }
 
     function createPage(&$values){

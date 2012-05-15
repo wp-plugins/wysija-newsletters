@@ -398,7 +398,7 @@ class WYSIJA_view_back extends WYSIJA_view{
 
                 break;
             default:
-                $wrap='<td class="'.$key.' column-'.$key.'">';
+                $wrap='<td class="column-'.$key.'">';
                 $specialMethod="fieldListHTML_".$key;
                 if(method_exists($this, $specialMethod)) $wrap.=$this->$specialMethod($val);
                 else $wrap.=$val;
@@ -563,16 +563,12 @@ class WYSIJA_view_back extends WYSIJA_view{
                 $formObj=&WYSIJA::get("forms","helper");
                 $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$params['values'],$val,$classValidate);
                 break;
-            case "roles":
-                $editable_roles = get_editable_roles();
-                $possible_values=array();
-                foreach ( $editable_roles as $role => $details ) {
-                    $name = translate_user_role($details['name'] ); 
-                    $possible_values[key($details['capabilities'])]=$name;
-                }
-                
+            case "roles":      
+                $toolbox=&WYSIJA::get('toolbox','helper');
+                $editable_roles=$toolbox->wp_get_editable_roles();
+   
                 $formObj=&WYSIJA::get("forms","helper");
-                $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$possible_values,$val,$classValidate);
+                $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$editable_roles,$val,$classValidate);
                 break;
             case "password":
                 if(!isset($params['size'])){

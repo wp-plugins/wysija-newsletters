@@ -28,7 +28,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelConf=&WYSIJA::get("config","model");
         $modelConf->save($dataconf);
 
-        $this->redirect();
+        $this->redirect('admin.php?page=wysija_config#premium');
     }
     
     function validateLic(){
@@ -155,7 +155,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
     
     function editTemplate(){
-        
         $this->viewShow='editTemplate';
         
         wp_enqueue_style('thickbox');
@@ -175,7 +174,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->js[]='wysija-editor';
         $this->js[]='wysija-admin-ajax-proto';
         $this->js[]='wysija-admin-ajax';
-        $this->js[]='wysija-base64';
+        $this->js[]='wysija-base-script-64';
         $this->js[]='media-upload';
         $this->js['admin-campaigns-editDetails']='admin-campaigns-editDetails';
         $modelEmail=&WYSIJA::get("email","model");
@@ -416,6 +415,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             return $this->editDetails();
         }
         
+        if(isset($_POST['wysija']['email']["params"]['googletrackingcode']) && $_POST['wysija']['email']["params"]['googletrackingcode'] && (!is_string($_POST['wysija']['email']["params"]['googletrackingcode']) OR preg_match('|[^a-z0-9#_.-]|i',$_POST['wysija']['email']["params"]['googletrackingcode']) !== 0 )){
+            //force to simple text
+            $this->error(__("Google marketing code needs to be an alphanumeric value.",WYSIJA),1);
+            return $this->editDetails();
+        }
+
         
         $updateemail=array(
             "email_id"=>$_POST['wysija']['email']['email_id'],
@@ -830,6 +835,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
     
     function viewstats(){
+        
         $this->js[]='wysija-admin-list';
         $this->js[]='wysija-charts';
         $this->viewShow='viewstats';
@@ -860,10 +866,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $query="SELECT count(user_id) as users, status FROM `".$this->modelObj->getPrefix()."email_user_stat` as A 
             WHERE A.email_id=".$emailObj['email_id']." GROUP BY status";
         $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
+
         /*we also count what is in the queue */
         $query="SELECT count(user_id) as users FROM `".$this->modelObj->getPrefix()."queue` as A 
             WHERE A.email_id=".$emailObj['email_id'];
-        $countss[-2]['status']=-2;
+        $countss[-2]['status']=-3;
         $countss[-2]['users']=$this->modelObj->count($query);
 
         $counts=array();
@@ -871,6 +878,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         foreach($countss as $count){
             switch($count['status']){
+                case "-3":
+                    $type='inqueue';
+                    break;
                 case "-2":
                     $type='notsent';
                     break;
@@ -895,7 +905,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $counts[$type]=$count['users'];
         }
 
-        
         $counts['allsent']=$total;
         $counts['all']=$truetotal;
 
@@ -987,8 +996,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'sent'=>array('order'=>2),
             'clicked'=>array('order'=>3),
             'unsubscribe'=>array('order'=>4),
-            'notsent'=>array('order'=>5)
+            'notsent'=>array('order'=>5),
+            'inqueue'=>array('order'=>6)
             );
+
         foreach(array_reverse($counts) as $key=> $count){
             if($key!="all" && $key!="allsent"){
                 if(isset($keys[$key]['name']))  $name=$keys[$key]['name'];
@@ -1006,13 +1017,17 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $query.=" ORDER BY count Desc";
         $this->data['clicks']=$modelEUU->query("get_res",$query,ARRAY_A);
 
-
-        foreach($this->data['clicks'] as $k => $v){
+        /*echo '<pre>';
+        print_r($this->data['clicks']);
+        echo '</pre>';*/
+        foreach($this->data['clicks'] as $k => &$v){
             $this->data['clicks'][$k]['name']="<strong>".sprintf(_n('%1$s hit', '%1$s hits', $v['count'],WYSIJA), $v['count'])."</strong> ";
+            //header("Content-type:text/html;charset=utf-8");
+            $v['url']=urldecode(utf8_encode($v['url']));
         }
    
         $this->data['email']=$emailObj;
-        $chartsencoded=base64_encode(serialize($this->data['charts']));
+        $chartsencoded=base64_encode(json_encode($this->data['charts']));
         wp_enqueue_script('wysija-admin-subscribers-edit-manual', WYSIJA_URL."js/admin-subscribers-edit-manual.php?data=".$chartsencoded, array( 'wysija-charts' ), true);
         
         if(!$this->data['subscribers']){
@@ -1158,7 +1173,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function articles(){
        $this->iframeTabs=array('articles'=>__("Article Selection",WYSIJA)); 
        $this->js[]='wysija-admin-ajax';
-       $this->js[]='wysija-base64';
+       $this->js[]='wysija-base-script-64';
        
        $_GET['tab']='articles';
        return $this->popupContent();
@@ -1200,8 +1215,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function themes(){
        $this->iframeTabs=array('themes'=>__("Install Themes",WYSIJA)); 
        $this->js[]='wysija-admin-ajax';
-       $this->js[]='wysija-base64';
-       $this->jsTrans['viewinfos']=__("View details",WYSIJA);
+       $this->js[]='wysija-base-script-64';
+       $this->jsTrans['viewinfos']=__("Details & PSD",WYSIJA);
        $this->jsTrans['viewback']=__("<< Back",WYSIJA);
        $this->jsTrans['install']=__("Install",WYSIJA);
        $this->jsTrans['reinstall']=__("Reinstall",WYSIJA);
@@ -1258,7 +1273,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function dividers() {
         $this->iframeTabs=array('dividers'=>__("Dividers Selection",WYSIJA));
         $this->js[]='wysija-admin-ajax';
-        $this->js[]='wysija-base64';
+        $this->js[]='wysija-base-script-64';
         
         $_GET['tab']='dividers';
         

@@ -34,9 +34,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         "bounce_max"=>8,
         "debug_on"=>false,
         "editor_fullarticle"=>false,
-        "allow-no-js"=>true
-        
-        
+        "allow_no_js"=>true
     );
     var $values=array();
     
@@ -103,7 +101,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'clean' => array(
                     'admin_head' => array(
                         '10' => array(
-                            'function' => array('events_editor_admin_head')
+                            'function' => 'events_editor_admin_head'
                         )
                     )
                 )
@@ -114,7 +112,29 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'clean' => array(
                     'admin_head' => array(
                         '10' => array(
-                            'function' => array('editor_admin_head')
+                            'function' => 'editor_admin_head'
+                        )
+                    )
+                )
+            ),
+            'acf' => array(
+                'file' => 'advanced-custom-fields/acf.php',
+                'version' => '3.1.7',
+                'clean' => array(
+                    'init' => array(
+                        '10' => array(
+                            'objects' => array('Acf')
+                        )
+                    )
+                )
+            ),
+            'wptofacebook' => array(
+                'file' => 'wptofacebook/index.php',
+                'version' => '1.2.3',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'WpToFb::wptofb_editor_admin_head'
                         )
                     )
                 )
@@ -126,7 +146,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'clean' => array(
                     'admin_head' => array(
                         '10' => array(
-                            'function' => array('smallbiz_on_admin_head')
+                            'function' => 'smallbiz_on_admin_head'
                         )
                     )
                 )

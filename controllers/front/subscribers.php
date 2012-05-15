@@ -21,7 +21,7 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
     function save(){
         $config=&WYSIJA::get('config','model');
         
-        if(!$config->getValue("allow-no-js")){
+        if(!$config->getValue("allow_no_js")){
             $this->notice(__("Subscription without JavaScript is disabled.",WYSIJA));
             return false;
         }

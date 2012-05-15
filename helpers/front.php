@@ -30,6 +30,9 @@ class WYSIJA_help_front extends WYSIJA_help{
                     
                     add_filter( 'the_title', array($this,'scan_title'));
                     add_filter( 'the_content', array($this,'scan_content'));
+                    if(isset($_REQUEST['message_success'])){
+                        add_filter( 'the_content', array($this,'scan_content_NLform') ); 
+                    }
                 }
             }    
         }else{

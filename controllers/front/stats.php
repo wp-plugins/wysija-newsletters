@@ -11,23 +11,52 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
     }
     
     
+    function rm_url_param($param_rm=array(), $query='')
+    {
+        if(!$query) return $query;
+        $queries=explode('?',$query);
+        $params=array();
+        parse_str($queries[1], $params);
+
+        foreach($param_rm as $param_rmuniq)
+            unset($params[$param_rmuniq]);
+        $newquery = $queries[0];
+        
+        if($params){
+            $newquery.='?';
+            $i=0;
+            foreach($params as $k => $v){ 
+                if($i>0)    $newquery .= '&';
+                $newquery.=$k.'='.$v; 
+                $i++;
+                
+            }
+        }else return $newquery;
+        
+        return substr($newquery,1);
+    }
+    
     function analyse(){
         if(isset($_REQUEST['email_id']) && isset($_REQUEST['user_id'])){
             $email_id=(int)$_REQUEST['email_id'];
             $user_id=(int)$_REQUEST['user_id'];
             if(isset($_REQUEST['urlencoded'])){
                 /* clicked stats */
-                $decodedUrl=base64_decode($_REQUEST['urlencoded']);
+                $recordedUrl=$decodedUrl=base64_decode($_REQUEST['urlencoded']);
+                if(strpos($recordedUrl, 'utm_source')!==false){
+                    $recordedUrl=$this->rm_url_param(array('utm_source','utm_campaign','utm_medium'),$recordedUrl);
+                }
+
                 if($email_id){ //if not email_id that means it is an email preview
                     /* look for url entry and insert if not exists*/
                     $modelUrl=&WYSIJA::get("url","model");
                     
-                    $urlObj=$modelUrl->getOne(false,array("url"=>$decodedUrl));
+                    $urlObj=$modelUrl->getOne(false,array("url"=>$recordedUrl));
 
                     if(!$urlObj){
                         /* we need to insert in url */
-                        $modelUrl->insert(array("url"=>$decodedUrl));
-                        $urlObj=$modelUrl->getOne(false,array("url"=>$decodedUrl));
+                        $modelUrl->insert(array("url"=>$recordedUrl));
+                        $urlObj=$modelUrl->getOne(false,array("url"=>$recordedUrl));
                     }
                     $modelUrl=null;
 
@@ -67,11 +96,11 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     //$modelEmail->update(array('number_clicked'=>"[increment]"),array("email_id"=>$email_id));
 
                     $statusEmailUserStat=2;
-                    if(in_array($decodedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
+                    if(in_array($recordedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
                         $this->subscriberClass = &WYSIJA::get("user","model");
                         $this->subscriberClass->getFormat=OBJECT;
                         $receiver = $this->subscriberClass->getOne($user_id);
-                        switch($decodedUrl){
+                        switch($recordedUrl){
                             case "[unsubscribe_link]":
                                 $link=$this->subscriberClass->getUnsubLink($receiver,true);
                                 $statusEmailUserStat=3;
@@ -80,12 +109,24 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                                 $link=$this->subscriberClass->getEditsubLink($receiver,true);
                                 break;
                         }
+ 
                         $decodedUrl=$link;
                         
                     }else{
-                        if(strpos($decodedUrl, "http://" )=== false) $decodedUrl="http://".$decodedUrl;
+                       
+                        if(strpos($decodedUrl, "http://" )=== false && strpos($decodedUrl, "https://" )=== false) $decodedUrl="http://".$decodedUrl;
+                        /*check that there is no broken unsubscribe link such as http://[unsubscribe_link] */
+                        if(strpos($decodedUrl, '[unsubscribe_link]')!==false){
+                            $this->subscriberClass = &WYSIJA::get("user","model");
+                            $this->subscriberClass->getFormat=OBJECT;
+                            $receiver = $this->subscriberClass->getOne($user_id);
+                            $decodedUrl=$this->subscriberClass->getUnsubLink($receiver,true);
+                        }
+
                     }
                     
+                    
+                     
                     $modelEmailUS=&WYSIJA::get("email_user_stat","model");
                     $exists=$modelEmailUS->getOne(false,array("equal"=>array("email_id"=>$email_id,"user_id"=>$user_id), "less"=>array("status"=>$statusEmailUserStat)));
                     $dataupdate=array('status'=>$statusEmailUserStat);
@@ -98,11 +139,11 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     $modelEmailUS->colCheck=false;
                     $modelEmailUS->update($dataupdate,array("equal"=>array("email_id"=>$email_id,"user_id"=>$user_id), "less"=>array("status"=>$statusEmailUserStat)));
                 }else{
-                   if(in_array($decodedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
+                   if(in_array($recordedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
                         $modelU=&WYSIJA::get("user","model");
                         $modelU->getFormat=OBJECT;
                         $objUser=$modelU->getOne(false,array('wpuser_id'=>get_current_user_id()));
-                        switch($decodedUrl){
+                        switch($recordedUrl){
                             case "[unsubscribe_link]":
                                 $link=$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1';
 
@@ -115,10 +156,12 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                         $decodedUrl=$link;
                         
                     }else{
-                        if(strpos($decodedUrl, "http://" )=== false) $decodedUrl="http://".$decodedUrl;
+                        if(strpos($decodedUrl, "http://" )=== false && strpos($decodedUrl, "https://" )=== false) $decodedUrl="http://".$decodedUrl;
                     } 
                 }
-
+                
+                /*sometimes this will be a life saver :)*/
+                $decodedUrl = str_replace('&amp;','&',$decodedUrl);
                 $this->redirect($decodedUrl);
                 
             }else{
@@ -153,7 +196,4 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
         return true;
     }
     
-
-        
-
 }
