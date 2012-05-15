@@ -53,8 +53,6 @@ class WYSIJA_help_back extends WYSIJA_help{
     }
     function resolveConflicts(){
         
-        error_reporting(E_ALL);
-                ini_set('display_errors', '1');
             $modelConfig=&WYSIJA::get('config','model');
 
             $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
