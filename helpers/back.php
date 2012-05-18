@@ -228,7 +228,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
             $jstrans["newsletters"]=__('Newsletters',WYSIJA);
             $jstrans["urlpremium"]='admin.php?page=wysija_config#premium';
-            if($_REQUEST['page']=='wysija_config'){
+            if(isset($_REQUEST['page']) && $_REQUEST['page']=='wysija_config'){
                 $jstrans["urlpremium"]="#premium";
             }
             wp_localize_script('wysija-admin', 'wysijatrans', $jstrans);
