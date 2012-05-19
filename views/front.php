@@ -3,12 +3,12 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_view_front extends WYSIJA_view{
     var $controller="";
     function WYSIJA_view_front(){
-
+        
     }
     
     function addScripts($print=true){
         if($print){
-            wp_print_styles('validate-engine-css');
+            //wp_print_styles('validate-engine-css');
             
             /*in some case we don't want to have an ajax subscription*/
             $modelC=&WYSIJA::get('config','model');

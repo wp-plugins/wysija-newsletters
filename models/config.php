@@ -34,7 +34,8 @@ class WYSIJA_model_config extends WYSIJA_object{
         "bounce_max"=>8,
         "debug_on"=>false,
         "editor_fullarticle"=>false,
-        "allow_no_js"=>true
+        "allow_no_js"=>true,
+        'urlstats_base64'=>true
     );
     var $values=array();
     
@@ -227,6 +228,10 @@ class WYSIJA_model_config extends WYSIJA_object{
 
                 }
                 
+                if(!isset($data["emails_notified_when_unsub"])){
+                    $data["emails_notified_when_unsub"]=false;
+                }
+                
             }
             foreach($data as $key => $value){
                 /*verify that the confirm email body contains an activation link if it doesn't add i at the end of the email*/
@@ -246,10 +251,6 @@ class WYSIJA_model_config extends WYSIJA_object{
             }
             
 
-            if(!isset($data["emails_notified_when_unsub"])){
-                $this->values["emails_notified_when_unsub"]=false;
-            }
-            
             /* save the confirmation email in the email table */
             if(isset($data["confirm_email_title"]) && isset($data["confirm_email_body"])){
                 $mailModel=&WYSIJA::get("email","model");
