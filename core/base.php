@@ -147,6 +147,8 @@ class WYSIJA_help extends WYSIJA_object{
         wp_register_style('validate-engine-css',WYSIJA_URL."css/validationEngine.jquery.css",array(),WYSIJA::get_version());
         wp_register_script('wysija-admin-ajax', WYSIJA_URL."js/admin-ajax.js",array(),WYSIJA::get_version());
         wp_register_script('wysija-admin-ajax-proto', WYSIJA_URL."js/admin-ajax-proto.js",array(),WYSIJA::get_version());
+        
+        if(defined('WYSIJA_SIDE') && WYSIJA_SIDE=='front')  wp_enqueue_style('validate-engine-css');
 
     }
 
@@ -410,7 +412,7 @@ class WYSIJA extends WYSIJA_object{
             );
         
         return array_merge($param, $frequencies);
-    } 
+    }  
     
     /**
      * cron where the frequency is decided by the administrator
@@ -610,15 +612,23 @@ class WYSIJA extends WYSIJA_object{
         if($subscriber_exists){
             $uid=$subscriber_exists['user_id'];
             $modelUser->update(array("email"=>$data->user_email,"firstname"=>$data->first_name,"lastname"=>$data->last_name),array("wpuser_id"=>$data->ID));
+            
+            $modelConf=&WYSIJA::get("config","model");
+            $modelUL=&WYSIJA::get("user_list","model");
+            
+            $result=$modelUL->getOne(false,array("user_id"=>$uid,"list_id"=>$modelConf->getValue("importwp_list_id")));
+            $modelUL->reset();
+            if(!$result)
+                $modelUL->insert(array("user_id"=>$uid,"list_id"=>$modelConf->getValue("importwp_list_id")));
         }else{
             $modelUser->noCheck=true;
             $uid=$modelUser->insert(array("email"=>$data->user_email,"wpuser_id"=>$data->ID,"firstname"=>$data->first_name,"lastname"=>$data->last_name,"status"=>1));
+            
+            $modelConf=&WYSIJA::get("config","model");
+            $modelUL=&WYSIJA::get("user_list","model");
+            $modelUL->insert(array("user_id"=>$uid,"list_id"=>$modelConf->getValue("importwp_list_id")));
         }
-        
-        $modelConf=&WYSIJA::get("config","model");
-        $modelUL=&WYSIJA::get("user_list","model");
-        $modelUL->insert(array("user_id"=>$uid,"list_id"=>$modelConf->getValue("importwp_list_id")));
-        
+
         return true; 
     }
     
@@ -757,7 +767,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         $config=&WYSIJA::get("config","model");
         $this->successmsgconf=__('Check your inbox now to confirm your subscription.',WYSIJA);
-        $this->successmsgsub=__('Youâ€™ve successfully subscribed.',WYSIJA);
+        $this->successmsgsub=__('You’ve successfully subscribed.',WYSIJA);
         if($config->getValue("confirm_dbleoptin")){
             $successmsg=$this->successmsgsub." ".$this->successmsgconf;
         }else{
