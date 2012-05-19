@@ -20,7 +20,26 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $possible_values=array();
         foreach ( $all_roles as $role => $details ) {
             $name = translate_user_role($details['name'] ); 
-            $possible_values[$role]=$name;
+            switch($role){
+                case 'administrator':
+                    $keyrole='switch_themes';
+                    break;
+                case 'editor':
+                    $keyrole='moderate_comments';
+                    break;
+                case 'author':
+                    $keyrole='upload_files';
+                    break;
+                case 'contributor':
+                    $keyrole='edit_posts';
+                    break;
+                case 'subscriber':
+                    $keyrole='read';
+                    break;
+                default:
+                    $keyrole=$role;
+            }
+            $possible_values[$keyrole]=$name;
 
         }
         return $possible_values;
