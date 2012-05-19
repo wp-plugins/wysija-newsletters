@@ -767,7 +767,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         $config=&WYSIJA::get("config","model");
         $this->successmsgconf=__('Check your inbox now to confirm your subscription.',WYSIJA);
-        $this->successmsgsub=__('You’ve successfully subscribed.',WYSIJA);
+        $this->successmsgsub=__('Youâ€™ve successfully subscribed.',WYSIJA);
         if($config->getValue("confirm_dbleoptin")){
             $successmsg=$this->successmsgsub." ".$this->successmsgconf;
         }else{
