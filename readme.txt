@@ -2,8 +2,8 @@
 Contributors: wysija
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing, email, emailing, smtp, automatic, 
 Requires at least: 3.0
-Tested up to: 3.3.1
-Stable tag: 1.1.3
+Tested up to: 3.3.2
+Stable tag: 1.1.5
 
 This plugin does one thing well: create and send newsletters from WordPress. Easily.
 
@@ -133,6 +133,35 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 1.1.5 - 2012-05-21 =
+
+* improved report after importing csv
+* fixed Warning: sprintf() /helpers/back.php on some environnements
+* fixed roles for creating newsletters or managing subscribers "parent roles can edit as well as child roles if a child role is selected"
+* fixed cron wysija's frequencies added in a cleaner way to avoid conflict with other plugins
+* fixed w3c validation on confirmation and unsubscription page
+* improved avoiding duplicates on environment with high sending frequencies
+* removed php show errors lost in resolveConflicts
+
+
+= 1.1.4 - 2012-05-14 =
+
+* added last name to recipient name in header
+* fixed automatic redirection for https links in newsletter
+* fixed conflict with Advanced Custom Fields (ACF) plugin in the newsletter editor
+* fixed conflict with the WpToFacebook plugin
+* fixed validation on import of addresses with trim
+* fixed dysfunctional unsubscribe link when Google Analytics campaign inserted
+* added alphanumeric validation on Google Analytics input
+* display clicked links in stats without Google Analytics parameters
+* fixed page/post newsletter subscription widget when javascript conflict returns base64 string
+* fixed WP users synch when subscriber with same email already exists
+* fixed encoded url recorded in click stats
+* added sending status In Queue to differentiate with Not Sent
+* fixed automatic bounce handling
+* added custom roles and permissions
+
 
 = 1.1.3 - 2012-03-31 =
 

@@ -17,7 +17,7 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
         add_action('init',array($this,'testsession'));
         
         if(!$this->userData){
-            $this->title=__("Page does not exists.",WYSIJA);
+            $this->title=__("Page does not exist.",WYSIJA);
             $this->subtitle=__("Please verify your link to this page.",WYSIJA);
             return false;
         }

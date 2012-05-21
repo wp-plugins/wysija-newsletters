@@ -42,13 +42,20 @@ class WYSIJA_model_user extends WYSIJA_model{
         
         if(!isset($this->values['status'])) $this->values['status']=0;
         
-        if(!isset($this->values['ip'])){
-            $userHelper=&WYSIJA::get("user","helper");
-            /*record the ip and save the user*/
-            $this->values['ip']=$userHelper->getIP();
-        }
+        
         
         return true;
+    }
+    
+    function getSubscriptionStatus($uid){
+        $this->getFormat=OBJECT;
+        $result=$this->getOne(array('status'),array('user_id'=>$uid));
+        return $result->status;
+    }
+    
+    function getObject($uid){
+        $this->getFormat=OBJECT;
+        return $this->getOne(false,array('user_id'=>$uid));
     }
     
     
@@ -167,6 +174,13 @@ class WYSIJA_model_user extends WYSIJA_model{
 
         $helperU=&WYSIJA::get("user","helper");
         $helperU->refreshUsers();
+        
+        do_action('wysija_subscriber_added', $id);
+        return true;
+    }
+    
+    function afterUpdate($id){
+        do_action('wysija_subscriber_modified', $id);
         return true;
     }
     

@@ -13,6 +13,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         
         if(isset($_GET['page']) && substr($_GET['page'],0,7)=="wysija_"){
             define("WYSIJA_ITF",TRUE);
+            
             if(defined('WYSIJA_DBG') && WYSIJA_DBG===true){
                 error_reporting(E_ALL);
                 ini_set('display_errors', '1');
@@ -37,6 +38,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             if(WYSIJA_ITF)  {
                 add_action('admin_init', array($this->controller, 'main'));
                 add_action('admin_footer',array($this,'version'),9);
+                add_action('after_setup_theme',array($this,'resolveConflicts'));
             }
             
             add_action('admin_menu', array($this, 'define_translated_strings'),98);
@@ -49,7 +51,38 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
         
     }
-    
+    function resolveConflicts(){
+        
+            $modelConfig=&WYSIJA::get('config','model');
+
+            $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
+            $conflictingTheme = null;
+            $currentTheme = strtolower(get_current_theme());
+            foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
+                if($keyTheme === $currentTheme) {
+                    $conflictingTheme = $keyTheme;
+                }
+            }
+
+            if($conflictingTheme !== null) {
+                $helperConflicts =& WYSIJA::get('conflicts', 'helper');
+                $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
+            }
+
+            $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
+            $conflictingPlugins=array();
+            foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
+                $arrayactiveplugins=get_option('active_plugins');
+                if(in_array($conflictPlug['file'], $arrayactiveplugins)) {
+
+                    $conflictingPlugins[$keyPlg]=$conflictPlug;
+                }
+            }
+            if($conflictingPlugins){
+                $helperConflicts=&WYSIJA::get("conflicts","helper");
+                $helperConflicts->resolve($conflictingPlugins);
+            }
+    }
     function define_translated_strings(){
         $config=&WYSIJA::get("config","model");
         $linkcontent=__("It doesn't always work the way we want it to, doesn't it? We have a [link]dedicated support website[/link] with documentation and a ticketing system.",WYSIJA);
@@ -79,14 +112,13 @@ class WYSIJA_help_back extends WYSIJA_help{
                 if((isset($_REQUEST['action']) && $_REQUEST['action']!="importplugins") || !isset($_REQUEST['action'])){
                     $msg=$config->getValue("ignore_msgs");
                     if(!isset($msg['importplugins-'.$tableName])&& (int)$pluginInfos['total']>0){
-                        if((int)$pluginInfos['total_lists']<1) $pluginInfos['total_lists']=1;
+                        if(!isset($pluginInfos['total_lists']) || !$pluginInfos['total_lists'] || (int)$pluginInfos['total_lists']<1) $pluginInfos['total_lists']=1;
+                        $sprintfedmsg=sprintf(__('Would you like to import the %1$s lists with a total of %2$s subscribers from the plugin %3$s. [link]Yes[/link]. [link_ignore]I\'ll import them later.[/link_ignore]',WYSIJA),$pluginInfos['total_lists'],$pluginInfos['total'],'<strong>"'.$pluginInfos['name'].'"</strong>');
                         $this->notice(
                             str_replace(array("[link_ignore]","[link]","[/link]","[/link_ignore]"),
                                     array('<a class="linkignore importplugins-'.$tableName.'" href="javascript:;">','<a href="admin.php?page=wysija_subscribers&action=importplugins">','</a>','</a>'),
-                                    sprintf(__('Would you like to import the %3$s lists with a total of %2$s subscribers from the plugin %1$s. [link]Yes[/link]. [link_ignore]I\'ll import them later.[/link_ignore]',WYSIJA),
-                                            '<strong>"'.$pluginInfos['name'].'"</strong>',
-                                            $pluginInfos['total'],
-                                            $pluginInfos['total_lists'])),true,true);
+                                    $sprintfedmsg
+                                    ));
                     }
                 }  
             }
@@ -165,6 +197,9 @@ class WYSIJA_help_back extends WYSIJA_help{
             'title'	=> __('Get Help!',WYSIJA),
             'content'=> $this->menuHelp));
             $tabfunc=true;
+            
+            
+            
         }
     }
     
@@ -173,7 +208,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $jstrans=array();
         wp_register_script('wysija-charts', "https://www.google.com/jsapi", array( 'jquery' ), true);
         wp_register_script('wysija-admin-list', WYSIJA_URL."js/admin-listing.js", array( 'jquery' ), true, WYSIJA::get_version());
-        wp_register_script('wysija-base64', WYSIJA_URL."js/base64.js", array( 'jquery' ), true, WYSIJA::get_version());
+        wp_register_script('wysija-base-script-64', WYSIJA_URL."js/base-script-64.js", array( 'jquery' ), true, WYSIJA::get_version());
         wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL."css/admin-global.css",array(),WYSIJA::get_version());
         wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL."js/admin-wysija-global.js",array(),WYSIJA::get_version());
         
@@ -184,13 +219,17 @@ class WYSIJA_help_back extends WYSIJA_help{
 
             $jstrans=$this->controller->jsTrans;
 
-            $jstrans['gopremium']=__("Go Premium Now!");
+            $jstrans['gopremium']=__("Go Premium!",WYSIJA);
             
             $backloader->jsParse($this->controller,$pagename,WYSIJA_URL);
             
             $backloader->loadScriptsStyles($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
         }
             $jstrans["newsletters"]=__('Newsletters',WYSIJA);
+            $jstrans["urlpremium"]='admin.php?page=wysija_config#premium';
+            if(isset($_REQUEST['page']) && $_REQUEST['page']=='wysija_config'){
+                $jstrans["urlpremium"]="#premium";
+            }
             wp_localize_script('wysija-admin', 'wysijatrans', $jstrans);
     }
     
@@ -220,9 +259,15 @@ class WYSIJA_help_back extends WYSIJA_help{
        return $newButtons;
     }
     function version(){
-        echo "<div class='wysija-version'>";
-        echo __("Wysija Version: ",WYSIJA)."<strong>".WYSIJA::get_version()."</strong>";
-        echo "</div>";
+        $wysijaversion= "<div class='wysija-version clearfix'>";
+        $wysijaversion.= '<div class="version">'.__("Wysija Version: ",WYSIJA)."<strong>".WYSIJA::get_version()."</strong></div>";
+        $wysijaversion.= '<div class="help">'.__('Need help?',WYSIJA).' <a href="http://support.wysija.com/" target="_blank">'.__('Get it here!',WYSIJA)."</a></div>";
+        $config=&WYSIJA::get('config','model');
+        $msg=$config->getValue("ignore_msgs");
+        
+        
+        $wysijaversion.= "</div>";
+        echo $wysijaversion;
     }
 }
 

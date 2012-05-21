@@ -303,7 +303,9 @@ class WYSIJA_help_bounce extends WYSIJA_help{
                                                     $this->_message->subemail = strtolower($oneEmail);
 
                                                     if(!empty($alreadyChecked[$this->_message->subemail])) continue;
-                                                    $this->_message->user_id = $this->subClass->user_id($this->_message->subemail);
+                                                    $this->subClass->getFormat=OBJECT;
+                                                    $result=$this->subClass->getOne(array('user_id'),array('email'=>$this->_message->subemail));
+                                                    $this->_message->user_id = $result['user_id'];
                                                     $alreadyChecked[$this->_message->subemail] = true;
                                                     if(!empty($this->_message->user_id)) break;
                                             }
@@ -390,7 +392,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
         if(isset($oneRule['action_user']) && in_array($oneRule['action_user'],array("unsub"))){
                 $status = $this->subClass->getSubscriptionStatus($this->_message->user_id);
                 if(empty($this->_message->subemail)){
-                    $currentUser = $this->subClass->get($this->_message->user_id);
+                    $currentUser = $this->subClass->getObject($this->_message->user_id);
                     if(!empty($currentUser->email)) $this->_message->subemail = $currentUser->email;
                 }
             }

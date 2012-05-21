@@ -34,9 +34,8 @@ class WYSIJA_model_config extends WYSIJA_object{
         "bounce_max"=>8,
         "debug_on"=>false,
         "editor_fullarticle"=>false,
-        "allow-no-js"=>true
-        
-        
+        "allow_no_js"=>true,
+        'urlstats_base64'=>true
     );
     var $values=array();
     
@@ -103,7 +102,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'clean' => array(
                     'admin_head' => array(
                         '10' => array(
-                            'function' => array('events_editor_admin_head')
+                            'function' => 'events_editor_admin_head'
                         )
                     )
                 )
@@ -114,7 +113,29 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'clean' => array(
                     'admin_head' => array(
                         '10' => array(
-                            'function' => array('editor_admin_head')
+                            'function' => 'editor_admin_head'
+                        )
+                    )
+                )
+            ),
+            'acf' => array(
+                'file' => 'advanced-custom-fields/acf.php',
+                'version' => '3.1.7',
+                'clean' => array(
+                    'init' => array(
+                        '10' => array(
+                            'objects' => array('Acf')
+                        )
+                    )
+                )
+            ),
+            'wptofacebook' => array(
+                'file' => 'wptofacebook/index.php',
+                'version' => '1.2.3',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'WpToFb::wptofb_editor_admin_head'
                         )
                     )
                 )
@@ -126,7 +147,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'clean' => array(
                     'admin_head' => array(
                         '10' => array(
-                            'function' => array('smallbiz_on_admin_head')
+                            'function' => 'smallbiz_on_admin_head'
                         )
                     )
                 )
@@ -207,6 +228,10 @@ class WYSIJA_model_config extends WYSIJA_object{
 
                 }
                 
+                if(!isset($data["emails_notified_when_unsub"])){
+                    $data["emails_notified_when_unsub"]=false;
+                }
+                
             }
             foreach($data as $key => $value){
                 /*verify that the confirm email body contains an activation link if it doesn't add i at the end of the email*/
@@ -226,10 +251,6 @@ class WYSIJA_model_config extends WYSIJA_object{
             }
             
 
-            if(!isset($data["emails_notified_when_unsub"])){
-                $this->values["emails_notified_when_unsub"]=false;
-            }
-            
             /* save the confirmation email in the email table */
             if(isset($data["confirm_email_title"]) && isset($data["confirm_email_body"])){
                 $mailModel=&WYSIJA::get("email","model");

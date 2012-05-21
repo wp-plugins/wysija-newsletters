@@ -616,7 +616,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                     $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&testprod=1&controller=orders&action=checkout&popformat=1&wysijadomain=".$helperLicence->getDomainInfo();
                     
                     $errormsg=str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="'.$urlpremium.'" >','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="'.$urlpremium.'" >','</a>'),
                             __("Theme is available in premium version only. [link]Get Premium now![/link]",WYSIJA));
                     $this->error($errormsg,1);
                     

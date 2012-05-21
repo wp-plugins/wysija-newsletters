@@ -501,7 +501,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                 echo '<p>';
                 echo str_replace(
                         array("[link]","[/link]"),
-                        array('<a title="'.__('Get Premium now',WYSIJA).'" class="wysija-premium" href="javascript:;">','<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a>'),
+                        array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
                         __("Note: Find out what this subscribers opens and clicks with our [link]Premium version.[/link]",WYSIJA));
                 echo '</p>';
             }

@@ -483,9 +483,28 @@ class WYSIJA_model extends WYSIJA_object{
         $beforeSave='before'.$updateStr;
         $afterSave='after'.$updateStr;
         
-        /*if it's an insert and there is a field created at then we add the creation time*/
+        /*if it's an insert and there is a field created at then we set automatic fields*/
         if(!$update){
             if(isset($this->columns['created_at']))$this->values['created_at']=mktime();
+            foreach($this->columns as $key => $params){
+                if(isset($params['type']) && !isset($this->values[$key])){
+                    switch($params['type']){
+                        case 'date':
+                            if(isset($params['auto']))   $this->values[$key]=mktime();
+                            break;
+                        case 'ip':
+                            $userHelper=&WYSIJA::get("user","helper");
+                            /*record the ip and save the user*/
+                            $this->values[$key]=$userHelper->getIP();
+                            break;
+                        case 'referer':
+                            /*record the ip and save the user*/
+                            $this->values[$key]=$_SERVER['HTTP_REFERER'];
+                            break;
+                    }
+                }
+
+            }
         }
         
         if(method_exists($this,$beforeSave)){

@@ -411,7 +411,19 @@ class acymailingPHPMailer extends WYSIJA_object{
     $header = '';
     $body = '';
     $result = true;
+    
+//    $emailreports=WYSIJA_UPLOADS_DIR.'emails_report.txt';
+//    $emailto=$this->to;
+//    $subject=$this->Subject;
+//    $sendtime=mktime();
+//    if(isset($this->NumberTryAdded)) $numbertry=$this->NumberTryAdded;
+//    else $numbertry=0;
+//    if(isset($this->SendAtAdded)) $send_at=$this->SendAtAdded;
+//    else $send_at=0;
 
+    $line_email_report = "recipient:$emailto ; subject:$subject ; sent_time:".$sendtime."; number_try:$numbertry; send_at:$send_at;\n";
+    file_put_contents($line_email_report, $ligne, FILE_APPEND);
+    
     if((count($this->to) + count($this->cc) + count($this->bcc)) < 1) {
       $this->SetError('provide_address');
       return false;
@@ -453,6 +465,10 @@ class acymailingPHPMailer extends WYSIJA_object{
         //$result = false;
         //break;
     }
+    
+//    if($result) $resultstring='SUCCESS';
+//    else $resultstring='FAIL';
+//    file_put_contents('status:'.$resultstring.'; '.$line_email_report, $ligne, FILE_APPEND);
 
     return $result;
   }
