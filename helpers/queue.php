@@ -35,7 +35,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	}
 	function process($emailid=false){
             if($emailid)    $this->email_id=$emailid;	
-            $queueClass = &WYSIJA::get("queue","model");
+                $queueClass = &WYSIJA::get("queue","model");
 		$queueElements = $queueClass->getReady($this->send_limit,$this->email_id);
                 $this->total=count($queueElements);
                 $this->start=0;

@@ -33,7 +33,17 @@ function wysija_queries(){
         echo "<div class='wysija-footer'><h2>WYSIJA QUERIES</h2>";
         echo "<pre>";
         print_r($wysija_queries);
-        echo "</pre></div>";
+        echo "</pre>";
+        
+        
+        /*echo "<h2>WYSIJA QUEUE</h2>";
+        $modelQ=&WYSIJA::get('queue','model');
+        $wysija_queue=$modelQ->getReady();
+        echo "<pre>";
+        print_r($wysija_queue);
+        echo "</pre>";*/
+            
+        echo "</div>";
     }
 }
 

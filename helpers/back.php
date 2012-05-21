@@ -113,13 +113,12 @@ class WYSIJA_help_back extends WYSIJA_help{
                     $msg=$config->getValue("ignore_msgs");
                     if(!isset($msg['importplugins-'.$tableName])&& (int)$pluginInfos['total']>0){
                         if(!isset($pluginInfos['total_lists']) || !$pluginInfos['total_lists'] || (int)$pluginInfos['total_lists']<1) $pluginInfos['total_lists']=1;
+                        $sprintfedmsg=sprintf(__('Would you like to import the %1$s lists with a total of %2$s subscribers from the plugin %3$s. [link]Yes[/link]. [link_ignore]I\'ll import them later.[/link_ignore]',WYSIJA),$pluginInfos['total_lists'],$pluginInfos['total'],'<strong>"'.$pluginInfos['name'].'"</strong>');
                         $this->notice(
                             str_replace(array("[link_ignore]","[link]","[/link]","[/link_ignore]"),
                                     array('<a class="linkignore importplugins-'.$tableName.'" href="javascript:;">','<a href="admin.php?page=wysija_subscribers&action=importplugins">','</a>','</a>'),
-                                    sprintf(__('Would you like to import the %3$s lists with a total of %2$s subscribers from the plugin %1$s. [link]Yes[/link]. [link_ignore]I\'ll import them later.[/link_ignore]',WYSIJA),
-                                            '<strong>"'.$pluginInfos['name'].'"</strong>',
-                                            $pluginInfos['total'],
-                                            $pluginInfos['total_lists'])),true,true);
+                                    $sprintfedmsg
+                                    ));
                     }
                 }  
             }

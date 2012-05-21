@@ -55,7 +55,7 @@ class WYSIJA_help_front extends WYSIJA_help{
     }
     function scan_content($content){
         $wysija_content="";
-        if(isset($this->controller->subtitle))  $wysija_content="<p>".$this->controller->subtitle."</p>";
+        if(isset($this->controller->subtitle))  $wysija_content=$this->controller->subtitle;
         return str_replace("[wysija_page]",$wysija_content,$content);
     }
     function scan_content_NLform($content){

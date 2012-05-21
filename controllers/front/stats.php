@@ -42,7 +42,11 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
             $user_id=(int)$_REQUEST['user_id'];
             if(isset($_REQUEST['urlencoded'])){
                 /* clicked stats */
-                $recordedUrl=$decodedUrl=base64_decode($_REQUEST['urlencoded']);
+                if(isset($_REQUEST['no64'])){
+                    $recordedUrl=$decodedUrl=$_REQUEST['urlencoded'];
+                }else{
+                    $recordedUrl=$decodedUrl=base64_decode($_REQUEST['urlencoded']);
+                }
                 if(strpos($recordedUrl, 'utm_source')!==false){
                     $recordedUrl=$this->rm_url_param(array('utm_source','utm_campaign','utm_medium'),$recordedUrl);
                 }

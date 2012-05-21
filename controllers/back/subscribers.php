@@ -823,19 +823,33 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $queryStart="INSERT IGNORE INTO ".$this->modelObj->getPrefix()."user (`".implode("` ,`",$datatoinsert)."`,`created_at`) VALUES ";
         
         //$linescount=count($csvArr);
-
+        /* detect the emails that are duplicate in the import file */
+        $emailsCount=array();
+        
+        
         /* we process the sql insertion 200 by 200 so that we are safe with the server */
         $csvChunks=array_chunk($csvArr, 200);
         $j=0;
         $linescount=0;
-        foreach($csvChunks as $arra){
+        $emailsalreadyrecorded=0;
+        $allemailsinvalid=array();
+        foreach($csvChunks as $keyChunk =>$arra){
             
-            $result=$this->_importRows($queryStart,$arra,$j,$datatoinsert,$emailKey);
+            foreach($arra as $keyline=> $emailline){
+                if(isset($emailsCount[$emailline[$emailKey]])) {
+                    $emailsCount[$emailline[$emailKey]]++;
+                    //$arra[$keyline]
+                }
+                else $emailsCount[$emailline[$emailKey]]=1;
+            }
+            
+            
+            $result=$this->_importRows($queryStart,$arra,$j,$datatoinsert,$emailKey,$emailsalreadyrecorded,$allemailsinvalid);
             if($result!==false) $j++;
             else{
                 $try=0;
                 while($result===false && $try<3){
-                    $result=$this->_importRows($queryStart,$arra,$j,$datatoinsert,$emailKey);
+                    $result=$this->_importRows($queryStart,$arra,$j,$datatoinsert,$emailKey,$emailsalreadyrecorded,$allemailsinvalid);
                     $try++;
                 }
                 if($result){
@@ -874,12 +888,41 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         
         $helperU=&WYSIJA::get("user","helper");
         $helperU->refreshUsers();
+
         
+        foreach($emailsCount as $emailkeycount =>$countemailfile){
+            if($countemailfile==1) unset($emailsCount[$emailkeycount]);
+        }
+        
+        
+        if($linescount<0)  $linescount=0; 
+            
         $this->notice(sprintf(__('%1$s subscribers have been added to "%2$s".',WYSIJA),$linescount,implode(',',$listnames)));
+        
+                
+        if((int)$emailsalreadyrecorded>0){
+            $this->notice(sprintf(__('%1$s emails were already recorded in your subscribers table and were ignored.',WYSIJA),$emailsalreadyrecorded),0);
+        }
+
+        if(count($emailsCount)>0){
+            $listemails='';
+            $m=0;
+            foreach($emailsCount as $emailkeyalready => $occurences){
+                if($m>0)$listemails.=', ';
+                $listemails.= $emailkeyalready.' ('.$occurences.')';
+                $m++;
+            }
+            //$emailsalreadyinserted=array_keys($emailsCount);
+            $this->notice(sprintf(__('%1$s emails appear more than once in your file : %2$s.',WYSIJA),count($emailsCount),$listemails),0);
+        }
+        
+        if(count($allemailsinvalid)>0){
+            $this->notice(sprintf(__('%1$s emails are not valid : %2$s.',WYSIJA),count($allemailsinvalid),implode(', ',$allemailsinvalid)),0);
+        }
         $this->redirect();
     }
     
-    function _importRows($query,$csvArr,$count,$datatoinsert,$emailKey){
+    function _importRows($query,$csvArr,$count,$datatoinsert,$emailKey,&$alreadyinsertedemails,&$invalidemails){
         $allEmails=array();
         $time=mktime();
         $linescount=count($csvArr);
@@ -912,6 +955,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                         if($helperUser->validEmail($vl)){
                             $allEmails[]=$vl;
                         }else{
+                            $invalidemails[]=$vl;
                             unset($csvArr[$kline]);
                             $linescount--;
                             continue 2;
@@ -934,7 +978,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $modelWysija=new WYSIJA_model();
         $resultqry=$modelWysija->query($query);
         
+        $outof=$linescount;
         $linescount=mysql_affected_rows();
+        $alreadyinsertedemails=$alreadyinsertedemails+($outof-$linescount);
         
         //dbg($query);
 

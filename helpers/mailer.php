@@ -610,12 +610,22 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 if(preg_match('#'.implode('|',$urlsportions).'|\{|%7B#i',$urlreuse)){
                     foreach($Wysijaurls as $k =>$v){
                         if(strpos($urlreuse, $k)!==false){
-                            $urlencoded=urlencode(base64_encode($v));
+                            if($modelConf->getValue('urlstats_base64')){
+                                $cururl=base64_encode($v);
+                            }else{
+                                $cururl=$v;
+                            }
+                            $urlencoded=urlencode($cururl);
                             break;
                         }
                     }
                 }else{
-                    $urlencoded=urlencode(base64_encode($urlreuse));
+                    if($modelConf->getValue('urlstats_base64')){
+                        $cururl=base64_encode($urlreuse);
+                    }else{
+                        $cururl=$urlreuse;
+                    }
+                    $urlencoded=urlencode($cururl);
                 }
                 $args = array();
                 $args['email_id'] = $email->email_id;
@@ -624,6 +634,9 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $args['controller'] = 'stats';
                 $args['action'] = 'analyse';
                 $args['wysija-page'] = 1;
+                if(!$modelConf->getValue('urlstats_base64')){
+                    $args['no64'] = 1;
+                }
 
                 $mytracker=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$args);
                 $urls[$results[0][$i]] = str_replace($url,$mytracker,$results[0][$i]);

@@ -423,8 +423,13 @@ class WYSIJA extends WYSIJA_object{
         $subscribers=(int)$config->getValue('total_subscribers');
         
         if($subscribers<2000 || ($premium && $subscribers>=2000) ){
-            $modelQ=&WYSIJA::get("queue","model");
-            $modelQ->launch();
+            
+            //$modelQ=&WYSIJA::get("queue","model");
+            //$modelQ->launch();
+            $helperQ=&WYSIJA::get("queue","helper");
+            $helperQ->report=false;
+            $helperQ->process();
+            
         } 
     }
     
