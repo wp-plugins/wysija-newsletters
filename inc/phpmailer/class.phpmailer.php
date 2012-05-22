@@ -421,8 +421,8 @@ class acymailingPHPMailer extends WYSIJA_object{
 //    if(isset($this->SendAtAdded)) $send_at=$this->SendAtAdded;
 //    else $send_at=0;
 
-    $line_email_report = "recipient:$emailto ; subject:$subject ; sent_time:".$sendtime."; number_try:$numbertry; send_at:$send_at;\n";
-    file_put_contents($line_email_report, $ligne, FILE_APPEND);
+//    $line_email_report = "recipient:$emailto ; subject:$subject ; sent_time:".$sendtime."; number_try:$numbertry; send_at:$send_at;\n";
+//    file_put_contents($line_email_report, $ligne, FILE_APPEND);
     
     if((count($this->to) + count($this->cc) + count($this->bcc)) < 1) {
       $this->SetError('provide_address');
