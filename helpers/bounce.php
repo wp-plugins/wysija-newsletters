@@ -305,7 +305,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
                                                     if(!empty($alreadyChecked[$this->_message->subemail])) continue;
                                                     $this->subClass->getFormat=OBJECT;
                                                     $result=$this->subClass->getOne(array('user_id'),array('email'=>$this->_message->subemail));
-                                                    $this->_message->user_id = $result['user_id'];
+                                                    $this->_message->user_id = $result->user_id;
                                                     $alreadyChecked[$this->_message->subemail] = true;
                                                     if(!empty($this->_message->user_id)) break;
                                             }
