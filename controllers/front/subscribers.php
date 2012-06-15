@@ -62,8 +62,7 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
         /* if the doble optin is activated then we send a confirmation email */
         if($dbloptin){
             /* TODO send a confirmation email now */
-            $mailer=&WYSIJA::get("mailer","helper");
-            $mailer->sendOne($config->getValue('confirm_email_id'),$uid);
+            $emailsent=$userHelper->sendConfirmationEmail($uid,true);
         }else{
             if($config->getValue("emails_notified") && $config->getValue("emails_notified_when_sub")){
                 $this->helperUser=&WYSIJA::get("user","helper");
@@ -73,20 +72,62 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
         }
         
         $model=&WYSIJA::get('user_list',"model");
-        $subdate=mktime();
+        $subdate=time();
         
 
-        if($_REQUEST['wysija']['user_list']['list_ids']){
+        if(isset($_REQUEST['wysija']['user_list']['list_ids']) && $_REQUEST['wysija']['user_list']['list_ids']){
             $listids=explode(',',$_REQUEST['wysija']['user_list']['list_ids']);
 
-            foreach($listids as $listid){
-                $model->insert(array("list_id"=>$listid,"user_id"=>$uid,"sub_date"=>$subdate));
-                $model->reset();
-            }
+        }elseif(isset($_REQUEST['wysija']['user_list']['list_id']) && $_REQUEST['wysija']['user_list']['list_id']){
+            $listids=$_REQUEST['wysija']['user_list']['list_id'];
         }
         
+        foreach($listids as $listid){
+            $model->insert(array("list_id"=>$listid,"user_id"=>$uid,"sub_date"=>$subdate));
+            $model->reset();
+        }
 
         return true;
+    }
+    
+    
+    function wysija_outter() {
+        
+        if(isset($_REQUEST['encodedForm'])){
+            $encodedForm=json_decode(base64_decode(urldecode($_REQUEST['encodedForm']))); 
+        }
+        else{
+            $encodedForm=$_REQUEST['formArray'];
+            $encodedForm=stripslashes_deep($encodedForm);
+        }  
+
+        $widgetdata=array();
+        foreach($encodedForm as $key =>$val) {
+            $widgetdata[$key]=$val;
+            if(is_object($val)){
+                $valu=array();
+                foreach($val as $keyin =>$valin){
+                    $valu[$keyin]=$valin;
+                    if(is_object($valin)){
+                        $inin=array();
+                        foreach($valin as $kin => $vin){
+                            $inin[$kin]=$vin;
+                        }
+                        $valu[$keyin]=$inin;
+                    }
+                }
+                $widgetdata[$key]=$valu;
+            }
+        }
+
+        $widgetdata['widget_id']='wysija-nl-iframe-'.time();
+
+        $widgetNL=new WYSIJA_NL_Widget(1);
+        $widgetNL->iFrame=true;
+        $subscriptionForm= $widgetNL->widget($widgetdata,$widgetdata);
+
+        echo $subscriptionForm;
+        exit;
     }
 
 }

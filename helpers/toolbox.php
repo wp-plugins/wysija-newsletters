@@ -14,6 +14,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         }
     }
     function wp_get_editable_roles() {
+        
         global $wp_roles;
         $all_roles = $wp_roles->roles;
         $editable_roles = apply_filters('editable_roles', $all_roles);
@@ -89,7 +90,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $mailer=&WYSIJA::get("mailer","helper");
         $mailer->WYSIJA_help_mailer("",$values);
         
-        global $current_user;
+        $current_user=WYSIJA::wp_get_userdata();
 
         $mailer->testemail=true;
         $mailer->wp_user=&$current_user->data;
@@ -121,7 +122,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $helperF=&WYSIJA::get("file","helper");
         $tempDir=$helperF->makeDir();
         
-        $filename=$key."-".mktime().$format;
+        $filename=$key."-".time().$format;
         $handle=fopen($tempDir.$filename, "w");
         fwrite($handle, $content);
         fclose($handle);
@@ -188,7 +189,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         return $domain_name[0];
     }
     function duration($s,$durationin=false,$level=1){
-        $t=mktime();
+        $t=time();
         if($durationin){
             $e=$t+$s;
             $s=$t;
@@ -217,5 +218,74 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if ($mylevel<$level && $mins >= 1) { $str.=sprintf(_n( '%1$s minute', '%1$s minutes', $mins, WYSIJA ),$mins)." ";$mylevel++; }
         if ($mylevel<$level && $secs >= 1) { $str.=sprintf(_n( '%1$s second', '%1$s seconds', $secs, WYSIJA ),$secs)." ";$mylevel++; }
         return $str;
+    }
+    function serverTimeToLocal($val){
+        $curenttime=time();
+        $curentofftime=$this->offset_time($curenttime);
+        $timedifference=$curenttime-$curentofftime;
+        return $val+$timedifference;
+    }
+    function localTimeToServer($val){
+        $curenttime=time();
+        $curentofftime=$this->offset_time($curenttime);
+        $timedifference=$curenttime-$curentofftime;
+        return $val-$timedifference;
+    }
+    function localtime($time,$justtime=false){
+        if($justtime) $time=strtotime($time);
+        return date(get_option('time_format'),$time);
+    }
+    function time_tzed($val=false){
+        return gmdate( 'Y-m-d H:i:s', $this->offset_time($val) );
+    }
+    function offset_time($val=false){
+        $gmttime=time() - date('Z');
+        $time_offseted=$gmttime + ( get_option( 'gmt_offset' ) * 3600 );
+        if(!$val) return $time_offseted;
+        $timediff=time()-$time_offseted;
+        return $val +$timediff;
+    }
+    function getday($day=false){
+        $days=array('monday'=>__('Monday',WYSIJA),
+                    'tuesday'=>__('Tuesday',WYSIJA),
+                    'wednesday'=>__('Wednesday',WYSIJA),
+                    'thursday'=>__('Thursday',WYSIJA),
+                    'friday'=>__('Friday',WYSIJA),
+                    'saturday'=>__('Saturday',WYSIJA),
+                    'sunday'=>__('Sunday',WYSIJA));
+        if(!$day || !isset($days[$day])) return $days;
+        else return $days[$day];
+    }
+    function getweeksnumber($week=false){
+        $weeks=array(
+                    '1'=>__('1st',WYSIJA),
+                    '2'=>__('2nd',WYSIJA),
+                    '3'=>__('3rd',WYSIJA),
+                    '4'=>__('Last',WYSIJA),
+                    );
+        if(!$week || !isset($weeks[$week])) return $weeks;
+        else return $weeks[$week];
+    }
+    
+    function getdaynumber($day=false){
+        $daynumbers=array();
+        for($i = 1;$i < 29;$i++) {
+            switch($i){
+                case 1:
+                    $number=__('1st',WYSIJA);
+                    break;
+                case 2:
+                    $number=__('2nd',WYSIJA);
+                    break;
+                case 3:
+                    $number=__('3rd',WYSIJA);
+                    break;
+                default:
+                    $number=sprintf(__('%1$sth',WYSIJA),$i);
+            }
+            $daynumbers[$i] = $number;
+        }
+        if(!$day || !isset($daynumbers[$day])) return $daynumbers;
+        else return $daynumbers[$day];
     }
 }

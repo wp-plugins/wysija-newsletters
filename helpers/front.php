@@ -6,6 +6,8 @@ class WYSIJA_help_front extends WYSIJA_help{
         parent::WYSIJA_help();
         
         
+        
+
         if(isset($_REQUEST['wysija-page']) || isset($_REQUEST['wysija-launch'])){
             if(defined('WYSIJA_DBG')){
                 include_once(WYSIJA_INC."debug.php");
@@ -17,7 +19,7 @@ class WYSIJA_help_front extends WYSIJA_help{
                     ini_set('display_errors', '0');
                 }
             }
-            if(defined('DOING_AJAX')){
+            if(defined('DOING_AJAX')){      
                 add_action('wp_ajax_nopriv_wysija_ajax', array($this, 'ajax'));
             }else{
                 
@@ -28,6 +30,8 @@ class WYSIJA_help_front extends WYSIJA_help{
                 }else $this->error("Action does not exists.");
                 if(isset($_REQUEST['wysija-page'])){
                     
+                      add_filter('wp_title', array($this,'meta_page_title'));
+
                     add_filter( 'the_title', array($this,'scan_title'));
                     add_filter( 'the_content', array($this,'scan_content'));
                     if(isset($_REQUEST['message_success'])){
@@ -41,7 +45,12 @@ class WYSIJA_help_front extends WYSIJA_help{
         
     }
     
+    function meta_page_title(){
+
+        return $this->controller->title;  
+    }
     function scan_title($title){
+        
         global $post;
         if(trim($title)==trim(single_post_title( '', false ))){
             $post->comment_status="close";
@@ -50,8 +59,6 @@ class WYSIJA_help_front extends WYSIJA_help{
         }else{
             return $title;
         }
-        
-        
     }
     function scan_content($content){
         $wysija_content="";

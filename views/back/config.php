@@ -92,15 +92,15 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         ?>
         <div id="tabs">
             <ul id="mainmenu" >
-                <li><a href="#basics"><?php _e('The Basics',WYSIJA);?></a></li>
-                <li><a href="#emailactiv"><?php _e('Subscription Activation Email',WYSIJA);?></a></li>
+                <li><a href="#basics"><?php _e('Basics',WYSIJA);?></a></li>
+                <li><a href="#emailactiv"><?php _e('Activation Email',WYSIJA);?></a></li>
                 <li><a href="#sendingmethod"><?php _e('Sending Method',WYSIJA);?></a></li>
-                <li><a href="#bounce"><?php _e('Automated Bounce Handling',WYSIJA);?></a></li>
+                <li><a href="#bounce"><?php _e('Bounce Handling',WYSIJA);?></a></li>
                 <li><a href="#advanced"><?php _e('Advanced',WYSIJA);?></a></li>
                 <li class="premium"><a href="#premium"><?php 
                 $modelC=&WYSIJA::get("config","model");
                 if($modelC->getValue("premium_key")){
-                   _e('Premium Activated!',WYSIJA);
+                   _e('Premium Activated',WYSIJA);
                 }else{
                    _e('Premium Upgrade',WYSIJA);
                 }
@@ -147,7 +147,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     </p>
                 </div>
                 <div id="premium">
-                    <?php $this->premium(); ?>
+                    <?php 
+                    $modelC=&WYSIJA::get("config","model");
+                    if($modelC->getValue("premium_key")){
+                       $this->premium_activated();
+                    }else{
+                       $this->premium();
+                    }
+                     ?>
                     
                 </div>
                 
@@ -186,15 +193,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__('Put in the emails of the person who should received all notifications, comma separated.',WYSIJA));
         
         $step['from_name']=array(
-            'type'=>'input',
-            'label'=>__('From name',WYSIJA),
+            'type'=>'fromname',
+            'class'=>'validate[required]',
+            'label'=>__('From name & email',WYSIJA),
             'desc'=>__("The plugin sends automated notifications, but also to your subscribers, like the subscription activation email. Put in the name that should show up in these emails.",WYSIJA));
-        
-        $step['from_email']=array(
-            'type'=>'input',
-            'label'=>__('From email',WYSIJA),
-            'desc'=>__('And the email.',WYSIJA));
-        
+
         /* TODO add for rooster
         $step['sharedata']=array(
             'type'=>'debug',
@@ -203,22 +206,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'link'=>'<a href="http://support.wysija.com/knowledgebase/sharing-your-usage-data/" target="_blank" title="'.__("Find out more.",WYSIJA).'">');
         */
         
-        $modelC=&WYSIJA::get("config","model");
-        if($modelC->getValue("premium_key")){
-            $title=__('You are using the premium version.',WYSIJA);
-            $desc=__('Click [link]here[/link] to login to your Wysija account.',WYSIJA);
-            $link='<a href="http://www.wysija.com/" target="_blank" title="'.__("Log in to Wysija.com",WYSIJA).'">';
-            $desc=str_replace(
-                    array("[link]","[/link]"),
-                    array($link,"</a>"),$desc);
-        }else{
-            $title=__('You are using the free version.',WYSIJA);
-            $desc=__('Send to more than 2000 subscribers, get immediate support, enable automated bounce handling and more. [link]Click here to purchase.[/link]',WYSIJA);
-            $link='<a class="premium-tab" href="javascript:;" title="'.__("Find out what's on offer.",WYSIJA).'">';
-            $desc=str_replace(
-                    array("[link]","[/link]"),
-                    array($link,'</a>'),$desc);
-        }
+        $modelC=&WYSIJA::get('config','model');
         
         
         
@@ -226,15 +214,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         ?>
         <table class="form-table">
             <tbody>
-                <tr>
-                    <th scope="row">
-                        <label style="cursor:default;"><?php echo $title ?></p><p class="description"><?php echo $desc ?> </label>
-                    </th>
-                    <td></td>
-                </tr>
-                
                 <?php
-
                 echo $this->buildMyForm($step,$modelC->values,"config");
                 ?>
             </tbody>
@@ -249,7 +229,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'radio',
             'values'=>array(true=>__("Yes",WYSIJA),false=>__("No",WYSIJA)),
             'label'=>__('Send Activation Email',WYSIJA),
-            'desc'=>__('Subscribers will not receive any emails until they activate their subscriptions. Keep this activated to stop fake subscriptions by humans and robots.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/why-you-should-enforce-email-activation/">'.__("Read more.",WYSIJA)."</a>");
+            'desc'=>__('Subscribers will not receive any emails until they activate their subscriptions. Keep this activated to stop fake subscriptions by humans and robots.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/why-you-should-enforce-email-activation/?utm_source=wpadmin&utm_campaign=activation email" target="_blank">'.__("Read more on support.wysija.com",WYSIJA)."</a>");
                 
         $step['confirm_email_title']=array(
             'type'=>'input',
@@ -264,7 +244,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         
         $modelU=&WYSIJA::get("user","model");
         $modelU->getFormat=OBJECT;
-        $objUser=$modelU->getOne(false,array('wpuser_id'=>get_current_user_id()));
+
+        $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
         $step['subscribed_title']=array(
             'type'=>'input',
             'label'=>__('Confirmation page title',WYSIJA),
@@ -339,7 +320,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field='<label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('SMTP server',WYSIJA).'</label>';
-                            $field.='<p>'.__('Perfect for sending with a professional SMTP provider, which we highly recommended for big and small lists. We negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/">'.__('Find out more.',WYSIJA).'</a></p>';
+                            $field.='<p>'.__('Perfect for sending with a professional SMTP provider, which we highly recommended for big and small lists. We negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=sending method" target="_blank">'.__('Read more on support.wysija.com',WYSIJA).'</a></p>';
                             echo $field;
                         ?>
                     </th>
@@ -548,7 +529,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         <?php 
                             $field=__('Send...',WYSIJA);
                             
-                            echo $field;
+                            echo $field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">','</a>'),__('Your web host\'s has limits. We suggest 70 emails per 15 minutes to be safe. [link]Find out more[/link] on support.wysija.com',WYSIJA)).'</p>';
                         ?>
                     </th>
                     <td colspan="2">
@@ -560,53 +541,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $params=array("id"=>$id,'name'=>'wysija[config]['.$name.']','size'=>'6');
                             //if($this->model->getValue("smtp_host")=="smtp.gmail.com") $params["readonly"]="readonly";
                             $field=$formsHelp->input($params,$value);
-                            $field.=__('emails every',WYSIJA);
+                            $field.= '&nbsp;'.__('emails every',WYSIJA).'&nbsp;';
                             
                             
                             $name='sending_emails_each';
                             $id=str_replace('_','-',$name);
                             $value=$this->model->getValue($name);
-                            
-                            $field.=$formsHelp->dropdown('wysija[config]['.$name.']',
-                                    array(
-                                        "one_min"=> __("1 minute",WYSIJA),
-                                        "two_min"=> __("2 minutes",WYSIJA),
-                                        "five_min"=> __("5 minutes",WYSIJA),
-                                        "ten_min"=> __("10 minutes",WYSIJA),
-                                        "fifteen_min"=> __("15 minutes",WYSIJA),
-                                        "thirty_min"=> __("30 minutes",WYSIJA),
-                                        "hourly"=> __("1 hour",WYSIJA),
-                                        "two_hours"=> __("2 hours",WYSIJA),
-                                        "twicedaily"=> __("Twice daily",WYSIJA),
-                                        "daily"=> __("Day",WYSIJA)),
-                                    $value);
+                            $field.=$formsHelp->dropdown(array('name'=>'wysija[config]['.$name.']','id'=>$id),$formsHelp->eachValues,$value);
+                            $field.='<span class="choice-under15"><b>'.__('This is fast!',WYSIJA).'</b> '.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/?utm_source=wpadmin&utm_campaign=cron" target="_blank">','</a>'),__('We suggest you setup a cron job. [link]Read more[/link] on support.wysija.com',WYSIJA)).'</span>';
                             echo $field;
                             
                            
                         ?>
                     </td>
                 </tr>
-                
-                <tr class="hidechoice choice-sending-method-site">
-                    <th scope="row" colspan="2">
-                        <?php 
-                            $field=__('What the hell should I put here?',WYSIJA);
-                            $field.='<p class="description">'.__('Leave this setting to 70 emails per 15 minutes, if you\'re unsure. Get in touch with your host to set up a "cron job" if your frequencies are 15 minutes or less. Wysija triggers its own cron every 15 minutes for Premium users.',WYSIJA).'</p>';
-                            echo $field;
-                        ?>
-                    </th>
-                </tr>
-
-                <tr class="hidechoice choice-sending-method-smtp">
-                    <th scope="row" colspan="2">
-                        <?php 
-                            $field=__('What the hell should I put here?',WYSIJA);
-                            $field.='<p class="description">'.__('Leave this setting to 70 emails per 15 minutes, if you\'re unsure. Get in touch with your host to set up a "cron job" if your frequencies are 15 minutes or less. Wysija triggers its own cron every 15 minutes for Premium users.',WYSIJA).'</p>';
-                            echo $field;
-                        ?>
-                    </th>
-                </tr>
-                
                 
             </tbody>
         </table>
@@ -757,7 +705,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
          
         $modelList=&WYSIJA::get("list","model");
         /* get lists which have users  and are enabled */
-        $query="SELECT * FROM ".$modelList->getPrefix()."list WHERE is_enabled>0";
+        $query="SELECT * FROM [wysija]list WHERE is_enabled>0";
         $arrayList=$modelList->query("get_res",$query);
         $step2=array();
         $valuesDDP=array(""=>__("Do nothing",WYSIJA),"delete"=>__("Delete the user",WYSIJA),"unsub"=>__("Unsubscribe the user",WYSIJA));
@@ -806,7 +754,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 if($valueforward===false) {
                     $modelU=&WYSIJA::get("user","model");
                     $modelU->getFormat=OBJECT;
-                    $datauser=$modelU->getOne(false,array('wpuser_id'=>get_current_user_id()));
+
+                    $datauser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
 
                     $valueforward=$datauser->email;
                 }
@@ -839,16 +788,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__('These are based on Wordpress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
         
         $step['replyto_name']=array(
-            'type'=>'input',
-            'label'=>__('Default reply name',WYSIJA),
+            'type'=>'fromname',
+            'class'=>'validate[required]',
+            'label'=>__('Reply-to name & email',WYSIJA),
             'desc'=>__('You can change the default reply-to name and email for your newsletters. This option is also used for the activation emails and Admin notifications (in Basics).',WYSIJA));
-        
-        $step['replyto_email']=array(
-            'type'=>'input',
-            'label'=>__('Default reply email address',WYSIJA),
-            'desc'=>__('When the subscribers hit "reply", this is where they will send their email.',WYSIJA));
-        
-        
+
         
         $config=&WYSIJA::get("config","model");
                     
@@ -865,7 +809,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         
         $modelU=&WYSIJA::get("user","model");
         $modelU->getFormat=OBJECT;
-        $objUser=$modelU->getOne(false,array('wpuser_id'=>get_current_user_id()));
+
+        $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
         
         $step['unsubscribe_linkname']=array(
             'type'=>'input',
@@ -883,6 +828,18 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'input',
             'label'=>__('Unsubscribe page content',WYSIJA));
         
+        /*
+        $step['manage_subscriptions']=array(
+        'type'=>'debug',
+        'label'=>_de_('Subscribers can manage their subscriptions',WYSIJA),
+        'desc'=>_de_('Check this option to add a "Manage your subscriptions" link in the footer of your newsletters. This allows subscribers to decide which lists they\'ll unsubscribe from. [link]Preview the Manage Subscripton page.[/link] The "Unsubscribe" link always unsubscribes a users from all lists.',WYSIJA),
+        'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"subscriptions",false,true).'" target="_blank" title="'.__("Preview page",WYSIJA).'">');
+        
+        $step['manage_subscriptions_linkname']=array(
+            'type'=>'input',
+            'label'=>_de_('Text of "Manage Subscriptions" link',WYSIJA),
+            'desc'=>_de_('This changes the label for the manage subscriptions link in the footer of your newsletters.',WYSIJA));
+        */
         $step['advanced_charset']=array(
             'type'=>'dropdown_keyval',
             'values'=>array("UTF-8","UTF-7",
@@ -890,7 +847,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 "ISO-8859-1","ISO-8859-2","ISO-8859-3","ISO-8859-4","ISO-8859-5","ISO-8859-6","ISO-8859-7","ISO-8859-8","ISO-8859-9","ISO-8859-10","ISO-8859-13","ISO-8859-14","ISO-8859-15",
                 "Windows-1251","Windows-1252"),
             'label'=>__('Charset',WYSIJA),
-            'desc'=>__('Squares or weird characters are displayed in your emails?',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/automated-bounce-handling-install-guide/">'.__("Read more.",WYSIJA)."</a>");
+            'desc'=>__('Squares or weird characters are displayed in your emails? Select the encoding for your language.',WYSIJA));
         $step['debug_on']=array(
             'type'=>'debug',
             'label'=>__('Debug mode',WYSIJA),
@@ -919,7 +876,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     
     function premium(){
        $helperLicence=&WYSIJA::get("licence","helper");
-       $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1";
+       $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton";
        
        $arrayPremiumBullets=array(
            'more2000'=>array(
@@ -940,7 +897,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                ),
            'cron'=>array(
                'title'=>__('We activate a cron job for you.',WYSIJA),
-               'desc'=>__('We make sure your sending every 15 minutes to avoid unregular delivery.',WYSIJA)
+               'desc'=>__('We make sure you\'re sending every 15 minutes to avoid unregular delivery.',WYSIJA)
                ),
            'bounces'=>array(
                'title'=>__('Let us handle your bounces.',WYSIJA),
@@ -992,13 +949,87 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </div>
                 </div>
+            <p class="wysija-premium-wrapper"><a class="wysija-premium-btns wysija-premium" href="<?php echo $urlpremium; ?>" target="_blank"><?php echo __('Upgrade for $99 a year for 1 site.',WYSIJA).'<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/>'; ?></a></p>
+            <p><?php echo __('Already paid?', WYSIJA) ?> <a id="premium-activate" type="submit" class="wysija" href="javascript:;" /><?php echo esc_attr(__('Activate your Premium licence.',WYSIJA)); ?></a></p>
+            
+            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA));?></p>
+            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/terms-conditions/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Read our simple and easy [link]terms and conditions.[/link]',WYSIJA));?></p>
+            
+        <?php
+        
+    }
+    
+    
+    
+    function premium_activated(){
+       $helperLicence=&WYSIJA::get("licence","helper");
+       $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton";
+       
+       $arrayPremiumBullets=array(
+           'act-createbounce'=>array(
+               'title'=>__('To do: create a bounce address.',WYSIJA),
+               'desc'=>__('Click on the Bounce Handling tab and read our guide if you need help.',WYSIJA)."\n".__('Note: Mailjet handles its own bounce.',WYSIJA)
+               ),
+           'act-trackga'=>array(
+               'title'=>__('Track with Google Analytics.',WYSIJA),
+               'desc'=>'<a href="http://support.wysija.com/knowledgebase/track-your-newsletters-visitors-in-google-analytics/?utm_source=wpadmin&utm_campaign=premiumactivated" target="_blank">'.__('See how it works.',WYSIJA).'</a>'
+               ),
+           'act-findclick'=>array(
+               'title'=>__('Find out which links are clicked.',WYSIJA),
+               'desc'=>__('This is the most important engagement metric. You\'ll get hooked.',WYSIJA)
+               ),
+           'act-advclick'=>array(
+               'title'=>__('See which links are clicked.',WYSIJA),
+               'desc'=>__('Find out if a subscriber is really addicted to your newsletters.',WYSIJA)
+               ),
+           'act-cron'=>array(
+               'title'=>__('We check every 15 min. that your newsletter is being sent.',WYSIJA),
+               'desc'=>__('We trigger your sending mecanism every 15 minutes to avoid unregular delivery. Avoid setting up a "cron job".',WYSIJA)
+               ),
+           'act-sendmor2000'=>array(
+               'title'=>__('Send to more than 2000 subscribers.',WYSIJA),
+               'desc'=>__('You have no more limits. Send to 100 000 if you want.',WYSIJA)
+               ),
+           'act-themes'=>array(
+               'title'=>__('Download beautiful themes by known designers.',WYSIJA),
+               'desc'=>__('Get beautiful themes and their Photoshop files directly in the visual editor.',WYSIJA)
+               ),
+           'act-finaltip'=>array(
+               'title'=>__('Final tip: send with a professional email provider.',WYSIJA),
+               'desc'=>__('Wysija highly recommends you send with a professional Email Provider. This will increase your deliverability. [link]Read more.[/link]',WYSIJA),
+               'link'=>'http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=premiumactivated'
+               ),
+
+       );
+       
+        ?>
+            <div id="premium-content">
+                    <h2><?php echo __('The Little Guide to Premium',WYSIJA)?></h2>
+                    <div class="bulletium">
+                        <?php 
+                            foreach($arrayPremiumBullets as $key => $bullet){
+
+                                ?>
+                                <div id="<?php echo $key ?>" class="bullet-hold clearfix">
+                                    <div class="feat-thumb"></div>
+                                    <div class="description">
+                                        <h3><?php echo $bullet['title'] ?></h3>
+                                        <p><?php
+                                        if(isset($bullet['link'])){
+                                            echo str_replace(array('[link]','[/link]'),array('<a href="'.$bullet['link'].'" target="_blank">','</a>'),$bullet['desc']);
+                                        }else   echo $bullet['desc'] ?></p>
+                                    </div>
+                                </div>
+                                <?php
+                            }
+                        ?>
+                    </div>
+                </div>
             <p>
-                <a class="wysija-premium-btns wysija-premium" href="<?php echo $urlpremium; ?>" target="_blank"><?php echo __('Upgrade for $99 a year for 1 site.',WYSIJA).'<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/>'; ?></a>
-                Already paid? <a id="premium-activate" type="submit" class="wysija" href="javascript:;" /><?php echo esc_attr(__('Activate your Premium licence.',WYSIJA)); ?></a>
+                <a class="wysija-premium-btns wysija-support" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=premiumactivated" target="_blank"><?php echo __('Get support',WYSIJA); ?></a>
             </p>
             
-            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/" target="_blank">','</a>'),__('Got a sale\'s question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA));?></p>
-            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/terms-conditions/" target="_blank">','</a>'),__('Read our simple and easy [link]terms and conditions.[/link]',WYSIJA));?></p>
+            <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA));?></p>
             
         <?php
         

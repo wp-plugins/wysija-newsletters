@@ -60,7 +60,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
                     if(preg_match('#certificate#i',$errorString) && !$bounceClass->config->getValue('bounce_selfsigned',false)){
                             $this->notice('You may need to turn ON the option <i>Self-signed certificates</i>');
                     }elseif(!empty($port) AND !in_array($port,array('993','143','110'))){
-                            $this->notice('Are you sure you selected the right port? You can leave it empty if you do not know what to specify');
+                            $this->notice(__('Are you sure you selected the right port? You can leave it empty if you do not know what to specify',WYSIJA));
                     }
                 }
             }
@@ -138,6 +138,15 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         
         $helpLic=&WYSIJA::get("licence","helper");
         $res=$helpLic->check();
+
+        if(!isset($res['result']))  $res['result']=false;
+        return $res;
+    }
+    
+    function devalidate(){
+        
+        $modelCOnfig=&WYSIJA::get('config','model');
+        $res=$modelCOnfig->save(array('premium_key'=>false));
 
         if(!isset($res['result']))  $res['result']=false;
         return $res;

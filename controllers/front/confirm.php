@@ -34,7 +34,6 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
         }else{
            if($this->_testKeyuser()){
                $modelConf=&WYSIJA::get("config","model"); 
-
                if((int)$this->userData["details"]['status']<1){
                     $this->helperUser->subscribe($this->userData["details"]["user_id"]);
                     $modelConf=&WYSIJA::get("config","model");
@@ -153,7 +152,7 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             $modelUL->reset();
             $modelUL->specialUpdate=true;
             $modelUL->noCheck=true;
-            $modelUL->update(array("unsub_date"=>mktime()),$condiFirst);
+            $modelUL->update(array("unsub_date"=>time()),$condiFirst);
             $modelUL->reset();
 
             $this->notice(__("Newsletter profile has been updated.",WYSIJA));

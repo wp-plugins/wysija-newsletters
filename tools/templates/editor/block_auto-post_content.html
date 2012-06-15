@@ -1,0 +1,40 @@
+{if #posts}
+    {loop name="#posts"}
+        {if $params.image_alignment == 'alternate' && $last_alignment}
+            {if $last_alignment == 'left'}
+                {set var="$image_alignment" value="right"}
+            {/if}
+            {if $last_alignment == 'right'}
+                {set var="$image_alignment" value="left"}
+            {/if}
+            {set var="$last_alignment" value="$image_alignment"}
+        {/if}
+        {if $params.image_alignment == 'alternate' && !$last_alignment}
+            {set var="$image_alignment" value="left"}
+            {set var="$last_alignment" value="left"}
+        {/if}
+        {if ! $image_alignment}{set var="$image_alignment" value="$params.image_alignment"}{/if}
+
+        <div class="wysija_content {$image_alignment} clearfix">
+            {if #image}
+                <div class="wysija_image {$image_alignment}">
+                    <img src="{#image.src}" width="{#image.width}" height="{#image.height}" alt="{#image.alt}" />
+                </div>
+            {/if}
+            {if #text}
+                <div class="wysija_text editable">{#text.value|base64_decode}</div>
+            {/if}
+        </div>
+        {if ! #IS_LAST && $params.divider.src}
+            <div class="wysija_divider">
+                <img src="{$params.divider.src}" height="{$params.divider.height}" width="{$params.divider.width}" />
+            </div>
+        {/if}
+    {/loop}
+{/if}
+
+{if ! #posts}
+    <div class="nopost editable">
+        <p class="align-center">{$params.nopost_message|base64_decode}</p>
+    </div>
+{/if}

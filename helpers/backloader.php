@@ -62,7 +62,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 
 
 
-                            wp_enqueue_style('wysija-tabs-css', WYSIJA_URL."css/smoothness/jquery-ui-1.8.15.custom.css",array(),WYSIJA::get_version());
+                            wp_enqueue_style('wysija-tabs-css', WYSIJA_URL."css/smoothness/jquery-ui-1.8.20.custom.css",array(),WYSIJA::get_version());
                             break;
                         case "wysija-validator":
                             wp_enqueue_script('wysija-validator-lang');
@@ -88,11 +88,14 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_localize_script( 'wysija-admin-ajax', $ajaxvarname.'AJAX',$dataajaxxx );
                             wp_enqueue_script("jquery-ui-dialog");
                             wp_enqueue_script($js);
-                            wp_enqueue_style('wysija-tabs-css', WYSIJA_URL."css/smoothness/jquery-ui-1.8.15.custom.css",array(),WYSIJA::get_version());
+                            wp_enqueue_style('wysija-tabs-css', WYSIJA_URL."css/smoothness/jquery-ui-1.8.20.custom.css",array(),WYSIJA::get_version());
                             break;
                         case "wysija-admin-ajax-proto":
                             
                             wp_enqueue_script($js);
+                            break;
+                        case 'wysija-edit-autonl':
+                            wp_enqueue_script('wysija-edit-autonl', WYSIJA_URL."js/admin-campaigns-editAutonl.js",array('jquery'),WYSIJA::get_version());
                             break;
                         case "wysija-editor":
                             wp_enqueue_script("wysija-prototype", WYSIJA_URL."js/prototype/prototype.js",array(),WYSIJA::get_version());
@@ -127,12 +130,22 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 
                                 if(substr($urlbase, -3) !== '.js') $js .= '.js';
 
-                                wp_enqueue_script($js, $urlbase.'js/'.$js);
+                                wp_enqueue_script($kjs, $urlbase.'js/'.$js,array(),WYSIJA::get_version());
                             } else {
                                 wp_enqueue_script($js);
                             }
                     }
                 }
             }
+            
+    }
+    function localize($pagename,$dirname,$urlname,&$controller,$extension="newsletter"){
+        if($controller->jsLoc){
+            foreach($controller->jsLoc as $key =>$value){
+                foreach($value as $kf => $local){
+                    wp_localize_script($key, $kf, $local);
+                }
+            }
+        }
     }
 }

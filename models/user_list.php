@@ -17,6 +17,11 @@ class WYSIJA_model_user_list extends WYSIJA_model{
         $this->WYSIJA_model();
     }
     
+
+    function afterInsert($resultSaveID) {
+        do_action('wysijaSubscribeTo',$this->values);
+    }
+
     function updateSubscription($subid,$lists){
 		/*$result = true;
 		$time = time();

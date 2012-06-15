@@ -1,15 +1,15 @@
 === Wysija Newsletters ===
-Contributors: wysija
-Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, subscription, email marketing, email, emailing, smtp, automatic, 
+Contributors: wysija, benheu
+Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
-Tested up to: 3.3.2
-Stable tag: 1.1.5
+Tested up to: 3.4
+Stable tag: 2.0
 
-This plugin does one thing well: create and send newsletters from WordPress. Easily.
+Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
 
-Drag and drop your articles, images, social bookmarks and dividers in your newsletter. Pick one of 20 themes. Change fonts and colors on the fly. Manage your lists and subscription forms with a few clicks. Configuration is dummy proof. And if you're lost, [we're here](http://support.wysija.com/) to help. Sending newsletters from WordPress is finally fun.
+Drag and drop your posts, images, social icons in our visual editor. Pick one of 20 themes. Change fonts and colors on the fly. Send the latest posts when you want or as a single newsletter. Configuration is dummy proof. This baby is fully supported.
 
 
 = One minute video demo =
@@ -18,10 +18,11 @@ http://vimeo.com/35054446
 
 = Features =
 
-* Drag & drop visual editor. This is an html-free experience
-* Pick one of 20 themes. Photoshop files included
+* Drag & drop visual editor, an HTML-free experience
+* Post notifications, like Feedburner or Subscribe2
+* [Selection of over 20 themes](http://www.wysija.com/newsletter-templates-wordpress/). Photoshop files included
 * Get stats for each newsletter: opens, clicks, unreads, unsubscribes
-* Add a subscription form as a sidebar widget or in your pages
+* Add a subscription form in your sidebar or pages
 * Your newsletters look the same in Gmail, iPhone, Android, Outlook, Yahoo, Hotmail, etc.
 * Your WordPress users have their own list
 * Import subscribers from MailChimp, Aweber, etc.
@@ -29,7 +30,7 @@ http://vimeo.com/35054446
 * Single or double opt-in, your choice
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
-* We offer quick [support](http://support.wysija.com/)
+* Autoresponders, i.e. "Send email 3 days after someone subscribes"
 * Free version is limited to 2000 subscribers
 
 = Premium version =
@@ -45,18 +46,25 @@ http://vimeo.com/35054446
 * Don't reinstall. Simply activate!
 * Priority support
 
+[Visit our Premium page](http://www.wysija.com/wordpress-newsletter-plugin-premium/).
+
 = Upcoming major release =
 
-* Subscription to post notifications, like Feedburner email alerts
-* Schedule sending of newsletter in future
-* Autoresponder, i.e. "Send email in 3 days after X event"
+* Spam check tool
+* "View it in your browser" link
 
 = Future releases =
 
-* Possibility to add marketing tracking codes (Premium feature)
-* Support for custom post types
+* New stats page
+* Subscriber profile: add any field you want, such as age, city, gender
+* Custom post types support
 * Display a list of newsletters sent in a page of your site (shortcode)
-* Add galleries to your newsletter
+
+= Support =
+
+We got a dedicated website just to help you out. And we're quite quick to reply.
+
+[support.wysija.com](http://support.wysija.com/)
 
 = Translations in your language =
 
@@ -67,16 +75,19 @@ http://vimeo.com/35054446
 * Dutch (dank je wel John)
 * French (our bird did it)
 * German (danke Wolfgang & others)
-* Greek - 75% complete (thx Giorgio)
+* Greek (thx Giorgio)
 * Hungarian (thx Csaba!)
-* Italian - 75% complete (grazie Nick)
+* Italian (grazie Nick & Federico)
 * Norwegian (tysen takk Magnus)
 * Polish (thx to Marcin)
-* Portuguese PT - partial (obrigado Alvaro)
-* Portuguese BR - (Raphael & Djio)
+* Portuguese PT (obrigado Jorge & Alvaro)
+* Portuguese BR (Raphael & Djio)
 * Romanian (multumesc Silviu)
 * Slovak (thx Jan)
-* Spanish (gracias Fernando)
+* Spanish (gracias Fernando & Federico)
+* Turkish (thx to Cihat)
+
+Note: some languages need to be updated. Get in touch if you want to complete the translations.
 
 == Installation ==
 
@@ -99,28 +110,20 @@ Note: premium users don't need to reinstall anything. It's the same plugin.
 1. Activate the plugin
 1. A new menu `Wysija` will appear in your Admin
 
-= 3. The old way (FTP) =
+= 3. The old and reliable way (FTP) =
 1. Upload `wysija-newsletters` folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 1. A new menu `Wysija` will appear in your Admin
 
 == Frequently Asked Questions ==
 
-= Where's the "View in your browser link" ? =
+= Got questions? =
 
-There isn't any. Newsletters made with Wysija look good in all major email clients, so we avoided adding it. We're considering including it later.
+Our [support site](http://support.wysija.com/) has plenty of articles and a ticketing system.
 
-= Can I drop custom post types ? =
-
-Not yet. We're working on it for our 1.3 release.
-
-= Submit your feature resquest =
+= Submit your feature request =
 
 We got a User Voice page where you can [add or vote for new features](http://wysija.uservoice.com/forums/150107-feature-request).
-
-= Get in touch with our responsive support team =
-
-Our [support site](http://support.wysija.com/) has articles and a responsive ticketing system to submit bugs.
 
 == Screenshots ==
 
@@ -134,6 +137,18 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 
 == Changelog ==
 
+= 2.0 - 2012-06-15 =
+
+* Added post notifications 
+* Added auto responders
+* Added scheduling (send in future)
+* allow subscribers to select lists
+* embed subscription form outside your WordPress site (find code in the widget)
+* Subscription forms compatibility with W3 Total Cache and WP Supercache
+* Load social bookmarks from theme automatically
+* Several bug fixes and micro improvements
+* Ability to send snail mail
+
 = 1.1.5 - 2012-05-21 =
 
 * improved report after importing csv
@@ -143,7 +158,6 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed w3c validation on confirmation and unsubscription page
 * improved avoiding duplicates on environment with high sending frequencies
 * removed php show errors lost in resolveConflicts
-
 
 = 1.1.4 - 2012-05-14 =
 
@@ -161,7 +175,6 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * added sending status In Queue to differentiate with Not Sent
 * fixed automatic bounce handling
 * added custom roles and permissions
-
 
 = 1.1.3 - 2012-03-31 =
 

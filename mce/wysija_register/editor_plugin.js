@@ -34,7 +34,7 @@
                     });
 
                     ed.addButton('wysija_register', {
-				title : 'Wysija Registration',
+				title : 'Add Wysija newsletter subscription form',
 				image : url+'/wysija_register.png',
                                 cmd: 'wysijaRegister'
 			});

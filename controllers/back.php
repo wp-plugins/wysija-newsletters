@@ -18,8 +18,8 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysija_msg=$wysija_msgTemp;
         }
         
-        
-        
+        $modelEmail =& WYSIJA::get('email', 'model');
+        $campaign = $modelEmail->getOne('params', array('email_id' => 12));
         $wysija_qryTemp=get_option("wysija_queries");
         if(is_array($wysija_qryTemp) && count($wysija_qryTemp)>0){
             $wysija_queries=$wysija_qryTemp;
@@ -27,8 +27,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         
         WYSIJA::update_option("wysija_queries","");
         WYSIJA::update_option("wysija_msg","");
-        
-        $this->pref=get_user_meta(get_current_user_id(),'wysija_pref',true);
+        $this->pref=get_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',true);
         
         $prefupdate=false;
         if($this->pref) {
@@ -51,9 +50,9 @@ class WYSIJA_control_back extends WYSIJA_control{
         }
 
         if($prefupdate){
-            update_user_meta(get_current_user_id(),'wysija_pref',base64_encode(serialize($this->pref)));
+            update_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',base64_encode(serialize($this->pref)));
         }else{
-            add_user_meta(get_current_user_id(),'wysija_pref',base64_encode(serialize($this->pref)));
+            add_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',base64_encode(serialize($this->pref)));
         }
         
         /* check the licence if we have a premium user once in a while like every 24hrs*/
@@ -61,18 +60,22 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(get_option("wysicheck") || (( (isset($_REQUEST['action']) && $_REQUEST['action']!="licok")) && $modelC->getValue("premium_key"))){
             //$this->notice('licence check');
             $onedaysec=7*24*3600;
-            if(get_option("wysicheck") || (!$modelC->getValue("premium_val") || mktime() >((int)$modelC->getValue("premium_val")+$onedaysec))){
+            if(get_option("wysicheck") || (!$modelC->getValue("premium_val") || time() >((int)$modelC->getValue("premium_val")+$onedaysec))){
                 $helpLic=&WYSIJA::get("licence","helper");
                 $res=$helpLic->check(true);
                 if($res['nocontact']){
                     /* redirect instantly to a page with a javascript file  where we check the domain is ok */      
                     $data=get_option("wysijey");
                     /* remotely connect to host */
-                    wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), mktime());
+                    wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
                     
                 }
             }
         }
+        
+        /*check if the plugin has an update available */
+        $updateH=&WYSIJA::get('update','helper');
+        $updateH->checkForNewVersion();
         
     } 
     
@@ -111,7 +114,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         if($this->statuses){
             //we count by statuses
-            $query="SELECT count(".$this->modelObj->pk.") as count, status FROM `".$this->modelObj->getPrefix().$this->modelObj->table_name."` GROUP BY status";
+            $query="SELECT count(".$this->modelObj->pk.") as count, status FROM `[wysija]".$this->modelObj->table_name."` GROUP BY status";
             $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
             $counts=array();
             $this->modelObj->countRows=0;
@@ -260,7 +263,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             }else{
                 $this->notice(str_replace(array('[link]','[/link]'),
                     array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
-                    sprintf(__('Yikes. You\'re near the limit of %1$s subscribers in total for the free version of Wysija. Sending will be disabled when you reach that limit. Rest assured, your visitors will still be able to subscribe. Go [link]premium[/link] to send without limits.',WYSIJA)
+                    sprintf(__('Yikes! You\'re near the limit of %1$s subscribers for Wysija\'s free version. Upgrade to [link]Premium[/link] to send without limits, and more.',WYSIJA)
                             ,"2000")));
             }
             
