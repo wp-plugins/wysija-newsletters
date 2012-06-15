@@ -7,6 +7,8 @@ Version: 2.0
 Author: Wysija
 Author URI: http://www.wysija.com/
 License: GPLv2 or later
+Text Domain: wysija-newsletters
+Domain Path: /languages/
 */
 
 /*

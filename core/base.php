@@ -890,7 +890,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
             "title" =>array("label"=>__("Title:",WYSIJA),'default'=>__('Subscribe to our Newsletter',WYSIJA))
             ,"instruction" =>array("label"=>"",'default'=>__('To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!',WYSIJA))
             ,"lists" =>array("core"=>1,"label"=>__('Select a list:',WYSIJA),'default'=>array(1))
-            ,"autoregister" =>array("core"=>1,"label"=>__('Let the user select his lists of interests:',WYSIJA),'default'=>'not_auto_register')
+            ,"autoregister" =>array("core"=>1,"label"=>__('Let the user select his/her lists of interests:',WYSIJA),'default'=>'not_auto_register')
             ,"customfields" =>array("core"=>1,"label"=>__('Ask for:',WYSIJA),'default'=>"")
             ,'labelswithin'=>array('core'=>1,'default'=>true,"label"=>__('Display labels in inputs',WYSIJA),'hidden'=>1)
             ,"submit" =>array("core"=>1,"label"=>__('Button label:',WYSIJA),'default'=>__('Subscribe!',WYSIJA))
