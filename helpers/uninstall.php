@@ -17,7 +17,7 @@ class WYSIJA_help_uninstall extends WYSIJA_object{
             $query = fread($handle, filesize($filename));
             fclose($handle);
             $modelObj=&WYSIJA::get("user","model");
-            $queries=str_replace("DROP TABLE `","DROP TABLE `".$modelObj->getPrefix(),$query);
+            $queries=str_replace("DROP TABLE `","DROP TABLE `[wysija]",$query);
             $queries=explode("-- QUERY ---",$queries);
             $modelWysija=new WYSIJA_model();
             global $wpdb;

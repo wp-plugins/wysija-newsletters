@@ -6,7 +6,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
     private $_template_path = array();
     private $_data_path = null;
     private $_strip_special_chars = false;
-    private $_print_time = false;
+    private $_render_time = false;
     private $_i18n = null;
     private $_lc_time = '';
     private $_inline = false;
@@ -61,22 +61,22 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
     {
         $this->_inline = $bool;
     }
-    public function render ($vars, $template)
+    public function render($vars, $template)
     {
         if (is_object ($vars)) {
             $vars = get_object_vars($vars);
         }
         if ($string = $this->_loadTemplate ($template)) {
-            if ($this->_print_time) {
+            if ($this->_render_time) {
                 $time_start = microtime();
             }
             $this->_vars = $vars;
-            $output = $this->_parse ($string);
             if($this->_inline) {
-                $output = preg_replace("#(\t|\r|\n)#UiS", '', trim($output));
-                $output = preg_replace("#> +<#UiS", '><', $output);
+                $string = preg_replace("#(\t|\r|\n)#UiS", '', trim($string));
+                $string = preg_replace("#> +<#UiS", '><', $string);
             }
-            if ($this->_print_time) {
+            $output = $this->_parse($string);
+            if ($this->_render_time) {
                 $time_end = microtime();
                 $time = $time_end - $time_start;
                 $output .= "<div>wysija parser rendering took : $time second(s)</div>";
@@ -448,14 +448,22 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                         $value = $arguments[0];
                     }
                 break;
-                case 'p2br':
-                    $value = str_replace("<p></p>", '<br />', $value);
+                case 'max':
+                    $value = min($value, $arguments[0]);
+                break;
+                case 'min':
+                    $value = max($value, $arguments[0]);
+                break;
+                case 'format_text':
+
+                    $value = trim($value);
+
+                    $value = str_replace('<p></p>', '<br />', $value);
                 break;
                 case 'ratio':
                     $image = $value;
                     $ratio = 1;
                     if(isset($image['width']) && isset($image['height'])) {
-                        
                         if((int)$image['height']<=0)$image['height']=1; 
                         $ratio = round(($image['width'] / $image['height']) * 1000) / 1000;
                     }
@@ -489,11 +497,11 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     $value = round ($value);
                 break;
                 case 'strlen':
-					if ($arguments[0]) {
-						$value = strlen ($value, $arguments[0]);
-					} else {
-						$value = strlen ($value);
-					}
+                    if ($arguments[0]) {
+                            $value = strlen ($value, $arguments[0]);
+                    } else {
+                            $value = strlen ($value);
+                    }
                 break;
                 case 'count':
                     $value = count ($value);
@@ -509,11 +517,11 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'width':
-					if (isset ($arguments[0]) && $arguments[0]) {
-						$data_path = $arguments[0];
-					} else {
-						$data_path = $this->_data_path;
-					}
+                    if (isset ($arguments[0]) && $arguments[0]) {
+                            $data_path = $arguments[0];
+                    } else {
+                            $data_path = $this->_data_path;
+                    }
                     $value = $data_path.'/'.$value;
                     if ($value && file_exists ($value)) {
                         $size = @getimagesize ($value);
@@ -523,11 +531,11 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'height':
-					if (isset ($arguments[0]) && $arguments[0]) {
-						$data_path = $arguments[0];
-					} else {
-						$data_path = $this->_data_path;
-					}
+                    if (isset ($arguments[0]) && $arguments[0]) {
+                            $data_path = $arguments[0];
+                    } else {
+                            $data_path = $this->_data_path;
+                    }
                     $value = $data_path.'/'.$value;
                     if ($value && file_exists ($value)) {
                         $size = @getimagesize ($value);
@@ -542,11 +550,11 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'size':
-					if (isset ($arguments[0]) && $arguments[0]) {
-						$data_path = $arguments[0];
-					} else {
-						$data_path = $this->_data_path;
-					}
+                    if (isset ($arguments[0]) && $arguments[0]) {
+                            $data_path = $arguments[0];
+                    } else {
+                            $data_path = $this->_data_path;
+                    }
                     $value = $data_path.'/'.$value;
                     if ($value && file_exists ($value)) {
                         $value = round (filesize ($value));
@@ -638,9 +646,43 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'htmlentities':
-                    $value = htmlentities ($value, ENT_QUOTES, 'UTF-8');
-                    $value = str_replace ('{', '&#123;', $value);
-                    $value = str_replace ('}', '&#125;', $value);
+                    $result = '';
+                    $length = strlen($value);
+                    for ($i = 0; $i < $length; $i++) {
+                        $char = $value[$i];
+                        $ascii = ord($char);
+                        if ($ascii < 128) {
+
+                            $result .= htmlentities($char);
+                        } else if ($ascii < 192) {
+
+                        } else if ($ascii < 224) {
+
+                            $result .= htmlentities(substr($value, $i, 2), ENT_QUOTES, 'UTF-8');
+                            $i++;
+                        } else if ($ascii < 240) {
+
+                            $ascii1 = ord($value[$i+1]);
+                            $ascii2 = ord($value[$i+2]);
+                            $unicode = (15 & $ascii) * 4096 +
+                                    (63 & $ascii1) * 64 +
+                                    (63 & $ascii2);
+                            $result .= "&#$unicode;";
+                            $i += 2;
+                        } else if ($ascii < 248) {
+
+                            $ascii1 = ord($value[$i+1]);
+                            $ascii2 = ord($value[$i+2]);
+                            $ascii3 = ord($value[$i+3]);
+                            $unicode = (15 & $ascii) * 262144 +
+                                    (63 & $ascii1) * 4096 +
+                                    (63 & $ascii2) * 64 +
+                                    (63 & $ascii3);
+                            $result .= "&#$unicode;";
+                            $i += 3;
+                        }
+                    }
+                    $value = $result;
                 break;
                 case 'html_entity_decode':
                     $value = html_entity_decode ($value, ENT_QUOTES);
@@ -665,11 +707,11 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'img_size_limit':
-					if (isset ($arguments[2]) && $arguments[2]) {
-						$data_path = $arguments[2];
-					} else {
-						$data_path = $this->_data_path;
-					}
+                    if (isset ($arguments[2]) && $arguments[2]) {
+                            $data_path = $arguments[2];
+                    } else {
+                            $data_path = $this->_data_path;
+                    }
                     if (null !== $data_path && $value != '' && file_exists ($data_path.'/'.$value)) {
                         $size = @getimagesize ($data_path.'/'.$value);
                         $new_width = round($size[0]);
@@ -712,12 +754,13 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     $value = strtolower (pathinfo ($value, PATHINFO_EXTENSION));
                 break;
                 case 'utf8_encode':
-                    $value = utf8_encode ($value);
+                    $value = utf8_encode($value);
                 break;
-                case 'urlencode':
-                    if (!is_array($value)) {
-                        $value = urlencode ($value);
-                    }
+                case 'url_encode':
+                    $value = urlencode ($value);
+                break;
+                case 'url_decode':
+                    $value = urldecode($value);
                 break;
                 case 'number_format':
                     if ($arguments) {
@@ -740,13 +783,13 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                 case 'modulo':
                     $value = $value%$arguments['0'];
                 break;
-				case 'trim_br':
-					$value = str_replace(array ("<br>", "<br/>", "<br />"), "\n", $value);
-					$value = nl2br (trim ($value));
-				break;
-				case 'implode':
-					$value = implode ($arguments[0], $value);
-				break;
+                case 'trim_br':
+                        $value = str_replace(array ("<br>", "<br/>", "<br />"), "\n", $value);
+                        $value = nl2br (trim ($value));
+                break;
+                case 'implode':
+                        $value = implode ($arguments[0], $value);
+                break;
             }
         }
         return $value;

@@ -4,13 +4,20 @@ class WYSIJA_help_bookmarks extends WYSIJA_object {
     function WYSIJA_help_bookmarks() {
     }
     
-    function getAll($size = 'medium') {
+    function getAll($size = 'medium', $theme = 'default') {
         $fileHelper =& WYSIJA::get('file', 'helper');
         $dirHandle = $fileHelper->exists('bookmarks'.DS.$size);
         if($dirHandle['result'] === FALSE) {
             return array();
         } else {
             $bookmarks = array();
+
+            if($size === 'medium' and $theme !== 'default') {
+                $themeIcons = $this->getAllByTheme($theme, 'url');
+                if(!empty($themeIcons)) {
+                    $bookmarks['00'] = $themeIcons;
+                }
+            }
             $sourceDir = $dirHandle['file'];
             $iconsets = scandir($sourceDir);
             foreach($iconsets as $iconset) {
@@ -45,10 +52,39 @@ class WYSIJA_help_bookmarks extends WYSIJA_object {
                     $info = pathinfo($sourceDir.DS.$icon);
                     $dimensions = @getimagesize($sourceDir.DS.$icon);
                     $bookmarks[basename($icon, '.'.$info['extension'])] = array(
-                        'src' => $fileHelper->url($icon, 'bookmarks'.DS.$size.DS.$iconset),
+                        'src' => $fileHelper->url($icon, 'bookmarks/'.$size.'/'.$iconset),
                         'width' => $dimensions[0],
                         'height' => $dimensions[1]
                     );
+                }
+            }
+            return $bookmarks;
+        }
+    }
+    function getAllByTheme($theme, $type = 'all')
+    {
+        $fileHelper =& WYSIJA::get('file', 'helper');
+        $dirHandle = $fileHelper->exists('themes'.DS.$theme.DS.'bookmarks');
+        if($dirHandle['result'] === FALSE) {
+            return array();
+        } else {
+            $bookmarks = array();
+            $sourceDir = $dirHandle['file'];
+            $icons = scandir($sourceDir);
+            foreach($icons as $icon) {
+                if(in_array($icon, array('.', '..', '.DS_Store', 'Thumbs.db')) === FALSE and strrpos($icon, '.txt') === FALSE) {
+                    if($type === 'all') {
+                        $info = pathinfo($sourceDir.DS.$icon);
+                        $dimensions = @getimagesize($sourceDir.DS.$icon);
+                        $bookmarks[basename($icon, '.'.$info['extension'])] = array(
+                            'src' => $fileHelper->url($icon, 'themes/'.$theme.'/bookmarks'),
+                            'width' => $dimensions[0],
+                            'height' => $dimensions[1]
+                        );
+                    } else if($type === 'url') {
+                        $info = pathinfo($sourceDir.DS.$icon);
+                        $bookmarks[basename($icon, '.'.$info['extension'])] = $fileHelper->url($icon, 'themes/'.$theme.'/bookmarks');
+                    }
                 }
             }
             return $bookmarks;

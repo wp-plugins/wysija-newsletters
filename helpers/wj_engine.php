@@ -2,6 +2,11 @@
 defined('WYSIJA') or die('Restricted access');
 
 class WYSIJA_help_wj_engine extends WYSIJA_object {
+
+    var $_debug = false;
+
+    var $_email_data = null;
+
     var $_context = 'editor';
 
     var $_data = null;
@@ -17,7 +22,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         return array(
             'dropHeaderNotice' => __('Drop your logo in this header.',WYSIJA),
             'dropFooterNotice' => __('Drop your footer image here.',WYSIJA),
-            'dropBannerNotice' => __('If you leave this area empty, it will not display once you send your e-mail',WYSIJA),
+            'dropBannerNotice' => __('If you leave this area empty, it will not display once you send your email',WYSIJA),
             'clickToEditText' => __('Click here to add a title or text.', WYSIJA),
             'alignmentLeft' =>  __('Align left',WYSIJA),
             'alignmentCenter' => __('Align center',WYSIJA),
@@ -50,7 +55,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'dividerSelectionTitle' => __('Divider Selection', WYSIJA),
             'abouttodeletetheme' => __('You are about to delete the theme : %1$s. Do you really want to do that?', WYSIJA),
             'addLinkTitle' => __('Add Link & Alternative text', WYSIJA),
-            'styleTransparent' => __('Check this box if you want transparency', WYSIJA)
+            'styleTransparent' => __('Check this box if you want transparency', WYSIJA),
+            'ajaxLoading' => __('Loading...', WYSIJA),
+            'customFieldsLabel' => __('Add first or last name of subscriber', WYSIJA),
+            'autoPostSettingsTitle' => __('Post selection options', WYSIJA),
+            'autoPostEditSettings' => __('Edit Automatic latest posts', WYSIJA),
+            'autoPostImmediateNotice' => __('You can only add one widget when designing a post notification sent immediately after an article is published', WYSIJA)
         );
     }
     
@@ -74,6 +84,21 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             if($decode) {
                 $this->_data = $this->getDecoded('data');
             }
+        }
+    }
+    function getEmailData($key = null) {
+        if($key === null) {
+            return $this->_email_data;
+        } else {
+            if(array_key_exists($key, $this->_email_data)) {
+                return $this->_email_data[$key];
+            }
+        }
+        return null;
+    }
+    function setEmailData($value = null) {
+        if($value !== null) {
+            $this->_email_data = $value;
         }
     }
     function getDefaultData() {
@@ -195,14 +220,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
 
             $config=&WYSIJA::get("config","model");
-
-            $modelUser =& WYSIJA::get("user","model");
             $data = array(
                 'header' => $this->renderEditorHeader(),
                 'body' => $this->renderEditorBody(),
                 'footer' => $this->renderEditorFooter(),
-                'unsubscribe_link' => $modelUser->getUnsubLink(),
-                'company_address' => nl2br($config->getValue('company_address'))
+                'unsubscribe' => $config->emailFooterLinks(true),
+                'company_address' => nl2br($config->getValue('company_address')),
+                'is_debug' => $this->isDebug()
             );
             return $wjParser->render($data, 'templates/editor/editor_template.html');
         }
@@ -250,6 +274,18 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $wjParser->setStripSpecialchars(true);
         $block['i18n'] = $this->getTranslations();
         return $wjParser->render($block, 'templates/editor/block_'.$block['type'].'.html');
+    }
+     
+    function renderEditorAutoPost($posts = array(), $params = array()) {
+        $wjParser =& WYSIJA::get('wj_parser', 'helper');
+        $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
+        $wjParser->setStripSpecialchars(true);
+        $data = array(
+            'posts' => $posts,
+            'params' => $params
+        );
+        $html = $wjParser->render($data, 'templates/editor/block_auto-post_content.html');
+        return $html;
     }
     
     function renderImages($data = array()) {
@@ -421,6 +457,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
     function setContext($value = null) {
         if($value !== null) $this->_context = $value;
     }
+    function isDebug() {
+        return ($this->_debug === true);
+    }
     function getEncoded($type = 'data') {
         return base64_encode(serialize($this->{'get'.ucfirst($type)}()));
     }
@@ -461,13 +500,17 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         return $wjParser->render($data, 'styles/css-'.$data['context'].'.html');
     }
     
-    function renderEmail($subject = NULL) {
+    function renderEmail($email = NULL) {
 
         @ini_set('pcre.backtrack_limit', 1000000);
         $this->setContext('email');
         if($this->isDataValid() === false) {
             throw new Exception('data is not valid');
         } else {
+
+            $this->setEmailData($email);
+
+            $data['subject'] = $this->getEmailData('subject');
 
             $data = array(
                 'header' => $this->renderEmailHeader(),
@@ -481,10 +524,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
             $wjParser->setStripSpecialchars(true);
             $wjParser->setInline(true);
-
-            if($subject !== NULL) {
-                $data['subject'] = $subject;
-            }
             try {
                 $template = $wjParser->render($data, 'templates/email/email_template.html');
                 return $template;
@@ -499,7 +538,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $wjParser->setStripSpecialchars(true);
         $config =& WYSIJA::get('config','model');
         $data = array(
-            'unsubscribe_label' => '[unsubscribe_linklabel]',
+            'unsubscribe' => $config->emailFooterLinks(),
             'company_address' => nl2br($config->getValue('company_address'))
         );
 
@@ -534,12 +573,101 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         foreach($blocks as $key => $block) {
 
             $block['block_width'] = 564;
+            if($block['type'] === 'auto-post') {
 
-            $block = $wjParser->render($block, 'templates/email/block_template.html');
 
-            $block = $this->applyInlineStyles('body', $block);
+                $email = $this->getEmailData();
 
-            $body .= $block;
+                $blockParams = $block['params'];
+
+                $params = array();
+                foreach($blockParams as $pairs) {
+                    $params[$pairs['key']] = $pairs['value'];
+                }
+
+                if(!empty($email['params']['autonl']['articles']['ids'])) {
+                    $params['exclude'] = $email['params']['autonl']['articles']['ids'];
+                } else {
+                    if(array_key_exists('autonl', $email['params']) === false) {
+                        $email['params']['autonl'] = array();
+                    }
+                    if(array_key_exists('articles', $email['params']['autonl']) === false) {
+                        $email['params']['autonl']['articles'] = array(
+                            'ids' => array(),
+                            'count' => 0,
+                            'first_subject' => ''
+                        );
+                    }
+                }
+
+                if(isset($email['params']['autonl']['articles']['immediatepostid'])){
+                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
+                    $params['post_limit'] = 1;
+                }
+                if(isset($email['params']['autonl']['firstSend'])){
+                    $params['post_date'] = $email['params']['autonl']['firstSend'];
+                }
+
+                $params['readmore'] = trim(base64_decode($params['readmore']));
+
+                $articlesHelper =& WYSIJA::get('articles', 'helper');
+                $posts = $articlesHelper->getPosts($params);
+
+                $postIds = array();
+                $postCount = 0;
+                if(empty($posts)) {
+
+                    if(!isset($params['nopost_message']) || strlen($params['nopost_message']) === 0) {
+                        $block = '';
+                    } else {
+                        $data = array('params' => $params);
+                        $block = $wjParser->render($data, 'templates/email/block_auto-post.html');
+                    }
+                } else {
+                    foreach($posts as $key => $post) {
+
+                        $postIds[] = $post['ID'];
+
+                        $postCount++;
+                        if(strlen(trim($post['post_title'])) > 0 and empty($email['params']['autonl']['articles']['first_subject'])) {
+                            $email['params']['autonl']['articles']['first_subject'] = trim($post['post_title']);
+                        }
+
+                        $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+
+                        $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $params);
+                    }
+
+                    if($params['show_divider'] === 'yes') {
+                        if(isset($email['params']['divider'])) {
+                            $params['divider'] = $email['params']['divider'];
+                        } else {
+                            $dividersHelper =& WYSIJA::get('dividers', 'helper');
+                            $params['divider'] = $dividersHelper->getDefault();
+                        }
+                    }
+                    $data = array(
+                        'posts' => $posts,
+                        'params' => $params
+                    );
+
+                    $block = $wjParser->render($data, 'templates/email/block_auto-post.html');
+                }
+
+                $email['params']['autonl']['articles']['ids'] = array_unique(array_merge($email['params']['autonl']['articles']['ids'], $postIds));
+
+                $email['params']['autonl']['articles']['count'] = (int)$email['params']['autonl']['articles']['count'] + $postCount;
+                $this->setEmailData($email);
+            } else {
+
+                $block = $wjParser->render($block, 'templates/email/block_template.html');
+            }
+            if($block !== '') {
+
+                $block = $this->applyInlineStyles('body', $block);
+
+                $body .= $block;
+            }
         }
         return $body;
     }
@@ -598,7 +726,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     'wysija-divider-container' => array('margin' => '0 auto 1.1em auto', 'padding' => '0', 'text-align' => 'center'),
                     'align-left' => array('text-align' => 'left'),
                     'align-center' => array('text-align' => 'center'),
-                    'align-right' => array('text-align' => 'right')
+                    'align-right' => array('text-align' => 'right'),
+                    'align-justify' => array('text-align' => 'justify')
                 );
             break;
             case 'unsubscribe':
@@ -622,7 +751,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 $classes['#<([^ /]+) ((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)class="'.$class.'"((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)>#Ui'] = '<$1 $2$4$5$7 style="$3$6'.$wjParser->render($styles, 'styles/inline.html').'">';
                 unset($classes[$class]);
             }
-            $block = preg_replace(array_keys($classes), $classes, $block);
+            $blockafter = preg_replace(array_keys($classes), $classes, $block);
+            
+            if($blockafter) $block=$blockafter;
         }
 
         if($area === 'body') {

@@ -18,16 +18,23 @@ class WYSIJA_help_dividers extends WYSIJA_object {
 
                     $dimensions = @getimagesize($dirHandle['file'].DS.$filename);
                     if($dimensions !== FALSE) {
-                        list($width, $height) = $dimensions;
+                        $width = (int)$dimensions[0];
+                        $height = (int)$dimensions[1];
                     } else {
                         $width = 564;
                         $height = 1;
                     }
-                    $dividers[] = array(
-                        'src' => $fileHelper->url($filename, 'dividers'),
-                        'width' => $width,
-                        'height' => $height
-                    );
+
+                    if($height > 0) {
+                        $ratio = round(($width / $height) * 1000) / 1000;
+                        $width = min($width, 564);
+                        $height = (int)($width / $ratio);
+                        $dividers[] = array(
+                            'src' => $fileHelper->url($filename, 'dividers'),
+                            'width' => $width,
+                            'height' => $height
+                        );
+                    }
                 }
             }
             return $dividers;

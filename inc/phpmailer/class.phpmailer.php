@@ -415,7 +415,7 @@ class acymailingPHPMailer extends WYSIJA_object{
 //    $emailreports=WYSIJA_UPLOADS_DIR.'emails_report.txt';
 //    $emailto=$this->to;
 //    $subject=$this->Subject;
-//    $sendtime=mktime();
+//    $sendtime=time();
 //    if(isset($this->NumberTryAdded)) $numbertry=$this->NumberTryAdded;
 //    else $numbertry=0;
 //    if(isset($this->SendAtAdded)) $send_at=$this->SendAtAdded;

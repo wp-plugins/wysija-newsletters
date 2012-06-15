@@ -25,6 +25,9 @@ class WYSIJA_help_queue extends WYSIJA_object{
             $this->listsubClass->sendNotif = false;
             $this->listsubClass->sendConf = false;
             $this->send_limit = (int) $this->config->getValue("sending_emails_number");
+            if(isset($_REQUEST['totalsend'])){
+                $this->send_limit = (int) $_REQUEST['totalsend']-$_REQUEST['alreadysent'];
+            }
             @ini_set('max_execution_time',0);
             @ini_set('default_socket_timeout',10);
             @ignore_user_abort(true);
@@ -33,14 +36,28 @@ class WYSIJA_help_queue extends WYSIJA_object{
                     $this->stoptime = time()+$timelimit-4;
             }
 	}
-	function process($emailid=false){
+	function process($emailid=false,$user_id=false){
             if($emailid)    $this->email_id=$emailid;	
                 $queueClass = &WYSIJA::get("queue","model");
-		$queueElements = $queueClass->getReady($this->send_limit,$this->email_id);
+		$queueElements = $queueClass->getReady($this->send_limit,$this->email_id,$user_id);
                 $this->total=count($queueElements);
                 $this->start=0;
 		if(empty($queueElements)){
-			$this->finish = true;
+			
+                        $queueElements = $queueClass->getDelayed($this->email_id);
+                        if($queueElements && $this->report){
+                            $disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
+                            $disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
+                            $disp.= "<div style='background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
+                            $disp.= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
+                            $disp.= sprintf(__('There are %1$s delayed email(s)',WYSIJA),count($queueElements));
+                            $disp.= '</div>';
+                            foreach($queueElements as $element){
+                                $disp.= "<div id='divinfo'>".sprintf(__('Email will be sent to %1$s at %2$s',WYSIJA),'<b>'.$element['email'].'</b>','<em>'.date_i18n(get_option('date_format').' H:i',$element['send_at']).'</em>')." </div>";
+                            }
+                            echo $disp;
+                        }
+                        $this->finish = true;
 			return true;
 		}
 		if($this->report){
@@ -56,7 +73,8 @@ class WYSIJA_help_queue extends WYSIJA_object{
 			$disp.= '</div>';
 			$disp.= "<div id='divinfo' style='display:none; position:fixed; bottom:3px;left:3px;background-color : white; border : 1px solid grey; padding : 3px;'> </div>";
 			$disp .= '<br /><br />';
-			$url = 'index.php?option=com_acymailing&ctrl=send&tmpl=component&task=continuesend&email_id='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
+                        $url = 'admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
+
 			$disp.= '<script type="text/javascript" language="javascript">';
 			$disp.= 'var mycounter = document.getElementById("counter");';
 			$disp.= 'var divinfo = document.getElementById("divinfo");
@@ -179,7 +197,8 @@ class WYSIJA_help_queue extends WYSIJA_object{
 
 		}
 		if($this->report){
-			echo "</body></html>";exit;
+			echo "</body></html>";
+                        exit;
 		}
 		return true;
 	}
@@ -216,7 +235,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				foreach($infosSub as $html => $subscribers){
 					if(!$status) $status=-2;
                                         else $status=0;
-                                        $query = 'INSERT IGNORE INTO `'.$modelEUS->getPrefix().'email_user_stat` (email_id,user_id,status,sent_at) VALUES ('.$email_id.','.implode(','.$status.','.$time.'),('.$email_id.',',$subscribers).','.$status.','.$time.')';
+                                        $query = 'INSERT IGNORE INTO `[wysija]email_user_stat` (email_id,user_id,status,sent_at) VALUES ('.$email_id.','.implode(','.$status.','.$time.'),('.$email_id.',',$subscribers).','.$status.','.$time.')';
 					$modelEUS->query($query);
 				}
 			}
@@ -227,7 +246,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		$delay = $this->config->getValue('queue_delay',3600);
                 $modelQ=&WYSIJA::get("queue","model");
 		foreach($queueUpdate as $email_id => $subscribers){
-			$query = 'UPDATE `'.$modelQ->getPrefix().'queue` SET send_at = send_at + '.$delay.', number_try = number_try +1 WHERE email_id = '.$email_id.' AND user_id IN ('.implode(',',$subscribers).')';
+			$query = 'UPDATE `[wysija]queue` SET send_at = send_at + '.$delay.', number_try = number_try +1 WHERE email_id = '.$email_id.' AND user_id IN ('.implode(',',$subscribers).')';
 			$modelQ->query($query);
 		}
 	}
@@ -312,10 +331,26 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				break;
 			case 'block' :
 				$message .= ' | user '.$subid.' blocked';
-				$modelU->query('UPDATE `'.$modelU->getPrefix().'user` SET `enabled` = 0 WHERE `user_id` = '.intval($subid));
-				$modelU->query('DELETE FROM `'.$modelU->getPrefix().'queue` WHERE `user_id` = '.intval($subid));
+				$modelU->query('UPDATE `[wysija]user` SET `enabled` = 0 WHERE `user_id` = '.intval($subid));
+				$modelU->query('DELETE FROM `[wysija]queue` WHERE `user_id` = '.intval($subid));
 				break;
 	      }
 		return $message;
 	}
+        
+        function clear(){
+            
+
+            $configM=&WYSIJA::get('config','model');
+
+            $queryUnsubscribed='SELECT C.user_id FROM `[wysija]user` as C WHERE C.status < '.$configM->getValue('confirm_dbleoptin');
+            $modelQ=&WYSIJA::get('queue','model');
+            $realquery='DELETE FROM `[wysija]queue`  WHERE `user_id` in ('.$queryUnsubscribed.')';
+            $modelQ->query($realquery);
+
+            $queryListEmail='SELECT C.email_id FROM `[wysija]email` as C ';
+            $realquery='DELETE FROM `[wysija]queue`  WHERE `email_id` NOT IN ('.$queryListEmail.')';
+            $modelQ->query($realquery);
+            return true;
+        }
 }

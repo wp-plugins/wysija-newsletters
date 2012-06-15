@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_themes extends WYSIJA_object{
-        
+    var $extensions = array('png', 'jpg', 'jpeg', 'gif');
     function WYSIJA_help_themes(){
     }
     
@@ -23,25 +23,24 @@ class WYSIJA_help_themes extends WYSIJA_object{
     
     function getInformation($theme) {
 
-        $extensions = array('png', 'jpg', 'jpeg', 'gif');
         $fileHelper =& WYSIJA::get('file', 'helper');
 
         $thumbnail = NULL;
-        for($i = 0; $i < count($extensions); $i++) {
+        for($i = 0; $i < count($this->extensions); $i++) {
 
-            $result = $fileHelper->exists('themes'.DS.$theme.DS.'thumbnail.'.$extensions[$i]);
+            $result = $fileHelper->exists('themes'.DS.$theme.DS.'thumbnail.'.$this->extensions[$i]);
             if($result['result'] !== FALSE){
-                $thumbnail = $fileHelper->url('thumbnail.'.$extensions[$i], 'themes'.DS.$theme);
+                $thumbnail = $fileHelper->url('thumbnail.'.$this->extensions[$i], 'themes'.DS.$theme);
             }
         }
 
         $screenshot = NULL;
         $width = $height = 0;
-        for($i = 0; $i < count($extensions); $i++) {
+        for($i = 0; $i < count($this->extensions); $i++) {
 
-            $result = $fileHelper->exists('themes'.DS.$theme.DS.'screenshot.'.$extensions[$i]);
+            $result = $fileHelper->exists('themes'.DS.$theme.DS.'screenshot.'.$this->extensions[$i]);
             if($result['result'] !== FALSE){
-                $screenshot = $fileHelper->url('screenshot.'.$extensions[$i], 'themes'.DS.$theme);
+                $screenshot = $fileHelper->url('screenshot.'.$this->extensions[$i], 'themes'.DS.$theme);
                 $dimensions = @getimagesize($result['file']);
                 if($dimensions !== FALSE) {
                     list($width, $height) = $dimensions;
@@ -75,13 +74,13 @@ class WYSIJA_help_themes extends WYSIJA_object{
     function getData($theme)
     {
 
-        $extensions = array('png', 'jpg', 'jpeg', 'gif');
+        $this->extensions = array('png', 'jpg', 'jpeg', 'gif');
         $fileHelper =& WYSIJA::get('file', 'helper');
 
         $header = NULL;
-        for($i = 0; $i < count($extensions); $i++) {
+        for($i = 0; $i < count($this->extensions); $i++) {
 
-            $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'header.'.$extensions[$i]);
+            $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'header.'.$this->extensions[$i]);
             if($result['result'] !== FALSE) {
                 $dimensions = @getimagesize($result['file']);
                 if($dimensions !== FALSE and count($dimensions) >= 2) {
@@ -96,7 +95,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
                         'type' => 'header',
                         'text' => null,
                         'image' => array(
-                            'src' => $fileHelper->url('header.'.$extensions[$i], 'themes'.DS.$theme.DS.'images'),
+                            'src' => $fileHelper->url('header.'.$this->extensions[$i], 'themes'.DS.$theme.DS.'images'),
                             'width' => $width,
                             'height' => $height,
                             'url' => null,
@@ -109,9 +108,9 @@ class WYSIJA_help_themes extends WYSIJA_object{
         }
 
         $footer = NULL;
-        for($i = 0; $i < count($extensions); $i++) {
+        for($i = 0; $i < count($this->extensions); $i++) {
 
-            $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'footer.'.$extensions[$i]);
+            $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'footer.'.$this->extensions[$i]);
             if($result['result'] !== FALSE) {
                 $dimensions = @getimagesize($result['file']);
                 if($dimensions !== FALSE and count($dimensions) >= 2) {
@@ -126,7 +125,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
                         'type' => 'footer',
                         'text' => null,
                         'image' => array(
-                            'src' => $fileHelper->url('footer.'.$extensions[$i], 'themes'.DS.$theme.DS.'images'),
+                            'src' => $fileHelper->url('footer.'.$this->extensions[$i], 'themes'.DS.$theme.DS.'images'),
                             'width' => $width,
                             'height' => $height,
                             'url' => null,
@@ -139,9 +138,9 @@ class WYSIJA_help_themes extends WYSIJA_object{
         }
 
         $divider = NULL;
-        for($i = 0; $i < count($extensions); $i++) {
+        for($i = 0; $i < count($this->extensions); $i++) {
 
-            $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'divider.'.$extensions[$i]);
+            $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'divider.'.$this->extensions[$i]);
             if($result['result'] !== FALSE) {
                 $dimensions = @getimagesize($result['file']);
                 if($dimensions !== FALSE and count($dimensions) >= 2) {
@@ -153,7 +152,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
 
                     $divider = array(
                         'type' => 'divider',
-                        'src' => $fileHelper->url('divider.'.$extensions[$i], 'themes'.DS.$theme.DS.'images'),
+                        'src' => $fileHelper->url('divider.'.$this->extensions[$i], 'themes'.DS.$theme.DS.'images'),
                         'width' => $width,
                         'height' => $height
                     );
@@ -165,6 +164,37 @@ class WYSIJA_help_themes extends WYSIJA_object{
             'footer' => $footer,
             'divider' => $divider
         );
+    }
+    function getDivider($theme = 'default') {
+        $divider = NULL;
+        if($theme === 'default') {
+            $dividersHelper =& WYSIJA::get('dividers', 'helper');
+            $divider = $dividersHelper->getDefault();
+        } else {
+
+            $fileHelper =& WYSIJA::get('file', 'helper');
+            for($i = 0; $i < count($this->extensions); $i++) {
+
+                $result = $fileHelper->exists('themes'.DS.$theme.DS.'images'.DS.'divider.'.$this->extensions[$i]);
+                if($result['result'] !== FALSE) {
+                    $dimensions = @getimagesize($result['file']);
+                    if($dimensions !== FALSE and count($dimensions) >= 2) {
+
+                        list($width, $height) = $dimensions;
+                        $ratio = round(($width / $height) * 1000) / 1000;
+                        $width = 564;
+                        $height = (int)($width / $ratio);
+
+                        $divider = array(
+                            'src' => $fileHelper->url('divider.'.$this->extensions[$i], 'themes'.DS.$theme.DS.'images'),
+                            'width' => $width,
+                            'height' => $height
+                        );
+                    }
+                }
+            }
+        }
+        return $divider;
     }
     
     function installTheme($ZipfileResult,$manual=false){
@@ -187,7 +217,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
             $this->error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir'])."<a target='_blank' href='http://codex.wordpress.org/Changing_File_Permissions'>".__('Read documentation',WYSIJA)."</a>");
             return false;
         }
-        $timecreated=mktime();
+        $timecreated=time();
         $dirthemetemp=$helperF->makeDir("temp".DS."temp_".$timecreated,0777);
         $zipclass=&WYSIJA::get("zip","helper");
         if(!$zipclass->unzip_wp($tempzipfile,$dirthemetemp)) {

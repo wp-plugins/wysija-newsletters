@@ -246,6 +246,7 @@ border:0; margin:0; padding:0; white-space:nowrap; text-decoration:none; font-we
 .wp_themeSkin span.mce_justifyright,
 .wp_themeSkin span.mce_justifycenter,
 .wp_themeSkin span.mce_justifyfull,
+.wp_themeSkin span.wj_custom_fields,
 .wp_themeSkin span.mce_indent,
 .wp_themeSkin span.mce_outdent,
 .wp_themeSkin span.mce_link,
@@ -369,6 +370,10 @@ border:0; margin:0; padding:0; white-space:nowrap; text-decoration:none; font-we
 .wp_themeSkin span.mce_bold {background-position:-1px -20px}
 .wp_themeSkin .mceButtonEnabled:hover span.mce_bold,
 .wp_themeSkin .mceButtonActive span.mce_bold {background-position:-1px 0}
+
+.wp_themeSkin span.wj_custom_fields {background-position:-560px -20px;}
+.wp_themeSkin .mceButtonEnabled:hover span.wj_custom_fields,
+.wp_themeSkin .mceButtonActive span.wj_custom_fields {background-position:-560px 0;}
 
 .wp_themeSkin span.mce_italic {background-position:-21px -20px}
 .wp_themeSkin .mceButtonEnabled:hover span.mce_italic,

@@ -42,6 +42,13 @@ class WYSIJA_control_back_tmce extends WYSIJA_control{
                             if(isset($datawidget[$k]))  $datawidget[$k][]=$v[0];
                             else    $datawidget[$k]=array($v[0]);
                             break;
+                        case "lists_name":
+                            foreach($v as $kv=>$vv){
+                                if(isset($datawidget[$k]))  $datawidget[$k][$kv]=$vv;
+                                else    $datawidget[$k]=array($kv=>$vv);
+                            }
+                            
+                            break;
                         case "customfields":
                             
                             $found=false;
@@ -61,6 +68,8 @@ class WYSIJA_control_back_tmce extends WYSIJA_control{
                     
                 }
             }
+            
+
             $count=count($customfields);
             if($count>1){
                 foreach($customfields as $keycol=>$paraval){

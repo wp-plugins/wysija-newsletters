@@ -34,13 +34,13 @@ class WYSIJA_help_licence extends WYSIJA_help{
                 if($decoded->result){
                     $res['result']=true;
 
-                    $dataconf=array('premium_key'=>base64_encode(get_option('home').mktime()),'premium_val'=>mktime());
+                    $dataconf=array('premium_key'=>base64_encode(get_option('home').time()),'premium_val'=>time());
                     $this->notice(__("Premium version is valid for your site.",WYSIJA));
                     WYSIJA::update_option("wysicheck",false);
                 }else{
                     $dataconf=array('premium_key'=>"",'premium_val'=>"");
                     $this->error(str_replace(array("[link]","[/link]"),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$data.'" target="_blank">','</a>'),
-                        __("Premium version licence does not exists for your site. Purchase from our website [link]here[/link].",WYSIJA)),1);
+                        __("Premium licence does not exist for your site. Purchase from our website [link]here[/link].",WYSIJA)),1);
                 }
                 $modelConf=&WYSIJA::get("config","model");
                 $modelConf->save($dataconf);

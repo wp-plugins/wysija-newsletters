@@ -3,6 +3,28 @@ defined('WYSIJA') or die('Restricted access');
 
 class WYSIJA_help_forms{
     function WYSIJA_help_forms(){
+        $this->eachValues=array(
+                            "one_min"=> __("1 minute",WYSIJA),
+                            "two_min"=> __("2 minutes",WYSIJA),
+                            "five_min"=> __("5 minutes",WYSIJA),
+                            "ten_min"=> __("10 minutes",WYSIJA),
+                            "fifteen_min"=> __("15 minutes",WYSIJA),
+                            "thirty_min"=> __("30 minutes",WYSIJA),
+                            "hourly"=> __("1 hour",WYSIJA),
+                            "two_hours"=> __("2 hours",WYSIJA),
+                            "twicedaily"=> __("Twice daily",WYSIJA),
+                            "daily"=> __("Day",WYSIJA));
+        $this->eachValuesSec=array(
+                            "one_min"=> '60',
+                            "two_min"=> '120',
+                            "five_min"=> '300',
+                            "ten_min"=> '600',
+                            "fifteen_min"=> '900',
+                            "thirty_min"=> '1800',
+                            "hourly"=> '3600',
+                            "two_hours"=>'7200',
+                            "twicedaily"=> '43200',
+                            "daily"=> '86400');
     }
     function input($data = '', $value = '', $extra = '') {
             $defaults = array('type' => 'text', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
@@ -101,7 +123,7 @@ class WYSIJA_help_forms{
             }
             ?><div id="media-buttons" class="hide-if-no-js"><?php
             if ( $media_buttons ) { ?>
-                    <?php	do_action( 'media_buttons' ); ?>
+                    <?php do_action( 'media_buttons' ); ?>
     <?php
             } ?>
             </div>

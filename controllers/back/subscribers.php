@@ -102,16 +102,16 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         /* 0 - counting request */
         
         if($filterJoin){
-            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `".$this->modelObj->getPrefix()."user_list` as B";
-            $queryCmmonStart.=" JOIN `".$this->modelObj->getPrefix().$this->modelObj->table_name."` as A on A.user_id=B.user_id";
+            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `[wysija]user_list` as B";
+            $queryCmmonStart.=" JOIN `[wysija]".$this->modelObj->table_name."` as A on A.user_id=B.user_id";
         }else{
-            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `".$this->modelObj->getPrefix().$this->modelObj->table_name."` as A";
+            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `[wysija]".$this->modelObj->table_name."` as A";
         }
         
 
         /* all the counts query */
         
-        $query="SELECT count(user_id) as users, status FROM `".$this->modelObj->getPrefix().$this->modelObj->table_name."` GROUP BY status";
+        $query="SELECT count(user_id) as users, status FROM `[wysija]".$this->modelObj->table_name."` GROUP BY status";
         $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
         $counts=array();
         $total=0;
@@ -154,16 +154,16 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         /* 1 - user request */
         
         if($filterJoin){
-            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `".$this->modelObj->getPrefix()."user_list` as B";
-            $query.=" JOIN `".$this->modelObj->getPrefix().$this->modelObj->table_name."` as A on A.user_id=B.user_id";
+            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]user_list` as B";
+            $query.=" JOIN `[wysija]".$this->modelObj->table_name."` as A on A.user_id=B.user_id";
         }else{
-            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `".$this->modelObj->getPrefix().$this->modelObj->table_name."` as A";
+            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]".$this->modelObj->table_name."` as A";
         }
         
         $queryFinal=$this->modelObj->makeWhere();
 
         /* without filter we already have the total number of subscribers */
-        if($this->filters)  $this->modelObj->countRows=$this->modelObj->count($queryCmmonStart.$queryFinal);
+        if($this->filters)  $this->modelObj->countRows=$this->modelObj->count($queryCmmonStart.$queryFinal,'users');
         else $this->modelObj->countRows=$counts['all'];
 
         $orderby=" ORDER BY ";
@@ -333,26 +333,26 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $model=&WYSIJA::get("list","model");
         $data=$model->getOne(array("name","welcome_mail_id","unsub_mail_id"),array("list_id"=>(int)$_REQUEST['id']));
 
-        $query="INSERT INTO `".$model->getPrefix()."email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`) 
-            SELECT ".mktime().",`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status` FROM ".$model->getPrefix()."email
+        $query="INSERT INTO `[wysija]email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`) 
+            SELECT ".time().",`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status` FROM [wysija]email
             WHERE email_id=".(int)$data['welcome_mail_id'];
         $emailWelcomeid=$model->query($query);
 
 
-        $query="INSERT INTO `".$model->getPrefix()."email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`) 
-            SELECT ".mktime().",`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status` FROM ".$model->getPrefix()."email
+        $query="INSERT INTO `[wysija]email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`) 
+            SELECT ".time().",`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status` FROM [wysija]email
             WHERE email_id=".(int)$data['unsub_mail_id'];
         $emailUnsubid=$model->query($query);
 
      
-        $query='INSERT INTO `'.$model->getPrefix().'list` (`created_at`,`name`,`description`,`welcome_mail_id`,`unsub_mail_id`,`is_enabled`,`ordering`) 
-            SELECT '.mktime().',"'.stripslashes(__("Copy of ",WYSIJA)).$data['name'].'" ,`description`,'.$emailWelcomeid.','.$emailUnsubid.' ,1,`ordering` FROM '.$model->getPrefix().'list
+        $query='INSERT INTO `[wysija]list` (`created_at`,`name`,`description`,`welcome_mail_id`,`unsub_mail_id`,`is_enabled`,`ordering`) 
+            SELECT '.time().',"'.stripslashes(__("Copy of ",WYSIJA)).$data['name'].'" ,`description`,'.$emailWelcomeid.','.$emailUnsubid.' ,1,`ordering` FROM [wysija]list
             WHERE list_id='.(int)$_REQUEST['id'];
         
         $listid=$model->query($query);
         
-        $query="INSERT INTO `".$model->getPrefix()."user_list` (`list_id`,`user_id`,`sub_date`,`unsub_date`) 
-            SELECT ".$listid.",`user_id`,`sub_date`,`unsub_date` FROM ".$model->getPrefix()."user_list
+        $query="INSERT INTO `[wysija]user_list` (`list_id`,`user_id`,`sub_date`,`unsub_date`) 
+            SELECT ".$listid.",`user_id`,`sub_date`,`unsub_date` FROM [wysija]user_list
             WHERE list_id=".(int)$_REQUEST['id'];
         
         $model->query($query);
@@ -411,7 +411,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             //group email user stats by status where userid
             $modelEUS=&WYSIJA::get('email_user_stat',"model");
             $modelEUS->setConditions(array("equal"=>array("user_id"=>$id)));
-            $query="SELECT count(email_id) as emails, status FROM `".$modelEUS->getPrefix().$modelEUS->table_name."`";
+            $query="SELECT count(email_id) as emails, status FROM `[wysija]".$modelEUS->table_name."`";
             $query.=$modelEUS->makeWhere();
             $query.=" GROUP BY status";
             $countss=$modelEUS->query("get_res",$query,ARRAY_A);
@@ -425,7 +425,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             //email_user_url
             $modelEUU=&WYSIJA::get('email_user_url',"model");
             $modelEUU->setConditions(array("equal"=>array("user_id"=>$id)));
-            $query="SELECT A.*,B.*,C.subject as name FROM `".$modelEUU->getPrefix().$modelEUU->table_name."` as A JOIN `".$modelEUU->getPrefix()."url` as B on A.url_id=B.url_id JOIN `".$modelEUU->getPrefix()."email` as C on C.email_id=A.email_id ";
+            $query="SELECT A.*,B.*,C.subject as name FROM `[wysija]".$modelEUU->table_name."` as A JOIN `[wysija]url` as B on A.url_id=B.url_id JOIN `[wysija]email` as C on C.email_id=A.email_id ";
             $query.=$modelEUS->makeWhere();
             $query.="ORDER BY A.number_clicked DESC";
             $this->data['clicks']=$modelEUS->query("get_res",$query,ARRAY_A);
@@ -493,6 +493,20 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->redirect('admin.php?page=wysija_subscribers&action=lists');
     }
     
+    function synchlisttotal(){
+        $this->requireSecurity();
+        
+        global $current_user;
+                         
+        if(is_multisite() && is_super_admin( $current_user->ID )){
+            $helperU=&WYSIJA::get("user","helper");
+            $helperU->synchList($_REQUEST['id'],true);
+        }
+
+        $this->redirect('admin.php?page=wysija_subscribers&action=lists');
+    }
+
+    
     function savelist(){
         $this->_resetGlobMsg();
         $update=false;
@@ -507,7 +521,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $this->modelObj->update($_REQUEST['wysija']['list']);
             $this->notice(__('List has been updated.',WYSIJA));
         }else{
-            $_REQUEST['wysija']['list']['created_at']=mktime();
+            $_REQUEST['wysija']['list']['created_at']=time();
             $_REQUEST['wysija']['list']['is_enabled']=1;
             
             $this->modelObj->insert($_REQUEST['wysija']['list']);   
@@ -574,7 +588,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     
     function import($id=false){
         $this->js[]='wysija-validator';
-        $this->viewObj->title=__('Import subscribers',WYSIJA);
+        $this->viewObj->title=__('Import Subscribers',WYSIJA);
         $this->viewShow='import';
     }
 
@@ -710,7 +724,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $resultdir=$fileHelp->makeDir("import");
         if(!$resultdir) return false;
 
-        $filename="import-".mktime().".csv";
+        $filename="import-".time().".csv";
         $handle=fopen($resultdir.$filename, "w");
         fwrite($handle, $csv);
         fclose($handle);
@@ -757,7 +771,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $this->data['totalrows']--;
         }
 
-        $this->viewObj->title=__('Import subscribers',WYSIJA);
+        $this->viewObj->title=__('Import Subscribers',WYSIJA);
         $this->viewShow='importmatch';
 
     }
@@ -820,7 +834,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $datatoinsert['status']='status';
         }
 
-        $queryStart="INSERT IGNORE INTO ".$this->modelObj->getPrefix()."user (`".implode("` ,`",$datatoinsert)."`,`created_at`) VALUES ";
+        $queryStart="INSERT IGNORE INTO [wysija]user (`".implode("` ,`",$datatoinsert)."`,`created_at`) VALUES ";
         
         //$linescount=count($csvArr);
         /* detect the emails that are duplicate in the import file */
@@ -901,7 +915,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         
                 
         if((int)$emailsalreadyrecorded>0){
-            $this->notice(sprintf(__('%1$s emails were already recorded in your subscribers table and were ignored.',WYSIJA),$emailsalreadyrecorded),0);
+            $this->notice(sprintf(__('%1$s were ignored because they are already subscribed.',WYSIJA),$emailsalreadyrecorded));
         }
 
         if(count($emailsCount)>0){
@@ -924,7 +938,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     
     function _importRows($query,$csvArr,$count,$datatoinsert,$emailKey,&$alreadyinsertedemails,&$invalidemails){
         $allEmails=array();
-        $time=mktime();
+        $time=time();
         $linescount=count($csvArr);
         $nbfields=count($datatoinsert);
 
@@ -994,7 +1008,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $user_ids=$this->modelObj->get(array('user_id'),array('email'=>$allEmails));
 
         $modelUL=&WYSIJA::get('user_list','model');
-        $query="INSERT IGNORE INTO ".$this->modelObj->getPrefix()."user_list (`list_id` ,`user_id`) VALUES ";
+        $query="INSERT IGNORE INTO [wysija]user_list (`list_id` ,`user_id`) VALUES ";
         foreach($_REQUEST['wysija']['user_list']['list'] as $keyl=> $listid){
             foreach($user_ids as $key=> $userid){
                 $query.="($listid,".$userid['user_id'].")";
@@ -1014,9 +1028,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     function export(){
         $this->js[]='wysija-validator';
         
-        $this->viewObj->title=__('Export subscribers',WYSIJA);
+        $this->viewObj->title=__('Export Subscribers',WYSIJA);
         $this->data=array();
-        $this->data['lists']=$this->_getLists();
+        $this->data['lists']=$this->_getLists(false);
         $this->viewShow='export';
     }
     
@@ -1069,11 +1083,11 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                 if(isset($_POST['wysija']['export']['filter']['confirmed'])){
                     $where=" AND B.status>0 ";
                 }
-                $qry="SELECT A.user_id FROM `".$this->modelObj->getPrefix()."user_list` as A 
-                    JOIN `".$this->modelObj->getPrefix()."user` as B on A.user_id=B.user_id
+                $qry="SELECT A.user_id FROM `[wysija]user_list` as A 
+                    JOIN `[wysija]user` as B on A.user_id=B.user_id
                         WHERE A.list_id = ".(int)$_POST['wysija']['export']['filter']['list'].$where;
             }else{
-                $qry="SELECT A.user_id FROM `".$this->modelObj->getPrefix()."user` as A";
+                $qry="SELECT A.user_id FROM `[wysija]user` as A";
                 if(isset($_POST['wysija']['export']['filter']['confirmed'])){
                     $qry.=" WHERE A.status>0";
                 }
@@ -1193,10 +1207,11 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         
     }
     
-    function _getLists(){
+    function _getLists($limit=false){
         
         $modelList=&WYSIJA::get("list","model");
         $modelList->escapingOn=true;
+        $modelList->_limitison=$limit;
         return $modelList->getLists();
     }
     

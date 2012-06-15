@@ -16,8 +16,12 @@
         </tr>
         <tr>
             <td id="wysija_unsubscribe">
-                <p>{#unsubscribe_link}<br /><br />{#company_address}</p>
+                <p>
+                    {loop name="#unsubscribe"}<a href="{#link}">{#label}</a>{if ! #IS_LAST}&nbsp;-&nbsp;{/if}{/loop}
+                    <br /><br />{#company_address}
+                </p>
             </td>
         </tr>
     </table>
 </div>
+{if #is_debug}<div id="wysija_editor_debug"></div>{/if}

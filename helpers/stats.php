@@ -3,15 +3,15 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_stats extends WYSIJA_object{
    function sendDailyReport(){
 
-        $onedayago=mktime()-1;
+        $onedayago=time()-1;
         $onedayago=$onedayago-(3600*24);
         $modelEUS=&WYSIJA::get("email_user_stat","model");
-        $query="SELECT COUNT(".$modelEUS->getPk().") as count, status FROM `".$modelEUS->getPrefix().$modelEUS->table_name."` 
+        $query="SELECT COUNT(".$modelEUS->getPk().") as count, status FROM `[wysija]".$modelEUS->table_name."` 
             WHERE sent_at>".$onedayago."
                 GROUP BY status";
         $statuscount=$modelEUS->query("get_res",$query);
         $modelUH=&WYSIJA::get("user_history","model");
-        $query="SELECT B.user_id,B.email FROM `".$modelUH->getPrefix().$modelUH->table_name."`  as A JOIN `".$modelUH->getPrefix()."user` as B on A.user_id=B.user_id
+        $query="SELECT B.user_id,B.email FROM `[wysija]".$modelUH->table_name."`  as A JOIN `[wysija]user` as B on A.user_id=B.user_id
             WHERE A.executed_at>".$onedayago." AND A.type='bounce'";
         $details=$modelUH->query("get_res",$query);
         $total=0;
@@ -53,7 +53,7 @@ class WYSIJA_help_stats extends WYSIJA_object{
         $mailer=&WYSIJA::get("mailer","helper");
         $mailer->testemail=true;
 
-        $res=$mailer->sendSimple($modelC->getValue('emails_notified'),__("Wysija's Daily Report",WYSIJA),$html);
+        $res=$mailer->sendSimple($modelC->getValue('emails_notified'),__("Your daily newsletter stats",WYSIJA),$html);
    }
    
    function getDomainStats(){

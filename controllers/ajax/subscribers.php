@@ -81,8 +81,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
         /* if the doble optin is activated then we send a confirmation email */
         if($dbloptin){
             /* TODO send a confirmation email now */
-            $mailer=&WYSIJA::get("mailer","helper");
-            $emailsent=$mailer->sendOne($config->getValue('confirm_email_id'),$uid);
+            $emailsent=$userHelper->sendConfirmationEmail($uid,true);
         }else{
             if($config->getValue("emails_notified") && $config->getValue("emails_notified_when_sub")){
                 
@@ -97,15 +96,27 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
         return $emailsent;
     }
     function registerToLists($data,$uid){
-        if($data['wysija[user_list][list_ids]']){
+        $model=&WYSIJA::get('user_list',"model");
+        if(isset($data['wysija[user_list][list_ids]'])){
             $listids=explode(',',$data['wysija[user_list][list_ids]']);
-            $model=&WYSIJA::get('user_list',"model");
-            $subdate=mktime();
+            
+            $subdate=time();
 
-            foreach($listids as $listid){
-                $model->replace(array("list_id"=>$listid,"user_id"=>$uid,"sub_date"=>$subdate));
-                $model->reset();
+            
+        }else{
+            $i=0;
+            $listids=array();
+            
+            for ($i = 0; $i <= 25; $i++) {
+                $testkey='wysija[user_list][list_id]['.$i.']';
+                if(isset($data[$testkey])) $listids[]=$data[$testkey];
             }
+            
+            //$listids=$data['wysija[user_list][list_id]'];
+        }
+        foreach($listids as $listid){
+            $model->replace(array("list_id"=>$listid,"user_id"=>$uid,"sub_date"=>$subdate));
+            $model->reset();
         }
         
     }

@@ -66,6 +66,10 @@ font[face=mceinline] {font-family:inherit !important}
     text-align:right;
 }
 
+.align-justify {
+    text-align:justify;
+}
+
 .wp-caption {
 	border: 1px solid #ddd;
 	text-align: center;

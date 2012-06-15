@@ -1,1 +1,1 @@
-<a href="[unsubscribe_link]" target="_blank">{#unsubscribe_label}</a><br /><br />{#company_address}
+{loop name="#unsubscribe"}<a href="{#link}" target="_blank">{#label}</a>{if ! #IS_LAST}&nbsp;-&nbsp;{/if}{/loop}<br /><br />{#company_address}

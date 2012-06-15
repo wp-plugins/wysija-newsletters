@@ -315,7 +315,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
 		if(empty($this->_message->email_id) && !empty($this->_message->user_id)){
 
 		    $modelEUS=&WYSIJA::get("email_user_stat","model");
-                     $emailres= $modelEUS->query("get_row",'SELECT `email_id` FROM '.$modelEUS->getPrefix().$modelEUS->table_name.' WHERE `user_id` = '.(int) $this->_message->user_id.' ORDER BY `sent_at` DESC LIMIT 1');
+                     $emailres= $modelEUS->query("get_row",'SELECT `email_id` FROM [wysija]'.$modelEUS->table_name.' WHERE `user_id` = '.(int) $this->_message->user_id.' ORDER BY `sent_at` DESC LIMIT 1');
                     $this->_message->email_id=$emailres['email_id'];
 
 		}
@@ -446,7 +446,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
         if(!empty($oneRule['action_user_min']) && $oneRule['action_user_min']>1){
 
           $modelEUS=&WYSIJA::get("email_user_stat","model");
-          $res=$modelEUS->query("get_row",'SELECT COUNT(email_id) as count FROM '.$modelEUS->getPrefix().$modelEUS->table_name.' WHERE status = -1 AND user_id = '.$this->_message->user_id);
+          $res=$modelEUS->query("get_row",'SELECT COUNT(email_id) as count FROM [wysija]'.$modelEUS->table_name.' WHERE status = -1 AND user_id = '.$this->_message->user_id);
           $nb = intval($res['count']) + 1;
           if($nb < $oneRule['action_user_min']){
             $message .= ' | '.sprintf(__('We received %1$s messages from the user %2$s',WYSIJA),$nb,$this->_message->subemail).' | '.sprintf(__('Actions will be executed after %1$s messages',WYSIJA),$oneRule['action_user_min']);
