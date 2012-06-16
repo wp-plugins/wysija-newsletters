@@ -93,7 +93,7 @@ class WYSIJA_model_user extends WYSIJA_model{
         if(!$userObj){
             //preview mode
             $this->getFormat=OBJECT;
-            $userObj=$this->getOne(false,array('wpuser_id'=>get_current_user_id()));
+            $userObj=$this->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
             $userspreview=true;
         }
         $params=array(
@@ -139,7 +139,7 @@ class WYSIJA_model_user extends WYSIJA_model{
     }
     
     function generateKeyuser($email){
-        return md5($email.mktime());
+        return md5($email.time());
     }
     
     function user_id($email){

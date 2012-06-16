@@ -38,6 +38,7 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
         $this->remove_actions('admin_head');
     }
     function remove_actions($actionsToClear){
+        
         global $wp_filter;
         foreach($wp_filter[$actionsToClear] as $priority => $callbacks) {
             if(!isset($this->cleanHooks[$actionsToClear][$priority])) continue;

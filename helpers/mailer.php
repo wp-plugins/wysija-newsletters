@@ -139,7 +139,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $mailClass = &WYSIJA::get('email','model');
             $mailClass->getFormat=OBJECT;
             $this->defaultMail[$email_id] = $mailClass->getOne($email_id);
-            $this->defaultMail[$email_id]->params = unserialize(base64_decode($this->defaultMail[$email_id]->params));
+            if(!is_array($this->defaultMail[$email_id]->params)) $this->defaultMail[$email_id]->params = unserialize(base64_decode($this->defaultMail[$email_id]->params));
             $this->defaultMail[$email_id]->attach=$this->defaultMail[$email_id]->attachments;
             unset($this->defaultMail[$email_id]->attachments);
             if(empty($this->defaultMail[$email_id]->email_id)) return false;

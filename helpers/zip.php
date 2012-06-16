@@ -29,13 +29,14 @@ class WYSIJA_help_zip extends WYSIJA_object{
     
     
     function _unzip_file_ziparchive($file, $to) {
+        
         global $wp_filesystem;
         $z = new ZipArchive();
 
-        $zopen = $z->open($file,  4);
-        if ( true !== $zopen ){
+        $zopen = $z->open($file, 4); // -- ZIPARCHIVE::CHECKCONS = 4
+        if ($zopen !== true){
             $this->error("Archive is not of a correct format!");
-            return false;;
+            return false;
         }
         $z->extractTo($to); 
         $z->close();

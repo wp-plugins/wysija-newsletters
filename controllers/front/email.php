@@ -15,7 +15,8 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
         $emailM=&WYSIJA::get("email","model");
         $configM=&WYSIJA::get("config","model");
         $data=$emailM->getOne(false,array("email_id"=>(int)$_REQUEST['email_id']));
-        $this->title=sprintf(__('Online version of newsletter: %1$s',WYSIJA),$data['user']['details']['email']);
+
+        $this->title=sprintf(__('Online version of newsletter: %1$s',WYSIJA),$data['subject']);
         
         $find=array();
         $replace=array();

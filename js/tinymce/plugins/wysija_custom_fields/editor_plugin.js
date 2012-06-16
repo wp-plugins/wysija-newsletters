@@ -1,7 +1,6 @@
 (function() {
         // Load plugin specific language pack
         //tinymce.PluginManager.requireLangPack('example');
-
         tinymce.create('tinymce.plugins.WYSIJA_custom_fields', {
                 /**
                  * Initializes the plugin, this will be executed after the plugin has been created.
@@ -20,9 +19,9 @@
 
                         // Register example button
                         ed.addButton('wysija_custom_fields', {
-                                title : 'Add first or last name of subscriber',
+                                title : wysijatrans.customFieldsLabel,
                                 cmd : 'wysijaCustomFieldsInsert',
-                                image : url + '/wysija_custom_fields.png'
+                                'class': 'wj_custom_fields'
                         });
                 },
                 /**

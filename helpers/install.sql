@@ -88,6 +88,7 @@ CREATE TABLE IF NOT EXISTS `email` (
   `subject` VARCHAR(250) NOT NULL DEFAULT '',
   `body` LONGTEXT NULL,
   `created_at` INT unsigned NULL,
+  `modified_at` INT unsigned NULL,
   `sent_at` INT unsigned NULL,
   `from_email` VARCHAR(250) NULL,
   `from_name` VARCHAR(250) NULL,

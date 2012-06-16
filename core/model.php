@@ -152,9 +152,7 @@ class WYSIJA_model extends WYSIJA_object{
 
             }else $page=$page-1;
         }
-        
 
-        
         if(!$limit){
             if(isset($this->limit_pp)) $limit=$this->limit_pp;
             else{
@@ -193,20 +191,43 @@ class WYSIJA_model extends WYSIJA_object{
      * @global type $wpdb
      * @return type 
      */
-    function count($query=false){
+    function count($query=false,$keygetcount=false){
         if(!$query){
-            
-            $query="SELECT COUNT(".$this->getPk().") as count FROM `".$this->getSelectTableName()."`";
+            $groupBy=$this->makeGroupBY();
+            $columnMore='';
+            if($groupBy) $columnMore=','.$this->groupby;
+            $query="SELECT COUNT(".$this->getPk().") as count ".$columnMore." FROM `".$this->getSelectTableName()."`";
             $query.=$this->makeJoins();
             
             $query.=$this->makeWhere();
+            $query.=$groupBy;
         }
         
         if($this->dbg) $this->keepQry($query,"count");
         
-        global $wpdb;
-        $wpdb->query($query);
-        return $wpdb->get_var();
+        $results=$this->query("get_res",$query,$this->getFormat);
+        
+        if(!$results || count($results)>1) return $results;
+        else {
+            if($keygetcount) return $results[0][$keygetcount];
+            else{
+                foreach($results[0] as $key => $count) return $count;
+            }
+        }
+
+        /*
+        if($this->groupby)  return $this->query("get_res",$query,$this->getFormat);
+        else {
+            global $wpdb;
+            $query=str_replace('[wysija]', $this->getPrefix(), $query);
+            $wpdb->query($query);
+            $results =$wpdb->get_var();
+            
+            dbg($query,0);
+        dbg($results,0);
+        }*/
+        
+        return $results;
     }
     
     /**
@@ -483,39 +504,39 @@ class WYSIJA_model extends WYSIJA_object{
         $beforeSave='before'.$updateStr;
         $afterSave='after'.$updateStr;
         
-        /*if it's an insert and there is a field created at then we set automatic fields*/
-        if(!$update){
-            if(isset($this->columns['created_at']))$this->values['created_at']=mktime();
-            foreach($this->columns as $key => $params){
-                if(isset($params['type']) && !isset($this->values[$key])){
-                    switch($params['type']){
-                        case 'date':
-                            if(isset($params['auto']))   $this->values[$key]=mktime();
-                            break;
-                        case 'ip':
-                            $userHelper=&WYSIJA::get("user","helper");
-                            /*record the ip and save the user*/
-                            $this->values[$key]=$userHelper->getIP();
-                            break;
-                        case 'referer':
-                            /*record the ip and save the user*/
-                            $this->values[$key]=$_SERVER['HTTP_REFERER'];
-                            break;
-                    }
-                }
-
-            }
-        }
         
+        
+            if(!$update && isset($this->columns['created_at']))$this->values['created_at']=time();
+            foreach($this->columns as $key => $params){
+                /*check for auto columns */
+                if((isset($params['autoup']) && $update) || !$update){
+                    if(isset($params['type']) && !isset($this->values[$key])){
+                        switch($params['type']){
+                            case 'date':
+                                $this->values[$key]=time();
+                                break;
+                            case 'ip':
+                                $userHelper=&WYSIJA::get("user","helper");
+                                /*record the ip and save the user*/
+                                $this->values[$key]=$userHelper->getIP();
+                                break;
+                            case 'referer':
+                                /*record the ip and save the user*/
+                                $this->values[$key]=$_SERVER['HTTP_REFERER'];
+                                break;
+                        }
+                    }
+
+                }
+            }
+
         if(method_exists($this,$beforeSave)){
             if(!$this->$beforeSave()){
                 //$this->error(sprintf('Problem during validation "%2$s" in model : %1$s.', get_class($this), $beforeSave));
                 return false;
             }
         }
-        
-       
-        
+
         /*prepare a format list for the update and insert function*/
         $fieldsFormats=array();
         if(!is_array($this->pk) && isset($this->values[$this->pk])) unset($this->values[$this->pk]);
@@ -664,7 +685,7 @@ class WYSIJA_model extends WYSIJA_object{
             $this->error("Cannot delete element without conditions in model : ".get_class($this));
             return false;
         }
-        $result=$this->beforeDelete();
+        $result=$this->beforeDelete($conditions);
         if($result) $result=$this->query($query.$whereQuery);
         else return false;
         $this->afterDelete();
@@ -776,6 +797,10 @@ class WYSIJA_model extends WYSIJA_object{
     
     function query($query,$arg2="",$arg3=ARRAY_A){
         global $wpdb;
+        
+       if(!$arg2) $query=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$query);
+       else $arg2=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$arg2);
+        
         switch($query){
             case "get_row":
                 if($this->dbg) $this->keepQry($arg2,"query");
@@ -789,6 +814,7 @@ class WYSIJA_model extends WYSIJA_object{
                 break;
             default:
                 if($this->dbg) $this->keepQry($query,"query");
+                
                 $result=$wpdb->query($query);
                 if(substr($query, 0, 6)=="INSERT") return $wpdb->insert_id;
                 else return $result;

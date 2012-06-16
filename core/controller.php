@@ -10,6 +10,7 @@ class WYSIJA_control extends WYSIJA_object{
     var $form_columns=array();
     var $filters=array();
     var $js=array();
+    var $jsLoc=array();
     var $extension="wysija-newsletters";
     var $joins=array();
     var $title="";

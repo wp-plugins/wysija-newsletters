@@ -4,12 +4,12 @@ class WYSIJA_help_campaigns extends WYSIJA_object{
         
     function WYSIJA_help_campaigns(){
     }
-    function saveParameters($campaign_id, $key, $value)
+    function saveParameters($email_id, $key, $value)
     {
 
         $modelEmail =& WYSIJA::get('email', 'model');
-        $campaign = $modelEmail->getOne('params', array('campaign_id' => $campaign_id));
-        $params = unserialize(base64_decode($campaign['params']));
+        $email = $modelEmail->getOne('params', array('email_id' => $email_id));
+        $params = $email['params'];
         if(!is_array($params)) {
             $params = array();
         }
@@ -20,6 +20,21 @@ class WYSIJA_help_campaigns extends WYSIJA_object{
             $params = array_merge($params, array($key => $value));
         }
 
-        return $modelEmail->update(array('params' => $params), array('campaign_id' => $campaign_id));
+        return $modelEmail->update(array('params' => $params), array('email_id' => $email_id));
+    }
+    function getParameters($email_id, $key = null) {
+
+        $modelEmail =& WYSIJA::get('email', 'model');
+        $email = $modelEmail->getOne('params', array('email_id' => $email_id));
+        $params = $email['params'];
+        if($key === null) {
+            return $params;
+        } else {
+            if(!is_array($params) or array_key_exists($key, $params) === false) {
+                return false;
+            } else {
+                return $params[$key];
+            }
+        }
     }
 }

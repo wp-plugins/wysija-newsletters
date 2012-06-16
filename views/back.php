@@ -414,8 +414,10 @@ class WYSIJA_view_back extends WYSIJA_view{
     function fieldListHTML_created_at($val,$format=''){
         if($format) return date_i18n($format,$val);
         else return date_i18n(get_option('date_format'),$val);
-
-        //return date("Y-m-d",$val);
+    }
+    
+    function fieldListHTML_created_at_time($val){
+        return $this->fieldListHTML_created_at($val,get_option('date_format').' '.get_option('time_format'));    
     }
     
     /**
@@ -500,7 +502,8 @@ class WYSIJA_view_back extends WYSIJA_view{
                             
                     }else{
                         if(isset($colparams['isparams'])){
-                            $params=unserialize(base64_decode($data[$model][$colparams['isparams']]));
+                            $params=$data[$model][$colparams['isparams']];
+                            //if(!is_array($data[$model][$colparams['isparams']]))    $params=unserialize(base64_decode($data[$model][$colparams['isparams']]));
                             $value="";
                             if(isset($params[$row]))    $value=$params[$row];
                             $paramscolumn=$colparams['isparams'];
@@ -526,10 +529,11 @@ class WYSIJA_view_back extends WYSIJA_view{
                 $desc='<p class="description">'.$colparams['desc'].'</p>';
             }
             //if(isset($colparams['desc'])) $desc='<p class="description">'.$colparams['desc'].'</p>';
-            $formFields.='<th scope="row">
-                        <label for="'.$row.'">'.$label.$desc.' </label>
-                    </th><td>';
-
+            $formFields.='<th scope="row">';
+            if(!isset($colparams['labeloff'])) $formFields.='<label for="'.$row.'">';
+            $formFields.=$label.$desc;
+            if(!isset($colparams['labeloff']))  $formFields.=' </label>';
+            $formFields.='</th><td>';
             $formFields.=$this->fieldHTML($row,$value,$model,$colparams,$paramscolumn);
             $formFields.='</td>';
 
@@ -767,17 +771,54 @@ class WYSIJA_view_back extends WYSIJA_view{
           else return $html;
     }
     
-    function _savebuttonsecure($data,$action="save",$button=false){
+    function fieldFormHTML_fromname($key,$val,$model,$params){
+        $formObj=&WYSIJA::get("forms","helper");
+        $disableEmail=false;
+        if($model!='config') $model='email';
+        if($key=='from_name')   $keyemail='from_email';
+        else    $keyemail='replyto_email';
+
+        $dataInputEmail=array('class'=>'validate[required]', 'id'=>$keyemail,'name'=>"wysija[$model][$keyemail]", 'size'=>40);
+         
+        if(isset($this->data['email'][$key])){
+            $valname=$this->data['email'][$key];
+            $valemail=$this->data['email'][$keyemail];
+        }else{
+            $valname=$this->model->getValue($key);
+            $valemail=$this->model->getValue($keyemail);
+        }
+        
+        /*if from email and sending method is gmail then the email is blocked to the smtp_login*/
+        if($key=='from_name'){
+            $modelConfig=&WYSIJA::get('config','model');
+            if($modelConfig->getValue('sending_method')=='gmail')   {
+                $dataInputEmail['readonly']='readonly';
+                $dataInputEmail['class'].=' disabled';
+                $valemail=$modelConfig->getValue('smtp_login');
+            }
+        }
+        
+        
+
+
+        $fieldHtml=$formObj->input( array('class'=>'validate[required]', 'id'=>$key,'name'=>"wysija[$model][$key]"),$valname);
+        $fieldHtml.=$formObj->input($dataInputEmail ,$valemail);
+        return $fieldHtml;
+    }
+    
+    function _savebuttonsecure($data,$action="save",$button=false,$warning=false){
         if(!$button) $button=__("Save",WYSIJA);
         ?>
             <p class="submit">
                 <?php 
+                
                 $secure=array('action'=>$action);
-                if(isset($data[$this->model->table_name][$this->model->pk]))$secure["id"]=$data[$this->model->table_name][$this->model->pk];
+                if(isset($data[$this->model->table_name][$this->model->pk]))    $secure["id"]=$data[$this->model->table_name][$this->model->pk];
                 $this->secure($secure); ?>
                 <input type="hidden" name="wysija[<?php echo $this->model->table_name ?>][<?php echo $this->model->pk ?>]" id="<?php echo $this->model->pk ?>" value="<?php if(isset($data[$this->model->table_name][$this->model->pk])) echo esc_attr($data[$this->model->table_name][$this->model->pk]) ?>" />
                 <input type="hidden" value="<?php echo $action ?>" name="action" />
                 <input type="submit" id="next-steptmpl" value="<?php echo esc_attr($button) ?>" name="submit-draft" class="button-primary wysija"/>
+                <?php if($warning)  echo $warning; ?>
             </p>
         <?php
     }

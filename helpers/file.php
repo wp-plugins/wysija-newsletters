@@ -56,7 +56,7 @@ class WYSIJA_help_file extends WYSIJA_object{
         $tempDir=$this->makeDir();
         if(!$tempDir)   return false;
         
-        $filename=$key."-".mktime().$format;
+        $filename=$key."-".time().$format;
         $handle=fopen($tempDir.$filename, "w");
         fwrite($handle, $content);
         fclose($handle);

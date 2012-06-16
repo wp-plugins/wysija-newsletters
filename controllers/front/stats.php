@@ -37,9 +37,16 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
     }
     
     function analyse(){
+if(isset($_REQUEST['debug'])){
+    error_reporting(E_ALL);
+    ini_set('display_errors', '1');
+}
         if(isset($_REQUEST['email_id']) && isset($_REQUEST['user_id'])){
             $email_id=(int)$_REQUEST['email_id'];
             $user_id=(int)$_REQUEST['user_id'];
+            
+if(isset($_REQUEST['debug']))   echo '<h2>isset email_id and user_id</h2>';
+            
             if(isset($_REQUEST['urlencoded'])){
                 /* clicked stats */
                 if(isset($_REQUEST['no64'])){
@@ -50,6 +57,8 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                 if(strpos($recordedUrl, 'utm_source')!==false){
                     $recordedUrl=$this->rm_url_param(array('utm_source','utm_campaign','utm_medium'),$recordedUrl);
                 }
+                
+if(isset($_REQUEST['debug']))   echo '<h2>isset urlencoded '.$decodedUrl.'</h2>';
 
                 if($email_id){ //if not email_id that means it is an email preview
                     /* look for url entry and insert if not exists*/
@@ -77,9 +86,9 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
 
                     /* increment stats counter on email_user_url clicked */
                     $modelEmailUserUrl=WYSIJA::get("email_user_url","model");
-                    $modelEmailUserUrl->update(array('clicked_at'=>mktime(),'number_clicked'=>'[increment]'),$dataEmailUserUrl);
+                    $modelEmailUserUrl->update(array('clicked_at'=>time(),'number_clicked'=>'[increment]'),$dataEmailUserUrl);
                     $modelEmailUserUrl=null;
-
+                    
                     /* look for url_mail entry and insert if not exists*/
                     $modelUrlMail=&WYSIJA::get("url_mail","model");
                     $dataUrlEmail=array("email_id"=>$email_id,"url_id"=>$user_id);
@@ -129,19 +138,21 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
 
                     }
                     
-                    
+if(isset($_REQUEST['debug']))   echo '<h2>isset decoded url '.$decodedUrl.'</h2>';
                      
                     $modelEmailUS=&WYSIJA::get("email_user_stat","model");
                     $exists=$modelEmailUS->getOne(false,array("equal"=>array("email_id"=>$email_id,"user_id"=>$user_id), "less"=>array("status"=>$statusEmailUserStat)));
                     $dataupdate=array('status'=>$statusEmailUserStat);
-                    if(!(int)$exists['opened_at']){
-                        $dataupdate['opened_at']=mktime();
+                    if($exists && isset($exists['opened_at']) && !(int)$exists['opened_at']){
+                        $dataupdate['opened_at']=time();
                     }
-                    //,'opened_at'=>mktime()
+                    //,'opened_at'=>time()
 
                     $modelEmailUS->reset();
                     $modelEmailUS->colCheck=false;
                     $modelEmailUS->update($dataupdate,array("equal"=>array("email_id"=>$email_id,"user_id"=>$user_id), "less"=>array("status"=>$statusEmailUserStat)));
+                    
+                    
                 }else{
                    if(in_array($recordedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
                         $modelU=&WYSIJA::get("user","model");
@@ -158,14 +169,21 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                                 break;
                         }
                         $decodedUrl=$link;
-                        
+     
                     }else{
                         if(strpos($decodedUrl, "http://" )=== false && strpos($decodedUrl, "https://" )=== false) $decodedUrl="http://".$decodedUrl;
                     } 
+if(isset($_REQUEST['debug']))   {
+    echo '<h2>not email_id </h2>';
+}    
                 }
                 
                 /*sometimes this will be a life saver :)*/
                 $decodedUrl = str_replace('&amp;','&',$decodedUrl);
+if(isset($_REQUEST['debug']))   {
+    echo '<h2>final decoded url '.$decodedUrl.'</h2>';
+    exit;
+}
                 $this->redirect($decodedUrl);
                 
             }else{
@@ -176,7 +194,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                 $modelEmailUS=&WYSIJA::get("email_user_stat","model");
                 $modelEmailUS->reset();
                 $modelEmailUS->update(
-                        array('status'=>1,'opened_at'=>mktime()),
+                        array('status'=>1,'opened_at'=>time()),
                         array("email_id"=>$email_id,"user_id"=>$user_id,"status"=>0));
                
 		header( 'Cache-Control: no-store, no-cache, must-revalidate' );

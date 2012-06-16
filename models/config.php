@@ -33,6 +33,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         "sending_emails_each"=>"daily",
         "bounce_max"=>8,
         "debug_on"=>false,
+        'manage_subscriptions'=>false,
         "editor_fullarticle"=>false,
         "allow_no_js"=>true,
         'urlstats_base64'=>true
@@ -79,6 +80,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         $this->defaults["unsubscribed_title"]=__("You've unsubscribed!",WYSIJA);
         $this->defaults["unsubscribed_subtitle"]=__("Great, you'll never hear from us again!",WYSIJA);
         $this->defaults["unsubscribe_linkname"]=__("Unsubscribe",WYSIJA);
+        $this->defaults["manage_subscriptions_linkname"]=__("Manage Subscriptions",WYSIJA);
         
         /**
          * List of all the conflictive extensions which invite themselves on our interfaces and break some of our js:
@@ -190,12 +192,12 @@ class WYSIJA_model_config extends WYSIJA_object{
                 /* in that case the admin changed the frequency of the wysija cron meaning that we need to clear it */
                 if($data['sending_emails_each']!=$this->getValue("sending_emails_each")){
                     wp_clear_scheduled_hook('wysija_cron_queue');
-                    $data['last_save']=mktime();
+                    $data['last_save']=time();
                 }
                 
                 if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each']!=$this->getValue("bouncing_emails_each")){
                     wp_clear_scheduled_hook('wysija_cron_bounce');
-                    $data['last_save']=mktime();
+                    $data['last_save']=time();
                 }
                 
                 /* if saved with gmail then we set up the smtp settings */
@@ -314,4 +316,33 @@ class WYSIJA_model_config extends WYSIJA_object{
         return false;
     }
     
+    /**
+     *
+     * @param type $editor 
+     */
+    function emailFooterLinks($editor=false){
+        $unsubscribe=array();
+        $unsubscribe[0] = array(
+                'link' => '[unsubscribe_link]',
+                'label' => $this->getValue('unsubscribe_linkname')
+            );
+
+        if($this->getValue('manage_subscriptions')){
+             $unsubscribe[1] =array(
+                'link' => '[subscriptions_link]',
+                'label' => $this->getValue('manage_subscriptions_linkname')
+            );
+        }
+        
+        if($editor){
+            $modelU=&WYSIJA::get("user","model");
+            $modelU->getFormat=OBJECT;
+            $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
+        
+            $unsubscribe[0]['link'] = $modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1';
+            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink($objUser,"subscriptions",false,true);
+        }
+        
+        return $unsubscribe;
+    }
 }

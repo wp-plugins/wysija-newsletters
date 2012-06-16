@@ -42,10 +42,10 @@ class WYSIJA_help_install extends WYSIJA_object{
                     "replyto_name"=>$values["from_name"],
                     "subject"=>$modelConf->getValue("confirm_email_title"),
                     "body"=>$modelConf->getValue("confirm_email_body"),
-                    "status"=>"1"));
+                    "status"=>99));
         
         $values['installed']=true;
-        $values['installed_time']=mktime();
+        $values['installed_time']=time();
         $values['wysija_db_version']="1.1";
         $modelConf->save($values);
         
@@ -358,20 +358,6 @@ class WYSIJA_help_install extends WYSIJA_object{
               'position' => '13',
               'type' => 'content',
             ),
-            'block-14' => 
-            array (
-              'text' => 
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("Be Cool, Submit Your Design",WYSIJA).'</h2><p>'.
-                  __("You feel your own newsletter design is awesome? Share it with the Wysija team, in the <em>Themes</em> tab on the right, and we might showcase it in our blog: www.wysija.com/blog <br><br>You can even share your themes with the entire community. Get in touch on www.wysija.com to submit yours via our contact form.",WYSIJA).'</p>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '14',
-              'type' => 'content',
-            ),
             'block-15' => 
             array (
               'text' => 
@@ -394,7 +380,7 @@ class WYSIJA_help_install extends WYSIJA_object{
                   __("I Want to Change my Footer's Content!",WYSIJA).'</h2><p class="align-left">'.
                   __("You can change the footer text in Wysija's Settings, and not here.",WYSIJA).' '.
                   __("In <em>The Basics</em> tab, you can add <strong>your postal address</strong> (good against spam filters), or whatever you see fit.",WYSIJA).' '.
-                  __('Change the text for the "<strong>Unsubscribe</strong>" link in the <em>Advanced</em> tab<span> of the Settings.<br></span>',WYSIJA).'</p>',
+                  __('Change the text for the "<strong>Unsubscribe</strong>" link in the <em>Advanced</em> tab of the Settings.',WYSIJA).'</p>',
               ),
               'image' => NULL,
               'alignment' => 'center',
@@ -573,7 +559,7 @@ class WYSIJA_help_install extends WYSIJA_object{
     function defaultSettings(&$values){
         
 
-        global $current_user;
+        $current_user=WYSIJA::wp_get_userdata();
         $values['replyto_name']=$values['from_name']=$current_user->user_login;
         $values['emails_notified']=$values['replyto_email']=$values['from_email']=$current_user->user_email;
     }

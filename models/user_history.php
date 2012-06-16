@@ -22,7 +22,7 @@ class WYSIJA_model_user_history extends WYSIJA_model{
     }
     
     function insert($subid,$action,$data = array(),$mailid = 0){
-            global $current_user;
+            $current_user=WYSIJA::wp_get_userdata();
             /*dbg($current_user,0);
             $current_user=wp_get_current_user();*/
             if(!empty($current_user->id)){
