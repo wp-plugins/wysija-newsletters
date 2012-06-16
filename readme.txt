@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 2.0
+Stable tag: 2.0.1
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -136,6 +136,10 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.0.1 - 2012-06-16 =
+
+* fixed subscribers not added to the lists on old type of widget
 
 = 2.0 - 2012-06-15 =
 

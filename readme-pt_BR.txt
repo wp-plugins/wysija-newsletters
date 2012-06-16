@@ -3,7 +3,7 @@ Contributors: wysija
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 2.0
+Stable tag: 2.0.1
 
 Send your posts and newsletters from WordPress easily, and beautifully.
 

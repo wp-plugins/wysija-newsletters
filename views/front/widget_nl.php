@@ -44,7 +44,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             if($formidreal==$_POST['formid'])    $data.= $this->messages();
         }
         $data.= $title;
-
+        $listfieldshidden=$listfields='';
         $disabledSubmit=$msgsuccesspreview='';
         if(isset($params['preview'])){
             $disabledSubmit='disabled="disabled"';
@@ -54,6 +54,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>
         <form id="'.$formidreal.'" method="post" action="" class="widget_wysija form-valid-sub">';
             if(isset($params['instruction']))   $data.='<p class="wysija-instruct">'.$params['instruction'].'</p>';
+            
             
             if(isset($params['autoregister']) && $params['autoregister']=='auto_register'){
                 $listfields='<div class="wysija_lists">';
@@ -67,6 +68,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 $listfields.='</div>';
                 
             }else{
+
                 if(isset($params["lists"])) $listexploded=esc_attr(implode(',',$params["lists"]));
                 else $listexploded="";
                 
@@ -86,7 +88,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 if(!isset($params['preview'])) $data.=$this->honey($params,$formidreal);
                 $data.=$submitbutton.'</p>';
             }
-            $listfieldshidden=$listfields='';
+            
 
             
 
