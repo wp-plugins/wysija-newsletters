@@ -668,8 +668,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
             // cleanup post and get image
             foreach($posts as $key => $post) {
-                // attempt to get post image 
-                $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+                if($params['image_alignment'] !== 'none') {
+                    // attempt to get post image 
+                    $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+                }
                 
                 $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $params);
             }

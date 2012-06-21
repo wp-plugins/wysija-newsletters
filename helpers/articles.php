@@ -147,24 +147,38 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
         if(has_post_thumbnail($post['ID'])) {
             $post_thumbnail = get_post_thumbnail_id($post['ID']);
+
             $image_info = wp_get_attachment_image_src($post_thumbnail, 'single-post-thumbnail');
+
+            $altText = trim(strip_tags(get_post_meta($post_thumbnail, '_wp_attachment_image_alt', true)));
+            if(strlen($altText) === 0) {
+
+                $altText = trim(strip_tags($post['post_title']));
+            }
         }
         if($image_info !== null) {
             $post_image = array(
                 'src' => $image_info[0],
                 'width' => $image_info[1],
-                'height' => $image_info[2]
+                'height' => $image_info[2],
+                'alt' => urlencode($altText)
             );
         } else {
             $matches = $matches2 = array(); 
             $output = preg_match_all('/<img.+src=['."'".'"]([^'."'".'"]+)['."'".'"].*>/i', $post['post_content'], $matches);
             if(isset($matches[0][0])){
-                preg_match_all('/(src|height|width|)="([^"]*)"/i', $matches[0][0], $matches2);
+                preg_match_all('/(src|height|width|alt)="([^"]*)"/i', $matches[0][0], $matches2);
                 if(isset($matches2[1])){
                     foreach($matches2[1] as $k2 => $v2) {
-                        if(in_array($v2, array('src', 'width', 'height'))) {
+                        if(in_array($v2, array('src', 'width', 'height', 'alt'))) {
                             if($post_image === null) $post_image = array();
-                            $post_image[$v2] = $matches2[2][$k2];
+                            if($v2 === 'alt') {
+
+                                $post_image[$v2] = urlencode($matches2[2][$k2]);
+                            } else {
+
+                                $post_image[$v2] = $matches2[2][$k2];
+                            }
                         }
                     } 
                 }

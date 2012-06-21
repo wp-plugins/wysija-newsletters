@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 2.0.1
+Stable tag: 2.0.2
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -136,6 +136,24 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.0.2 - 2012-06-21 =
+
+* fixed missing title on widget when cache plugin activated
+* fixed update procedure to Wysija version "2.0" failed! on some MySQL servers
+* fixed W3C validation for subscription form with empty action: replace with #wysija
+* fixed forbidden iframe subfolder corrected to a home url with params
+* improved theme installation with PclZip
+* fixed missing previously sent auto newsletter on newsletters page
+* fixed broken url for images uploaded in WordPress 3.4
+* fixed "nl 2 br" on unsubscribed notification messages for admins 
+* added meta noindex on iframe forms to avoid polluting Google Analytics
+* added validation of lists on subscription form
+* fixed issue with image alignment in automatic newsletters
+* fixed url & alternative text encoding in header/footer
+* fixed images thumbs not displaying in Images tab
+* fixed popups' CSS due to WordPress 3.4 update
+* fixed issues when creating new lists from segment
 
 = 2.0.1 - 2012-06-16 =
 

@@ -1,5 +1,5 @@
 {if ! #no-block}
-<div wysija_type="{#type}" class="wysija_block{if #static} static{/if}" wysija_position="{#position}">
+<div wysija_type="{#type}" class="wysija_block{if #static} static{/if}" wysija_position="{#position}"{if #background_color}wysija_bg_color="{#background_color}"{/if}>
     {if ! #static}
         {include file="templates/editor/block_controls.html"}
         {include file="templates/editor/block_placeholder.html"}

@@ -90,9 +90,16 @@ class WYSIJA_help_zip extends WYSIJA_object{
                 if ( '__MACOSX/' === substr($file['filename'], 0, 9) ) // Don't extract the OS X-created __MACOSX directory files
                         continue;
                 if ( ! $wp_filesystem->put_contents( $filedest, $file['content'], 0644) ){
-                    $this->error('Could not copy file : '. $filedest);
-                    return false;
-                }           
+
+                    if ( ! ($fp = @fopen($filedest, 'w')) )
+                            return false;
+                    @fwrite($fp, $file['content']);
+                    @fclose($fp);
+                    if(!file_exists($filedest)){
+                        $this->error('Could not copy file : '. $filedest);
+                        return false;
+                    }
+                }            
             }
             return true;
     }

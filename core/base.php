@@ -213,7 +213,7 @@ class WYSIJA extends WYSIJA_object{
     function WYSIJA(){
 
     }
-    function get_permalink($pageid,$params=array()){
+    function get_permalink($pageid,$params=array(),$simple=false){
         /*if(get_bloginfo("version")=="3.0"){
             $url=get_permalink($pageid);
         }else{
@@ -236,6 +236,13 @@ class WYSIJA extends WYSIJA_object{
             $url=get_permalink($values['confirm_email_link']);
             if(!$url) $this->error('Error with the wysijap subscription confirmation page.');
         }
+        
+        //make a simple url to the home
+        if($simple){
+            $url=site_url();
+            if($url{strlen($url)}!='/') $url.='/';
+        }
+        
         $params['wysijap']=str_replace("?wysijap=","",basename($url));
 
         if($params){
@@ -711,7 +718,10 @@ class WYSIJA extends WYSIJA_object{
         //WYSIJA::wp_notice(__("User has been removed from the <b>Synched</b> Wordpress user list.",WYSIJA));
     }
     
-    function hook_postNotification( $post_ID ) {
+    function hook_postNotification( $post_ID, $post ) {
+        //if post is  updated then we just don't run the code
+        if ($post->post_date != $post->post_modified) return;
+        
         $modelEmail=&WYSIJA::get('email','model');
         $emails=$modelEmail->get(false,array('type'=>2,'status'=>array(1,3,99)));
 
@@ -1135,8 +1145,9 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 'formArray'=>  $instance,
                 'encodedForm'=> urlencode($encodedForm) ,
                 );
+        $modelConf=&WYSIJA::get("config","model");
         
-        
+        if($modelConf->getValue('require_short_url')) unset($paramsurl['formArray']);
 
         if($externalsite) $paramsurl['external_site']=1;
         
@@ -1145,8 +1156,8 @@ class WYSIJA_NL_Widget extends WP_Widget {
             $paramsurl['donotcachepage']=$cache_page_secret;
         }
 
-        $modelConf=&WYSIJA::get("config","model");
-        $fullurl=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$paramsurl);
+        //the final tru allow for shorter url
+        $fullurl=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$paramsurl,true);
 
         return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$now.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
         //$fieldHTML='<div class="widget-control-actions">';
@@ -1184,7 +1195,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         /*if a cache plugin is active let's load the plugin in an iframe*/
         if(!is_admin() && !$this->iFrame && (WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php') || WYSIJA::is_plugin_active('w3-total-cache/w3-total-cache.php'))){
             $view->addScripts();
-            $glob.=$this->genIframe($instance);
+            $glob.=$title.$this->genIframe($instance);
         }else{
             $glob.=$view->display($title,$instance,false,$this->iFrame);
         }
@@ -1205,7 +1216,7 @@ add_action('profile_update', array("WYSIJA", 'hook_edit_WP_subscriber'), 1);
 add_action('delete_user', array("WYSIJA", 'hook_del_WP_subscriber'), 1);
 
 /**/
-add_action('publish_post', array("WYSIJA", 'hook_postNotification'), 1);
+add_action('publish_post', array("WYSIJA", 'hook_postNotification'),10,2 );
 add_action('wysijaSubscribeTo', array("WYSIJA", 'hook_subscriber_to_list'), 1);
 
 
