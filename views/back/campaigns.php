@@ -357,7 +357,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         <strong>
                                         <?php ;
                                         if(in_array($row["status"], array(0,4,-1))){
-                                            $statusshared='';
+                                            $durationsent=$statusshared='';
                                             ?><a href="admin.php?page=wysija_campaigns&id=<?php 
                                             echo $row["email_id"] ?>&action=edit" class="row-title"><?php  
                                             echo $row["name"]; ?></a> - <span class="post-state"><?php 
@@ -1057,7 +1057,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <!-- IMAGES BAR -->
                 <div class="wj_images" style="display:none;">
                     <div class="wj_button">
-                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wp_upload&campaignId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
+                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wp_upload&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
                     </div>
                     
                     <ul id="wj-images-quick" class="clearfix">
@@ -2022,10 +2022,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             $secure=array('action'=>"medias");
             $this->secure($secure); ?>
             
-            <div id="media-items">
-            <?php echo $this->_get_media_items($post_id, $errors); ?>
-                <div class="clear"></div>
-            </div>
+            <div id="media-items" class="clearfix">
+            <?php echo $this->_get_media_items($post_id, $errors); ?></div>
         </form>
         
         <?php
@@ -2088,10 +2086,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             $secure=array('action'=>"medias");
             $this->secure($secure); ?>
 
-            <div id="media-items">
-            <?php echo $this->_get_media_items(null, $errors,true); ?>
-                <div class="clear"></div>
-            </div>
+            <div id="media-items" class="clearfix"><?php echo $this->_get_media_items(null, $errors,true); ?></div>
             <div class="clear"></div>
         </form>
         
@@ -2238,10 +2233,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <?php do_action('post-html-upload-ui', $flash); ?>
         </div>
         <?php do_action('post-upload-ui'); ?>
-        <div id="media-items">
-            
-                <div class="clear"></div>
-            </div>
+        <div id="media-items" class="clearfix"></div>
         <?php
     }
     
@@ -2275,7 +2267,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                      $classname="";
 
                      if(isset($selectedImages["wp-".$attachment->ID])) $classname=" selected ";
-                    $output.='<div class="wysija-thumb image-'.$attachment->ID.$classname.'"><img title="'.$attachment->post_title.'" alt="'.$attachment->post_title.'" src="'.$thumb_url.'" class="thumbnail" />';
+                     
+                    $output.='<div class="wysija-thumb image-'.$attachment->ID.$classname.'">';
+                    $output .= '<img title="'.$attachment->post_title.'" alt="'.$attachment->post_title.'" src="'.$thumb_url.'" class="thumbnail" />';
                     if(!$wpimage)    $output.='<span class="delete-wrap"><span class="delete del-attachment">'.$attachment->ID.'</span></span>';
                     $output.='<span class="identifier">'.$attachment->ID.'</span>
                         <span class="width">'.$img_details[1].'</span>
@@ -2289,7 +2283,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     
     function _getSelectedImages() {
         $modelEmail=&WYSIJA::get("email","model");
-        $email = $modelEmail->getOne(false,array("campaign_id"=>$_REQUEST['campaignId']));
+        $email = $modelEmail->getOne(false,array("email_id"=>$_REQUEST['emailId']));
 
         if(!isset($email['params']['quickselection']) or empty($email['params']['quickselection'])) return array();
         return $email['params']['quickselection'];

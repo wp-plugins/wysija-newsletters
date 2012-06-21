@@ -17,7 +17,7 @@
 
         <div class="wysija_content {$image_alignment} clearfix">
             {if #image}
-                <div class="wysija_image {$image_alignment}">
+                <div class="wysija_image {$image_alignment}" style="width:{#image.width}px;">
                     <img src="{#image.src}" width="{#image.width}" height="{#image.height}" alt="{#image.alt}" />
                 </div>
             {/if}

@@ -23,10 +23,13 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
     }
     
     function save(){
-        
         $data=array();
+        $i=0;
         foreach($_REQUEST['data'] as $vals){
-            $data[$vals['name']]=$vals['value'];
+            if($vals['name']=='wysija[user_list][list_id][]'){
+                $data[str_replace('wysija[user_list][list_id][]', 'wysija[user_list][list_id]['.$i.']', $vals['name'])]=$vals['value'];
+                $i++;
+            }else   $data[$vals['name']]=$vals['value'];
         }
         
         $_REQUEST['_wpnonce']=$data['_wpnonce'];
@@ -106,7 +109,6 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
         }else{
             $i=0;
             $listids=array();
-            
             for ($i = 0; $i <= 25; $i++) {
                 $testkey='wysija[user_list][list_id]['.$i.']';
                 if(isset($data[$testkey])) $listids[]=$data[$testkey];

@@ -114,17 +114,18 @@ function WYSIJAsetParams(result,fileObj){
             identifier:"wp-"+wpid,
             width:imgdimensions[0],
             height:imgdimensions[1],
-            /*url:jQuery('#media-item-'+fileObj.id+' tbody input.urlfield').val(),*/
-            url:jQuery('#media-item-'+fileObj.id+' tbody button.urlfile').attr('title'),
             thumb_url:jQuery('#thumbnail-head-'+wpid+' img.thumbnail').attr('src')
         };
     /*}*/
+    var elementUrl=jQuery('#media-item-'+fileObj.id+' tbody button.urlfile');
     
+    if(elementUrl.attr('title')=== undefined)   insertArray.url=elementUrl.attr('data-link-url');
+    else insertArray.url=elementUrl.attr('title');
 
     insert(insertArray);
     if ( swfu.getStats().files_queued == 0 ) {
                 /* and then show the close popup button */
-                closeLbox();
+               closeLbox();
 	}
     return true;
 }

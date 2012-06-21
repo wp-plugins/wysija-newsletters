@@ -90,7 +90,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]email` LIKE 'modified_at';")){
                     $querys[]="ALTER TABLE `[wysija]email` ADD `modified_at` INT UNSIGNED NOT NULL DEFAULT '0';";
                 }
-                $querys[]="UPDATE `[wysija]email` SET `modified_at` = `sent_at`;";
+                $querys[]="UPDATE `[wysija]email` SET `modified_at` = `sent_at`  WHERE `sent_at`>=0;";
                 $querys[]="UPDATE `[wysija]email` SET `modified_at` = `created_at` WHERE `modified_at`='0';";
                 $querys[]="UPDATE `[wysija]email` SET `status` = '99' WHERE `status` ='1';";//change sending status from 1 to 3
                 $errors=$this->runUpdateQueries($querys);

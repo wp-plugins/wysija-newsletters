@@ -247,6 +247,7 @@ class WYSIJA_help_user extends WYSIJA_object{
 
         $notifieds=explode(",",$notifieds);
         $mailer->testemail=true;
+        $body=nl2br($body);
         foreach($notifieds as $receiver){
             $mailer->sendSimple(trim($receiver),$title,$body);
         }

@@ -632,8 +632,10 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                         if(strlen(trim($post['post_title'])) > 0 and empty($email['params']['autonl']['articles']['first_subject'])) {
                             $email['params']['autonl']['articles']['first_subject'] = trim($post['post_title']);
                         }
+                        if($params['image_alignment'] !== 'none') {
 
-                        $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+                            $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+                        }
 
                         $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $params);
                     }
