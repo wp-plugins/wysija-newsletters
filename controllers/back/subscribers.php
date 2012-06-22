@@ -1203,7 +1203,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->js[]='wysija-validator';
 
         $this->data=array();
-        $this->data['list']=$this->_getLists();
+        $this->data['list']=$this->_getLists(10);
         
     }
     
