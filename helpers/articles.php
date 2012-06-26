@@ -35,12 +35,11 @@ class WYSIJA_help_articles extends WYSIJA_object {
             'post_parent'     => NULL,
             'post_status'     => 'publish'
         );
-        if(isset($params['post_date'])){
-            $args['post_date']=$params['post_date'];
+        if(isset($params['post_date'])) {
+            $args['post_date'] = $params['post_date'];
         }
         $modelPosts=&WYSIJA::get('wp_posts','model');
         $posts=$modelPosts->get_posts($args);
-
         if(empty($posts)) return array();
         foreach($posts as $key => $post) {
             $posts[$key] = (array)$post;
@@ -95,7 +94,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
         if(strlen(trim($post['post_title'])) > 0) {
 
-            $post['post_title'] = str_replace(array("<",">"), array("&lt;","&gt;"), $post['post_title']);
+            $post['post_title'] = trim(str_replace(array('$'), array('&#36;'), strip_tags($post['post_title'])));
+
             $content = '<'.$params['title_tag'].' class="align-'.$params['title_alignment'].'">'.  $post['post_title'].'</'.$params['title_tag'].'>'.$content;
         }
 
@@ -130,7 +130,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
           'position' => 0,
           'type' => 'content',
           'text' => array(
-              'value' => $content
+              'value' => base64_encode($content)
           ),
           'image' => $post_image,
           'alignment' => $params['image_alignment']

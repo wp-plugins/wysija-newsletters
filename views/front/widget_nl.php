@@ -10,12 +10,12 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         $html='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
-<meta name="robots" content="noindex">
+<meta name="robots" content="NOINDEX,NOFOLLOW">
 <title>'.__('Wysija Subscription',WYSIJA).'</title>';
         global $wp_scripts,$wp_styles;
 
         ob_start();
-        wp_head();
+        if(isset($_REQUEST['external_site'])) wp_head();
         wp_print_styles('validate-engine-css');
         //add custom css for external site iframe
         if(isset($_REQUEST['external_site']) && file_exists(WYSIJA_UPLOADS_DIR.'css'.DS.'iframe.css'))  wp_register_style('wysija-iframe',WYSIJA_UPLOADS_URL."css/iframe.css",array(),WYSIJA::get_version());

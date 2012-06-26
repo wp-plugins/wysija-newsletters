@@ -97,8 +97,23 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
             $encodedForm=json_decode(base64_decode(urldecode($_REQUEST['encodedForm']))); 
         }
         else{
-            $encodedForm=$_REQUEST['formArray'];
-            $encodedForm=stripslashes_deep($encodedForm);
+            if(isset($_REQUEST['fullWysijaForm'])){
+                $encodedForm=json_decode(base64_decode(urldecode($_REQUEST['fullWysijaForm'])));
+            }else{
+                if(isset($_REQUEST['widgetnumber'])){
+
+                    $widgets=get_option('widget_wysija');
+                    if(isset($widgets[$_REQUEST['widgetnumber']])){
+                        $encodedForm=$widgets[$_REQUEST['widgetnumber']];
+                    }
+
+                }else{
+                    $encodedForm=$_REQUEST['formArray'];
+                    $encodedForm=stripslashes_deep($encodedForm);
+                }
+                
+            }
+ 
         }  
 
         $widgetdata=array();
@@ -119,8 +134,11 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
                 $widgetdata[$key]=$valu;
             }
         }
-
-        $widgetdata['widget_id']='wysija-nl-iframe-'.time();
+        
+        
+        if(isset($_REQUEST['widgetnumber']))  $intrand=$_REQUEST['widgetnumber'];  
+        else $intrand=rand(5, 1500);
+        $widgetdata['widget_id']='wysija-nl-iframe-'.$intrand;
 
         $widgetNL=new WYSIJA_NL_Widget(1);
         $widgetNL->iFrame=true;

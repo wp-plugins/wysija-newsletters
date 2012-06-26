@@ -3,6 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_wp_posts extends WYSIJA_model{
     
     var $pk="ID";
+    var $tableWP=true;
     var $table_name="posts";
     var $columns=array(
         'ID'=>array("req"=>true,"type"=>"integer"), 
@@ -42,23 +43,20 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
         if(!$args) return false;
         $customQuery='';
         
-        /*
-         * SELECT wp_posts.* FROM wp_posts 
-         * INNER JOIN wp_term_relationships 
-         * ON (wp_posts.ID = wp_term_relationships.object_id) 
-         * WHERE 1=1 AND wp_posts.ID 
-         * NOT IN (723,716,712,710,707,699,697,705,702,679,677,674) 
-         * AND ( wp_term_relationships.term_taxonomy_id IN (21,22) ) 
-         * AND wp_posts.post_type = 'post' 
-         * AND (wp_posts.post_status = 'publish') 
-         * GROUP BY wp_posts.ID 
-         * ORDER BY wp_posts.post_date DESC 
-         * LIMIT 0, 2
+        /**
+         * SELECT A.ID, A.post_title, A.post_content, A.post_date FROM `wp_posts` A 
+         * LEFT JOIN `wp_term_relationships` B ON (A.ID = B.object_id)
+         * LEFT JOIN `wp_term_taxonomy` C ON (C.term_taxonomy_id = B.term_taxonomy_id)
+         * WHERE C.term_id IN (326) AND A.post_type IN ('post') AND A.post_status IN ('publish') ORDER BY post_date DESC LIMIT 0,10;
          * 
          */
-        $customQuery='SELECT A.ID, A.post_title, A.post_content FROM `[wp]'.$this->table_name.'` as A ';
-        if(isset($args['category']) && $args['category'])
-            $customQuery.='JOIN `[wp]term_relationships` as B ON (A.ID = B.object_id) ';
+        
+        $customQuery='SELECT A.ID, A.post_title, A.post_content FROM `[wp]'.$this->table_name.'` A ';
+        
+        if(isset($args['category']) && $args['category']) {
+            $customQuery.='LEFT JOIN `[wp]term_relationships` as B ON (A.ID = B.object_id) ';
+            $customQuery.='LEFT JOIN `[wp]term_taxonomy` C ON (C.term_taxonomy_id = B.term_taxonomy_id) ';
+        }
         
         $conditionsOut=$conditionsIn=array();
         
@@ -66,13 +64,14 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
             if(!$val) continue;
             switch($col){
                 case 'category':
-                    $conditionsIn['B.term_taxonomy_id']=array('sign'=>'IN','val' =>$val);
+                    //$conditionsIn['B.term_taxonomy_id']=array('sign'=>'IN','val' =>$val, 'cast' => 'int');
+                    $conditionsIn['C.term_id']=array('sign'=>'IN','val' =>$val, 'cast' => 'int');
                     break;
                 case 'include':
-                    $conditionsIn['A.ID']=array('sign'=>'IN','val' =>$val);
+                    $conditionsIn['A.ID'] = array('sign'=>'IN','val' =>$val, 'cast' => 'int');
                     break;
                 case 'exclude':
-                    $conditionsIn['A.ID']=array('sign'=>'NOT IN','val' =>$val);
+                    $conditionsIn['A.ID'] = array('sign'=>'NOT IN', 'val' => $val, 'cast' => 'int');
                     break;
                 case 'post_type':
                     $conditionsIn['A.post_type']=array('sign'=>'IN','val' =>$val);
@@ -84,17 +83,18 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
                     //convert the date 
                     $toob=&WYSIJA::get('toolbox','helper');
                     $val= $toob->time_tzed($val);
-                    $conditionsIn['A.post_date']=array('sign'=>'>','val' =>$val );
+                    
+                    if($val !== '') {
+                        $conditionsIn['A.post_date']=array('sign'=>'>','val' =>$val);
+                    }
                     break;
                 default:
             }
-            //$dataGet[]
         }
         
         $customQuery.='WHERE ';
 
         $customQuery.=$this->setWhereCond($conditionsIn);
-        //$customQuery.=' AND '.$this->setWhereCond($conditionsOut);
         
         if(isset($args['orderby'])){
             $customQuery.=' ORDER BY '.$args['orderby'];
@@ -106,28 +106,59 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
         }
 
         return $this->query('get_res',$customQuery);
-        
     }
-    
     
     function setWhereCond($conditionsIn){
         $customQuery='';
-        $i=0;
-        foreach($conditionsIn as $col => $data){
-            if($i>0) $customQuery.=' AND ';
-            $customQuery.=$col.' ';
-            $valu=$data['val'];
-            if(is_array($data['val'])) $valu=implode("','",$data['val']);
-            switch($data['sign']){
+        $i = 0;
+        
+        foreach($conditionsIn as $col => $data) {
+            
+            if($i > 0) $customQuery .=' AND ';
+            
+            $customQuery .= $col.' ';
+            
+            $value = $data['val'];            
+            
+            switch($data['sign']) {
                 case 'IN':
                 case 'NOT IN':
-                    $customQuery.=$data['sign'].' ('."'".$valu."'".') ';
+                    $values = '';
+                    if(is_array($value)) {
+                        if(array_key_exists('cast', $data) && $data['cast'] === 'int') {
+                            $count = count($value);
+                            for($j = 0; $j < $count; $j++) {
+                                if($value[$j] === null) continue;
+                                $value[$j] = intval($value[$j]);
+                            }
+                            $values = join(', ', $value);
+                        } else {
+                            $values = "'".join("', '", $value)."'";
+                        }
+                    } else {
+                        if(strpos($value, ',') === FALSE) {
+                            // single value
+                            $values = "'".$value."'";
+                        } else {
+                            // multiple values
+                            $values = "'".join("','", explode(',', $value))."'";
+                        }
+                    }
+
+                    if($values !== '') {
+                        $customQuery.= $data['sign'].' ('.$values.') ';
+                    }
                     break;
 
                 default:
                     $sign='=';
-                    if(isset($data['sign'])) $sign=$data['sign'];
-                    $customQuery.=$sign."'".$valu."' ";
+                    if(isset($data['sign'])) $sign = $data['sign'];
+                    
+                    if(array_key_exists('cast', $data) && $data['cast'] === 'int') {
+                        $customQuery.= $sign."'".(int)$value."' ";
+                    } else {
+                        $customQuery.= $sign."'".$value."' ";
+                    }
             }
             $i++;
         }

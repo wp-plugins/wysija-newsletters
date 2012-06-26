@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -136,6 +136,17 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.0.3 - 2012-06-26 =
+
+* fixed theme activation not working 
+* fixed google analytics code on iframe subscription forms
+* fixed post notification bug with wrong category selected when fetching articles
+* fixed issue regarding category selection in auto responder / post notifications
+* fixed dollar sign being stripped in post titles
+* fixed warning and notices when adding a list
+* fixed on some server unsubscribe page or confirmation page redirecting to 404
+* improved iframe system works now with short url and multiple forms
 
 = 2.0.2 - 2012-06-21 =
 

@@ -116,7 +116,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $this->reportMessage = sprintf(__("Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers));
                     if(!empty($this->ErrorInfo)) {
 
-                        $this->error($this->ErrorInfo);
+                        foreach($this->ErrorInfo as $error){
+                            $this->error($error['error']);
+                        }
+
 
                     }
                     if(!empty($warnings)) $this->reportMessage .= ' | '.$warnings;
@@ -679,10 +682,14 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
               $this->SetLanguage('en'); // set the default language
             }
             $this->error_count++;
-            $this->ErrorInfo = $this->language[$key];
-            $this->ErrorInfoVar = $var;
+            if(!$this->ErrorInfo) $this->ErrorInfo=array();
+
+            $varerror='';
+            if(!is_array($var)) $varerror=$var;
+            elseif(isset($var['error'])) $varerror=$var['error'];   
+            $errormsg=$this->language[$key];
+            if($varerror) $errormsg.='('.$varerror.')';
+            $this->ErrorInfo[] = array('error'=>$errormsg);
+
         }
-        
-        
-        
 }
