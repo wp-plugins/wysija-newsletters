@@ -780,12 +780,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['role_campaign']=array(
             'type'=>'roles',
             'label'=>__('Who can create newsletters?',WYSIJA),
-            'desc'=>__('These are based on Wordpress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
+            'desc'=>__('These are based on WordPress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
         
         $step['role_subscribers']=array(
             'type'=>'roles',
             'label'=>__('Who can manage subscribers?',WYSIJA),
-            'desc'=>__('These are based on Wordpress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
+            'desc'=>__('These are based on WordPress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
         
         $step['replyto_name']=array(
             'type'=>'fromname',

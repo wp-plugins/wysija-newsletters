@@ -10,11 +10,12 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         $html='<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
+<meta name="robots" content="NOINDEX,NOFOLLOW">
 <title>'.__('Wysija Subscription',WYSIJA).'</title>';
         global $wp_scripts,$wp_styles;
 
         ob_start();
-        wp_head();
+        if(isset($_REQUEST['external_site'])) wp_head();
         wp_print_styles('validate-engine-css');
         //add custom css for external site iframe
         if(isset($_REQUEST['external_site']) && file_exists(WYSIJA_UPLOADS_DIR.'css'.DS.'iframe.css'))  wp_register_style('wysija-iframe',WYSIJA_UPLOADS_URL."css/iframe.css",array(),WYSIJA::get_version());
@@ -52,8 +53,8 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         }
         
         $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>
-        <form id="'.$formidreal.'" method="post" action="" class="widget_wysija form-valid-sub">';
-            if(isset($params['instruction']))   $data.='<p class="wysija-instruct">'.$params['instruction'].'</p>';
+        <form id="'.$formidreal.'" method="post" action="#wysija" class="widget_wysija form-valid-sub">';
+            if(isset($params['instruction']) && $params['instruction'])   $data.='<p class="wysija-instruct">'.$params['instruction'].'</p>';
             
             
             if(isset($params['autoregister']) && $params['autoregister']=='auto_register'){
@@ -61,7 +62,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 $i=0;
                 foreach($params["lists"] as $listid){
                     $listfields.='<p class="wysija_list_check">
-                        <label for="list_id_'.$listid.'"><input id="list_id_'.$listid.'" type="checkbox" name="wysija[user_list][list_id]['.$i.']" value="'.$listid.'" checked="checked" /> '.$params['lists_name'][$listid].' </label>
+                        <label for="'.$formidreal.'_list_id_'.$listid.'"><input id="'.$formidreal.'_list_id_'.$listid.'" class="validate[minCheckbox[1]] checkbox checklists" type="checkbox" name="wysija[user_list][list_id][]" value="'.$listid.'" checked="checked" /> '.$params['lists_name'][$listid].' </label>
                             </p>';
                     $i++;
                 }

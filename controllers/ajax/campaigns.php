@@ -637,6 +637,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                     case 'nopost_message':
                         $params[$key] = base64_decode($value);
                         break;
+                    case 'exclude':
+                        $params[$key] = explode(',', $value);
+                        break;
                     default:
                         $params[$key] = $value;
                 }
@@ -657,22 +660,36 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             
             // see if posts have already been sent
             if(!empty($email['params']['autonl']['articles']['ids'])) {
-                $params['exclude'] = $email['params']['autonl']['articles']['ids'];
+                
+                if(!isset($params['exclude'])) { $params['exclude'] = array(); }
+                
+                $params['exclude'] = array_unique(array_merge($email['params']['autonl']['articles']['ids'], $params['exclude']));
             }
             
+            // only select posts more recent that the latest post sent
             if(!empty($email['params']['autonl']['firstSend'])) {
                 $params['post_date'] = $email['params']['autonl']['firstSend'];
             }
             
             $posts = $articlesHelper->getPosts($params);
+            
+            // used to keep track of post ids present in the auto post
+            $post_ids = array();
 
             // cleanup post and get image
             foreach($posts as $key => $post) {
-                // attempt to get post image 
-                $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+                if($params['image_alignment'] !== 'none') {
+                    // attempt to get post image 
+                    $posts[$key]['post_image'] = $articlesHelper->getImage($post);
+                }
                 
                 $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $params);
+                
+                // store article id
+                $post_ids[] = $post['ID'];
             }
+            // store article ids
+            $params['post_ids'] = join(',', $post_ids);
             
             // get divider if necessary
             if($params['show_divider'] === 'yes') {

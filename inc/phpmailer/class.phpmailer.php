@@ -683,7 +683,7 @@ class acymailingPHPMailer extends WYSIJA_object{
         $connection = true;
         if($this->SMTPAuth) {
           if(!$this->smtp->Authenticate($this->Username, $this->Password)) {
-            $this->SetError('authenticate');
+            $this->SetError('authenticate',$this->smtp->error);
             $this->smtp->Reset();
             $connection = false;
           }

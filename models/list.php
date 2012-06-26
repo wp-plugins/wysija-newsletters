@@ -39,19 +39,19 @@ class WYSIJA_model_list extends WYSIJA_model{
         
         if($id){
             $query="SELECT A.name, A.list_id, A.description, A.is_enabled, A.namekey
-                FROM [wysija]list as A
-                LEFT JOIN [wysija]email as B on A.welcome_mail_id=B.email_id 
+                FROM ".$this->getPrefix()."list as A
+                LEFT JOIN ".$this->getPrefix()."email as B on A.welcome_mail_id=B.email_id 
                 WHERE A.list_id=".(int)$id;
                 $result=$this->getResults($query);
                 $this->escapeQuotesFromRes($result);
                 return $result[0];
         }else{
             $query="SELECT A.name, A.list_id, A.created_at, A.is_enabled, A.namekey, 0 as subscribers, 0 as campaigns_sent
-            FROM [wysija]list as A";
+            FROM ".$this->getPrefix()."list as A";
         
             $this->countRows=$this->count($query);
 
-            if(isset($this->_limitison))  $query.=$this->setLimit();
+            if(isset($this->_limitison) && $this->_limitison)  $query.=$this->setLimit();
             $listres=$this->getResults($query);
             //dbg($query);
 
@@ -59,8 +59,8 @@ class WYSIJA_model_list extends WYSIJA_model{
             foreach($listres as $res) $listids[]=$res['list_id'];
 
             /* add the count of subscribers and unsubscribers */
-            $qry="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `[wysija]user_list` as A WHERE list_id IN (".implode(',',$listids).") GROUP BY list_id";
-            $qry1="SELECT count(distinct A.user_id) as total,B.status,A.list_id FROM `[wysija]user_list` as A LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") GROUP BY A.list_id,B.status";
+            $qry="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `".$this->getPrefix()."user_list` as A WHERE list_id IN (".implode(',',$listids).") GROUP BY list_id";
+            $qry1="SELECT count(distinct A.user_id) as total,B.status,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") GROUP BY A.list_id,B.status";
             /*$qry15="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") AND B.status =0 GROUP BY list_id";
             $qry2="SELECT count(distinct A.user_id) as nbunsub,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") AND B.status <0 GROUP BY list_id";*/
 

@@ -1,4 +1,5 @@
 {if #posts}
+    {if $params.post_ids}<input type="hidden" name="post_ids" value="{$params.post_ids}" />{/if}
     {loop name="#posts"}
         {if $params.image_alignment == 'alternate' && $last_alignment}
             {if $last_alignment == 'left'}
@@ -17,7 +18,7 @@
 
         <div class="wysija_content {$image_alignment} clearfix">
             {if #image}
-                <div class="wysija_image {$image_alignment}">
+                <div class="wysija_image {$image_alignment}" style="width:{#image.width}px;">
                     <img src="{#image.src}" width="{#image.width}" height="{#image.height}" alt="{#image.alt}" />
                 </div>
             {/if}

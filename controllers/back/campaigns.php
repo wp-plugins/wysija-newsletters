@@ -322,12 +322,20 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelEmail=&WYSIJA::get("email","model");
         $this->data=array();
         $this->data['email']=$modelEmail->getOne(false,array("email_id"=>$_REQUEST['id']));
-        if($this->data['email']['status']>0){
-            $this->redirect();
-        }
+
+        $this->checkIsEditable();
         
         $this->viewObj->title=sprintf(__('Second step :  "%1$s"',WYSIJA),$this->data['email']['subject']);
         $this->title=sprintf(__('Step %1$s',WYSIJA),2)." | ".$this->data['email']['subject'];
+    }
+    
+    function checkIsEditable(){
+        if( 
+                !($this->data['email']==2 || isset($this->data['email']['params']['schedule']['isscheduled']))
+                        && $this->data['email']['status']>0
+                        ){
+            $this->redirect();
+        }
     }
     
     function pause(){
@@ -469,9 +477,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }
         //$modelEmail->getParams($this->data['email']);
         
-        if($this->data['email']['status']>0){
-            $this->redirect();
-        }
+        $this->checkIsEditable();
+        
         $this->title=sprintf(__('Step %1$s',WYSIJA),3)." | ".$this->data['email']['subject'];
         $this->dataAutoNl();
 
@@ -1055,7 +1062,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         
 
         //$this->data['campaigns']=$this->modelObj->getResults($query.$queryFinal." GROUP BY A.campaign_id".$orderby.$this->modelObj->setLimit());
-        $this->data['campaigns']=$this->modelObj->getResults($query.$queryFinal." GROUP BY A.campaign_id".$orderby.$this->modelObj->setLimit());
+        $this->data['campaigns']=$this->modelObj->getResults($query.$queryFinal." GROUP BY B.email_id".$orderby.$this->modelObj->setLimit());
         //dbg($this->data['campaigns']);
         $emailids=array();
         foreach($this->data['campaigns'] as $emailcamp){
@@ -1512,7 +1519,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     
     function getListSubscriberQry($selectcolumns){
         $this->modelObj=&WYSIJA::get("email","model");
-        $this->emailObj=$this->modelObj->getOne(false,array("campaign_id"=>$_REQUEST['id']));
+        $this->emailObj=$this->modelObj->getOne(false,array('email_id' => $_REQUEST['id']));
         
         /* use the filter if there is */
         $this->setviewStatsfilter();
@@ -1539,15 +1546,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
     
     function createnewlist(){
-        /* get the campaign details */
+        /* get the email subject */
+        $emailModel =& WYSIJA::get('email', 'model');
+        $email = $emailModel->getOne(array('subject'), array('email_id' => $_REQUEST['id']));
         
-        $campaign=$this->modelObj->getOne(false,array("campaign_id"=>$_REQUEST['id']));
         $this->modelObj->reset();
         
         /* set the name of the new list*/
         $prefix="";
         if(isset($_REQUEST['link_filter'])) $prefix=" (".$this->viewObj->getTransStatusEmail($_REQUEST['link_filter']).")";
-        $listname=sprintf(__('Segment of %1$s',WYSIJA),$campaign['name'].$prefix);
+        $listname=sprintf(__('Segment of %1$s',WYSIJA), $email['subject'].$prefix);
         
         /*insert new list*/
         $modelL=&WYSIJA::get("list","model");

@@ -150,6 +150,12 @@ class WYSIJA_help_back extends WYSIJA_help{
         $count=0;
         
         global $menu,$submenu;
+
+        $role = get_role( 'administrator' );
+
+        $role->add_cap( 'wysija_newsletters' );
+        $role->add_cap( 'wysija_subscribers' );
+        $role->add_cap( 'wysija_config' );
         
         $position=50;
         while(isset($menu[$position])){
@@ -161,7 +167,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             if(!isset($menutemp['subtitle'])) $menutemp['subtitle']=$menutemp['title'];
             if($action=='campaigns')    $roleformenu=$modelC->getValue('role_campaign');
             elseif($action=='subscribers')    $roleformenu=$modelC->getValue('role_subscribers');
-            else $roleformenu='manage_options';
+            else $roleformenu='wysija_config';
             if($wysija_installing===true){
                 if($count==0){
                     $parentmenu=$actionFull;
