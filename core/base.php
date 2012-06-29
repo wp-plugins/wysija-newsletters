@@ -724,23 +724,35 @@ class WYSIJA extends WYSIJA_object{
         //WYSIJA::wp_notice(__("User has been removed from the <b>Synched</b> Wordpress user list.",WYSIJA));
     }
     
-    function hook_postNotification( $post_ID, $post ) {
-        //if post is  updated then we just don't run the code
-        if ($post->post_date != $post->post_modified) return;
-        
-        $modelEmail=&WYSIJA::get('email','model');
-        $emails=$modelEmail->get(false,array('type'=>2,'status'=>array(1,3,99)));
+    function hook_postNotification_now($id) {
+        return WYSIJA::hook_postNotification($id, 'now');
+    }
 
-        foreach($emails as $key=> $email){
-            if($email['params']['autonl']['event']=='new-articles'  && $email['params']['autonl']['when-article']=='immediate'){
+    function hook_postNotification_future($id) {
+        return WYSIJA::hook_postNotification($id, 'future');
+    }
+
+    function hook_postNotification($id, $when) {
+        // don't resend updated post
+        $post = get_post($id);
+        
+        if($when === 'now' && $post->post_modified !== $post->post_date) {
+            return;
+        }
+        
+        $modelEmail =& WYSIJA::get('email', 'model');
+        $emails = $modelEmail->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
+
+        foreach($emails as $key => $email) {
+            if($email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
                 $modelEmail->reset();
-                $modelEmail->giveBirth($email,$post_ID);
+                $modelEmail->giveBirth($email, $id);
             }
         }
 
-        return $post_ID;
+        return $id;
     }
-    
+  
     function hook_subscriber_to_list( $details ) {
 
         $config=&WYSIJA::get('config','model');
@@ -841,6 +853,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 if(strpos($siteurl, $_SERVER['HTTP_HOST'])===false){
                     //if we don't find it then we need to create a new siteadminurl
                     //by replacing the part between http// and the first slash with the one from request uri
+                    
                     $siteurlarray=explode("/",
                             str_replace(array("http://"),"",$siteurl)
                             );
@@ -858,6 +871,16 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
                 }else{
                     $ajaxurl=$siteurl;
+                }
+                
+                //let's check if the current ajaxurl is https if so we need to make sure that also the url we're calling from is https
+                if(strpos($ajaxurl, 'https://')!==false){
+                    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on'){
+                        //ok
+                    }else{
+                        $ajaxurl=str_replace('https://','http://',$ajaxurl);
+                    }
+
                 }
 
                 $lastchar=substr($ajaxurl, -1);
@@ -932,6 +955,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
             ,"submit" =>array("core"=>1,"label"=>__('Button label:',WYSIJA),'default'=>__('Subscribe!',WYSIJA))
             ,"success"=>array("core"=>1,"label"=>__('Success message:',WYSIJA),'default'=>$successmsg)
             ,"iframe"=>array("core"=>1,"label"=>__('Get iframe version',WYSIJA),/*'nolabel'=>1*/)
+            ,"php"=>array("core"=>1,"label"=>__('Get php version',WYSIJA),/*'nolabel'=>1*/)
         );
     }
 
@@ -981,8 +1005,13 @@ class WYSIJA_NL_Widget extends WP_Widget {
         $formObj=&WYSIJA::get("forms","helper");
 
         $html='';
+        $modelList=&WYSIJA::get("list","model");
+        $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
+        if(!$lists){
+            echo '<p>'.__('Before creating a subscription widget you\'ll need to create at least one list to add your subscribers to.',WYSIJA).' <a href="admin.php?page=wysija_subscribers&action=addlist">'.__('Create a list.',WYSIJA).'</a></p>';
+            return;
+        }
         
-
         foreach($this->fields as $field => $fieldParams){
             $extrascriptLabel='';
             $valuefield="";
@@ -1004,8 +1033,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
             $styleDivSeparators='clear:both; max-height: 116px; overflow: auto; float: left;margin: 0 10px 10px 0;';
             switch($field){
                 case "lists":
-                    $modelList=&WYSIJA::get("list","model");
-                    $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
+                    
                     
                     $classDivLabel='style="float:left"';
                     $fieldHTML= '<div style="'.$styleDivSeparators.'">';
@@ -1014,7 +1042,6 @@ class WYSIJA_NL_Widget extends WP_Widget {
                         $modelConfig=&WYSIJA::get("config","model");
                         $valuefield[]=$modelConfig->getValue("default_list_id");
                     }
-                    
                     foreach($lists as $list){
                         if(in_array($list['list_id'], $valuefield)) $checked=true;
                         else $checked=false;
@@ -1024,6 +1051,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                                         $list['list_id'],$checked).$list['name'].'</label></p>';
                         $fieldHTML.='<input type="hidden" name="'.$this->get_field_name($field.'_name')."[".$list['list_id']."]".'" value="'.$list['name'].'" />';
                     }
+                    
                     $fieldHTML .= '</div>';
                     
                     break;
@@ -1130,12 +1158,14 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $fieldHTML= $formObj->textarea( array('id'=>$this->get_field_id($field),'name'=>$this->get_field_name($field),'value'=>$valuefield,"cols"=>46,"rows"=>4,"style"=>'width:404px'),$valuefield);
                     break;
                 case 'iframe':
+                case 'php':
                     $fieldHTML='';
                     if(!empty($instance)){
-                        $valuefield=$this->genIframe($instance,true);
+                        if($field=='iframe')    $valuefield=$this->genIframe($instance,true);
+                        else $valuefield=$this->genPhp($instance,true);
                         
-                        $extrascriptLabel.=' style="color:#456465;text-decoration:underline;" onClick="document.getElementById(\''.$this->get_field_id($field).'\').style.display = \'block\';" ';
-                        $fieldHTML.= $formObj->textarea( array('id'=>$this->get_field_id($field),'class'=>'disabled hidden','name'=>'dummyname','value'=>$valuefield,'readonly'=>'readonly',"cols"=>46,"rows"=>4,"style"=>'width:404px'),$valuefield);
+                        $extrascriptLabel.=' style="color:#456465;text-decoration:underline;" onClick="document.getElementById(\''.$this->get_field_id($field).'\').style.display = (document.getElementById(\''.$this->get_field_id($field).'\').style.display != \'none\' ? \'none\' : \'block\' );" ';
+                        $fieldHTML.= $formObj->textarea( array('id'=>$this->get_field_id($field),'class'=>'disabled hidden','name'=>'dummyname','value'=>$valuefield,'readonly'=>'readonly',"cols"=>46,"rows"=>4,"style"=>'display:none;width:404px;'),$valuefield);
                         //$fieldHTML.='<a href="javascript:;" onClick="alert(\'hello\')">'.$fieldParams['label'].'</a></div>';
                     }else $fieldParams['nolabel']=1;
                     
@@ -1168,8 +1198,13 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 'wysija-page'=>1,
                 'controller'=>"subscribers",
                 'action'=>"wysija_outter",
-                'widgetnumber'=>  $this->number,
                 );
+        
+        if(isset($this->number) && $this->number >0) $paramsurl['widgetnumber']=$this->number;
+        else{
+           $paramsurl['fullWysijaForm']=$encodedForm; 
+        }
+        
         $modelConf=&WYSIJA::get("config","model");
 
         if($externalsite) $paramsurl['external_site']=1;
@@ -1183,6 +1218,19 @@ class WYSIJA_NL_Widget extends WP_Widget {
         $fullurl=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$paramsurl,true);
 
         return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$this->number.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
+        //$fieldHTML='<div class="widget-control-actions">';
+    }
+    
+    function genPhp($instance,$externalsite=false){
+
+        $instance2=$instance;
+        $instance2['widget_id']=$this->id.'-php';
+        $phpcode='$widgetdata='.var_export($instance2,true).';'."\n";
+        $phpcode.='$widgetNL=new WYSIJA_NL_Widget(1);'."\n";
+        $phpcode.='$subscriptionForm= $widgetNL->widget($widgetdata,$widgetdata);'."\n";
+        $phpcode.='echo $subscriptionForm;'."\n";
+        
+        return $phpcode;
         //$fieldHTML='<div class="widget-control-actions">';
     }
     
@@ -1240,7 +1288,8 @@ add_action('profile_update', array("WYSIJA", 'hook_edit_WP_subscriber'), 1);
 add_action('delete_user', array("WYSIJA", 'hook_del_WP_subscriber'), 1);
 
 /**/
-add_action('publish_post', array("WYSIJA", 'hook_postNotification'),10,2 );
+add_action('publish_post', array("WYSIJA", 'hook_postNotification_now'), 10, 1);
+add_action('publish_future_post', array("WYSIJA", 'hook_postNotification_future'), 10, 1);
 add_action('wysijaSubscribeTo', array("WYSIJA", 'hook_subscriber_to_list'), 1);
 
 
