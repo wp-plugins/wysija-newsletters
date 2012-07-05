@@ -70,7 +70,7 @@
      *     @argument event - The javascript event
      */
 
-    var FormValidator = function(formName, fields, callback) {
+    var WysijaValidator = function(formName, fields, callback) {
         this.callback = callback || defaults.callback;
         this.errors = [];
         this.fields = {};
@@ -118,7 +118,7 @@
      * Sets a custom message for one of the rules
      */
 
-    FormValidator.prototype.setMessage = function(rule, message) {
+    WysijaValidator.prototype.setMessage = function(rule, message) {
         this.messages[rule] = message;
 
         // return this for chaining
@@ -130,7 +130,7 @@
      * Registers a callback for a custom rule (i.e. callback_username_check)
      */
 
-    FormValidator.prototype.registerCallback = function(name, handler) {
+    WysijaValidator.prototype.registerCallback = function(name, handler) {
         if (name && typeof name === 'string' && handler && typeof handler === 'function') {
             this.handlers[name] = handler;
         }
@@ -144,7 +144,7 @@
      * Runs the validation when the form is submitted.
      */
 
-    FormValidator.prototype._validateForm = function(event) {
+    WysijaValidator.prototype._validateForm = function(event) {
         this.errors = [];
 
         for (var key in this.fields) {
@@ -187,7 +187,7 @@
      * Looks at the fields value and evaluates it against the given rules
      */
 
-    FormValidator.prototype._validateField = function(field) {
+    WysijaValidator.prototype._validateField = function(field) {
         var rules = field.rules.split('|');
 
         /*
@@ -266,7 +266,7 @@
      * Object containing all of the validation hooks
      */
 
-    FormValidator.prototype._hooks = {
+    WysijaValidator.prototype._hooks = {
         required: function(field) {
             var value = field.value;
 
@@ -382,6 +382,6 @@
         }
     };
 
-    window.FormValidator = FormValidator;
+    window.WysijaValidator = WysijaValidator;
 
 })(window, document);
