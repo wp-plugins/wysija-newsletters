@@ -74,6 +74,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
                     $content = $helperToolbox->excerpt($post['post_content'], 60);
                 }
             }
+
+            $content = preg_replace('/<([\/])?h[123456](.*?)>/', '<$1p$2>', $content);
         }
 
         $content = wpautop($content, false);

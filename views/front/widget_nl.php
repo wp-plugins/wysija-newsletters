@@ -52,6 +52,10 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             $msgsuccesspreview='<div class="allmsgs"><div class="updated">'.$params["success"].'</div></div>';
         }
         
+        //a subscription form needs to have lists associated to itself, otherwise it's no good
+        if(!isset($params["lists"]) || !$params["lists"])   return;
+
+        
         $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>
         <form id="'.$formidreal.'" method="post" action="#wysija" class="widget_wysija form-valid-sub">';
             if(isset($params['instruction']) && $params['instruction'])   $data.='<p class="wysija-instruct">'.$params['instruction'].'</p>';

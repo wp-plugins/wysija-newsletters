@@ -954,8 +954,8 @@ class WYSIJA_NL_Widget extends WP_Widget {
             ,'labelswithin'=>array('core'=>1,'default'=>true,"label"=>__('Display labels in inputs',WYSIJA),'hidden'=>1)
             ,"submit" =>array("core"=>1,"label"=>__('Button label:',WYSIJA),'default'=>__('Subscribe!',WYSIJA))
             ,"success"=>array("core"=>1,"label"=>__('Success message:',WYSIJA),'default'=>$successmsg)
-            ,"iframe"=>array("core"=>1,"label"=>__('Get iframe version',WYSIJA),/*'nolabel'=>1*/)
-            ,"php"=>array("core"=>1,"label"=>__('Get php version',WYSIJA),/*'nolabel'=>1*/)
+            ,"iframe"=>array("core"=>1,"label"=>__('Get iframe version',WYSIJA))
+            /*,"php"=>array("core"=>1,"label"=>_x_('Get php version',WYSIJA))*/
         );
     }
 
@@ -1200,9 +1200,13 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 'action'=>"wysija_outter",
                 );
         
-        if(isset($this->number) && $this->number >0) $paramsurl['widgetnumber']=$this->number;
+        if(isset($this->number) && $this->number >0) {
+            $paramsurl['widgetnumber']=$this->number;
+            $idframe=$this->number;
+        }
         else{
            $paramsurl['fullWysijaForm']=$encodedForm; 
+           $idframe=  rand(45000, 99999);
         }
         
         $modelConf=&WYSIJA::get("config","model");
@@ -1217,7 +1221,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         //the final tru allow for shorter url
         $fullurl=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$paramsurl,true);
 
-        return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$this->number.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
+        return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
         //$fieldHTML='<div class="widget-control-actions">';
     }
     

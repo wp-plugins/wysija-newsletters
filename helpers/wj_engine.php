@@ -510,8 +510,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
             $this->setEmailData($email);
 
-            $data['subject'] = $this->getEmailData('subject');
-
             $data = array(
                 'header' => $this->renderEmailHeader(),
                 'body' => $this->renderEmailBody(),
@@ -520,6 +518,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 'css' => $this->renderStyles(),
                 'styles' => $this->getStyles(),
             );
+
+            $data['subject'] = $this->getEmailData('subject');
             $wjParser =& WYSIJA::get('wj_parser', 'helper');
             $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
             $wjParser->setStripSpecialchars(true);

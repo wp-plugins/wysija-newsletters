@@ -859,6 +859,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             
             
             $result=$this->_importRows($queryStart,$arra,$j,$datatoinsert,$emailKey,$emailsalreadyrecorded,$allemailsinvalid);
+
             if($result!==false) $j++;
             else{
                 $try=0;
@@ -950,6 +951,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             }
         }
         
+        
+
+        $outof=0;
         $j=1;
         $helperUser=&WYSIJA::get("user","helper");
         global $wpdb;
@@ -968,6 +972,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                         $vl=trim($vl);
                         if($helperUser->validEmail($vl)){
                             $allEmails[]=$vl;
+                            $outof++;
                         }else{
                             $invalidemails[]=$vl;
                             unset($csvArr[$kline]);
@@ -992,11 +997,13 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $modelWysija=new WYSIJA_model();
         $resultqry=$modelWysija->query($query);
         
-        $outof=$linescount;
-        $linescount=mysql_affected_rows();
+        //$outof=$linescount;
+        global $wpdb;
+
+        $linescount=$wpdb->rows_affected;
+
         $alreadyinsertedemails=$alreadyinsertedemails+($outof-$linescount);
-        
-        //dbg($query);
+
 
         if($resultqry===false) {
             $this->error(__("Error when inserting emails.",WYSIJA),true);

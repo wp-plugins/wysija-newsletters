@@ -2,8 +2,8 @@
 Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
-Tested up to: 3.4
-Stable tag: 2.0.3
+Tested up to: 3.4.1
+Stable tag: 2.0.4
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -136,6 +136,16 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.0.4 - 2012-07-05 =
+
+* added for dummies check that list exists or subscription form widget not editable
+* fixed problem with plugin wordpress-https when doing ajax subscription
+* fixed issue with scheduled articles not being sent in post notification
+* fixed rare issue when inserting a WordPress post would trigger an error
+* fixed issue wrong count of ignored emails when importing
+* fixed multi forms several send confirmation emails on one subscribing request
+* fixed subject title in email template
 
 = 2.0.3 - 2012-06-26 =
 
