@@ -92,6 +92,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
         $content = preg_replace('/<([\/])?ol(.*?)>/', '<$1ul$2>', $content);
 
+        $content = str_replace(array('$'), array('&#36;'), $content);
+
         $content = strip_tags($content, '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li>');
 
         if(strlen(trim($post['post_title'])) > 0) {
