@@ -1229,8 +1229,13 @@ class WYSIJA_NL_Widget extends WP_Widget {
         }
         
         $modelConf=&WYSIJA::get("config","model");
-
-        if($externalsite) $paramsurl['external_site']=1;
+        $onloadattr='';
+        if($externalsite){
+            $paramsurl['external_site']=1;
+            
+        }else{
+            $onloadattr='onload="jQuery.WYSIJA_iframeloadhandler(this);"';
+        }
         
         if(WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php')){
             global $cache_page_secret;
@@ -1242,7 +1247,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         
         
         //return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
-        return '<iframe onload="jQuery.WYSIJA_iframeloadhandler(this);" width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
+        return '<iframe '.$onloadattr.' width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
         //$fieldHTML='<div class="widget-control-actions">';
     }
     
