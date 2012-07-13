@@ -10,6 +10,7 @@ class WYSIJA_object{
     function WYSIJA_object(){
 
     }
+    
 
     function get_version() {
         static $version=false;
@@ -811,17 +812,35 @@ class WYSIJA extends WYSIJA_object{
     
     function is_caching_active(){
         $checkPlugins=array(
-            'wp-super-cache/wp-cache.php' =>array(true,'wp_cache_easy_on'),
-            'w3-total-cache/w3-total-cache.php'=>array(true,WP_CACHE,'$config = & w3_instance("W3_Config");
-        return $config->get_boolean("pgcache.enabled")'));
+            'wp-super-cache/wp-cache.php' ,
+            'w3-total-cache/w3-total-cache.php',
+            'quick-cache/quick-cache.php',
+            'hyper-cache/plugin.php'
+            );
 
-        
-        foreach($checkPlugins as $pluginFileName => $conditions){
+
+        foreach($checkPlugins as $pluginFileName){
             if(WYSIJA::is_plugin_active($pluginFileName)){
-                foreach($conditions as $cond1){
-                    if(!$cond1) continue(2);
+                switch($pluginFileName){
+                    case 'wp-super-cache/wp-cache.php':
+                        global $cache_enabled, $super_cache_enabled;
+                        if(!(WP_CACHE && $cache_enabled && $super_cache_enabled))   continue(2);
+                        break;
+                    case 'w3-total-cache/w3-total-cache.php':
+                        $config = & w3_instance("W3_Config");
+                        if(!(WP_CACHE && $config->get_boolean("pgcache.enabled")))   continue(2);
+   
+                        break;
+                    case 'quick-cache/quick-cache.php':
+                        if(!(WP_CACHE && $GLOBALS["WS_PLUGIN__"]["qcache"]["o"]["enabled"]))   continue(2);
+                        break;
+                    case 'hyper-cache/plugin.php':
+                        if(!(WP_CACHE))   continue(2);
+                        break;
+                    default:
+                        continue(2);
                 }
-                
+                return true;
             }
         }
         
@@ -1220,8 +1239,10 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         //the final tru allow for shorter url
         $fullurl=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$paramsurl,true);
-
-        return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
+        
+        
+        //return '<iframe width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
+        return '<iframe onload="jQuery.WYSIJA_iframeloadhandler(this);" width="100%" scrolling="no" frameborder="0" src="'.$fullurl.'" name="wysija-'.$now.'" class="iframe-wysija" id="wysija-'.$idframe.'" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.__('Subscription Wysija',WYSIJA).'"></iframe>';
         //$fieldHTML='<div class="widget-control-actions">';
     }
     
@@ -1269,7 +1290,8 @@ class WYSIJA_NL_Widget extends WP_Widget {
         $view=&WYSIJA::get("widget_nl","view","front");
         /*if a cache plugin is active let's load the plugin in an iframe*/
         
-        if(!is_admin() && !$this->iFrame && (WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php') || WYSIJA::is_plugin_active('w3-total-cache/w3-total-cache.php'))){
+        /*if(!is_admin() && !$this->iFrame && (WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php') || WYSIJA::is_plugin_active('w3-total-cache/w3-total-cache.php'))){*/
+        if(!is_admin() && !$this->iFrame && WYSIJA::is_caching_active()){
             $view->addScripts();
             $glob.=$title.$this->genIframe($instance);
         }else{

@@ -104,8 +104,12 @@ class WYSIJA_help_back extends WYSIJA_help{
         $this->menuHelp=$truelinkhelp;
         if(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
             $msg=$config->getValue("ignore_msgs");
-            if(!isset($msg['crondisabled']))
-                $this->notice(__('The CRON system is disabled on your WordPress site. Wysija will not work correctly while it stays disabled.',WYSIJA).' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>'); 
+            if(!isset($msg['crondisabled'])){
+                $this->notice(
+                        __('The CRON system is disabled on your WordPress site. Wysija will not work correctly while it stays disabled.',WYSIJA).
+                        ' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>'); 
+            }
+
         }
         
         $importPossible=$config->getValue("pluginsImportableEgg");
@@ -158,8 +162,14 @@ class WYSIJA_help_back extends WYSIJA_help{
         $role->add_cap( 'wysija_config' );
         
         $position=50;
-        while(isset($menu[$position])){
+        $positionplus1=$position+1;
+        while(isset($menu[$position]) || isset($menu[$positionplus1])){
             $position++;
+            $positionplus1=$position+1;
+
+            if(!isset($menu[$position]) && isset($menu[$positionplus1])){
+                $position=$position+2;
+            }
         }
         global $wysija_installing;
         foreach($this->menus as $action=> $menutemp){

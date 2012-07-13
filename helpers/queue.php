@@ -45,17 +45,22 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		if(empty($queueElements)){
 			
                         $queueElements = $queueClass->getDelayed($this->email_id);
-                        if($queueElements && $this->report){
-                            $disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
-                            $disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
-                            $disp.= "<div style='background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
-                            $disp.= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
-                            $disp.= sprintf(__('There are %1$s delayed email(s)',WYSIJA),count($queueElements));
-                            $disp.= '</div>';
-                            foreach($queueElements as $element){
-                                $disp.= "<div id='divinfo'>".sprintf(__('Email will be sent to %1$s at %2$s',WYSIJA),'<b>'.$element['email'].'</b>','<em>'.date_i18n(get_option('date_format').' H:i',$element['send_at']).'</em>')." </div>";
+                        
+                        if(empty($queueElements)){
+                            $this->clear();
+                        }else{
+                            if($this->report){
+                                $disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
+                                $disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
+                                $disp.= "<div style='background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
+                                $disp.= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
+                                $disp.= sprintf(__('There are %1$s delayed email(s)',WYSIJA),count($queueElements));
+                                $disp.= '</div>';
+                                foreach($queueElements as $element){
+                                    $disp.= "<div id='divinfo'>".sprintf(__('Email will be sent to %1$s at %2$s',WYSIJA),'<b>'.$element['email'].'</b>','<em>'.date_i18n(get_option('date_format').' H:i',$element['send_at']).'</em>')." </div>";
+                                }
+                                echo $disp;
                             }
-                            echo $disp;
                         }
                         $this->finish = true;
 			return true;
@@ -348,8 +353,10 @@ class WYSIJA_help_queue extends WYSIJA_object{
             $realquery='DELETE FROM `[wysija]queue`  WHERE `user_id` in ('.$queryUnsubscribed.')';
             $modelQ->query($realquery);
 
-            $queryListEmail='SELECT C.email_id FROM `[wysija]email` as C ';
-            $realquery='DELETE FROM `[wysija]queue`  WHERE `email_id` NOT IN ('.$queryListEmail.')';
+            $realquery='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]email` as b on a.email_id = b.email_id WHERE b.email_id IS NULL';
+            $modelQ->query($realquery);
+
+            $realquery='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.user_id IS NULL';
             $modelQ->query($realquery);
             return true;
         }

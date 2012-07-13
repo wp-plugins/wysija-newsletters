@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.0.4
+Stable tag: 2.0.5
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -136,6 +136,16 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.0.5 - 2012-07-13 =
+
+* added extended check of caching plugin activation
+* added security to disallow directory browsing
+* added subscription form working now with Quick-cache and Hyper cache(Already working with WP Super Cache && W3 Total Cache)
+* added onload attribute on iframe subscription form which seems more reliable
+* added independant cron manager wysija_cron.php
+* added cleaning the queue of deleted users or deleted emails through phpmyadmin for instance
+* added theme menu erasing Wysija's menu when in the position right below ours
 
 = 2.0.4 - 2012-07-05 =
 
