@@ -34,3 +34,5 @@ define("WYSIJA_CTRL",WYSIJA_DIR."controllers".DS);
 define("WYSIJA_DIR_IMG",WYSIJA_DIR."img".DS);
 define("WYSIJA_EDITOR_IMG",WYSIJA_URL."img/");
 define("WYSIJA_EDITOR_TOOLS",WYSIJA_DIR."tools".DS);
+global $blog_id;
+define('WYSIJA_CRON',md5(__FILE__.$blog_id));

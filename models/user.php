@@ -157,10 +157,18 @@ class WYSIJA_model_user extends WYSIJA_model{
     }
     
     function beforeDelete(){
+        $newum=new WYSIJA_model_user();
+        $users=$newum->get(array('user_id'),$this->conditions);
+        $userids=array();
+        foreach($users as $usr) $userids[]=$usr['user_id'];
         
         //delete all the user stats
         $eusM=&WYSIJA::get('email_user_stat','model');
-        $eusM->delete($this->conditions);
+        $conditions=array('user_id'=>$userids);
+        $eusM->delete($conditions);
+        //delete all the queued emails
+        $qM=&WYSIJA::get('queue','model');
+        $qM->delete($conditions);
         return true;
     }
     

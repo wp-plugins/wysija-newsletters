@@ -868,6 +868,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <?php
                 //}
                 ?>
+       
                 
             </tbody>
         </table>
