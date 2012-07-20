@@ -15,7 +15,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             define("WYSIJA_ITF",TRUE);
             
             if(defined('WYSIJA_DBG') && WYSIJA_DBG===true){
-                error_reporting(E_ALL);
+                error_reporting(E_ALL ^ E_STRICT);
                 ini_set('display_errors', '1');
             }else{
                 error_reporting(0);
@@ -25,7 +25,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         }else{
             define("WYSIJA_ITF",FALSE);
             if(defined('WYSIJA_DBG_ALL')){
-                error_reporting(E_ALL);
+                error_reporting(E_ALL ^ E_STRICT);
                 ini_set('display_errors', '1');
             }
         }

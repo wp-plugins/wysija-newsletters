@@ -8,7 +8,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function _displayErrors(){
-       error_reporting(E_ALL);
+       error_reporting(E_ALL ^ E_STRICT);
        @ini_set("display_errors", 1);
     }
        

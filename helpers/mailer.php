@@ -154,7 +154,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $uploadPath = str_replace(array('/','\\'),DS,$uploadFolder);
                     $uploadURL = $this->config->getValue('uploadurl');
                     foreach($this->defaultMail[$email_id]->attach as $oneAttach){
-                            $attach = null;
+                            $attach = new StdClass();
                             $attach->name = $oneAttach->filename;
                             $attach->filename = $uploadPath.$oneAttach->filename;
                             $attach->url = $uploadURL.$oneAttach->filename;
@@ -368,7 +368,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             
 
-            $mailforTrigger = null;
+            $mailforTrigger = new StdClass();
             $mailforTrigger->body = &$this->Body;
 
             $mailforTrigger->subject = &$this->Subject;
@@ -490,7 +490,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	}
         function sendSimple($sendto,$subject,$body,$params=array(),$format='text'){
             $modelConfig=&WYSIJA::get("config","model");
-            $emailObj=null;
+            $emailObj=new StdClass();
             
             $emailObj->email_id=0;
             while(isset($this->defaultMail[$emailObj->email_id])){

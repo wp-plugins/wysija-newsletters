@@ -45,12 +45,24 @@ class WYSIJA_help_user extends WYSIJA_object{
     
     function subscribe($user_id,$status=true,$auto=false){
         $time=time();
+        
+        $modelL=&WYSIJA::get("list","model");
+        $listsdata=$modelL->get(array('list_id'),array('is_enabled'=>'1'));
+        $listidsenabled=array();
+        foreach($listsdata as $listdt){
+            $listidsenabled[]=$listdt['list_id'];
+        }
+        
+        $modelUserList=&WYSIJA::get("user_list","model");
+        $listidsfromuser=$modelUserList->get(array('list_id'),array('user_id'=>$user_id,'list_id'=>$listidsenabled));
+        $listidsenableduser=array();
+        foreach($listidsfromuser as $listdt){
+            $listidsenableduser[]=$listdt['list_id'];
+        }
         if($status){
             $status=1;
             $datecol="sub_date";
             $cols=array($datecol=>$time,"unsub_date"=>0);
-            
-
         }else{
 
             $status=-1;
@@ -58,16 +70,13 @@ class WYSIJA_help_user extends WYSIJA_object{
             $cols=array($datecol=>$time);
             $modelU=&WYSIJA::get("queue","model");
             $modelU->delete(array("user_id"=>$user_id));
-            if($auto){
-                $modelU=&WYSIJA::get("user_list","model");
-                $modelU->delete(array("user_id"=>$user_id));
-            }
 
+            $modelUserList->delete(array("user_id"=>$user_id,'list_id'=>$listidsenableduser));
         }
         $modelUser=&WYSIJA::get("user","model");
         $modelUser->update(array("status"=>$status),array("user_id"=>$user_id));
         
-        if($status){
+        if($status){        
             $lists=$this->getUserLists($user_id);
             $this->sendAutoNl($user_id,$lists);
         }
@@ -75,9 +84,14 @@ class WYSIJA_help_user extends WYSIJA_object{
             $modelUserList=&WYSIJA::get("user_list","model");
             $modelUserList->update($cols,array("user_id"=>$user_id));
         }
+        return $listidsenableduser;
     }
     
     function sendAutoNl($user_id,$extraparams=false,$checkfortype='subs-2-nl'){
+
+        $modelUser=&WYSIJA::get('user','model');
+        $modelC=&WYSIJA::get('config','model');
+        if(!$modelUser->exists(array('user_id'=>$user_id,'status'=>(int)$modelC->getValue('confirm_dbleoptin')))) return false;
         $modelEmail=&WYSIJA::get('email','model');
         $emails=$modelEmail->get(false,array('type'=>2,'status'=>array(1,3,99)));
         if(is_object($emails)){
@@ -225,10 +239,14 @@ class WYSIJA_help_user extends WYSIJA_object{
         $modelUser->query($query);
     }
     
-    function _notify($email,$subscribed=true){
+    function _notify($email,$subscribed=true,$listids=false){
         
         $modelUser=&WYSIJA::get("user_list","model");
-        $qry="Select B.name from `[wysija]user_list` as A join `[wysija]list` as B on A.list_id=B.list_id where A.user_id=".$this->uid." and B.is_enabled>0";
+        if($listids){
+            $qry="Select B.name from `[wysija]list` as B where B.list_id IN ('".implode("','",$listids)."') and B.is_enabled>0";
+        }else{
+            $qry="Select B.name from `[wysija]user_list` as A join `[wysija]list` as B on A.list_id=B.list_id where A.user_id=".$this->uid." and B.is_enabled>0";
+        }
         $result=$modelUser->query("get_res",$qry);
         $listnames=array();
         foreach($result as $arra){

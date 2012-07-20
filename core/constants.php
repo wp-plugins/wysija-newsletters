@@ -18,7 +18,8 @@ define("WYSIJA_PLG_DIR", dirname($current_folder).DS);
 define("WYSIJA_DIR", $current_folder.DS);
 define("WYSIJA_DATA_DIR", WYSIJA_DIR.'data'.DS);
 define('WYSIJA_FILE',WYSIJA_DIR."index.php");
-define("WYSIJA_URL",WP_PLUGIN_URL.'/'.strtolower("wysija-newsletters")."/");
+
+define("WYSIJA_URL",plugins_url().'/'.strtolower("wysija-newsletters")."/");
 
 $upload_dir = wp_upload_dir();
 

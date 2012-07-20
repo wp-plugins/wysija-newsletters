@@ -64,13 +64,13 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
                 $modelConf=&WYSIJA::get("config","model");
                 $statusint=(int)$this->userData["details"]['status'];
                 if( ($modelConf->getValue("confirm_dbleoptin") && $statusint>0) || (!$modelConf->getValue("confirm_dbleoptin") && $statusint>=0)){
-                    $this->helperUser->unsubscribe($this->userData["details"]["user_id"]);
+                    $listids=$this->helperUser->unsubscribe($this->userData["details"]["user_id"]);
 
                     
                     $this->title=$modelConf->getValue("unsubscribed_title");
                     $this->subtitle=$modelConf->getValue("unsubscribed_subtitle");
                     $this->helperUser->uid=$this->userData["details"]["user_id"];
-                    if($modelConf->getValue("emails_notified") && $modelConf->getValue("emails_notified_when_unsub"))    $this->helperUser->_notify($this->userData["details"]["email"],false);
+                    if($modelConf->getValue("emails_notified") && $modelConf->getValue("emails_notified_when_unsub"))    $this->helperUser->_notify($this->userData["details"]["email"],false,$listids);
                 }else{
                     $this->title=__("You are already unsubscribed.",WYSIJA);
 
