@@ -51,7 +51,7 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
          * 
          */
         
-        $customQuery='SELECT A.ID, A.post_title, A.post_content FROM `[wp]'.$this->table_name.'` A ';
+        $customQuery='SELECT A.ID, A.post_title, A.post_content, A.post_excerpt FROM `[wp]'.$this->table_name.'` A ';
         
         if(isset($args['category']) && $args['category']) {
             $customQuery.='LEFT JOIN `[wp]term_relationships` as B ON (A.ID = B.object_id) ';

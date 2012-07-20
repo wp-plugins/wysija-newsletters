@@ -11,7 +11,7 @@ class WYSIJA_help_front extends WYSIJA_help{
         if(isset($_REQUEST['wysija-page']) || isset($_REQUEST['wysija-launch'])){
             if(defined('WYSIJA_DBG')){
                 include_once(WYSIJA_INC."debug.php");
-                error_reporting(E_ALL);
+                error_reporting(E_ALL ^ E_STRICT);
                 ini_set('display_errors', '1');
             }else{
                 if(defined("WP_DEBUG") && !WP_DEBUG){
