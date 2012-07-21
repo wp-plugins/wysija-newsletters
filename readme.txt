@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.0.5
+Stable tag: 2.0.7
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -136,6 +136,21 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.0.7 - 2012-07-21 =
+
+* fixed strict error appearing on servers below php version 5.4
+* fixed on export to a csv translate fields and don't get the columns namekeys
+* added non translated 'Loading...' string on subscription's frontend
+
+= 2.0.6 - 2012-07-20 =
+
+* fixed unreliable WP_PLUGIN_URL when dealing with https constants now using plugins_url() instead
+* fixed automatic newsletter resending itself on unsubscribe
+* fixed when unsubscribing and registering to some lists, you will not be re-registered to your previous lists
+* fixed issue with small height images not displaying in email
+* fixed issue with post excerpt in automatic posts
+* improved php 5.4 strictness compatibility
 
 = 2.0.5 - 2012-07-13 =
 

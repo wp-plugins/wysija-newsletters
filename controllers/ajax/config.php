@@ -8,7 +8,12 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function _displayErrors(){
-       error_reporting(E_ALL);
+       if(version_compare(phpversion(), '5.4')>= 0){
+            error_reporting(E_ALL ^ E_STRICT);
+
+        }else{
+            error_reporting(E_ALL);
+        }
        @ini_set("display_errors", 1);
     }
        

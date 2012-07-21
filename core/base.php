@@ -320,7 +320,7 @@ class WYSIJA extends WYSIJA_object{
      * @param type $type
      * @return type 
      */
-    function get($name,$type,$forceside=false,$extendedplugin="wysija-newsletters"){
+    public static function get($name,$type,$forceside=false,$extendedplugin="wysija-newsletters"){
         static $arrayOfObjects;
         
         WYSIJA::load_lang($extendedplugin);
@@ -910,7 +910,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     'action' => 'wysija_ajax',
                     'controller' => $controller,
                     'ajaxurl'=>$ajaxurl,
-                    'loadingTrans'  =>'Loading...'
+                    'loadingTrans'  =>__('Loading...',WYSIJA)
                 );
                 
                 
@@ -1319,8 +1319,8 @@ add_action('profile_update', array("WYSIJA", 'hook_edit_WP_subscriber'), 1);
 add_action('delete_user', array("WYSIJA", 'hook_del_WP_subscriber'), 1);
 
 /**/
-add_action('publish_post', array("WYSIJA", 'hook_postNotification_now'), 10, 1);
-add_action('publish_future_post', array("WYSIJA", 'hook_postNotification_future'), 10, 1);
+add_action('publish_post', array("WYSIJA", 'hook_postNotification_now'), 1, 1);
+add_action('publish_future_post', array("WYSIJA", 'hook_postNotification_future'), 1, 1);
 add_action('wysijaSubscribeTo', array("WYSIJA", 'hook_subscriber_to_list'), 1);
 
 

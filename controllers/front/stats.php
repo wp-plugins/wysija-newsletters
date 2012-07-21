@@ -38,7 +38,12 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
     
     function analyse(){
 if(isset($_REQUEST['debug'])){
-    error_reporting(E_ALL);
+    if(version_compare(phpversion(), '5.4')>= 0){
+        error_reporting(E_ALL ^ E_STRICT);
+
+    }else{
+        error_reporting(E_ALL);
+    }
     ini_set('display_errors', '1');
 }
         if(isset($_REQUEST['email_id']) && isset($_REQUEST['user_id'])){
