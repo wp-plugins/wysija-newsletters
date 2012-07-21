@@ -910,7 +910,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     'action' => 'wysija_ajax',
                     'controller' => $controller,
                     'ajaxurl'=>$ajaxurl,
-                    'loadingTrans'  =>'Loading...'
+                    'loadingTrans'  =>__('Loading...',WYSIJA)
                 );
                 
                 

@@ -1118,8 +1118,15 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             }
         }
 
-                
-        $content=implode(";",$_POST['wysija']['export']['fields'])."\n";
+        $model=&WYSIJA::get("user_field","model");
+        $fields=$model->getFields();
+        
+        $namefields=array();
+        foreach($_POST['wysija']['export']['fields'] as $keyfield){
+            $namefields[]=$fields[$keyfield];
+        }
+        
+        $content=implode(";",$namefields)."\n";
         foreach($data as $row){
             $content.=implode(';',$row)."\n";
         }
