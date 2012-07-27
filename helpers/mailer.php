@@ -635,6 +635,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $args['user_id'] = $user->user_id;
                 $args['urlencoded'] = $urlencoded;
                 $args['controller'] = 'stats';
+                $forbiddenparams=$modelConf->getValue('params_forbidden');
+                if(isset($forbiddenparams['controller']['stats'])) $args['controller'] = $forbiddenparams['controller']['stats'];
                 $args['action'] = 'analyse';
                 $args['wysija-page'] = 1;
                 if(!$modelConf->getValue('urlstats_base64')){
@@ -668,6 +670,9 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $args['email_id'] = $email->email_id;
                 $args['user_id'] = $user->user_id;
                 $args['controller'] = 'stats';
+                $forbiddenparams=$modelConf->getValue('params_forbidden');
+                if(isset($forbiddenparams['controller']['stats'])) $args['controller'] = $forbiddenparams['controller']['stats'];
+                
                 $args['action'] = 'analyse';
                 $args['wysija-page'] = 1;
                 $args['render'] = 1;

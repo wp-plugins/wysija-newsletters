@@ -26,8 +26,9 @@ class WYSIJA_help_front extends WYSIJA_help{
             if(defined('DOING_AJAX')){      
                 add_action('wp_ajax_nopriv_wysija_ajax', array($this, 'ajax'));
             }else{
-                
-                $this->controller=&WYSIJA::get($_REQUEST['controller'],"controller");
+                $paramscontroller=$_REQUEST['controller'];
+                if($paramscontroller=='stat') $paramscontroller='stats';
+                $this->controller=&WYSIJA::get($paramscontroller,"controller");
                 if(method_exists($this->controller, $_REQUEST['action'])){
                     add_action('init',array($this->controller,$_REQUEST['action']));
 
