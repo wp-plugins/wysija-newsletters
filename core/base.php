@@ -1034,7 +1034,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         foreach($this->fields as $field => $fieldParams){
             $extrascriptLabel='';
             $valuefield="";
-            if($fieldParams['hidden'] || (isset($this->coreOnly) && !isset($fieldParams['core']))) continue;
+            if((isset($fieldParams['hidden']) && $fieldParams['hidden']) || (isset($this->coreOnly) && !isset($fieldParams['core']))) continue;
             if(isset($instance[$field]))  {
                 
                 if($field=="success" && $instance[$field]==$this->successmsgsub." ".$this->successmsgconf){

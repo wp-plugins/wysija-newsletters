@@ -55,7 +55,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         //a subscription form needs to have lists associated to itself, otherwise it's no good
         if(!isset($params["lists"]) || !$params["lists"])   return;
 
-        
+        $data.='<div class="widget_wysija_cont">';
         $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>
         <form id="'.$formidreal.'" method="post" action="#wysija" class="widget_wysija form-valid-sub">';
             if(isset($params['instruction']) && $params['instruction'])   $data.='<p class="wysija-instruct">'.$params['instruction'].'</p>';
@@ -117,7 +117,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         
         //hook to let plugins modify our html the way they want
         $data = apply_filters('wysija_subscription_form', $data);
-        
+        $data.='</div>';
         if($echo) echo $data;
         else return $data;
     }
