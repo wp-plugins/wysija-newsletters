@@ -18,10 +18,12 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         
         if(!isset($_REQUEST['action'])) $this->action='main';
         else $this->action=$_REQUEST['action'];
-        
-        switch($this->action){
-            case "save":
-                $this->save();
+        $localaction=$this->action;
+        switch($localaction){
+            case 'log':
+            case 'save':
+            case 'clearlog':
+                $this->$localaction();
                 break;
             case "reinstall":
                 $this->reinstall();
@@ -68,23 +70,34 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
     
     function reinstall(){
-        $this->viewObj->title=__("Reinstall Wysija?",WYSIJA);
+        $this->viewObj->title=__('Reinstall Wysija?',WYSIJA);
         return true;
     }
     
     function doreinstall(){
 
-        if(isset($_REQUEST['postedfrom']) && $_REQUEST['postedfrom']=="reinstall"){
-            $uninstaller=&WYSIJA::get("uninstall","helper");
+        if(isset($_REQUEST['postedfrom']) && $_REQUEST['postedfrom']=='reinstall'){
+            $uninstaller=&WYSIJA::get('uninstall','helper');
             $uninstaller->reinstall();
             
         }
-        $this->redirect("admin.php?page=wysija_config");
+        $this->redirect('admin.php?page=wysija_config');
         return true;
     }
     
     function render(){
         $this->_checkTotalSubscribers();
         $this->viewObj->render($this->action,$this->data);
+    }
+    
+    function log(){
+        $this->viewObj->arrayMenus=array('clearlog'=>'Clear log');
+        $this->viewObj->title='Wysija\'s log';
+        return true;
+    }
+    
+    function clearlog(){
+        $this->redirect('admin.php?page=wysija_config&action=log');
+        return true;
     }
 }

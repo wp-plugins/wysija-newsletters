@@ -2,9 +2,9 @@
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model extends WYSIJA_object{
     
-    var $table_prefix="wysija";
-    var $table_name="";
-    var $pk="";
+    var $table_prefix='wysija';
+    var $table_name='';
+    var $pk='';
     var $values=array();
     var $conditions=array();
     var $orderby=array();
@@ -25,8 +25,8 @@ class WYSIJA_model extends WYSIJA_object{
     var $joins=array();
 
     
-    function WYSIJA_model($extensions=""){
-        if(defined("WYSIJA_DBG") || defined("WYSIJA_DBG_ALL")) $this->dbg=true;
+    function WYSIJA_model($extensions=''){
+        if(defined('WYSIJA_DBG') || defined('WYSIJA_DBG_ALL')) $this->dbg=true;
         global $wpdb;
         $this->wpprefix=$wpdb->prefix;
         if($extensions) $this->table_prefix=$extensions;
@@ -56,14 +56,14 @@ class WYSIJA_model extends WYSIJA_object{
     function get($columnsOrPKval=false,$conditions=array()){
         /*then columns becomes the pk value*/
         if(!$conditions){
-            $conditions=array("equal"=>array($this->pk=>$columnsOrPKval));
+            $conditions=array('equal'=>array($this->pk=>$columnsOrPKval));
             $columnsOrPKval=false;
             $this->noCheck=true;
         }
         
         /* if we pass just the id strong in the get conditions then it's the pk*/
         if($conditions && !is_array($conditions)){
-            $conditions=array("equal"=>array($this->pk=>$conditions));
+            $conditions=array('equal'=>array($this->pk=>$conditions));
         }
         if($this->setConditions($conditions)){
             if($this->getOne)   $results=$this->getRows($columnsOrPKval,0,1);

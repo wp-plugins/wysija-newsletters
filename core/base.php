@@ -1,5 +1,5 @@
 <?php
-require_once(dirname(__FILE__).DIRECTORY_SEPARATOR."constants.php");
+require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php');
 defined('WYSIJA') or die('Restricted access');
 global $wysija_msg;
 global $wysija_wpmsg;
@@ -24,7 +24,7 @@ class WYSIJA_object{
             $plugin_data = get_plugin_data( WYSIJA_FILE );
             $version = $plugin_data['Version'];
         }else{
-            $version="undefined";
+            $version='undefined';
         }
         return $version;
     }
@@ -305,7 +305,7 @@ class WYSIJA extends WYSIJA_object{
      * @param type $extendedplugin 
      */
     function load_lang_init($extendedplugin=false){
-        $extensionloaded=WYSIJA::load_lang("get_all");
+        $extensionloaded=WYSIJA::load_lang('get_all');
 
         foreach($extensionloaded as $extendedplugin => $transstring){
             
@@ -320,7 +320,7 @@ class WYSIJA extends WYSIJA_object{
      * @param type $type
      * @return type 
      */
-    public static function get($name,$type,$forceside=false,$extendedplugin="wysija-newsletters"){
+    public static function get($name,$type,$forceside=false,$extendedplugin='wysija-newsletters'){
         static $arrayOfObjects;
         
         WYSIJA::load_lang($extendedplugin);
@@ -332,10 +332,10 @@ class WYSIJA extends WYSIJA_object{
         if($forceside)  $side=$forceside;
         else    $side=WYSIJA_SIDE;
         
-        if($extendedplugin=="wysija-newsletters"){
+        if($extendedplugin=='wysija-newsletters'){
             $extendeconstant=strtoupper("wysija");
             if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
-            $extendedpluginname="wysija";
+            $extendedpluginname='wysija';
         }else{
            $extendeconstant=strtoupper($extendedplugin);
             if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
@@ -345,52 +345,67 @@ class WYSIJA extends WYSIJA_object{
         //security to protect against ./../ includes
         $name = preg_replace('#[^a-z0-9_]#i','',$name);
         switch($type){
-            case "controller":
-                $ctrdir=WYSIJA_PLG_DIR.$extendedplugin.DS."controllers".DS;
+            case 'controller':
+                $ctrdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'controllers'.DS;
                 /*require the parent class necessary*/
-                require_once(WYSIJA_CORE."controller.php");/*require the common controller file*/
+                require_once(WYSIJA_CORE.'controller.php');/*require the common controller file*/
                 if(defined('DOING_AJAX')) {
-                    $classpath=$ctrdir."ajax".DS.$name.".php";
+                    $classpath=$ctrdir.'ajax'.DS.$name.'.php';
                 }else {
-                    $classpath=$ctrdir.$side.DS.$name.".php";
-                    require_once(WYSIJA_CTRL.$side.".php");/*require the side specific controller file*/
+                    $classpath=$ctrdir.$side.DS.$name.'.php';
+                    require_once(WYSIJA_CTRL.$side.'.php');/*require the side specific controller file*/
                 }
                 $classname = strtoupper($extendedpluginname).'_control_'.$side.'_'.$name;
                 break;
-            case "view":
-                $viewdir=WYSIJA_PLG_DIR.$extendedplugin.DS."views".DS;
+            case 'view':
+                $viewdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'views'.DS;
                 $classpath=$viewdir.$side.DS.$name.".php";
                 $classname = strtoupper($extendedpluginname).'_view_'.$side.'_'.$name;
-                require_once(WYSIJA_CORE."view.php");/*require the common view file*/
-                require_once(WYSIJA_VIEWS.$side.".php");/*require the side specific view file*/
+                require_once(WYSIJA_CORE.'view.php');/*require the common view file*/
+                require_once(WYSIJA_VIEWS.$side.'.php');/*require the side specific view file*/
                 break;
-            case "helper":
-                $helpdir=WYSIJA_PLG_DIR.$extendedplugin.DS."helpers".DS;
+            case 'helper':
+                $helpdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'helpers'.DS;
 
-                $classpath=$helpdir.$name.".php";
+                $classpath=$helpdir.$name.'.php';
                 $classname = strtoupper($extendedpluginname).'_help_'.$name;
 
                 break;
-            case "model":
-                $modeldir=WYSIJA_PLG_DIR.$extendedplugin.DS."models".DS;
-                $classpath=$modeldir.$name.".php";
+            case 'model':
+                $modeldir=WYSIJA_PLG_DIR.$extendedplugin.DS.'models'.DS;
+                $classpath=$modeldir.$name.'.php';
                 $classname = strtoupper($extendedpluginname).'_model_'.$name;
                 /*require the parent class necessary*/
-                require_once(WYSIJA_CORE."model.php");
+                require_once(WYSIJA_CORE.'model.php');
                 break;
             default:
-                WYSIJA::setInfo("error",'WYSIJA::get does not accept this type of file "'.$type.'" .');
+                WYSIJA::setInfo('error','WYSIJA::get does not accept this type of file "'.$type.'" .');
                 return false;
         }
 
         if(!file_exists($classpath)) {
-            WYSIJA::setInfo("error",'file has not been recognised '.$classpath);  
+            WYSIJA::setInfo('error','file has not been recognised '.$classpath);  
             return;
         }
 
         require_once($classpath);
         return $arrayOfObjects[$extendedplugin][$type.$name]=new $classname($extendedpluginname);
         
+    }
+    
+    function log($key='default',$data='empty'){
+        $config=&WYSIJA::get('config','model');
+        if((int)$config->getValue('debug_new')>0){
+            $optionlog=get_option('wysija_log');
+            if ( false === $optionlog ){
+                add_option( 'wysija_log', array() ,'','no');
+                $optionlog=array();
+            }
+
+            $optionlog[time().$key]=$data;
+            update_option('wysija_log', $optionlog);
+        }
+        return false;
     }
     
     /**
@@ -725,19 +740,43 @@ class WYSIJA extends WYSIJA_object{
         //WYSIJA::wp_notice(__("User has been removed from the <b>Synched</b> Wordpress user list.",WYSIJA));
     }
     
-    function hook_postNotification_now($id) {
+    function hook_postNotification_transition($new_status, $old_status, $post) {
+
+        WYSIJA::log('pn_transition_new',$new_status);
+        WYSIJA::log('pn_transition_old',$new_status);
+        WYSIJA::log('pn_transition_post',$post);
+        if($post->post_type=='post' && $new_status=='publish' && $old_status!=$new_status){
+            $modelEmail =& WYSIJA::get('email', 'model');
+            $emails = $modelEmail->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
+
+            foreach($emails as $key => $email) {
+                if($email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
+                    $modelEmail->reset();
+                    $modelEmail->giveBirth($email, $post->ID);
+                }
+            }
+        }
+        
+        
+        return true;
+    }
+    
+    /*function hook_postNotification_now($id) {
+        //WYSIJA::log('pn_now',$id);
         return WYSIJA::hook_postNotification($id, 'now');
     }
 
     function hook_postNotification_future($id) {
+        //WYSIJA::log('pn_future',$id);
         return WYSIJA::hook_postNotification($id, 'future');
     }
 
     function hook_postNotification($id, $when) {
         // don't resend updated post
         $post = get_post($id);
-        
+        //WYSIJA::log('pn_data',$post);
         if($when === 'now' && $post->post_modified !== $post->post_date) {
+            //WYSIJA::log('pn_condition_out','we\'re out $post->post_modified !== $post->post_date');
             return;
         }
         
@@ -752,7 +791,7 @@ class WYSIJA extends WYSIJA_object{
         }
 
         return $id;
-    }
+    }*/
   
     function hook_subscriber_to_list( $details ) {
 
@@ -1319,8 +1358,9 @@ add_action('profile_update', array("WYSIJA", 'hook_edit_WP_subscriber'), 1);
 add_action('delete_user', array("WYSIJA", 'hook_del_WP_subscriber'), 1);
 
 /**/
-add_action('publish_post', array("WYSIJA", 'hook_postNotification_now'), 1, 1);
-add_action('publish_future_post', array("WYSIJA", 'hook_postNotification_future'), 1, 1);
+add_action('transition_post_status', array("WYSIJA", 'hook_postNotification_transition'), 1, 3);
+//add_action('publish_post', array("WYSIJA", 'hook_postNotification_now'), 1, 1);
+//add_action('publish_future_post', array("WYSIJA", 'hook_postNotification_future'), 1, 1);
 add_action('wysijaSubscribeTo', array("WYSIJA", 'hook_subscriber_to_list'), 1);
 
 

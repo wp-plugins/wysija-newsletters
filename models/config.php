@@ -8,7 +8,6 @@ class WYSIJA_model_config extends WYSIJA_object{
         "emails_notified_when_bounce",
         "emails_notified_when_dailysummary",
         "bounce_process_auto",
-        "debug_on",
         "sharedata"
     );
     var $defaults=array(
@@ -32,7 +31,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         "sendmail_path"=>"/usr/sbin/sendmail",
         "sending_emails_each"=>"daily",
         "bounce_max"=>8,
-        "debug_on"=>false,
+        "debug_new"=>false,
         'manage_subscriptions'=>false,
         "editor_fullarticle"=>false,
         "allow_no_js"=>true,

@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.0.8
+Stable tag: 2.0.9
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -137,6 +137,15 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.0.9 - 2012-08-03 =
+
+* improved debug mode with different level for different needs
+* added logging function to monitor post notification process for instance
+* improved send immediately post notification (in some case the trigger was not working... using different WordPress hook now)
+* fixed post notification interface (step1 and step3) not compatible with WordPress lower than 3.3
+* fixed issue when duplicating sent post notifications. You should not be able to copy a child email and then change it's type like an automatic newsletter etc...
+* fixed zip format error when uploading your own theme (this error was happenning on various browsers)
+
 = 2.0.8 - 2012-07-27 =
 
 * added default style for subscription notification which was lost
@@ -180,7 +189,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 = 2.0.3 - 2012-06-26 =
 
-* fixed theme activation not working 
+* fixed theme activation not working
 * fixed google analytics code on iframe subscription forms
 * fixed post notification bug with wrong category selected when fetching articles
 * fixed issue regarding category selection in auto responder / post notifications
@@ -198,7 +207,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * improved theme installation with PclZip
 * fixed missing previously sent auto newsletter on newsletters page
 * fixed broken url for images uploaded in WordPress 3.4
-* fixed "nl 2 br" on unsubscribed notification messages for admins 
+* fixed "nl 2 br" on unsubscribed notification messages for admins
 * added meta noindex on iframe forms to avoid polluting Google Analytics
 * added validation of lists on subscription form
 * fixed issue with image alignment in automatic newsletters
@@ -213,7 +222,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 = 2.0 - 2012-06-15 =
 
-* Added post notifications 
+* Added post notifications
 * Added auto responders
 * Added scheduling (send in future)
 * allow subscribers to select lists
@@ -276,7 +285,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 = 1.1.1 - 2012-03-13 =
 
-* fixed small IE8 and IE9 compatibility issues 
+* fixed small IE8 and IE9 compatibility issues
 * fixed fatal error for new installation
 * fixed wysija admin white screen on wordpres due to get_current_screen function
 * fixed unsubscribe link disappearing because of qtranslate fix
@@ -306,11 +315,11 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * small changes in Styles tab of visual editor
 * new full width footer image area (600px)
 * added transparency feature to header, footer, newsletter
-* newsletter width for content narrowed to 564px 
+* newsletter width for content narrowed to 564px
 * improved line-height for titles in text editor
 * fixed Outlook and Hotmail padding issue with images
 * improved speed of editor
-* possibility to import automatically and keep in Sync lists from all major plugins: MailPress, Satollo, WP-Autoresponder, Tribulant, Subscribe2, etc. 
+* possibility to import automatically and keep in Sync lists from all major plugins: MailPress, Satollo, WP-Autoresponder, Tribulant, Subscribe2, etc.
 * possibility to change "Unsubscribe" link text in footer
 * choose which role can edit subscribers
 * preview of newsletter in new window and not in popup
@@ -325,7 +334,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed menu position conflict with other themes and plugins
 * fixed subscription form works with jquery 1.3, compatible for themes that use it
 * fixed issue of drag & drop of WP post not working with php magic quotes
-* fixed permissions issue. Only admins could use the plugin despite changing the permissions in Settings > Advanced. 
+* fixed permissions issue. Only admins could use the plugin despite changing the permissions in Settings > Advanced.
 * fixed display of successful subscription in widget displays better in most theme
 * fixed synching of WordPress user registering through frontend /wp-login.php?action=register
 * fixed redirection unsubscribe link from preview emails
@@ -343,7 +352,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fix retrieve wp.posts when time is different on mysql server and apache server
 * fix changing encoding from utf8 to another was not sending
 * newsletter background colour now displays in new Gmail
-* less confusing queue sending status 
+* less confusing queue sending status
 * updated language file (pot) with 20 or so modifications
 
 = 0.9.6 - 2011/12/18 =
@@ -353,7 +362,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed menu submenu no wysija but newsletters no js
 * fixed bug statistics opened_at not inserted
 * fixed bug limit subscribers updated on subscribers delete
-* fixed daily cron scandir empty dir 
+* fixed daily cron scandir empty dir
 * fixed subscribe from frontend without javascript error
 * fixed subscribe IP server validation when trying in local
 * fixed CSS issues with Wordpress 3.3
@@ -373,7 +382,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed issue with wp_attachment function affecting Wordpress post insertion
 * fixed issue when importing subscribers (copy/paste from Gmail)
 * fixed issue related to Wordpress MU
-* minor bugfixes 
+* minor bugfixes
 
 = 0.9 - 2011/12/23 =
 * Hello World.
