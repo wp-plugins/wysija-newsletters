@@ -143,7 +143,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * added logging function to monitor post notification process for instance
 * improved send immediately post notification (in some case the trigger was not working... using different WordPress hook now)
 * fixed post notification interface (step1 and step3) not compatible with WordPress lower than 3.3
-* fixed issue when duplicating sent post notifications. You should not be able to copy a child email and then change it's type like an automatic newsletter etc...
+* fixed issue when duplicating sent post notifications. You should now be able to copy a child email and then change it's type like an automatic newsletter etc...
 * fixed zip format error when uploading your own theme (this error was happenning on various browsers)
 
 = 2.0.8 - 2012-07-27 =
