@@ -3,6 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 
 
 class WYSIJA_help_backloader extends WYSIJA_help{
+    var $jsVariables='';
     function WYSIJA_help_backloader(){
         parent::WYSIJA_help();
     }
@@ -14,7 +15,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 
         if(!$controller->jsTrans){
             $controller->jsTrans["selecmiss"]=__('Please make a selection first!',WYSIJA);
-            $controller->jsTrans["suredelete"]=__('Deleting a list will not delete any subscribers.',WYSIJA);    
+            $controller->jsTrans["suredelete"]=__('Deleting a list will not delete any subscribers.',WYSIJA);
         }
         $controller->js[]='wysija-admin-ajax';
         $controller->js[]='thickbox';
@@ -22,14 +23,14 @@ class WYSIJA_help_backloader extends WYSIJA_help{
     }
     function loadScriptsStyles($pagename,$dirname,$urlname,&$controller,$extension="newsletter") {
         
-            if(file_exists($dirname."js".DS."admin-".$pagename.".js")) 
+            if(file_exists($dirname."js".DS."admin-".$pagename.".js"))
                 wp_enqueue_script('wysija-'.$extension.'-admin-'.$pagename, $urlname."js/admin-".$pagename.".js",array(),WYSIJA::get_version());
             
             if(file_exists($dirname."js".DS."admin-".$pagename.".php"))
                 wp_enqueue_script('wysija-'.$extension.'-admin-'.$pagename, $urlname."js/admin-".$pagename.".php",array(),WYSIJA::get_version());
             if(file_exists($dirname."css".DS."admin-".$pagename.".css"))
                 wp_enqueue_style('wysija-'.$extension.'-admin-'.$pagename."css", $urlname."css/admin-".$pagename.".css",array(),WYSIJA::get_version());
-            
+
             if(isset($_GET['action'])){
                 
                 if(file_exists($dirname."js".DS."admin-".$pagename."-".$_REQUEST['action'].".js"))
@@ -49,7 +50,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
             }
         return true;
     }
-    
+
     function jsParse(&$controller,$pagename,$urlbase=WYSIJA_URL){
 
         $plugin = substr(strrchr(substr($urlbase, 0, strlen($urlbase)-1), '/'), 1);
@@ -112,7 +113,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             ));
                             wp_enqueue_script("wysija-proto-scriptaculous", WYSIJA_URL."js/prototype/scriptaculous.js",array("wysija-prototype"),WYSIJA::get_version());
                             wp_enqueue_script("wysija-proto-dragdrop", WYSIJA_URL."js/prototype/dragdrop.js",array("wysija-proto-scriptaculous"),WYSIJA::get_version());
-                            wp_enqueue_script("wysija-proto-controls", WYSIJA_URL."js/prototype/controls.js",array("wysija-proto-scriptaculous"),WYSIJA::get_version()); 
+                            wp_enqueue_script("wysija-proto-controls", WYSIJA_URL."js/prototype/controls.js",array("wysija-proto-scriptaculous"),WYSIJA::get_version());
                             wp_enqueue_script("wysija-timer", WYSIJA_URL."js/timer.js",array(),WYSIJA::get_version());
                             wp_enqueue_script($js, WYSIJA_URL."js/".$js.".js",array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-konami', WYSIJA_URL."js/konami.js",array(),WYSIJA::get_version());
@@ -137,15 +138,36 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                     }
                 }
             }
-            
+
     }
     function localize($pagename,$dirname,$urlname,&$controller,$extension="newsletter"){
         if($controller->jsLoc){
             foreach($controller->jsLoc as $key =>$value){
                 foreach($value as $kf => $local){
-                    wp_localize_script($key, $kf, $local);
+
+
+                    $this->localizeme($key, $kf, $local);
                 }
             }
         }
     }
+    function localizeme( $handle, $object_name, $l10n ) {
+		foreach ( (array) $l10n as $key => $value ) {
+			if ( !is_scalar($value) )
+				continue;
+			$l10n[$key] = html_entity_decode( (string) $value, ENT_QUOTES, 'UTF-8');
+		}
+		$this->jsVariables.= "var $object_name = " . json_encode($l10n) . ';';
+
+                add_action('admin_head',array($this,'printAdminLocalized'));
+
+	}
+    function printAdminLocalized(){
+        echo "<script type='text/javascript'>\n"; // CDATA and type='text/javascript' is not needed for HTML 5
+        echo "\n";
+        echo $this->jsVariables."\n";
+        echo "\n";
+        echo "</script>\n";
+    }
 }
+
