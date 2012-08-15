@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.0.9
+Stable tag: 2.0.9.5
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -137,13 +137,19 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.0.9.5 - 2012-08-15 =
+
+* fixed post notification hook when post's status change from publish to draft and back to publish.
+* fixed firewall 2 avoid troubles with image uploader automatically
+* fixed problem of confirmation page on some servers when pretty links activated on wysijap post. Default is params link now.
+
 = 2.0.9 - 2012-08-03 =
 
 * improved debug mode with different level for different needs
 * added logging function to monitor post notification process for instance
 * improved send immediately post notification (in some case the trigger was not working... using different WordPress hook now)
 * fixed post notification interface (step1 and step3) not compatible with WordPress lower than 3.3
-* fixed issue when duplicating sent post notifications. You should now be able to copy a child email and then change it's type like an automatic newsletter etc...
+* fixed issue when duplicating sent post notifications. You should not be able to copy a child email and then change it's type like an automatic newsletter etc...
 * fixed zip format error when uploading your own theme (this error was happenning on various browsers)
 
 = 2.0.8 - 2012-07-27 =

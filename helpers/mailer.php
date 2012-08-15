@@ -73,14 +73,14 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             $this->WordWrap = 150;
 	}//endfct
-        
+
 	function send(){
             if($this->sendHTML){
                 $this->AltBody = $this->textVersion($this->Body,true);
             }else{
                 $this->Body = $this->textVersion($this->Body,false);
             }
-            
+
             if(empty($this->ReplyTo)){
                     $replyToName = $this->config->getValue('reply_name');
                     $this->AddReplyTo($this->config->getValue('reply_email'),$replyToName);
@@ -102,6 +102,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject);
             $this->Body = str_replace(chr(194),chr(32),$this->Body);
+            WYSIJA::log('Mail -> send',array('subject'=>$this->Subject,'Recipient'=>$this->to));
             ob_start();
             $result = parent::Send();
             $warnings = ob_get_clean();
@@ -170,14 +171,14 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                  $this->defaultMail[$email_id]=$email_object;
                  
             }
-            
+
             if($this->isMailjet){
                 $this->defaultMail[$email_id]->mailjetid=get_option('siteurl').'-'.$this->defaultMail[$email_id]->email_id;
             }
-            
+
             $this->parseUserTags($this->defaultMail[$email_id]);
             $this->parseRelativeURL($this->defaultMail[$email_id]);
-            add_action('wysija_replacetags', array($this,'replacetags')); 
+            add_action('wysija_replacetags', array($this,'replacetags'));
             do_action('wysija_replacetags', $email_id);
         }
         function parseUserTags(&$emailobj){
@@ -194,7 +195,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             if(!isset($emailobj->tags) || !$emailobj->tags)$emailobj->tags=array();
         }
-        
+
         function parseRelativeURL(&$emailobj){
             static $mainurl = '';
             $siteurl=get_option('siteurl');
@@ -231,7 +232,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $emailobj->body=preg_replace($replace,$replaceBy,$emailobj->body);
             return true;
         }
-        
+
 	function clearAll(){
             $this->Subject = '';
             $this->Body = '';
@@ -279,7 +280,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $receiver = $this->subscriberClass->getOne($receiverid);
                 if(!$receiver){
                     $userHelper = &WYSIJA::get("user","helper");
-                    if($userHelper->validEmail($receiverid)){  
+                    if($userHelper->validEmail($receiverid)){
                         $this->subscriberClass->getFormat = OBJECT;
                         $receiver = $this->subscriberClass->getOne(false,array("email"=>$receiverid));
                     }
@@ -491,7 +492,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
         function sendSimple($sendto,$subject,$body,$params=array(),$format='text'){
             $modelConfig=&WYSIJA::get("config","model");
             $emailObj=new StdClass();
-            
+
             $emailObj->email_id=0;
             while(isset($this->defaultMail[$emailObj->email_id])){
                 $emailObj->email_id=$emailObj->email_id-1;
@@ -531,7 +532,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $replace=array();
             $find[]='[unsubscribe_linklabel]';
             $replace[]=$this->config->getValue('unsubscribe_linkname');
-            
+
             $this->defaultMail[$email_id]->body=str_replace($find,$replace,$this->defaultMail[$email_id]->body);
         }
         function replaceusertags($email,$receiver){
@@ -574,7 +575,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             $email->body=str_replace($arrayfind,$arrayreplace,$email->body);
             $email->subject=str_replace($arrayfind,$arrayreplace,$email->subject);
-            
+
         }
         function tracker_replaceusertags($email,$user){
             if(empty($user->user_id)) return;
@@ -609,7 +610,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $Wysijaurls["action=unsubscribe"]="[unsubscribe_link]";
                 $Wysijaurls["action=subscriptions"]="[subscriptions_link]";
                 $urlsportions=array_keys($Wysijaurls);
-                
+
                 if(preg_match('#'.implode('|',$urlsportions).'|\{|%7B#i',$urlreuse)){
                     foreach($Wysijaurls as $k =>$v){
                         if(strpos($urlreuse, $k)!==false){
@@ -648,7 +649,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             $email->body = str_replace(array_keys($urls),$urls,$email->body);
 	}//endfct
-        
+
         function openrate_replaceusertags($email,$user){
 
                 $typemails=array(1,2,3);
@@ -672,7 +673,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $args['controller'] = 'stats';
                 $forbiddenparams=$modelConf->getValue('params_forbidden');
                 if(isset($forbiddenparams['controller']['stats'])) $args['controller'] = $forbiddenparams['controller']['stats'];
-                
+
                 $args['action'] = 'analyse';
                 $args['wysija-page'] = 1;
                 $args['render'] = 1;
@@ -691,7 +692,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             $varerror='';
             if(!is_array($var)) $varerror=$var;
-            elseif(isset($var['error'])) $varerror=$var['error'];   
+            elseif(isset($var['error'])) $varerror=$var['error'];
             $errormsg=$this->language[$key];
             if($varerror) $errormsg.='('.$varerror.')';
             $this->ErrorInfo[] = array('error'=>$errormsg);

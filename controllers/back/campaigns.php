@@ -52,6 +52,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 if($_REQUEST['emailid']){
                     $emailid=$_REQUEST['emailid'];
                 }
+                WYSIJA::log('Don\'t wait and send now queue process',array('email_id'=>$emailid));
                 $helperQ->process($emailid);
             }else{
                 echo "<strong>".__("Queue is empty!",WYSIJA)."</strong>";
@@ -1915,7 +1916,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         return wp_iframe( array($this->viewObj,'popup_wysija_browse'), array() );
     }
 
-    function special_wp_browse() {
+    function special_wordp_browse() {
         $this->_wysija_subaction();
         $this->jsTrans['deleteimg']=__("This image might be in an article. Delete anyway?",WYSIJA);
         return wp_iframe( array($this->viewObj,'popup_wp_browse'), array() );
@@ -1940,7 +1941,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         return true;
     }
 
-    function special_wp_upload() {
+    function special_wordp_upload() {
 
         wp_enqueue_script('swfupload-all');
         wp_enqueue_script('swfupload-handlers');

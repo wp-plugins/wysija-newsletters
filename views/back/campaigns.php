@@ -270,7 +270,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             <table cellspacing="0" class="widefat fixed">
                     <thead>
                         <?php
-                            $openedsorting=$statussorting=$namesorting=$datesorting=" sortable desc";
+                            $openedsorting=$statussorting=$namesorting=$datesorting=$datesorting2=" sortable desc";
                             $hiddenOrder="";
                             if(isset($_REQUEST["orderby"])){
                                 switch($_REQUEST["orderby"]){
@@ -279,6 +279,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         break;
                                     case "modified_at":
                                         $datesorting=" sorted ".$_REQUEST["ordert"];
+                                        break;
+                                    case "sent_at":
+                                        $datesorting2=" sorted ".$_REQUEST["ordert"];
                                         break;
                                     case "status":
                                         $statussorting=" sorted ".$_REQUEST["ordert"];
@@ -303,7 +306,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                             /*$header.='<th class="manage-column column-emails" id="emails-list" scope="col">'.__('Emails',WYSIJA).'</th>
                             <th class="manage-column column-opened" id="opened-list" scope="col">'.__('Opened',WYSIJA).'</th>
                             <th class="manage-column column-clic" id="clic-list" scope="col">'.__('Clicked',WYSIJA).'</th>';*/
-                            $header.='<th class="manage-column column-date'.$datesorting.'" id="modified_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Modified On',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>
+                            $header.='<th class="manage-column column-date'.$datesorting.'" id="modified_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Modified On',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
+                            $header.='<th class="manage-column column-date'.$datesorting2.'" id="sent_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Sent On',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>
                         </tr>';
                             echo $header;
                         ?>
@@ -607,13 +611,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                     ?></td>
                                     <td><?php
 
-                                        if(isset($row["lists"])) echo $row["lists"];
+                                        if(isset($row['lists'])) echo $row['lists'];
                                         else    echo $messageListEdit;
 
                                     ?></td>
-                                    <td><?php if(isset($row["stats"])) echo $row["stats"];
-                                              else echo $row["number_opened"]." - ".$row["number_clicked"]." - ".$row["number_unsub"]; ?></td>
-                                    <td><?php echo $this->fieldListHTML_created_at($row["modified_at"]) ?></td>
+                                    <td><?php if(isset($row['stats'])) echo $row['stats'];
+                                              else echo $row['number_opened'].' - '.$row['number_clicked'].' - '.$row['number_unsub']; ?></td>
+                                    <td title='<?php echo $this->fieldListHTML_created_at($row['modified_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['modified_at']); ?></td>
+                                    <td title='<?php echo $this->fieldListHTML_created_at($row['sent_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['sent_at']); ?></td>
 
                                 </tr><?php
                                 $alt=!$alt;
@@ -1057,7 +1062,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <!-- IMAGES BAR -->
                 <div class="wj_images" style="display:none;">
                     <div class="wj_button">
-                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wp_upload&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
+                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wordp_upload&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
                     </div>
 
                     <ul id="wj-images-quick" class="clearfix">

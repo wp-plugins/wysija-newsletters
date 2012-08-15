@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_email extends WYSIJA_model{
-    
+
     var $pk="email_id";
     var $table_name="email";
     var $columns=array(
@@ -40,14 +40,14 @@ class WYSIJA_model_email extends WYSIJA_model{
     );
     /*var $escapeFields=array('subject','body');
     var $escapingOn=true;*/
-    
-    
-    
-    
+
+
+
+
     function WYSIJA_model_email(){
         $this->WYSIJA_model();
     }
-    
+
     function beforeInsert(){
         $this->checkParams();
         $modelConfig=&WYSIJA::get("config","model");
@@ -55,24 +55,24 @@ class WYSIJA_model_email extends WYSIJA_model{
         if(!isset($this->values["from_name"])) $this->values["from_name"]=$modelConfig->getValue("from_name");
         if(!isset($this->values["replyto_email"])) $this->values["replyto_email"]=$modelConfig->getValue("replyto_email");
         if(!isset($this->values["replyto_name"])) $this->values["replyto_name"]=$modelConfig->getValue("replyto_name");
-        
+
         return true;
-    }  
-    
+    }
+
     function beforeDelete($conditions){
         if(!isset($conditions['email_id'])){
             return true;
         }else $emailid=$conditions['email_id'];
-        
+
         $modelQ=&WYSIJA::get("queue","model");
         $modelQ->delete(array('email_id'=>$conditions['email_id']));
         return true;
-    }  
-    
+    }
+
     function beforeUpdate(){
-        
+
         if(isset($this->values["params"]) && is_array($this->values["params"])){
-            
+
             //update the nextSend value
             if(!isset($this->values["params"]['autonl']['nextSend']) && isset($this->values['type']) && $this->values['type']=='2'){
                 $auton=&WYSIJA::get('autonews','helper');
@@ -82,11 +82,11 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         //get the params from the db and update them
         $this->checkParams();
- 
+
 
         return true;
-    }  
-    
+    }
+
     function checkParams(&$object=false){
 
         if(!$object) $object=&$this->values;
@@ -97,9 +97,9 @@ class WYSIJA_model_email extends WYSIJA_model{
                  if(isset($object['email_id'])){
                     $newEmailModel=new WYSIJA_model_email();
                     $recentData=$newEmailModel->getOne(false,array('email_id'=>$object['email_id']));
-                    if(is_string($recentData['params']))    $recentData['params']=unserialize(base64_decode($recentData['params'])); 
-                    
-                }   
+                    if(is_string($recentData['params']))    $recentData['params']=unserialize(base64_decode($recentData['params']));
+
+                }
 
                 foreach($object["params"] as $pk => $pv){
                     if($pk=='autonl'){
@@ -107,23 +107,23 @@ class WYSIJA_model_email extends WYSIJA_model{
                             $recentData['params'][$pk][$pvk]=$pvv;
                         }
                     }else   $recentData['params'][$pk]=$pv;
-                    
-                   
+
+
                 }
 
                 $object["params"]=base64_encode(serialize($recentData['params']));
-                
-                
+
+
             }
         }else{
             if(isset($object->params) && is_array($object->params)){
                  if(isset($object->email_id)){
                     $newEmailModel=new WYSIJA_model_email();
                     $recentData=$newEmailModel->getOne(false,array('email_id'=>$object->email_id));
-                    $recentData['params']=unserialize(base64_decode($recentData['params'])); 
-                    
-                    
-                }  
+                    $recentData['params']=unserialize(base64_decode($recentData['params']));
+
+
+                }
 
                 foreach($object->params as $pk => $pv){
                     if($pk=='autonl'){
@@ -135,33 +135,33 @@ class WYSIJA_model_email extends WYSIJA_model{
 
                 $object->params=base64_encode(serialize($recentData['params']));
 
-                
+
             }
         }
-        
-            
 
-           
 
-        
+
+
+
+
     }
-    
+
     function getParams(&$object=false){
         if(!$object) $object=&$this->values;
-        
+
         if(is_array($object)){
             if(isset($object["params"]) && is_string($object["params"])){
                 $object["params"]=unserialize(base64_decode($object["params"]));
-            } 
+            }
         }else{
             if(isset($object->params) && is_string($object->params)){
                 $object->params=unserialize(base64_decode($object->params));
-            } 
+            }
         }
-        
+
 
     }
-    
+
     function getPreviewLink($email_id,$text=false,$urlOnly=true){
         if(!$text) $text=__("View",WYSIJA);
 
@@ -181,12 +181,12 @@ class WYSIJA_model_email extends WYSIJA_model{
         return '<a href="'.$fullurl.'" target="_blank">'.$text.'</a>';
 
     }
-    
-    
+
+
     /**
      * what to do when starting to send a newsletter based on the type and other parameters
      * @param type $email
-     * @return type 
+     * @return type
      */
     function send($email,$queueemails=false){
 
@@ -203,7 +203,7 @@ class WYSIJA_model_email extends WYSIJA_model{
             /*if($email['params']['autonl']['event']=='new-articles' && $email['params']['autonl']['when-article']=='immediate'){
                 $this->giveBirth($email);
             }*/
-            
+
         }else{
             /* insert select all the subscribers from the lists related to that campaign */
 
@@ -216,15 +216,15 @@ class WYSIJA_model_email extends WYSIJA_model{
         $this->reset();
         $this->update($sentstatus,array('email_id'=>$email['email_id']));
     }
-    
-    
+
+
 
     function giveBirth($email, $immediatePostNotif=false){
         /* duplicate email with the right body and title set it as type 1*/
         if(isset($email['params']) && !is_array($email['params']))  $this->getParams($email);
         $emailChild=$email;
         $paramsVal=$email['params'];
-        
+
         if(!isset($paramsVal['autonl']['total_child']))  $paramsVal['autonl']['total_child']=0;
         $paramsVal['autonl']['total_child']++;
 
@@ -236,38 +236,42 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         $this->reset();
         unset($emailChild['params']['autonl']);
-       
+
         // get articles ids used in previously sent childs
         $ids = (!empty($paramsVal['autonl']['articles']['ids'])) ? $paramsVal['autonl']['articles']['ids'] : array();
-        
+
         // build autonl articles params for child
         $emailChild['params']['autonl']['articles'] = array('ids' => $ids, 'count' => 0, 'first_subject' => '');
         if(isset($email['params']['autonl']['firstSend']))  $emailChild['params']['autonl']['firstSend'] = $email['params']['autonl']['firstSend'];
-        
+
         //if it's an immediate post notif let know the render email
-        if($immediatePostNotif) $emailChild['params']['autonl']['articles']['immediatepostid']=$immediatePostNotif;
-        
+        if($immediatePostNotif) {
+            $emailChild['params']['autonl']['articles']['immediatepostid']=$immediatePostNotif;
+            //if this article is already set there is no reason to give birth to a child email
+            if(in_array($immediatePostNotif, $email['params']['autonl']['articles']['ids'])) return false;
+        }
+
         $wjEngine =& WYSIJA::get('wj_engine', 'helper');
         // set data & styles
         if(isset($emailChild['wj_data'])) { $wjEngine->setData($emailChild['wj_data'], true); } else { $wjEngine->setData(); }
         if(isset($emailChild['wj_styles'])) { $wjEngine->setStyles($emailChild['wj_styles'], true); } else { $wjEngine->setStyles(); }
-        
+
         // generate email html body
         $body = $wjEngine->renderEmail($emailChild);
-        
+
         // get back email data as it will be updated during the rendering (articles ids + articles count)
         $emailChild = $wjEngine->getEmailData();
         $emailChild['body'] = $body;
-        
+
         // update parent email articles' ids to reflect the ones added in the child email
         $paramsVal['autonl']['articles']['ids'] = $emailChild['params']['autonl']['articles']['ids'];
-        
-        $donotsend=false;        
+
+        $donotsend=false;
         // if there's no article, do not send
         if($emailChild['params']['autonl']['articles']['count'] === 0) {
             $donotsend = true;
         }
-        
+
         // we send if not told to not do it
         if(!$donotsend){
             // scan title for tags [number] [total] [post_title]
@@ -284,25 +288,25 @@ class WYSIJA_model_email extends WYSIJA_model{
             $this->dbg=false;//this line is to correct the crazy color so that it doesn't use the keepQry function.
             $emailChild['email_id']=$this->insert($emailChild);
             $this->reset();
-            
+
             $this->send($emailChild,true);
         }
-       
+
         // update the parent with the new nextSend date
         $auton=&WYSIJA::get('autonews','helper');
         $nextSendValue=$auton->getNextSend($email);
 
         $paramsVal['autonl']['nextSend']=$nextSendValue;
-        
+
         $this->reset();
-        
+
         if(!isset($email['params']['autonl']['firstSend'])) $paramsVal['autonl']['firstSend']=time();
         $this->update(array('params'=>$paramsVal), array('email_id'=>$email['email_id']));
         return $nextSendValue;
     }
-    
+
     function get($columns,$conditions){
-       
+
         $results=parent::get($columns,$conditions);
 
         if(is_array($results) && (!isset($results['params']))){
@@ -310,7 +314,7 @@ class WYSIJA_model_email extends WYSIJA_model{
                 $this->getParams($result);
             }
         }else $this->getParams($results);
-        
+
         return $results;
     }
 }
