@@ -7,26 +7,12 @@ class WYSIJA_help_front extends WYSIJA_help{
         
         
         
-
         if(isset($_REQUEST['wysija-page']) || isset($_REQUEST['wysija-launch'])){
-            if(defined('WYSIJA_DBG')){
-                include_once(WYSIJA_INC."debug.php");
-                if(version_compare(phpversion(), '5.4')>= 0){
-                    error_reporting(E_ALL ^ E_STRICT);
-                }else{
-                    error_reporting(E_ALL);
-                }
-                ini_set('display_errors', '1');
-            }else{
-                if(defined("WP_DEBUG") && !WP_DEBUG){
-                    error_reporting(0);
-                    ini_set('display_errors', '0');
-                }
-            }
-            if(defined('DOING_AJAX')){      
+            if(defined('DOING_AJAX')){
                 add_action('wp_ajax_nopriv_wysija_ajax', array($this, 'ajax'));
             }else{
                 $paramscontroller=$_REQUEST['controller'];
+
                 if($paramscontroller=='stat') $paramscontroller='stats';
                 $this->controller=&WYSIJA::get($paramscontroller,"controller");
                 if(method_exists($this->controller, $_REQUEST['action'])){
@@ -40,19 +26,19 @@ class WYSIJA_help_front extends WYSIJA_help{
                     add_filter( 'the_title', array($this,'scan_title'));
                     add_filter( 'the_content', array($this,'scan_content'));
                     if(isset($_REQUEST['message_success'])){
-                        add_filter( 'the_content', array($this,'scan_content_NLform') ); 
+                        add_filter( 'the_content', array($this,'scan_content_NLform') );
                     }
                 }
-            }    
+            }
         }else{
-           add_filter( 'the_content', array($this,'scan_content_NLform') ); 
+           add_filter( 'the_content', array($this,'scan_content_NLform') );
         }
-        
+
     }
-    
+
     function meta_page_title(){
 
-        return $this->controller->title;  
+        return $this->controller->title;
     }
     function scan_title($title){
         
@@ -77,11 +63,11 @@ class WYSIJA_help_front extends WYSIJA_help{
             if($mymatch){
                 $widgetdata=unserialize(base64_decode($mymatch));
                 $widgetNL=new WYSIJA_NL_Widget(1);
-                $contentTABLE= $widgetNL->widget($widgetdata,$widgetdata); 
+                $contentTABLE= $widgetNL->widget($widgetdata,$widgetdata);
                 $content=str_replace($matches[0][$key],$contentTABLE,$content);
             }//endif
         }//endforeach
 
         return $content;
     }
-}   
+}

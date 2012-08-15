@@ -12,11 +12,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->jsTrans['selecmiss']=__('Please select some users first!',WYSIJA);
         $this->search=array('title'=>__('Search newsletters',WYSIJA));
         $this->column_actions=array('editlist'=>__('Edit',WYSIJA),'duplicatelist'=>__('Duplicate',WYSIJA),'deletelist'=>__('Delete',WYSIJA));
-        
-        
-        
+
+
+
     }
-   
+
     function main($data){
         $this->menuTop($this->action);
 
@@ -26,20 +26,20 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->listing($data);
         echo '</form>';
     }
-    
+
     function menuTop($actionmenu=false){
         $arrayTrans=array("back"=>__("Back",WYSIJA),"add"=>__('Create a new newsletter',WYSIJA),"duplicate"=>__('Duplicate',WYSIJA));
         $arrayMenus=false;
         switch($actionmenu){
             case "add":
             case "edit":
-                
+
                 break;
             case "main":
                  $arrayMenus=array();
                 /*if($this->queuedemails){
                     $arrayTrans["send_test_editor"]=sprintf(__('Send %1$s queued emails right now.',WYSIJA),$this->queuedemails);
-                    $arrayMenus[]="send_test_editor"; 
+                    $arrayMenus[]="send_test_editor";
                 }*/
                 $arrayMenus[]="add";
                 break;
@@ -47,7 +47,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 $arrayMenus=array("duplicate");
                 break;
             default:
-               $arrayMenus=false; 
+               $arrayMenus=false;
         }
         $menu="";
         if($arrayMenus){
@@ -60,22 +60,22 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 if($actionmenu=="main" && $action=="add"){
                      $menu.='<span class="description" > '.__("... or duplicate one below to copy its design.",WYSIJA)."</span>";
                 }
-                
+
             }
-            
-            
+
+
         }
-        
+
         return $menu;
 
     }
-    
-    
+
+
     function filterDDP($data){
 
         ?>
         <ul class="subsubsub">
-            <?php 
+            <?php
             $total=count($data['counts']);
             $i=1;
             foreach($data['counts'] as $countType =>$count){
@@ -109,22 +109,22 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 $classcurrent='';
                 if((isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']==$countType) || ($countType=='all' && !isset($_REQUEST['link_filter']))) $classcurrent='class="current"';
                 echo '<li><a '.$classcurrent.' href="admin.php?page=wysija_campaigns&link_filter='.$countType.'">'.$tradText.' <span class="count">('.$count.')</span></a>';
-            
+
                 if($total!=$i) echo ' | ';
                 echo '</li>';
                 $i++;
             }
-            
+
             ?>
         </ul>
 
         <?php $this->searchBox(); ?>
 
-        <div class="tablenav">    
+        <div class="tablenav">
             <div class="alignleft actions">
                 <select name="filter-date" class="global-filter">
                     <option selected="selected" value=""><?php echo esc_attr(__('Show all months', WYSIJA)); ?></option>
-                    <?php 
+                    <?php
                      //echo $this->fieldListHTML_created_at($row["created_at"])
 
                     foreach($data['dates'] as $listK => $list){
@@ -135,12 +135,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     ?>
                 </select>
             </div>
-            
+
             <div class="alignleft actions">
                 <select name="filter-list" class="global-filter">
                     <option selected="selected" value=""><?php _e('View by lists', WYSIJA); ?></option>
-                    <?php 
-                    
+                    <?php
+
                     foreach($data['lists'] as $listK => $list){
                         $selected="";
                         if(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK) $selected=' selected="selected" ';
@@ -151,12 +151,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input type="submit" class="filtersubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Filter', WYSIJA)); ?>">
             </div>
             <?php $this->pagination(); ?>
-            
+
             <div class="clear"></div>
         </div>
         <?php
     }
-    
+
     function getTransStatusEmail($status){
         switch($status){
             case "all":
@@ -191,13 +191,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         }
         return $tradText;
     }
-    
+
     function filterDDPVIEW($data){
 
         ?>
         <ul class="subsubsub">
-            <?php 
-            
+            <?php
+
             $total=count($data['counts']);
             $i=1;
             foreach($data['counts'] as $countType =>$count){
@@ -205,20 +205,20 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 $tradText=$this->getTransStatusEmail($countType);
                 $classcurrent='';
                 if((isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']==$countType) || ($countType=='allsent' && !isset($_REQUEST['link_filter']))) $classcurrent='class="current"';
-                
+
                 echo '<li><a '.$classcurrent.' href="admin.php?page=wysija_campaigns&action=viewstats&id='.$_REQUEST['id'].'&link_filter='.$countType.'">'.$tradText.' <span class="count">('.$count.')</span></a>';
-            
+
                 if($total!=$i) echo ' | ';
                 echo '</li>';
                 $i++;
             }
-            
+
             ?>
         </ul>
 
         <?php $this->searchBox(); ?>
 
-        <div class="tablenav">    
+        <div class="tablenav">
 
             <div class="alignleft actions">
                 <select name="action2" class="global-action">
@@ -236,41 +236,41 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         <?php
                     }
                     ?>
-                    <option value="createnewlist"><?php _e('Create a new list', WYSIJA); 
+                    <option value="createnewlist"><?php _e('Create a new list', WYSIJA);
                     /*$prefix="";
                     if(isset($_REQUEST['link_filter'])) $prefix="[".$this->getTransStatusEmail($_REQUEST['link_filter'])."]";
                     $listname=sprintf(__('Segment of %1$s'),$prefix.$this->namecampaign);
-                    
+
                     echo " ".$listname*/ ?></option>
                     <option value="unsubscribeall"><?php _e('Unsubscribe from all lists', WYSIJA); ?></option>
-                    <?php 
+                    <?php
                         foreach($data['lists'] as $listK => $list){
                             if($list['is_enabled'])   echo '<option value="actionvar_unsubscribelist-listid_'.$list['list_id'].'">'.sprintf(__('Unsubscribe from list: %1$s',WYSIJA),$list['name']).' ('.$list['users'].')'.'</option>';
                         }
                     ?>
                     <option value="export"><?php _e('Export to CSV', WYSIJA); ?></option>
-                    
+
                 </select>
                 <input type="submit" class="bulksubmitcamp button-secondary action" name="doaction" value="<?php echo esc_attr(__('Apply', WYSIJA)); ?>">
             </div>
             <?php $this->pagination(); ?>
-            
+
             <div class="clear"></div>
         </div>
         <?php
     }
-    
+
     /*
      * main view
      */
-    function listing($data){    
+    function listing($data){
 
         ?>
         <div class="list">
             <table cellspacing="0" class="widefat fixed">
                     <thead>
-                        <?php 
-                            $openedsorting=$statussorting=$namesorting=$datesorting=" sortable desc";
+                        <?php
+                            $openedsorting=$statussorting=$namesorting=$datesorting=$datesorting2=" sortable desc";
                             $hiddenOrder="";
                             if(isset($_REQUEST["orderby"])){
                                 switch($_REQUEST["orderby"]){
@@ -279,6 +279,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         break;
                                     case "modified_at":
                                         $datesorting=" sorted ".$_REQUEST["ordert"];
+                                        break;
+                                    case "sent_at":
+                                        $datesorting2=" sorted ".$_REQUEST["ordert"];
                                         break;
                                     case "status":
                                         $statussorting=" sorted ".$_REQUEST["ordert"];
@@ -298,12 +301,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                             $header.='<th class="manage-column column-status'.$statussorting.'" id="status" scope="col" style="width:400px;"><a href="#" class="orderlink" ><span>'.__('Status',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
                             $header.='<th class="manage-column column-list-names" id="list-list" scope="col">'.__('Lists',WYSIJA).'</th>';
                             $header.='<th class="manage-column column-opened'.$openedsorting.'" id="number_opened" scope="col" style="width:120px;"><a href="#" class="orderlink" ><span>'.__('Open, clicks, unsubscribed',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
-                            
-                            
+
+
                             /*$header.='<th class="manage-column column-emails" id="emails-list" scope="col">'.__('Emails',WYSIJA).'</th>
                             <th class="manage-column column-opened" id="opened-list" scope="col">'.__('Opened',WYSIJA).'</th>
                             <th class="manage-column column-clic" id="clic-list" scope="col">'.__('Clicked',WYSIJA).'</th>';*/
-                            $header.='<th class="manage-column column-date'.$datesorting.'" id="modified_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Modified On',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>
+                            $header.='<th class="manage-column column-date'.$datesorting.'" id="modified_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Modified On',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
+                            $header.='<th class="manage-column column-date'.$datesorting2.'" id="sent_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Sent On',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>
                         </tr>';
                             echo $header;
                         ?>
@@ -315,23 +319,23 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     </tfoot>
 
                     <tbody class="list:<?php echo $this->model->table_name.' '.$this->model->table_name.'-list" id="wysija-'.$this->model->table_name.'"' ?>>
-                        
+
                             <?php
                             $listingRows="";
                             $alt=true;
-                            
+
                             $statuses=array("-1"=>__('Sent to %1$s out of %2$s',WYSIJA),"0"=>__("Draft",WYSIJA),"1"=>__('%1$s out of %2$s sent.',WYSIJA),"3"=>__('%1$s out of %2$s sent.',WYSIJA),"2"=>__('Sent to %1$s out of %2$s',WYSIJA),"99"=>__('%1$s out of %2$s sent.',WYSIJA));
 
                             foreach($data['campaigns'] as $row){
                                 $classRow=$messageListEdit='';
                                 //check if lists have been removed in case of scheduled newsletter or  auto post notif
-                                
+
                                 if(isset($row['classRow'])){
                                     $classRow.=$row['classRow'];
                                 }
                                 if(isset($row['msgListEdit'])) $messageListEdit=$row['msgListEdit'];
 
-                                
+
                                 if($alt) $classRow.='alternate';
                                 $editStep='editTemplate';
                                 if($row["type"]==2){
@@ -345,11 +349,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                 if(in_array($row["status"], array(1,3,99))) $classRow.=" sending";
                                 if($row["status"]==2) $classRow.=" sent";
 
-                                
+
                                 //$row["params"]=unserialize(base64_decode($row["params"]));
                                 ?>
                                 <tr class="<?php echo $classRow ?>" >
-                                
+
                                     <th scope="col" class="check-column" >
                                         <input type="checkbox" name="wysija[campaign][campaign_id][]" id="campaign_id_<?php echo $row["campaign_id"] ?>" value="<?php echo esc_attr($row["campaign_id"]) ?>" class="checkboxselec" />
                                     </th>
@@ -358,13 +362,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         <?php ;
                                         if(in_array($row["status"], array(0,4,-1))){
                                             $durationsent=$statusshared='';
-                                            ?><a href="admin.php?page=wysija_campaigns&id=<?php 
-                                            echo $row["email_id"] ?>&action=edit" class="row-title"><?php  
-                                            echo $row["name"]; ?></a> - <span class="post-state"><?php 
+                                            ?><a href="admin.php?page=wysija_campaigns&id=<?php
+                                            echo $row["email_id"] ?>&action=edit" class="row-title"><?php
+                                            echo $row["name"]; ?></a> - <span class="post-state"><?php
                                             if(isset($row['params']['schedule']['isscheduled'])){
                                                 $toolboxH=&WYSIJA::get('toolbox','helper');
-                                                
-                                                
+
+
                                                 //no recording just conversion
                                                 $scheduletimenoffset=strtotime($row['params']['schedule']['day'].' '. $row['params']['schedule']['time']);
                                                 $timeleft=$toolboxH->offset_time($scheduletimenoffset)-time();
@@ -381,7 +385,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                         $durationsent=sprintf(__('Scheduled to be sent on %1$s'),$timeleft);
                                                     }
                                                 }
-                                                
+
 
 
                                                 $statusshared= $durationsent;
@@ -391,7 +395,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                 else{
                                                     if((int)$row['status']==-1) $resulttext=sprintf($statuses[(int)$row['status']],$data['sent'][$row["email_id"]]['to'],$data['sent'][$row["email_id"]]['total']);
                                                     else $resulttext=$statuses[(int)$row['status']];
-                                                    
+
                                                     echo $resulttext;
                                                 }
                                             }
@@ -401,7 +405,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         }else{
 
                                          if(isset($data['sent'][$row["email_id"]]['to']) && $data['sent'][$row["email_id"]]['to']>0){
-                                              ?><a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="row-title"><?php  echo $row["name"]; ?></a><?php 
+                                              ?><a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="row-title"><?php  echo $row["name"]; ?></a><?php
                                           }else{
                                               if($row["type"]==2){
                                                   ?>
@@ -409,14 +413,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                               <?php  echo $row["name"]; ?>
                                               </a><?php
                                               }else{
-                                                  echo $row["name"]; 
+                                                  echo $row["name"];
                                               }
                                           }
-                                             
-                                        } 
+
+                                        }
                                         ?></strong>
                                         <div class="row-actions">
-                                                <?php 
+                                                <?php
                                                 $paramsurl=array(
                                                     'wysija-page'=>1,
                                                     'controller'=>"email",
@@ -435,13 +439,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                 $dupaction='duplicate';
                                                 if(isset($row['params']['autonl']['parent'])) {
                                                     $deleteAction='Email';
-                                                    $dupid=$deleteId=$row["email_id"];
-                                                    $dupaction='duplicateEmail';
+                                                    $deleteId=$row["email_id"];
+                                                    //$dupaction='duplicateEmail';
                                                 }
-     
+
                                                 if($row["status"]==0 || $row["status"]==4){
                                                     ?>
-                                                   | <span class="edit">        
+                                                   | <span class="edit">
                                                         <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=<?php echo $editStep ?>" class="submitedit"><?php _e('Edit',WYSIJA)?></a>
                                                     </span>
                                                    | <span class="duplicate">
@@ -452,7 +456,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                     </span>
                                                         <?php
                                                 }else{
-                                                    
+
                                                     if($row["status"]==-1){
                                                         ?>
                                                       | <span class="edit"><a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=<?php echo $editStep ?>" class="submitedit"><?php _e('Edit',WYSIJA)?></a></span>
@@ -467,21 +471,21 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                     }else{
                                                         if($row['type']==2){
                                                             ?>
-                                                          | <span class="edit">        
-                                                              <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="submitedit"><?php _e('Edit',WYSIJA)?></a>  
+                                                          | <span class="edit">
+                                                              <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="submitedit"><?php _e('Edit',WYSIJA)?></a>
                                                             </span>
                                                             <?php
                                                         }
                                                         if(isset($data['sent'][$row["email_id"]]['to']) && $data['sent'][$row["email_id"]]['to']>0){
                                                            ?>
-                                                            
+
                                                            | <span class="viewstats">
                                                                 <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="submitedit"><?php _e('Stats',WYSIJA)?></a>
                                                             </span>
-                                                            
-                                                                <?php 
+
+                                                                <?php
                                                         }
-                                                        
+
                                                         ?>
                                                       | <span class="duplicate">
                                                           <a href="admin.php?page=wysija_campaigns&id=<?php echo $dupid ?>&email_id=<?php echo $row["email_id"] ?>&action=<?php echo $dupaction ?>" class="submitedit"><?php _e('Duplicate',WYSIJA)?></a>
@@ -494,21 +498,21 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                 } ?>
                                         </div>
                                     </td>
-                                    <td><?php  
+                                    <td><?php
 
                                         switch((int)$row["status"]){
                                             case 99:
                                             case 3:
                                             case 2:
                                             case 1:
-                                                
+
                                                 if($row["type"]==2) {
                                                     $pause= '';
                                                     if(isset($row["params"]['autonl']['event']) && $row["params"]['autonl']['event']=='new-articles' && $row["params"]['autonl']['when-article']!='immediate'){
                                                         /*if next send is passed or not set then we just create a new email*/
 //if($row["email_id"]==7)   unset($row["params"]['autonl']['nextSend']);
-//$row["params"]['autonl']['nextSend']=-1;  
-                                                        
+//$row["params"]['autonl']['nextSend']=-1;
+
                                                        /**
                                                          * IMPORTANT WE COMPARE TO THE OFFSET TIME (time set by the administrator)
                                                          */
@@ -516,9 +520,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                                                         if(!isset($row["params"]['autonl']['nextSend']) || (time() > $toolboxH->offset_time((int)$row["params"]['autonl']['nextSend']))){
                                                             $autonH=&WYSIJA::get('autonews','helper');
-                                                            
+
                                                             $nextSend=$autonH->nextSend($row);
-                                                            
+
                                                         }else{
                                                             $nextSend=$row["params"]['autonl']['nextSend'];
                                                         }
@@ -529,7 +533,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                         $dayname=$toolboxH->getday($row["params"]['autonl']['dayname']);
                                                         $daynumber=$toolboxH->getdaynumber($row["params"]['autonl']['daynumber']);
                                                         $weeknumber=$toolboxH->getweeksnumber($row["params"]['autonl']['dayevery']);
-                                                        
+
                                                         if($timeleft<(3600*24)) {
                                                             $timeleft=$toolboxH->duration($timeleft,true,2);
                                                             $durationsent=sprintf(__('Next send out in %1$s'),$timeleft);
@@ -538,9 +542,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                             $timeleft=date_i18n(get_option('date_format').' '.get_option('time_format'),$nextSend);
                                                             $durationsent=sprintf(__('Next send out on %1$s'),$timeleft);
                                                         }
-                                                        
-                                                        
-                                                        
+
+
+
                                                         switch($row["params"]['autonl']['when-article']){
                                                             case 'daily':
                                                                 $statussent=sprintf(__('Sent daily at %1$s.',WYSIJA),$time);
@@ -555,11 +559,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                                 $statussent=sprintf(__('Sent monthly on the %1$s %2$s at %3$s',WYSIJA),$weeknumber,$dayname,$time);
                                                                 break;
                                                         }
-                                                        
+
                                                         echo '<p>'.$statussent.'</p>';
-                                                        
+
                                                         echo '<p>'.$durationsent.' ('.__('Won\'t be sent until a new post is published.',WYSIJA).')</p>';
-                                                        
+
                                                         echo $pause;
                                                     }else{
                                                         $delay='';
@@ -568,22 +572,22 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                             $numberafter=(int)$row["params"]['autonl']['numberafter'];
                                                             $delay=$numberafter.' '.$data['autonl']['fields']['numberofwhat']['valuesunit'][$row["params"]['autonl']['numberofwhat']];
                                                         }
-                                                        
-                                                        
+
+
                                                         $statustext=$this->getSendingStatus($row,$data,$numberafter,$delay);
                                                         echo $statustext.$pause;
                                                         if(!$numberafter) echo $this->dataBatches($data,$row,$pause,$statuses);
                                                         else  echo $this->dataBatches($data,$row,$pause,$statuses,true);
                                                     }
-                                                    
+
                                                 }else{
                                                     $pause= ' | <a href="admin.php?page=wysija_campaigns&id='.$row["email_id"].'&action=pause" class="submitedit">'.__("Pause",WYSIJA).'</a>';
                                                     echo $this->dataBatches($data,$row,$pause,$statuses);
                                                 }
-                                                
+
                                                 break;
                                             case -1:
-                                                
+
                                                 if($row["type"]==2) {
                                                     $resumelink=__('Not active.',WYSIJA).' | <a href="admin.php?page=wysija_campaigns&id='.$row["email_id"].'&action=resume" class="submitedit">'.__("Activate",WYSIJA).'</a>';
                                                     echo $resumelink;
@@ -592,7 +596,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                     echo sprintf($statuses[$row["status"]],$data['sent'][$row["email_id"]]['to'],$data['sent'][$row["email_id"]]['total']);
                                                     echo ' | '.$resumelink;
                                                 }
-                                                
+
                                                 break;
                                             case 4:
                                             case 0:
@@ -605,16 +609,17 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         }
 
                                     ?></td>
-                                    <td><?php 
-                                        
-                                        if(isset($row["lists"])) echo $row["lists"];
+                                    <td><?php
+
+                                        if(isset($row['lists'])) echo $row['lists'];
                                         else    echo $messageListEdit;
-                                        
+
                                     ?></td>
-                                    <td><?php if(isset($row["stats"])) echo $row["stats"];
-                                              else echo $row["number_opened"]." - ".$row["number_clicked"]." - ".$row["number_unsub"]; ?></td>
-                                    <td><?php echo $this->fieldListHTML_created_at($row["modified_at"]) ?></td>
-                                
+                                    <td><?php if(isset($row['stats'])) echo $row['stats'];
+                                              else echo $row['number_opened'].' - '.$row['number_clicked'].' - '.$row['number_unsub']; ?></td>
+                                    <td title='<?php echo $this->fieldListHTML_created_at($row['modified_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['modified_at']); ?></td>
+                                    <td title='<?php echo $this->fieldListHTML_created_at($row['sent_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['sent_at']); ?></td>
+
                                 </tr><?php
                                 $alt=!$alt;
                             }
@@ -623,12 +628,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                     </tbody>
                 </table>
-            </div>            
-       
+            </div>
+
             <?php
             echo $hiddenOrder;
     }
-  
+
     function getSendingStatus($row,$data,$numberafter,$delay){
         $statustext=false;
         if(isset($row['msgSendSuspended'])){
@@ -661,23 +666,23 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     if(!$statustext)    $statustext=__('Sending per event',WYSIJA);
             }
         }
-        
+
         return $statustext;
     }
-    
+
     function dataBatches($data,$row,$pause,$statuses,$pending=false){
         $sentto=$senttotal=$sentleft=0;
         $return='<div>';
         if(isset($data['sent'][$row["email_id"]]['to'])) $sentto=$data['sent'][$row["email_id"]]['to'];
         if(isset($data['sent'][$row["email_id"]]['total']))  $senttotal=$data['sent'][$row["email_id"]]['total'];
         if(isset($data['sent'][$row["email_id"]]['left']))  $sentleft=$data['sent'][$row["email_id"]]['left'];
-        
+
         $statusdata=$senttohowmany='';
         if($row['type']!=2) $statusdata= sprintf($statuses[$row["status"]],$sentto,$senttotal);
         elseif($row['params']['autonl']['event']!='new-articles') $return.=sprintf(__('Sent to %1$s subscribers.',WYSIJA),$sentto);
-        
+
         if($sentleft>0){
-            
+
             $config=&WYSIJA::get("config","model");
             $premium=$config->getValue('premium_key');
             $subscribers=(int)$config->getValue('total_subscribers');
@@ -692,12 +697,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                    $return.= "<p><strong>".sprintf(__('Time remaining: %1$s',WYSIJA),$helperToolbox->duration($data['sent'][$row["email_id"]]['remaining_time'],true,4))."</strong><br/>".$statusdata.$pause."</p>";
                    $return.= "<div class='info-stats'><a href='javascript:;' class='moredetails'>".__("Show more details",WYSIJA)."</a>";
                }
-                   
+
 
                if($sentleft>(int)$config->getValue('sending_emails_number')) $nextBatchnumber=(int)$config->getValue('sending_emails_number');
                else  $nextBatchnumber=(int)$sentleft;
-               
-               
+
+
                //Next batch of xx emails will be sent in xx minutes. Don't wait & send right now.
                if($pending){
                    $return.= "<span style='color:#555'>".sprintf(__('%1$s email(s) pending.',WYSIJA),$nextBatchnumber);
@@ -707,7 +712,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                $return.= "<a href='admin.php?page=wysija_campaigns&action=send_test_editor&emailid=".$row["email_id"]."' class='action-send-test-editor' >".__('Don\'t wait & send right now.',WYSIJA)."</a>";
                $return.= "";
                }
-               
+
             }else{
                 $return.= $statusdata;
                 $link= str_replace(
@@ -721,11 +726,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $return.='</div>';
         return $return;
     }
-    
+
     /*
      * main view
      */
-    function viewstats($data){    
+    function viewstats($data){
 
         $this->menuTop($this->action);
         $this->search['title']=__("Search recipients",WYSIJA);
@@ -733,7 +738,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <div id="wysistats">
             <div id="wysistats1" class="left">
                 <div id="statscontainer"></div>
-                <h3><?php 
+                <h3><?php
                 $helperToolbox=&WYSIJA::get("toolbox","helper");
                 $sentwhen=$data['email']['sent_at'];
                 if(!$sentwhen)$sentwhen=$data['email']['created_at'];
@@ -743,19 +748,19 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
             <div id="wysistats2" class="left">
                 <ul>
-                    <?php 
+                    <?php
                     foreach($data['charts']['stats'] as $stats){
                         echo "<li>".$stats['name'].": ".$stats['number']."</li>";
                     }
                     ?>
-                    
+
                 </ul>
             </div>
             <div id="wysistats3" class="left">
-                
+
                 <p class="title"><?php echo __('What got clicked?',WYSIJA);?></p>
 
-                <?php 
+                <?php
                 $modelC=&WYSIJA::get("config","model");
                 if(count($data['clicks'])>0){
                     echo  "<ol>";
@@ -782,8 +787,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 }*/
 
                  ?>
-                
-                
+
+
 
             </div>
             <div class="clear"></div>
@@ -797,7 +802,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <div class="list">
             <table cellspacing="0" class="widefat fixed">
                     <thead>
-                        <?php 
+                        <?php
                             $umstatussorting=$statussorting=$fnamesorting=$lnamesorting=$usrsorting=$datesorting=" sortable desc";
                             $hiddenOrder="";
                             if(isset($_REQUEST["orderby"])){
@@ -840,16 +845,16 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     </tfoot>
 
                     <tbody class="list:<?php echo $this->model->table_name.' '.$this->model->table_name.'-list" id="wysija-'.$this->model->table_name.'"' ?>>
-                        
+
                             <?php
                             $listingRows="";
                             $alt=true;
-                            
+
                             $statuses=array("-1"=>__("Unsubscribed",WYSIJA),"0"=>__("Unconfirmed",WYSIJA),"1"=>__("Subscribed",WYSIJA));
                             $config=&WYSIJA::get("config","model");
                             if(!$config->getValue("confirm_dbleoptin"))  $statuses["0"]=$statuses["1"];
 
-                            
+
                             $mstatuses=array("-2"=>$this->getTransStatusEmail("notsent"),"-1"=>$this->getTransStatusEmail("bounced"),"0"=>$this->getTransStatusEmail("sent")
                                 ,"1"=>$this->getTransStatusEmail("opened"),"2"=>$this->getTransStatusEmail("clicked"),"3"=>$this->getTransStatusEmail("unsubscribe"));
                             //dbg($data,false);
@@ -857,19 +862,19 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                 $classRow="";
                                 if($alt) $classRow=' class="alternate" ';
 
-                                        echo '<tr '.$classRow.' >'; 
+                                        echo '<tr '.$classRow.' >';
                                         echo '<td class="username column-username">';
                                         echo get_avatar( $row["email"], 32 );
                                         echo "<strong>".$row["email"]."</strong>";
                                         echo "<p style='margin:0;'>".$row["lastname"]." ".$row["firstname"]."</p>";
-                                 
-                                        
+
+
                                         echo '<div class="row-actions">
                                             <span class="edit">
                                                 <a href="admin.php?page=wysija_subscribers&id='.$row["user_id"].'&action=edit" class="submitedit">'.__('View stats or edit',WYSIJA).'</a>
                                             </span>
                                         </div>';
-                                        
+
                                     echo '</td>';
                                     /*<td><?php echo $row["firstname"] ?></td>
                                     <td><?php  echo $row["lastname"] ?></td> */ ?>
@@ -880,8 +885,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                     <td><?php echo $row["opened"] ?></td>
                                     <td><?php echo $row["clicked"] ?></td> */?>
                                     <td><?php echo $this->fieldListHTML_created_at($row["created_at"]) ?></td>
-                                
-                                <?php 
+
+                                <?php
                                 echo '</tr>';
                                 $alt=!$alt;
                             }
@@ -890,35 +895,35 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                     </tbody>
                 </table>
-            </div>            
-       
+            </div>
+
             <?php
             echo $hiddenOrder;
             $this->limitPerPage();
             echo '</form>';
     }
-    
+
     /* when creating a newsletter or when editing as a draft*/
     function add($data=false){
-        
+
         $this->data=$data;
         $step=array();
-        
+
         $step['type']=array(
             'type'=>'type_nl',
             'class'=>'validate[required]',
             'label'=>__('What type of newsletter is this?',WYSIJA),
             'labeloff'=>1,
             'desc'=>'');
-        
+
         $step['params']=array(
             'type'=>'frequencies',
             'label'=>__('When...',WYSIJA),'class'=>'validate[required]',
             'desc'=>'',
             'labeloff'=>1,
             'rowclass'=>'automatic-nl');
-        
-        
+
+
         $step['subject']=array(
             'type'=>'subject',
             'label'=>__('Subject line',WYSIJA),
@@ -934,10 +939,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'labeloff'=>1,
             'desc'=>__('The list of subscribers which will be used for that campaign.',WYSIJA));
         }
-        
-        
-        
-        
+
+
+
+
 
         if(!isset($msg['browsermsg'])){
         ?>
@@ -953,23 +958,23 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         }
         ?>
         <form name="step1" method="post" id="campaignstep3" action="" class="form-valid">
-            
+
             <table class="form-table">
-                <tbody>                    
+                <tbody>
                     <?php
                         //dbg($data);
                         echo $this->buildMyForm($step,$data,"email",true);
                     ?>
                 </tbody>
             </table>
- 
-            <?php 
+
+            <?php
             $this->model->table_name='email';
             $this->model->pk='email_id';
-            $this->_savebuttonsecure($data,"savecamp",__("Next step",WYSIJA),$this->immediatewarning); 
-            
+            $this->_savebuttonsecure($data,"savecamp",__("Next step",WYSIJA),$this->immediatewarning);
+
             ?>
-            
+
         </form>
         <?php
     }
@@ -1006,7 +1011,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             <div id="wysija_default_header" style="display:none;"><?php echo $wjEngine->renderEditorHeader($defaultData['header']); ?></div>
             <div id="wysija_default_footer" style="display:none;"><?php echo $wjEngine->renderEditorFooter($defaultData['footer']); ?></div>
             <div id="wysija_widgets_settings" style="display:none;">
-                <div class="autopost"><?php 
+                <div class="autopost"><?php
                     // if it's a post notification that should be sent immediately after an article is published, constrain to only 1 autopost with 1 post_limit
                     if((int)$data['email']['type'] === 2 && $data['email']['params']['autonl']['event'] === 'new-articles' && $data['email']['params']['autonl']['when-article'] === 'immediate') {
                         print 'single';
@@ -1015,7 +1020,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     }
                 ?></div>
                 <div class="divider">
-                    <?php 
+                    <?php
                     $params = $data['email']['params'];
 
                     if(is_array($params) and isset($params['divider'])) {
@@ -1029,7 +1034,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <div class="image"><?php print WYSIJA_EDITOR_IMG."transparent.png"; ?></div>
                 <div class="theme"><?php if(isset($data['email']['params']['theme'])) { print $data['email']['params']['theme']; } else { print 'default'; } ?></div>
             </div>
-            
+
             <!-- BEGIN: Wysija Toolbar -->
             <div id="wysija_toolbar">
                 <ul class="tabs">
@@ -1057,18 +1062,18 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <!-- IMAGES BAR -->
                 <div class="wj_images" style="display:none;">
                     <div class="wj_button">
-                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wp_upload&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
+                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wordp_upload&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
                     </div>
-                    
+
                     <ul id="wj-images-quick" class="clearfix">
-                        <?php 
+                        <?php
                         //get list images from template
                         $helperImage=&WYSIJA::get('images','helper');
                         $result=$helperImage->getList();
 
                         $quick_select = $data['email']['params'];
                         if(!isset($quick_select['quickselection'])) $quick_select['quickselection'] = array();
-                        
+
                         if($result && empty($quick_select['quickselection'])) {
                             echo $wjEngine->renderImages($result);
                         } else {
@@ -1087,7 +1092,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         ?>
                     </form>
                 </div>
-                
+
                 <!-- THEMES BAR -->
                 <div class="wj_themes" style="display:none;">
                     <div class="wj_button">
@@ -1095,14 +1100,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         <?php /*<a id="wysija-themes-showcase" class="button" href="javascript:;"><?php xx_e('Showcase your theme',WYSIJA) ?></a> */ ?>
                     </div>
                     <ul id="wj_themes_list" class="clearfix">
-                        <?php 
+                        <?php
                         //get themes
                         echo $wjEngine->renderThemes();
                         ?>
                     </ul>
                     <div id="wj_themes_preview" style="display:none;"></div>
                 </div>
-                
+
                 <div id="wysija_notices" style="display:none;"><span id="wysija_notice_msg"></span><img alt="loader" style="display:none;" id="ajax-loading" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
             </div>
         <!-- END: Wysija Toolbar -->
@@ -1110,10 +1115,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $modelU=&WYSIJA::get("user","model");
                     $modelU->getFormat=OBJECT;
                     $datauser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
-                    
+
                     $emailuser='';
                     if(isset($datauser->email)) $emailuser=$datauser->email;
-                
+
                 ?>
         <p><input type="text" name="receiver-preview" id="preview-receiver" value="<?php echo $emailuser ?>" /> <a href="javascript:;" id="wj-send-preview" class="button wysija"><?php _e("Send preview",WYSIJA) ?></a></p>
             <p class="submit">
@@ -1141,11 +1146,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     window.location.href = e.target.href;
                 });
             });
-            
+
             function switchThemeWYSIJA(event) {
                 // get event target
                 var target = (event.currentTarget) ? event.currentTarget : event.srcElement.parentElement;
-                
+
                 if(window.confirm("<?php _e('If you confirm the theme switch, it will override your header, footer, dividers and styles', WYSIJA) ?>")) {
                     wysijaAJAX.task = 'switch_theme';
                     wysijaAJAX.wysijaData = Object.toJSON(new Hash({theme: $(target).readAttribute('rel')}));
@@ -1153,12 +1158,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     WYSIJA_AJAX_POST(function(response) {
                         // set theme name
                         $('wysija_widgets_settings').down('.theme').update(response.responseJSON.result.templates.theme);
-                        
+
                         // set css
                         if(response.responseJSON.result.styles.css != null) {
                             updateStyles(response.responseJSON.result.styles.css);
                         }
-                    
+
                         // update styles form
                         if(response.responseJSON.result.styles.form != null) {
                             // refresh styles form
@@ -1169,7 +1174,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                             setupStylesForm();
                             applyStyles();
                         }
-                    
+
                         // set header
                         if(response.responseJSON.result.templates.header != undefined) {
                             $$('.'+Wysija.options.header)[0].replace(response.responseJSON.result.templates.header);
@@ -1189,7 +1194,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     return false;
                 }
             }
-            
+
             // auto save
             new Timer(15 * 1000, function(){
               if (this.count > 0) {
@@ -1208,18 +1213,18 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 WYSIJA_AJAX_POST(function(response) {
                     // remove fixed height for each text block
                     $$('.wysija_text').invoke('setStyle', {height:'auto'});
-                    
+
                     // apply new styles
                     updateStyles(response.responseJSON.result.styles);
                 });
 
                 return false;
             }
-            
+
             function updateStyles(styles) {
                 // remove previous styles
                 if($('wj_css') != undefined) $('wj_css').remove();
-                
+
                 // append new styles
                 var head = document.getElementsByTagName('head')[0],
                     style = document.createElement('style'),
@@ -1229,7 +1234,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 if(style.styleSheet) style.styleSheet.cssText = rules.nodeValue; else style.appendChild(rules);
                 head.appendChild(style);
             }
-            
+
             // auto apply styles change
             function setupStylesForm() {
                 $$('#wj_styles_form select, #wj_styles_form input[class!="transparent"]').invoke('observe', 'change', applyStyles);
@@ -1245,7 +1250,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 wysijaAJAX.wysijaIMG = Object.toJSON(wysijaIMG);
                 WYSIJA_AJAX_POST();
             }
-            
+
             var konami = new Konami();
             konami.code = function() {
                 Wysija.flyToTheMoon();
@@ -1258,9 +1263,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <img id="wysija-konami-bird" src="<?php echo WYSIJA_URL ?>img/wysija_bird.jpg" style="display:none;z-index:99999;position:absolute;top:100px;left:100px;" width="597" height="483" />
             </div>
         </div>
-        
+
         <div id="wysija-divider">
-            
+
         </div>
         <?php
     }
@@ -1282,14 +1287,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'desc'=>'',
             'labeloff'=>1,
             'rowclass'=>'automatic-nl');
-            
+
             $step['type']=array(
             'type'=>'type_nl',
             'class'=>'validate[required]',
             'labeloff'=>1,
             'label'=>__('What type of newsletter is this?',WYSIJA),
             'rowclass'=>'hidden');
-            
+
             if(isset($data['email']["params"]['autonl']['event']) && $data['email']["params"]['autonl']['event']=='new-articles'){
                 $step['subject']['desc']=str_replace(array('[number]','[total]','[post_title]'),array('<b>[number]</b>','<b>[total]</b>','<b>[post_title]</b>'),__('Insert [total] to show number of posts, [post_title] to show the latest post\'s title & [number] to display the issue number.',WYSIJA));
             }
@@ -1311,16 +1316,16 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'class'=>'validate[required]',
             'label'=>__('From name & email',WYSIJA),
             'desc'=>__('This is name & email of the sender. ie, yourself or your company.',WYSIJA));
-        
-       
+
+
 
         $step['replyto_name']=array(
             'type'=>'fromname',
             'class'=>'validate[required]',
             'label'=>__('Reply-to name & email',WYSIJA),
             'desc'=>__('When the subscribers hit "reply", this is to who they will send their email ',WYSIJA));
-         
-        
+
+
         $config=&WYSIJA::get("config","model");
         if($config->getValue('premium_key')){
             $step['googletrackingcode']=array(
@@ -1330,12 +1335,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 'label'=>__('Google Analytics Campaign',WYSIJA),
                 'desc'=>__('For example, "Spring email". [link]Read the guide.[/link]',WYSIJA),
                 'link'=>'<a href="http://support.wysija.com/knowledgebase/track-your-newsletters-visitors-in-google-analytics/?utm_source=wpadmin&utm_campaign=step3" target="_blank"> ');
-            
+
             if(isset($_REQUEST['wysija']['email']["params"]['googletrackingcode'])) {
                 $data['email']['params']['googletrackingcode']=$step['googletrackingcode']['default']=$_REQUEST['wysija']['email']["params"]['googletrackingcode'];
             }
-            
-            
+
+
 
         }
 
@@ -1348,18 +1353,18 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'desc'=>'');
 
         }
-        
+
         ?>
         <form name="step3" method="post" id="campaignstep3" action="" class="form-valid">
-            
+
             <table class="form-table">
-                <tbody>                    
+                <tbody>
                     <?php
-                    
+
                         echo $this->buildMyForm($step,$data,"email");
-                    
+
                     ?>
-                    
+
                 </tbody>
             </table>
              <?php
@@ -1368,9 +1373,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $datauser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
                     $emailuser='';
                     if(isset($datauser->email)) $emailuser=$datauser->email;
-                    
+
                 ?>
-                
+
             <p><input type="text" name="receiver-preview" id="preview-receiver" value="<?php echo $emailuser ?>" /> <a href="javascript:;" id="wj-send-preview" class="button wysija"><?php _e("Send preview",WYSIJA) ?></a></p>
 
             <p class="submit">
@@ -1390,9 +1395,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $buttonsave=esc_attr(__('Save & close',WYSIJA));
                     $buttonsendlater=esc_attr(__('Save & close',WYSIJA));
                 }
-                
+
                 if($this->data['email']['status']==0){
-                        
+
                     if($this->data['lists']){
                         ?>
                     <input type="submit" value="<?php echo $sendNow ?>" id="submit-send" name="submit-send" class="button-primary wysija"/>
@@ -1409,13 +1414,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 }
                 ?>
 
-                <?php 
+                <?php
 
                 echo str_replace(
                     array('[link]','[/link]'),
                     array('<a href="admin.php?page=wysija_campaigns&action=editTemplate&id='.$data['email']['email_id'].'">','</a>'),
                     __("or simply [link]go back to design[/link].",WYSIJA)
-                    ); 
+                    );
                 echo $this->immediatewarning;
 
                 ?>
@@ -1423,7 +1428,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         </form>
         <?php
     }
-    
+
     function fieldFormHTML_subject($key,$val,$model,$params){
         $fieldHTML= '';
         $field=$key;
@@ -1458,8 +1463,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         }elseif(is_string($val)){
             $val=unserialize(base64_decode($val));
         }
-        
-        
+
+
         if(!isset($val['autonl'])){
             $val=array(
                 'autonl'=>
@@ -1477,13 +1482,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         foreach($this->data['autonl']['fields'] as $fieldK =>$field){
             $myval='';
             $singleFieldHtml='';
-            
+
             //dbg($field,0);
             if(isset($field['extend'])){
                 $field=$this->data['autonl']['fields'][$field['extend']];
             }
             if(isset($val['autonl'][$fieldK]))  $myval=$val['autonl'][$fieldK];
-            
+
             $classDDP='';
             if(isset($field['class'])) $classDDP=$field['class'];
 
@@ -1491,13 +1496,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             if(isset($field['style'])){
                 $dataArray['style']=$field['style'];
             }
-            
+
             $arrayFields=array('event');
             if(!in_array($fieldK, $arrayFields)) $classDDP.='sub-event';
             $arrayFields[]='when-article';
             if(!in_array($fieldK, $arrayFields)) $classDDP.=' sub-when-article';
             $dataArray['class']=$classDDP;
-            
+
             //by default we return a dropdown
             if(!isset($field['type'])){
                 $singleFieldHtml.=$formsHelp->dropdown(
@@ -1509,30 +1514,30 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 if($typee=='checkbox'){
                     $singleFieldHtml.=$formsHelp->$typee($dataArray,'',$myval);
                 }else{
-                   $singleFieldHtml.=$formsHelp->$typee($dataArray,$myval); 
+                   $singleFieldHtml.=$formsHelp->$typee($dataArray,$myval);
                 }
-                
+
             }
-            
+
             if(isset($field['label_before']) || isset($field['label_after'])){
                 $before=$after='';
                 if(isset($field['label_before'])) $before=$field['label_before'];
                 if(isset($field['label_after'])) $after=$field['label_after'];
                 $singleFieldHtml='<label id="'.$id.'-label-'.$fieldK.'" for="'.$id.'-'.$fieldK.'" class="'.$classDDP.'">'.$before.$singleFieldHtml.$after.'</label>';
             }
-            
+
             $fieldHTML.=$singleFieldHtml;
         }
 
         $fieldHTML.='</div>';
         return $fieldHTML;
     }
-    
+
     function fieldFormHTML_type_nl($key,$val,$model,$params){
         $fieldHTML= '<div class="list-radios">';
         $field=$key;
         $valuefield=array();
-        
+
         $typesnl=array(
             '1'=>array(
                 'type'=>'standard',
@@ -1551,7 +1556,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             if(($val && (int)$val==(int)$typenl) || (!$val && isset($paramstnl['default']))){
                 $checked=' checked="checked" ';
             }
-            
+
             $fieldHTML.='<label for="nl_type_'.$paramstnl['type'].'">'.
                     '<input class="radiotype-nl" id="nl_type_'.$paramstnl['type'].'" type="radio" name="wysija[email][type]" value="'.$typenl.'" '.$checked.' />'
                     .$paramstnl['label'].'</label>';
@@ -1559,7 +1564,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
         $fieldHTML.='</div>';
         return $fieldHTML;
-    }    
+    }
 
     function fieldFormHTML_lists($key,$val,$model,$params){
         $fieldHTML= '<div class="list-checkbox">';
@@ -1569,12 +1574,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         if(isset($this->data['campaign_list']) && $this->data['campaign_list']){
             foreach($this->data['campaign_list'] as $list){
                 $valuefield[$list['list_id']]=$list;
-            } 
+            }
         }
 
 
         $formObj=&WYSIJA::get("forms","helper");
-        
+
         foreach($this->data['lists'] as $list){
 
             $checked=false;
@@ -1592,7 +1597,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     }
     function fieldFormHTML_scheduleit($key,$val,$model,$params){
         $formObj=&WYSIJA::get("forms","helper");
-        
+
         $valuescheduled='';
 
         if(isset($this->data['email']['params']['schedule']['isscheduled']))$valuescheduled=$this->data['email']['params']['schedule']['isscheduled'];
@@ -1600,39 +1605,39 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $data.=$this->fieldFormHTML_datepicker('datepicker',$val,$model,$params);
         return $data;
     }
-    
-    
-    
+
+
+
     function fieldFormHTML_datepicker($key,$val,$model,$params){
         if((int)$this->data['email']['type']==2) return;
 
         $fieldHTML= '<span id="schedule-area" class="schedule-row" >';
         $field=$key;
         $valuefield=array();
-        
+
         $formObj=&WYSIJA::get("forms","helper");
-        
+
         $valuescheduled=$valuetime='';
         $valueday=date("Y/m/d");
         if(isset($this->data['email']['params']['schedule']['day']))$valueday=$this->data['email']['params']['schedule']['day'];
         if(isset($this->data['email']['params']['schedule']['time']))$valuetime=$this->data['email']['params']['schedule']['time'];
         if(isset($this->data['email']['params']['schedule']['isscheduled']))$valuescheduled=$this->data['email']['params']['schedule']['isscheduled'];
-        
+
         $fieldHTML.=$formObj->input( array('class'=>$params['class'], 'id'=>$field.'-day','name'=>"wysija[email][params][schedule][day]"),$valueday);
         $fieldHTML.=' @ ';
         $fieldHTML.=$formObj->dropdown(
                     array('name'=>'wysija[email][params][schedule][time]','id'=>$field.'-time'),
                     $this->data['autonl']['fields']['time']['values'],$valuetime);
-        
+
         $fieldHTML.="</span>";
         return $fieldHTML;
     }
- 
-    
+
+
     function edit($data){
         $this->menuTop("edit");
         $formid='wysija-'.$_REQUEST['action'];
-        
+
         ?>
         <div id="wysistats">
             <div id="wysistats1" class="left">
@@ -1641,40 +1646,40 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
             <div id="wysistats2" class="left">
                 <ul>
-                    <?php 
+                    <?php
 
                     foreach($data['charts']['stats'] as $stats){
                         echo "<li>".$stats['name'].": ".$stats['number']."</li>";
                     }
                         echo "<li>".__('Added',WYSIJA).":".$this->fieldListHTML_created_at($data['user']['details']["created_at"])."</li>";
                     ?>
-                    
+
                 </ul>
             </div>
             <div id="wysistats3" class="left">
                 <p class="title"><?php echo __(sprintf('Total of %1$d clicks:',count($data['clicks'])),WYSIJA);?></p>
                 <ol>
-                    <?php 
+                    <?php
 
                     foreach($data['clicks'] as $click){
                         echo "<li>".$click['name']." : ".$click['url']."</li>";
                     }
-                     
+
                     ?>
-                    
+
                 </ol>
             </div>
             <div class="clear"></div>
         </div>
-        
+
         <?php
         $this->buttonsave=__('Save',WYSIJA);
         $this->add($data);
     }
-    
+
     function popup_image_data($data){
         echo $this->messages(true);
-        ?>  
+        ?>
         <div style="width:300px;">
         <form method="post" action="" class="image-data-form" id="image-data-form">
             <div class="ml-submit">
@@ -1696,11 +1701,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         </div>
         <?php
     }
-    
+
     function popup_themes($errors){
         ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         echo $this->messages(true);
-        ?>  
+        ?>
         <form enctype="multipart/form-data" method="post" action="" class="wrap media-upload-form validate" id="gallery-form">
             <div id="searchview" class="ml-submit searchview">
                 <?php /*?>
@@ -1722,7 +1727,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
 
             <div id="theme-view" class="ml-submit" ></div>
-            
+
         </form>
         <form enctype="multipart/form-data" method="post" action="" class="wrap media-upload-form validate" id="gallery-form">
             <div id="theme-upload" class="ml-submit" >
@@ -1730,15 +1735,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <a class="button-secondary2 theme-view-back" href="javascript:;"><?php echo __("<< Back",WYSIJA)?></a>
                 </div>
                 <div class="form">
-                <?php 
+                <?php
                     $secure=array('action'=>"themeupload");
                     $this->secure($secure);
                     ?>
-                    <p><input type="file" name="my-theme"/>( <?php 
+                    <p><input type="file" name="my-theme"/>( <?php
                     $helperToolbox=&WYSIJA::get("toolbox","helper");
                     $data =$helperToolbox->get_max_file_upload();
                     $bytes=$data['maxmegas'];
-                                    
+
                                     echo sprintf(__('total max upload file size : %1$s',WYSIJA),$bytes)?> )</p>
                     <p><label for="overwrite"><input type="checkbox" id="overwrite" name="overwriteexistingtheme" /><?php echo __("If a theme with the same name exists, overwrite it.",WYSIJA); ?></label></p>
                     <p><input type="hidden" name="action" value="themeupload" />
@@ -1748,42 +1753,42 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         </form>
         <?php
     }
-    
+
     function themeupload(){
         $this->popup_themes(false);
     }
-    
+
     function popup_articles($errors){
         echo $this->messages(true);
-        ?>  
-       
+        ?>
+
         <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
             <div class="ml-submit">
                 <input type="text" id="search-box" name="search" autocomplete="off" />
                 <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
                 <label id="labelfullarticlesget" for="fullarticlesget">
-                    <?php 
+                    <?php
                     $modelConfig=&WYSIJA::get("config","model");
                     $checked="";
                     if($modelConfig->getValue("editor_fullarticle")) $checked=' checked="checked" ';
                     ?>
                     <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
-                    <?php 
+                    <?php
                     echo __("Insert entire post, not just excerpt",WYSIJA);
                     ?>
                 </label>
             </div>
             <div id="search-results" class="ml-submit"></div>
-            
+
         </form>
         <?php
     }
-    
+
     function popup_dividers($data = array()) {
         echo $this->messages(true);
-        
+
         ?>
-        
+
         <div class="wysija_popup_content dividers">
             <form enctype="multipart/form-data" method="post" action="" class="" id="dividers-form">
                 <ul class="dividers">
@@ -1808,17 +1813,17 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
         <?php
     }
-    
+
     function popup_autopost($data = array()) {
         echo $this->messages(true);
         $category_ids = (isset($data['params']['category_ids'])) ? trim($data['params']['category_ids']) : '';
-        
+
         $selected_categories = array();
         if(strlen($category_ids) > 0) {
             $selected_categories = explode(',', $category_ids);
             sort($selected_categories);
         }
-        
+
         ?>
         <div class="wysija_popup_content autopost">
             <div style="display:none;" id="category_list">
@@ -1835,7 +1840,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <label for="category"><?php _e('Category', WYSIJA) ?></label>
                     <select name="category" class="categories">
                         <option value="" selected="selected"><?php _e("All categories", WYSIJA) ?></option>
-                        <?php foreach($data['categories'] as $category) { 
+                        <?php foreach($data['categories'] as $category) {
                             $is_selected = '';
                             if(empty($selected_categories) === FALSE and isset($selected_categories[0])) {
                                 $is_selected = ((int)$category['id'] === (int)$selected_categories[0]) ? 'selected="selected"' : '';
@@ -1846,7 +1851,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     </select>
                     <span class="inline"><a href="javascript:;" class="icon-plus" id="add-category"><span></span></a></span>
                 </p>
-                
+
                 <ul id="category_selection">
                     <?php
                         if(empty($selected_categories) === FALSE and count($selected_categories) > 1) {
@@ -1868,7 +1873,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         }
                     ?>
                 </ul>
-                
+
                 <!-- title -->
                 <p class="clearfix">
                     <label><?php _e('Title', WYSIJA) ?></label>
@@ -1877,14 +1882,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         <option value="h2"<?php if($data['params']['title_tag'] === 'h2') echo ' selected="selected"'; ?>><?php _e('Heading 2', WYSIJA) ?></option>
                         <option value="h3"<?php if($data['params']['title_tag'] === 'h3') echo ' selected="selected"'; ?>><?php _e('Heading 3', WYSIJA) ?></option>
                     </select>
-                    
+
                     <select name="title_alignment" id="title_alignment">
                         <option value="left"<?php if($data['params']['title_alignment'] === 'left') echo ' selected="selected"'; ?>><?php _e('Left aligned', WYSIJA) ?></option>
                         <option value="center"<?php if($data['params']['title_alignment'] === 'center') echo ' selected="selected"'; ?>><?php _e('Centered', WYSIJA) ?></option>
                         <option value="right"<?php if($data['params']['title_alignment'] === 'right') echo ' selected="selected"'; ?>><?php _e('Right aligned', WYSIJA) ?></option>
                     </select>
                 </p>
-                
+
                 <!-- alignment -->
                 <p class="clearfix">
                     <label><?php _e('Image alignment', WYSIJA) ?></label>
@@ -1896,7 +1901,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <label class="radio"><input type="radio" name="image_alignment" value="right"<?php if($data['params']['image_alignment'] === 'right') echo ' checked="checked"'; ?> /><?php _e('right', WYSIJA) ?></label>
                     <label class="radio"><input type="radio" name="image_alignment" value="none"<?php if($data['params']['image_alignment'] === 'none') echo ' checked="checked"'; ?> /><?php _e('no image', WYSIJA) ?></label>
                 </p>
-                
+
                 <!-- post content: full post or excerpt -->
                 <p class="clearfix">
                     <label>
@@ -1906,13 +1911,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <label class="radio"><input type="radio" name="post_content" value="excerpt"<?php if($data['params']['post_content'] === 'excerpt') echo ' checked="checked"'; ?> /><?php _e('excerpt', WYSIJA) ?></label>
                     <label class="radio"><input type="radio" name="post_content" value="full"<?php if($data['params']['post_content'] === 'full') echo ' checked="checked"'; ?> /><?php _e('full post', WYSIJA) ?></label>
                 </p>
-                
+
                 <!-- read more -->
                 <p class="clearfix">
                     <label for="readmore"><?php _e('"Read more" text', WYSIJA) ?></label>
                     <input type="text" name="readmore" value="<?php echo esc_attr($data['params']['readmore']); ?>" id="readmore" />
                 </p>
-                
+
                 <!-- max number of articles -->
                 <?php
                     if($data['autopost_type'] === 'single') {
@@ -1940,7 +1945,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <?php
                     }
                 ?>
-                
+
                 <!-- nopost_message: only applies when there is more than one group of post -->
                 <?php
                     if($data['autopost_count'] > 1) {
@@ -1959,17 +1964,17 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <?php
                     }
                 ?>
-                
+
                 <input type="submit" id="autopost-submit" class="button-primary alignright" name="submit" value="<?php echo esc_attr(__('Done',WYSIJA));?>" />
             </form>
         </div>
         <?php
     }
-    
+
     function popup_bookmarks($data = array()){
         echo $this->messages(true);
-        
-        ?>  
+
+        ?>
         <div class="wysija_popup_content bookmarks">
             <form enctype="multipart/form-data" method="post" action="" class="" id="bookmarks-form">
                 <ul class="networks">
@@ -1985,7 +1990,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     }
                     ?>
                 </ul>
-                
+
                 <div class="sizes">
                     <span><?php _e('Size:', WYSIJA) ?></span>
                     <a href="javascript:;" class="small<?php if($data['size'] === 'small') echo ' selected' ?>" rel="small"><?php _e('small', WYSIJA) ?></a>
@@ -1993,60 +1998,60 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <a href="javascript:;" class="large<?php if($data['size'] === 'large') echo ' selected' ?>" rel="large"><?php _e('large', WYSIJA) ?></a>
                     <input type="hidden" name="bookmarks-size" value="<?php echo $data['size'] ?>" id="bookmarks-size" />
                 </div>
-                
+
                 <ul class="icons"><!-- this will be loaded via ajax --></ul>
                 <input type="hidden" name="bookmarks-iconset" value="" id="bookmarks-iconset" />
                 <input type="hidden" name="bookmarks-theme" value="<?php echo $data['theme'] ?>" id="bookmarks-theme" />
 
                 <p><input type="submit" id="bookmarks-submit" name="submit" value="<?php echo esc_attr(__("Done",WYSIJA)) ?>" class="button-primary alignright"/></p>
             </form>
-            
+
         </div>
         <?php
     }
-    
+
     function popup_wysija_browse($errors){
         echo $this->messages(true);
         ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         global $redir_tab, $type;
-        
+
 	$redir_tab = 'wysija_browse';
 	media_upload_header();
 	$post_id = intval($_REQUEST['post_id']);
 
-        ?>  
+        ?>
 
         <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
-            <?php 
-            
+            <?php
+
             $secure=array('action'=>"medias");
             $this->secure($secure); ?>
-            
+
             <div id="media-items" class="clearfix">
             <?php echo $this->_get_media_items($post_id, $errors); ?></div>
         </form>
-        
+
         <?php
         $this->_alt_close();
     }
-    
+
     function _alt_close(){
         ?>
         <p><input type="submit" id="close-pop-alt" value="<?php echo esc_attr(__("Done",WYSIJA)) ?>" name="submit-draft" class="button-primary wysija"/></p>
         <?php
     }
-    
+
     function popup_wp_browse($errors){
         echo $this->messages(true);
         ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         global $redir_tab, $wpdb, $wp_query, $wp_locale, $type, $tab, $post_mime_types;
-        
+
 	$redir_tab = 'wp_browse';
 
 	media_upload_header();
-        
+
         $limit=20;
-        
+
 	$_GET['paged'] = isset( $_GET['paged'] ) ? intval($_GET['paged']) : 0;
 	if ( $_GET['paged'] < 1 )
 		$_GET['paged'] = 1;
@@ -2058,7 +2063,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 	list($post_mime_types, $avail_post_mime_types) = wp_edit_attachments_query();
 
         ?>
-        
+
         <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="library-form">
 
             <div class="tablenav">
@@ -2081,26 +2086,26 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
 
 
-            <?php 
-            
+            <?php
+
             $secure=array('action'=>"medias");
             $this->secure($secure); ?>
 
             <div id="media-items" class="clearfix"><?php echo $this->_get_media_items(null, $errors,true); ?></div>
             <div class="clear"></div>
         </form>
-        
+
         <?php
         $this->_alt_close();
     }
-    
-    
-    
+
+
+
     function popup_wp_upload($errors){
         global $redir_tab,$type, $tab;
-        
+
         $redir_tab = 'wp_upload';
-        
+
         media_upload_header();
 	$flash_action_url = admin_url('async-upload.php');
 
@@ -2126,7 +2131,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 	}
         echo $this->messages(true);
         ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
-        
+
         <script type="text/javascript">
         //<![CDATA[
         var uploaderMode = 0;
@@ -2137,7 +2142,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         });
         //]]>
         </script>
-        
+
         <div id="media-upload-notice">
         <?php if (isset($errors['upload_notice']) ) { ?>
                 <?php echo $errors['upload_notice']; ?>
@@ -2236,7 +2241,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <div id="media-items" class="clearfix"></div>
         <?php
     }
-    
+
     function _get_media_items( $post_id, $errors, $wpimage=false ) {
             $attachments = array();
             if ( $post_id ) {
@@ -2250,9 +2255,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                             foreach ( $GLOBALS['wp_the_query']->posts as $attachment )
                                     $attachments[$attachment->ID] = $attachment;
             }
-            
+
             $selectedImages=$this->_getSelectedImages();
-            
+
             $output = '';
             foreach ( (array) $attachments as $id => $attachment ) {
                 if(!$post_id && $attachment->post_parent==$_REQUEST['post_id'])    continue;
@@ -2262,12 +2267,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                             $thumb_url = $thumb_details[0];
                     else
                             $thumb_url = false;
-                    
+
                      if ( ( $id = intval( $id ) )) $img_details = wp_get_attachment_image_src( $id, 'full', true );
                      $classname="";
 
                      if(isset($selectedImages["wp-".$attachment->ID])) $classname=" selected ";
-                     
+
                     $output.='<div class="wysija-thumb image-'.$attachment->ID.$classname.'">';
                     $output .= '<img title="'.$attachment->post_title.'" alt="'.$attachment->post_title.'" src="'.$thumb_url.'" class="thumbnail" />';
                     if(!$wpimage)    $output.='<span class="delete-wrap"><span class="delete del-attachment">'.$attachment->ID.'</span></span>';
@@ -2280,7 +2285,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             if(!$output) $output="<em>".__('This tab will be filled with images from your current and previous newsletters.',WYSIJA)."</em>";
             return $output;
     }
-    
+
     function _getSelectedImages() {
         $modelEmail=&WYSIJA::get("email","model");
         $email = $modelEmail->getOne(false,array("email_id"=>$_REQUEST['emailId']));
@@ -2288,6 +2293,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         if(!isset($email['params']['quickselection']) or empty($email['params']['quickselection'])) return array();
         return $email['params']['quickselection'];
     }
-    
-    
+
+
 }

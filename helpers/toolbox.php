@@ -20,7 +20,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $editable_roles = apply_filters('editable_roles', $all_roles);
         $possible_values=array();
         foreach ( $all_roles as $role => $details ) {
-            $name = translate_user_role($details['name'] ); 
+            $name = translate_user_role($details['name'] );
             switch($role){
                 case 'administrator':
                     $keyrole='switch_themes';
@@ -95,7 +95,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $mailer->testemail=true;
         $mailer->wp_user=&$current_user->data;
         $res=$mailer->sendSimple($current_user->data->user_email,str_replace("[send_method]",$send_method,__("[send_method] works with Wysija",WYSIJA)),$content_email);
-        
+
         if($res){
             $this->notice(sprintf(__("Test email successfully sent to <b><i>%s</i></b>",WYSIJA),$current_user->data->user_email));
             return true;
@@ -121,7 +121,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
     function temp($content,$key="temp",$format=".tmp"){
         $helperF=&WYSIJA::get("file","helper");
         $tempDir=$helperF->makeDir();
-        
+
         $filename=$key."-".time().$format;
         $handle=fopen($tempDir.$filename, "w");
         fwrite($handle, $content);
@@ -173,7 +173,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         }
     }
     function excerpt($text,$num_words=8,$more=" ..."){
-        $words_array = preg_split( "/[\n\r\t ]+/", $text, $num_words + 1, PREG_SPLIT_NO_EMPTY ); 
+        $words_array = preg_split( "/[\n\r\t ]+/", $text, $num_words + 1, PREG_SPLIT_NO_EMPTY );
         if ( count( $words_array ) > $num_words ) {
                 array_pop( $words_array );
                 $text = implode( ' ', $words_array );
@@ -184,7 +184,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         return  $text;
     }
     function _make_domain_name($url){
-        $domain_name=str_replace(array("http://","www."),"",$url);
+        $domain_name=str_replace(array("https://","http://","www."),"",$url);
         $domain_name=explode('/',$domain_name);
         return $domain_name[0];
     }
@@ -266,7 +266,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if(!$week || !isset($weeks[$week])) return $weeks;
         else return $weeks[$week];
     }
-    
+
     function getdaynumber($day=false){
         $daynumbers=array();
         for($i = 1;$i < 29;$i++) {

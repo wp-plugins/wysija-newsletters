@@ -6,36 +6,18 @@ class WYSIJA_help_back extends WYSIJA_help{
     function WYSIJA_help_back(){
         parent::WYSIJA_help();
         
-        $config=&WYSIJA::get("config","model");
+        $config=&WYSIJA::get('config','model');
+        define('WYSIJA_DBG',(int)$config->getValue('debug_new'));
 
-        if($config->getValue("debug_on")) include_once(WYSIJA_INC."debug.php");
-
+        error_reporting(0);
+        ini_set('display_errors', '0');
+        if(WYSIJA_DBG>0) include_once(WYSIJA_INC.'debug.php');
         
-        if(isset($_GET['page']) && substr($_GET['page'],0,7)=="wysija_"){
-            define("WYSIJA_ITF",TRUE);
-            
-            if(defined('WYSIJA_DBG') && WYSIJA_DBG===true){
-                if(version_compare(phpversion(), '5.4')>= 0){
-                    error_reporting(E_ALL ^ E_STRICT);
-                }else{
-                    error_reporting(E_ALL);
-                }
-                ini_set('display_errors', '1');
-            }else{
-                error_reporting(0);
-                ini_set('display_errors', '0');
-            }
-            $this->controller=&WYSIJA::get(str_replace("wysija_","",$_GET['page']),"controller");
+        if(isset($_GET['page']) && substr($_GET['page'],0,7)=='wysija_'){
+            define('WYSIJA_ITF',TRUE);
+            $this->controller=&WYSIJA::get(str_replace('wysija_','',$_GET['page']),'controller');
         }else{
-            define("WYSIJA_ITF",FALSE);
-            if(defined('WYSIJA_DBG_ALL')){
-                if(version_compare(phpversion(), '5.4')>= 0){
-                    error_reporting(E_ALL ^ E_STRICT);
-                }else{
-                    error_reporting(E_ALL);
-                }
-                ini_set('display_errors', '1');
-            }
+            define('WYSIJA_ITF',FALSE);
         }
         
         if(defined('DOING_AJAX')){
@@ -52,43 +34,43 @@ class WYSIJA_help_back extends WYSIJA_help{
             add_action('admin_menu', array($this, 'define_translated_strings'),98);
             add_action('admin_menu', array($this, 'add_menus'),99);
             add_action('admin_enqueue_scripts',array($this, 'add_js'),10,1);
-            
+
             
             add_action('admin_head-post-new.php',array($this,'addCodeToPagePost'));
             add_action('admin_head-post.php',array($this,'addCodeToPagePost'));
         }
-        
+
     }
     function resolveConflicts(){
         
-            $modelConfig=&WYSIJA::get('config','model');
+        $modelConfig=&WYSIJA::get('config','model');
 
-            $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
-            $conflictingTheme = null;
-            $currentTheme = strtolower(get_current_theme());
-            foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
-                if($keyTheme === $currentTheme) {
-                    $conflictingTheme = $keyTheme;
-                }
+        $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
+        $conflictingTheme = null;
+        $currentTheme = strtolower(get_current_theme());
+        foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
+            if($keyTheme === $currentTheme) {
+                $conflictingTheme = $keyTheme;
             }
+        }
 
-            if($conflictingTheme !== null) {
-                $helperConflicts =& WYSIJA::get('conflicts', 'helper');
-                $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
-            }
+        if($conflictingTheme !== null) {
+            $helperConflicts =& WYSIJA::get('conflicts', 'helper');
+            $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
+        }
 
-            $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
-            $conflictingPlugins=array();
-            foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
-                if(WYSIJA::is_plugin_active($conflictPlug['file'])) {
+        $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
+        $conflictingPlugins=array();
+        foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
+            if(WYSIJA::is_plugin_active($conflictPlug['file'])) {
 
-                    $conflictingPlugins[$keyPlg]=$conflictPlug;
-                }
+                $conflictingPlugins[$keyPlg]=$conflictPlug;
             }
-            if($conflictingPlugins){
-                $helperConflicts=&WYSIJA::get("conflicts","helper");
-                $helperConflicts->resolve($conflictingPlugins);
-            }
+        }
+        if($conflictingPlugins){
+            $helperConflicts=&WYSIJA::get("conflicts","helper");
+            $helperConflicts->resolve($conflictingPlugins);
+        }
     }
     function define_translated_strings(){
         $config=&WYSIJA::get("config","model");
@@ -101,7 +83,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $finds=array("[link]",'[/link]');
         $replace=array('<a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" title="Wysija User Voice">','</a>');
         $truelinkhelp.="<p>".str_replace($finds,$replace,$extra)."</p>";
-        
+
         $truelinkhelp.="<p>".__("Wysija Version: ",WYSIJA)."<strong>".WYSIJA::get_version()."</strong></p>";
         $this->menus=array(
             "campaigns"=>array("title"=>__("Wysija",WYSIJA)),
@@ -115,7 +97,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             if(!isset($msg['crondisabled'])){
                 $this->notice(
                         __('The CRON system is disabled on your WordPress site. Wysija will not work correctly while it stays disabled.',WYSIJA).
-                        ' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>'); 
+                        ' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
             }
 
         }
@@ -135,11 +117,11 @@ class WYSIJA_help_back extends WYSIJA_help{
                                     $sprintfedmsg
                                     ));
                     }
-                }  
+                }
             }
         }
         if(WYSIJA_ITF){
-            global $wysija_installing; 
+            global $wysija_installing;
             if( !$config->getValue("sending_emails_ok")){
                 $msg=$config->getValue("ignore_msgs");
                 $urlsendingmethod='admin.php?page=wysija_config#sendingmethod';
@@ -151,7 +133,7 @@ class WYSIJA_help_back extends WYSIJA_help{
                         array('<a href="widgets.php">','<a class="linkignore setupmsg" href="javascript:;">','<a id="linksendingmethod" href="'.$urlsendingmethod.'">','</a>','</a>','</a>'),
                         __('Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] and confirm your site can send emails in the [link]Settings[/link]. [link_ignore]Ignore[/link_ignore].',WYSIJA)),true,true);
                 }
-                
+
             }
             
         }
@@ -205,7 +187,7 @@ class WYSIJA_help_back extends WYSIJA_help{
                         add_action('load-'.$hookname, array($this,'add_help_tab'));
                     }else{
                         
-                        add_contextual_help($hookname, $this->menuHelp); 
+                        add_contextual_help($hookname, $this->menuHelp);
                     }
                 }
             }
@@ -227,10 +209,10 @@ class WYSIJA_help_back extends WYSIJA_help{
             $tabfunc=true;
             
             
-            
+
         }
     }
-    
+
     function add_js($hook) {
         
         $jstrans=array();
@@ -240,7 +222,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL."css/admin-global.css",array(),WYSIJA::get_version());
         wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL."js/admin-wysija-global.js",array(),WYSIJA::get_version());
         
-        if(WYSIJA_ITF){          
+        if(WYSIJA_ITF){
             $pagename=str_replace("wysija_","",$_REQUEST['page']);
             $backloader=&WYSIJA::get("backloader","helper");
             $backloader->initLoad($this->controller);
@@ -250,7 +232,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             $jstrans['gopremium']=__("Go Premium!",WYSIJA);
             
             $backloader->jsParse($this->controller,$pagename,WYSIJA_URL);
-            
+
             $backloader->loadScriptsStyles($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
             $backloader->localize($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
         }
@@ -268,7 +250,7 @@ class WYSIJA_help_back extends WYSIJA_help{
          add_filter("mce_external_plugins", array($this,"addRichPlugin"));
          add_filter('mce_buttons', array($this,'addRichButton1'),999);
          $myStyleUrl = "../../plugins/wysija-newsletters/css/tmce/style.css";
-         add_editor_style($myStyleUrl);   
+         add_editor_style($myStyleUrl);
 
          wp_enqueue_style('custom_TMCE_admin_css', WYSIJA_URL.'css/tmce/panelbtns.css');
          wp_print_styles('custom_TMCE_admin_css');
@@ -289,7 +271,7 @@ class WYSIJA_help_back extends WYSIJA_help{
     }
     function version(){
         $wysijaversion= "<div class='wysija-version'>";
-        
+
         $config=&WYSIJA::get('config','model');
         $msg=$config->getValue("ignore_msgs");
         $wysijaversion.='<div class="social-foot">';
@@ -316,12 +298,12 @@ class WYSIJA_help_back extends WYSIJA_help{
 <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
 <!-- Place this tag where you want the +1 button to render -->
 <g:plusone href="https://plus.google.com/104749849451537343615" size="medium"></g:plusone></div>
-<div id="hidesocials"> 
+<div id="hidesocials">
 <a class="linkignore socialfoot" href="javascript:;">'.__('Hide!',WYSIJA).'</a>
     </div>';
             $wysijaversion.= "<div style='clear:both;'></div></div><div style='clear:both;'></div>";
         }
-        
+
         $wysijaversion.= "</div></div>";
         echo $wysijaversion;
     }

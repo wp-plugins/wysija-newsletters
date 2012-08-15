@@ -4,13 +4,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     var $title="Settings";
     var $icon="icon-options-general";
-    
+
     function WYSIJA_view_back_support(){
         $this->title=__("Settings",WYSIJA);
         $this->WYSIJA_view_back();
-        
+
     }
-    function reinstall(){ 
+    function reinstall(){
         ?>
         <form name="wysija-settings" method="post" id="wysija-settings" action="" class="form-valid" autocomplete="off">
             <input type="hidden" value="doreinstall" name="action"/>
@@ -23,7 +23,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         </form>
         <?php
     }
-    
+
+    function fieldFormHTML_debugnew($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get("forms","helper");
+        $selected=$this->model->getValue($key);
+        if(!$selected)   $selected=0;
+        $field='<p><label for="'.$key.'">';
+        $options=array(0=>'off',1=>'log + SQL',2=>'log + SQL + PHP errors',/*99=>'log + Admin(SQL + PHP errors) Public(Debug for admins)'*/);
+        $field.=$formsHelp->dropdown(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'),$options,$selected);
+        $field.='</label></p>';
+
+        return $field;
+    }
+
     function fieldFormHTML_debug($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
         $formsHelp=&WYSIJA::get("forms","helper");
@@ -35,13 +48,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         return $field;
     }
-    
+
     function fieldFormHTML_email_notifications($key,$value,$model,$paramsex){
         /* first part concerning the field itself */
         $params=array();
         $params['type']="default";
         $field=$this->fieldHTML($key,$value,$model,$params);
-        
+
         /*second part concerning the checkbox*/
         $threecheck=array(
             "_when_sub" =>__('When someone subscribes',WYSIJA)
@@ -60,10 +73,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         return $field;
     }
-    
-    
+
+
     function fieldFormHTML_selfsigned($key,$value,$model,$params){
-        
+
         $formsHelp=&WYSIJA::get("forms","helper");
 
         $realvalue=$this->model->getValue($key);
@@ -88,7 +101,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function main(){
-        
+
         ?>
         <div id="tabs">
             <ul id="mainmenu" >
@@ -97,14 +110,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 <li><a href="#sendingmethod"><?php _e('Sending Method',WYSIJA);?></a></li>
                 <li><a href="#bounce"><?php _e('Bounce Handling',WYSIJA);?></a></li>
                 <li><a href="#advanced"><?php _e('Advanced',WYSIJA);?></a></li>
-                <li class="premium"><a href="#premium"><?php 
+                <li class="premium"><a href="#premium"><?php
                 $modelC=&WYSIJA::get("config","model");
                 if($modelC->getValue("premium_key")){
                    _e('Premium Activated',WYSIJA);
                 }else{
                    _e('Premium Upgrade',WYSIJA);
                 }
-                
+
                 ?></a></li>
             </ul>
             <form name="wysija-settings" method="post" id="wysija-settings" action="" class="form-valid" autocomplete="off">
@@ -126,11 +139,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
-                
+
                 <div id="bounce">
-                    <?php 
+                    <?php
                     $config=&WYSIJA::get("config","model");
-                    
+
                     if(!$config->getValue("premium_key")){
                         echo str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;" title="'.__("Purchase Wysija PREMIUM",WYSIJA).'">','</a>'),__("[link]Purchase the premium version[/link] and get access to the <strong>Automated Bounce Handling</strong> system.",WYSIJA));
                     }else {
@@ -147,7 +160,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     </p>
                 </div>
                 <div id="premium">
-                    <?php 
+                    <?php
                     $modelC=&WYSIJA::get("config","model");
                     if($modelC->getValue("premium_key")){
                        $this->premium_activated();
@@ -155,30 +168,23 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                        $this->premium();
                     }
                      ?>
-                    
+
                 </div>
-                
+
                 <p class="submitee">
                     <?php $this->secure(array('action'=>"save")); ?>
                     <input type="hidden" value="save" name="action" />
                     <input type="hidden" value="" name="redirecttab" id="redirecttab" />
                 </p>
-                
+
             </form>
         </div>
         <?php
     }
 
-    
+
     function basics(){
         $step=array();
-        if(defined('WYSIJA_DBG_ALL') && WYSIJA_DBG_ALL){
-            $step['premium_key']=array(
-            'type'=>'input',
-            'label'=>'Premium Account Serial Key',
-            'desc'=>'Get immediate support, add your own marketing tracking codes, enable automated bounce handling. [link]Click here to purchase.[/link]',
-            'link'=>'<a class="premium-tab" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
-        }
 
         $step['company_address']=array(
             'type'=>'textarea',
@@ -186,12 +192,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__("The address will be added to your newsletters' footer. This helps avoid spam filters.",WYSIJA),
             'rows'=>"3",
             'cols'=>"40",);
-        
+
         $step['emails_notified']=array(
             'type'=>'email_notifications',
             'label'=>__('Email notifications',WYSIJA),
             'desc'=>__('Put in the emails of the person who should received all notifications, comma separated.',WYSIJA));
-        
+
         $step['from_name']=array(
             'type'=>'fromname',
             'class'=>'validate[required]',
@@ -205,11 +211,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__('Help us improve Wysija by sharing information on how you use the plugin and get chance to win a Premium licence. [link]Find out more.[/link]',WYSIJA),
             'link'=>'<a href="http://support.wysija.com/knowledgebase/sharing-your-usage-data/" target="_blank" title="'.__("Find out more.",WYSIJA).'">');
         */
-        
+
         $modelC=&WYSIJA::get('config','model');
-        
-        
-        
+
+
+
 
         ?>
         <table class="form-table">
@@ -221,8 +227,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         </table>
         <?php
     }
-    
-    
+
+
     function emailactiv(){
         $step=array();
         $step['confirm_dbleoptin']=array(
@@ -230,18 +236,18 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'values'=>array(true=>__("Yes",WYSIJA),false=>__("No",WYSIJA)),
             'label'=>__('Send Activation Email',WYSIJA),
             'desc'=>__('Subscribers will not receive any emails until they activate their subscriptions. Keep this activated to stop fake subscriptions by humans and robots.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/why-you-should-enforce-email-activation/?utm_source=wpadmin&utm_campaign=activation email" target="_blank">'.__("Read more on support.wysija.com",WYSIJA)."</a>");
-                
+
         $step['confirm_email_title']=array(
             'type'=>'input',
             'label'=>__('Email subject',WYSIJA),
             'rowclass'=>"confirmemail");
-        
+
         $step['confirm_email_body']=array(
             'type'=>'textarea',
             'label'=>__('Email content',WYSIJA),
             'rowclass'=>"confirmemail");
-        
-        
+
+
         $modelU=&WYSIJA::get("user","model");
         $modelU->getFormat=OBJECT;
 
@@ -269,21 +275,21 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         </table>
         <?php
     }
-    
+
     function sendingmethod(){
         $key="sending_method";
         $realvalue=$this->model->getValue($key);
-        $formsHelp=&WYSIJA::get("forms","helper");  
+        $formsHelp=&WYSIJA::get("forms","helper");
         ?>
         <table class="form-table">
             <tbody>
-                
+
                 <tr>
                     <th scope="row" class="row">
-                        <?php 
-                            
-                            
-                            
+                        <?php
+
+
+
                             $checked=false;
                             $value="site";
                             $id=str_replace("_",'-',$key).'-'.$value;
@@ -296,9 +302,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </th>
                     <th scope="row" class="row">
-                        <?php 
+                        <?php
 
-                            
+
                             $checked=false;
                             $value="gmail";
                             $id=str_replace("_",'-',$key).'-'.$value;
@@ -311,11 +317,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </th>
                     <th scope="row" class="row">
-                        <?php 
+                        <?php
                             $checked=false;
                             $value="smtp";
                             if($value ==$realvalue) $checked=true;
-                            
+
                             $id=str_replace("_",'-',$key).'-'.$value;
                             $field='<label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
@@ -324,14 +330,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             echo $field;
                         ?>
                     </th>
-                    
+
                     <td>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-site">
                     <th scope="row">
-                        <?php 
+                        <?php
                             $field=__('Delivery method',WYSIJA);
                             $field.='<p class="description">'.__('Send yourself some test emails to confirm which method works with your server.',WYSIJA).'</p>';
                             echo $field;
@@ -344,60 +350,41 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $realvalue=$this->model->getValue($key);
                             $value="phpmail";
                             if($value ==$realvalue) $checked=true;
-                            
+
                             $id=str_replace("_",'-',$key).'-'.$value;
                             $field='<p class="title"><label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='PHP Mail</label><a class="button-secondary" id="send-test-mail-phpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
                             $field.='<p class="description">'.__('This email engine works on 95% of servers',WYSIJA).'</p>';
-                            
-                            
+
+
                             $value="sendmail";
                             $checked=false;
                             if($value ==$realvalue) $checked=true;
-                            
+
                             $id=str_replace("_",'-',$key).'-'.$value;
                             $field.='<p class="title"><label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='Sendmail</label>
                                 <a class="button-secondary" id="send-test-mail-sendmail">'.__('Send a test mail',WYSIJA).'</a></p>';
                             $field.='<p class="description">'.__('This method works on 5% of servers',WYSIJA).'</p>';
-                            
+
                             $id=str_replace("_",'-',$key).'-'.$value."-path";
                             $field.='<p class="title" id="p-'.$id.'"><label for="'.$id.'">';
                             $field.=__("Sendmail path",WYSIJA).'</label>'.$formsHelp->input(array("id"=>$id,'name'=>'wysija[config][sendmail_path]'),$this->model->getValue("sendmail_path")).'</p>';
-                            
-                            echo $field;
-                        ?>
-                    </td>
-                </tr>              
-                
-                <tr class="hidechoice choice-sending-method-smtp">
-                    <th scope="row">
-                        <?php 
-                            $key="smtp_host";  
-                            $id=str_replace("_",'-',$key);
-                            $field='<label for="'.$id.'">'.__('SMTP Hostname',WYSIJA)."</label>";
-                            $field.="<p class='description'>e.g.:smtp.mydomain.com</p>";
-                            echo $field;
-                        ?>
-                    </th>
-                    <td colspan="2">
-                        <?php  
-                            $value=$this->model->getValue($key);
-                            $field=$formsHelp->input(array("id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+
                             echo $field;
                         ?>
                     </td>
                 </tr>
-                
-                <tr class="hidechoice choice-sending-method-smtp choice-sending-method-gmail">
+
+                <tr class="hidechoice choice-sending-method-smtp">
                     <th scope="row">
-                        <?php 
-                            $key="smtp_login";  
+                        <?php
+                            $key="smtp_host";
                             $id=str_replace("_",'-',$key);
-                            $field='<label for="'.$id.'">'.__('Login',WYSIJA)."</label>";
-   
+                            $field='<label for="'.$id.'">'.__('SMTP Hostname',WYSIJA)."</label>";
+                            $field.="<p class='description'>e.g.:smtp.mydomain.com</p>";
                             echo $field;
                         ?>
                     </th>
@@ -409,11 +396,30 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-smtp choice-sending-method-gmail">
                     <th scope="row">
-                        <?php 
-                            $key="smtp_password";  
+                        <?php
+                            $key="smtp_login";
+                            $id=str_replace("_",'-',$key);
+                            $field='<label for="'.$id.'">'.__('Login',WYSIJA)."</label>";
+
+                            echo $field;
+                        ?>
+                    </th>
+                    <td colspan="2">
+                        <?php
+                            $value=$this->model->getValue($key);
+                            $field=$formsHelp->input(array("id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                            echo $field;
+                        ?>
+                    </td>
+                </tr>
+
+                <tr class="hidechoice choice-sending-method-smtp choice-sending-method-gmail">
+                    <th scope="row">
+                        <?php
+                            $key="smtp_password";
                             $id=str_replace("_",'-',$key);
                             $field='<label for="'.$id.'">'.__('Password',WYSIJA)."</label>";
                             echo $field;
@@ -427,11 +433,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-smtp">
                     <th scope="row">
-                        <?php 
-                            $key="smtp_port";  
+                        <?php
+                            $key="smtp_port";
                             $id=str_replace("_",'-',$key);
                             $field='<label for="'.$id.'">'.__('SMTP port',WYSIJA)."</label>";
 
@@ -446,10 +452,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-smtp">
                     <th scope="row">
-                        <?php 
+                        <?php
                             $key="smtp_secure";
                             $id=str_replace("_",'-',$key);
                             $field='<label for="'.$id.'">'.__('Secure connection',WYSIJA)."</label>";
@@ -458,28 +464,28 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     </th>
                     <td colspan="2">
                         <?php
-                            
+
                             $value=$this->model->getValue($key);
-                            
+
                             $field=$formsHelp->dropdown(array("name"=>'wysija[config]['.$key.']',"id"=>$id),array(false=>__("No"),"ssl"=>"SSL","tls"=>"TLS"),$value);
                             echo $field;
                         ?>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-smtp">
                     <th scope="row">
-                        <?php 
+                        <?php
                             $field=__('Authentication',WYSIJA);
                             echo $field.'<p class="description">'.__("Leave this option to Yes. Only a tiny portion of SMTP services ask Authentication to be turned off.",WYSIJA).'</p>';
                         ?>
                     </th>
                     <td colspan="2">
                         <?php
-                            
+
                             $key="smtp_auth";
                             $realvalue=$this->model->getValue($key);
-                            
+
                             $value=false;
                             $checked=false;
                             if($value ==$realvalue) $checked=true;
@@ -487,7 +493,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field='<label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('No',WYSIJA).'</label>';
-                            
+
                             $value=true;
                             $checked=false;
                             if($value ==$realvalue) $checked=true;
@@ -495,24 +501,24 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field.='<label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('Yes',WYSIJA).'</label>';
-                            
-                            
-                            
+
+
+
                             /*$key2=$key."_login";
                             $value=$this->model->getValue($key2);
                             $id=str_replace("_",'-',$key2).'-'.$value;
                             $field.="<p>".$formsHelp->input(array("default"=>__("Username",WYSIJA),"id"=>$id,'name'=>'wysija[config]['.$key2.']','size'=>'40'),$value,$checked)."</p>";
-                            
+
                             $key2=$key."_pass";
                             $value=$this->model->getValue($key2);
                             $id=str_replace("_",'-',$key2).'-'.$value;
                             $field.="<p>".$formsHelp->input(array("default"=>__("Password",WYSIJA),"id"=>$id,'name'=>'wysija[config]['.$key2.']','size'=>'40'),$value,$checked)."</p>";*/
-                            
+
                             echo $field;
                         ?>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-smtp choice-sending-method-gmail">
                     <th scope="row">
                         <a class="button-secondary" id="send-test-mail-smtp"><?php _e("Send a test mail",WYSIJA)?></a>
@@ -523,18 +529,18 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         ?>
                     </td>
                 </tr>
-                
+
                 <tr class="hidechoice choice-sending-method-smtp choice-sending-method-site choice-sending-method-gmail">
                     <th scope="row">
-                        <?php 
+                        <?php
                             $field=__('Send...',WYSIJA);
-                            
+
                             echo $field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">','</a>'),__('Your web host\'s has limits. We suggest 70 emails per 15 minutes to be safe. [link]Find out more[/link] on support.wysija.com',WYSIJA)).'</p>';
                         ?>
                     </th>
                     <td colspan="2">
-                        
-                        <?php 
+
+                        <?php
                             $name='sending_emails_number';
                             $id=str_replace('_','-',$name);
                             $value=$this->model->getValue($name);
@@ -542,27 +548,27 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             //if($this->model->getValue("smtp_host")=="smtp.gmail.com") $params["readonly"]="readonly";
                             $field=$formsHelp->input($params,$value);
                             $field.= '&nbsp;'.__('emails every',WYSIJA).'&nbsp;';
-                            
-                            
+
+
                             $name='sending_emails_each';
                             $id=str_replace('_','-',$name);
                             $value=$this->model->getValue($name);
                             $field.=$formsHelp->dropdown(array('name'=>'wysija[config]['.$name.']','id'=>$id),$formsHelp->eachValues,$value);
                             $field.='<span class="choice-under15"><b>'.__('This is fast!',WYSIJA).'</b> '.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/?utm_source=wpadmin&utm_campaign=cron" target="_blank">','</a>'),__('We suggest you setup a cron job. [link]Read more[/link] on support.wysija.com',WYSIJA)).'</span>';
                             echo $field;
-                            
-                           
+
+
                         ?>
                     </td>
                 </tr>
-                
+
             </tbody>
         </table>
         <?php
     }
-    
+
     function bounce(){
- 
+
 
     $field='<p class="description"><span class="title">'.__('How does it work?',WYSIJA).'</span> </p>';
     $field.="<ol>";
@@ -581,7 +587,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             <li><a href="#actions"><?php _e('Actions & Notifications',WYSIJA);?></a></li>
         </ul>
         <div id="connection">
-            
+
             <?php $this->connection(); ?>
         </div>
         <div id="actions">
@@ -591,20 +597,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             <?php $this->rules(); ?>
         </div>
     </div>
-        
+
         <?php
     }
-    
+
     function connection(){
-        $step=array();    
+        $step=array();
         $step['bounce_email']=array(
             'type'=>'input',
             'label'=>__('Bounce Email',WYSIJA));
-        
+
         $step['bounce_host']=array(
             'type'=>'input',
             'label'=>__('Hostname',WYSIJA));
-        
+
         $step['bounce_login']=array(
             'type'=>'input',
             'label'=>__('Login',WYSIJA));
@@ -627,15 +633,15 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['bounce_selfsigned']=array(
             'type'=>'selfsigned',
             'label'=>__('Self-signed certificates',WYSIJA));
-        
-        
+
+
         $step2=array();
         $valuesDDP=array("unsub"=>__("Unsubscribe the user",WYSIJA),"del"=>__("Delete the subscriber",WYSIJA), "not"=>__("Do nothing",WYSIJA));
         $step2['bounce_email_notexists']=array(
             'type'=>'dropdown',
             'values'=>$valuesDDP,
             'label'=>__('When email does not exist... ',WYSIJA));
-        
+
         $step2['bounce_inbox_full']=array(
             'type'=>'dropdown',
             'values'=>$valuesDDP,
@@ -663,9 +669,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                     $formFields.=$this->fieldHTML($row,$value,"config",$colparams);
                     $formFields.='</td>';
-                    
-                    
-                    
+
+
+
                     $formFields.='</tr>';
                 }
                 echo $formFields;
@@ -689,20 +695,23 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     '.__("Process bounce automatically",WYSIJA).'</label></td><td id="bounce-frequency"><label for="'.$id.'">'.__("each",WYSIJA)."</label> ".$field.'</td></tr>';
                 /*try to connect button*/
                 echo '<tr><td><a class="button-secondary" id="bounce-connector">'.__("Does it work? Try to connect.",WYSIJA).'</a></td><td></td></tr>';
-                
+
 
                 ?>
             </tbody>
         </table>
         <?php
     }
-    
-    
+
+    function log(){
+        dbg(get_option('wysija_log'),0);
+    }
+
      function rules(){
-         
+
          $helpRules=&WYSIJA::get("rules","helper");
          $rules=$helpRules->getRules(false,true);
-         
+
         $modelList=&WYSIJA::get("list","model");
         /* get lists which have users  and are enabled */
         $query="SELECT * FROM [wysija]list WHERE is_enabled>0";
@@ -712,7 +721,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         foreach($arrayList as $list){
             $valuesDDP["unsub_".$list['list_id']]=sprintf(__('Unsubscribe the user and add him to the list "%1$s" ',WYSIJA),$list['name']);
         }
-  
+
         foreach($rules as $rule){
                 if(isset($rule['behave'])) continue;
                 $label=$rule['title'];
@@ -736,7 +745,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $formFields="<ol>";$i=0;
         $formHelp=&WYSIJA::get("forms","helper");
         foreach($step2 as $row =>$colparams){
-   
+
             $formFields.='<li>';
             $value=$this->model->getValue($row);
             if(!$value && isset($colparams['default'])) $value=$colparams['default'];
@@ -746,9 +755,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             $desc='';
             if(isset($colparams['desc'])) $desc='<p class="description">'.$colparams['desc'].'</p>';
             $formFields.='<label for="'.$row.'">'.$label.$desc.' </label>';
-            
 
-            
+
+
             if(isset($colparams['forward'])){
                 $valueforward=$this->model->getValue($row."_forwardto");
                 if($valueforward===false) {
@@ -759,13 +768,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                     $valueforward=$datauser->email;
                 }
-                    
+
                 $formFields.='<input  id="'.$row.'" size="30" type="text" class="bounce-forward-email" name="wysija[config]['.$row."_forwardto".']" value="'.$valueforward.'" />';
             }else{
-                
+
                 $formFields.=$formHelp->dropdown(array('id'=>$row, 'name'=>'wysija[config]['.$row.']'), $colparams['values'], $value, '');
             }
-            
+
             $i++;
             $formFields.='</li>';
         }
@@ -773,30 +782,30 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         echo $formFields;
 
     }
-    
+
     function advanced(){
         $step=array();
-        
+
         $step['role_campaign']=array(
             'type'=>'roles',
             'label'=>__('Who can create newsletters?',WYSIJA),
             'desc'=>__('These are based on WordPress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
-        
+
         $step['role_subscribers']=array(
             'type'=>'roles',
             'label'=>__('Who can manage subscribers?',WYSIJA),
             'desc'=>__('These are based on WordPress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
-        
+
         $step['replyto_name']=array(
             'type'=>'fromname',
             'class'=>'validate[required]',
             'label'=>__('Reply-to name & email',WYSIJA),
             'desc'=>__('You can change the default reply-to name and email for your newsletters. This option is also used for the activation emails and Admin notifications (in Basics).',WYSIJA));
 
-        
+
         $config=&WYSIJA::get("config","model");
-                    
-                    
+
+
         if(!$config->getValue("premium_key")){
             $step['bounce_email']=array(
             'type'=>'input',
@@ -804,37 +813,37 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             "desc"=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
             'link'=>'<a class="premium-tab" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
         }
-        
-                
-        
+
+
+
         $modelU=&WYSIJA::get("user","model");
         $modelU->getFormat=OBJECT;
 
         $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
-        
+
         $step['unsubscribe_linkname']=array(
             'type'=>'input',
             'label'=>__('Text of "Unsubscribe" link',WYSIJA),
             'desc'=>__('This changes the label for the unsubscribe link in the footer of your newsletters.',WYSIJA));
-        
+
         $step['unsubscribed_title']=array(
             'type'=>'input',
             'label'=>__('Unsubscribe page title',WYSIJA),
             'desc'=>__('This is the [link]unsubscription confirmation[/link] page a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter.',WYSIJA),
             'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1" target="_blank" title="'.__("Preview page",WYSIJA).'">');
 
-        
+
         $step['unsubscribed_subtitle']=array(
             'type'=>'input',
             'label'=>__('Unsubscribe page content',WYSIJA));
-        
+
         /*
         $step['manage_subscriptions']=array(
         'type'=>'debug',
         'label'=>_de_('Subscribers can manage their subscriptions',WYSIJA),
         'desc'=>_de_('Check this option to add a "Manage your subscriptions" link in the footer of your newsletters. This allows subscribers to decide which lists they\'ll unsubscribe from. [link]Preview the Manage Subscripton page.[/link] The "Unsubscribe" link always unsubscribes a users from all lists.',WYSIJA),
         'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"subscriptions",false,true).'" target="_blank" title="'.__("Preview page",WYSIJA).'">');
-        
+
         $step['manage_subscriptions_linkname']=array(
             'type'=>'input',
             'label'=>_de_('Text of "Manage Subscriptions" link',WYSIJA),
@@ -842,14 +851,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         */
         $step['advanced_charset']=array(
             'type'=>'dropdown_keyval',
-            'values'=>array("UTF-8","UTF-7",
-                "BIG5",
+            'values'=>array('UTF-8','UTF-7',
+                'BIG5',
                 "ISO-8859-1","ISO-8859-2","ISO-8859-3","ISO-8859-4","ISO-8859-5","ISO-8859-6","ISO-8859-7","ISO-8859-8","ISO-8859-9","ISO-8859-10","ISO-8859-13","ISO-8859-14","ISO-8859-15",
-                "Windows-1251","Windows-1252"),
+                'Windows-1251','Windows-1252'),
             'label'=>__('Charset',WYSIJA),
             'desc'=>__('Squares or weird characters are displayed in your emails? Select the encoding for your language.',WYSIJA));
-        $step['debug_on']=array(
-            'type'=>'debug',
+        $step['debug_new']=array(
+            'type'=>'debugnew',
             'label'=>__('Debug mode',WYSIJA),
             'desc'=>__("Enable this to show Wysija's errors. Our support might ask you to enable this if you seek their help.",WYSIJA));
         ?>
@@ -857,28 +866,24 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             <tbody>
                 <?php
                 echo $this->buildMyForm($step,"","config");
-                
-                /*if($config->getValue("debug_on")){*/
+
                     ?>
                     <tr><th scope="row">
                         <div class="label"><?php _e("Reinstall from scratch",WYSIJA)?>
                         <p class="description"><?php _e("Want to start all over again? This will wipe out Wysija and reinstall anew.",WYSIJA)?></p>
                         </div>
                     </th><td><p><a class="button" href="admin.php?page=wysija_config&action=reinstall"><?php _e('Reinstall now...',WYSIJA); ?></a></p></td></tr>
-                    <?php
-                //}
-                ?>
-       
-                
+
+
             </tbody>
         </table>
         <?php
     }
-    
+
     function premium(){
        $helperLicence=&WYSIJA::get("licence","helper");
        $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton";
-       
+
        $arrayPremiumBullets=array(
            'more2000'=>array(
                'title'=>__('Send to more than 2000 subscribers.',WYSIJA),
@@ -926,12 +931,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                'desc'=>__('30-Day money back guarantee. Good reason to try us out.',WYSIJA)
                ),
        );
-       
+
         ?>
             <div id="premium-content">
                     <h2><?php echo __('11 Cool Reasons to Upgrade to Premium',WYSIJA)?></h2>
                     <div class="bulletium">
-                        <?php 
+                        <?php
                             foreach($arrayPremiumBullets as $key => $bullet){
 
                                 ?>
@@ -952,20 +957,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 </div>
             <p class="wysija-premium-wrapper"><a class="wysija-premium-btns wysija-premium" href="<?php echo $urlpremium; ?>" target="_blank"><?php echo __('Upgrade for $99 a year for 1 site.',WYSIJA).'<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/>'; ?></a></p>
             <p><?php echo __('Already paid?', WYSIJA) ?> <a id="premium-activate" type="submit" class="wysija" href="javascript:;" /><?php echo esc_attr(__('Activate your Premium licence.',WYSIJA)); ?></a></p>
-            
+
             <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA));?></p>
             <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/terms-conditions/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Read our simple and easy [link]terms and conditions.[/link]',WYSIJA));?></p>
-            
+
         <?php
-        
+
     }
-    
-    
-    
+
+
+
     function premium_activated(){
        $helperLicence=&WYSIJA::get("licence","helper");
        $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton";
-       
+
        $arrayPremiumBullets=array(
            'act-createbounce'=>array(
                'title'=>__('To do: create a bounce address.',WYSIJA),
@@ -1002,12 +1007,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                ),
 
        );
-       
+
         ?>
             <div id="premium-content">
                     <h2><?php echo __('The Little Guide to Premium',WYSIJA)?></h2>
                     <div class="bulletium">
-                        <?php 
+                        <?php
                             foreach($arrayPremiumBullets as $key => $bullet){
 
                                 ?>
@@ -1029,11 +1034,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             <p>
                 <a class="wysija-premium-btns wysija-support" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=premiumactivated" target="_blank"><?php echo __('Get support',WYSIJA); ?></a>
             </p>
-            
+
             <p><?php echo str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA));?></p>
-            
+
         <?php
-        
+
     }
-   
+
 }

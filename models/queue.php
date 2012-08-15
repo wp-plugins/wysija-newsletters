@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_queue extends WYSIJA_model{
-    
+
     var $pk=array("email_id","user_id");
     var $table_name="queue";
     var $columns=array(
@@ -11,13 +11,13 @@ class WYSIJA_model_queue extends WYSIJA_model{
         'priority' => array("type"=>"integer"),
         'number_try' => array("type"=>"integer")
     );
-    
-    
-    
+
+
+
     function WYSIJA_model_queue(){
         $this->WYSIJA_model();
     }
-    
+
     function queueCampaign($campaignobj){
         if(!$campaignobj) {
             $this->error("Missing campaign id in queueCampaign()");
@@ -31,97 +31,19 @@ class WYSIJA_model_queue extends WYSIJA_model{
         if($modelC->getValue("confirm_dbleoptin")) $statusmin=0;
         else $statusmin=-1;
 
-        
+
         $query="INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ";
-        $query.="SELECT ".$data['email']['email_id'].", A.user_id,".time()." 
-            FROM [wysija]user_list as A 
-                JOIN [wysija]user as B on A.user_id=B.user_id 
+        $query.="SELECT ".$data['email']['email_id'].", A.user_id,".time()."
+            FROM [wysija]user_list as A
+                JOIN [wysija]user as B on A.user_id=B.user_id
                     WHERE B.status>".$statusmin." AND A.list_id IN (".implode(",",$data['campaign']['lists']['ids']).")  ";
-        
+
         $this->query($query);
 
         return true;
     }
-    
-    
-    function launch(){
-        $modelC=&WYSIJA::get("config","model");
-        /* check if the daily limit there is, has been reached already */
-        $sent_today=0;
-        if($sent_today<$modelC->getValue("sending_emails_number")){
-            /* get a list of queue ordered by priority/campaign and send them */
-            $modelQ=&WYSIJA::get("queue","model");
-            $query="SELECT A.email_id,B.* FROM `[wysija]queue` as A 
-                LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id 
-                LEFT JOIN `[wysija]email` as C on C.email_id=A.email_id
-                    WHERE  A.send_at<".time()." AND C.status >0
-                    ORDER BY priority, A.email_id DESC LIMIT 0,".$modelC->getValue("sending_emails_number");
-           
-            $users=$modelQ->query("get_res",$query,OBJECT);
 
-            if($users){
-                /* make a list of email_id to be sent */ 
-                $emailids=$modelQ->query("get_res","SELECT A.email_id FROM `[wysija]queue` as A 
-                    LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id 
-                        WHERE  A.send_at<".time()."
-                        GROUP BY A.email_id
-                        ORDER BY priority, A.email_id DESC LIMIT 0,".$modelC->getValue("sending_emails_number"),ARRAY_A);
 
-                $allemailids=array();
-                foreach($emailids as $emailob)  $allemailids[]=$emailob['email_id'];
-
-                /* add the confirmation email_id */
-                $allemailids[]=$modelC->getValue("confirm_email_id");
-
-                /* let's load the emails to be sent */
-                $emails=$modelQ->query("get_res","SELECT * FROM `[wysija]email` 
-                    WHERE email_id IN ('".implode("','",$allemailids)."')",OBJECT_K);
-                /*foreach($emails as $emailid => $email){
-                    if($emailid!=$modelC->getValue('confirm_email_id')) {
-                        $emails[$emailid]->body.="[subscriptions_links]";
-                        $emails[$emailid]->body.="\n[footer_address]";
-                    }
-                }*/
-                
-                /* if there is double optin "on" we load the confirmation email to send to the people having not confirmed yet */
-                $mailer=&WYSIJA::get("mailer","helper");
-                $time=time();
-                $error=$success=array();
-                $confirmemailid=$modelC->getValue("confirm_email_id");
-                $modelEUS=&WYSIJA::get("email_user_stat","model");
-                foreach($users as $usr){
-                    if($usr->status>=0){
-                        if($modelC->getValue("confirm_dbleoptin") && $usr->status==0) $email_id=$confirmemailid;
-                        else $email_id=$usr->email_id;
-
-                        if($mailer->sendOne($emails[$email_id],$usr)){
-                            /* remove from the queue insert into email_user_stat */
-                            $success[$email_id][]=$usr->user_id;
-                            $modelEUS->reset();
-                            $insertdata=array("user_id"=>$usr->user_id,"email_id"=>$email_id,"sent_at"=>$time,"status"=>"0");
-                            //dbg($insertdata);
-                            $modelEUS->fieldValid=false;
-                            $modelEUS->insert($insertdata);
-                            $modelQ->reset();
-                            $modelQ->delete(array("equal"=>array("user_id"=>$usr->user_id, "email_id"=>$email_id)));
-                        }else{
-                            /* increment the number of try */
-                            $error[$email_id][]=$usr->user_id;
-                            $modelQ->reset();
-                            $modelQ->update(array("number_try"=>"[increment]"), array("user_id"=>$usr->user_id, "email_id"=>$email_id));
-                        }
-                    }
-
-                }
-
-            }else{
-                $this->notice(__("Queue is empty.",WYSIJA));
-            }
-
-        }
-    }
-    
-        
     function ACYdelete($filters){
             $query = 'DELETE a.* FROM [wysija]queue as a';
             if(!empty($filters)){
@@ -146,7 +68,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
     function queue($mailid,$time,$onlyNew = false){
             $mailid = intval($mailid);
             if(empty($mailid)) return false;
- 
+
             $classLists =&WYSIJA::get("campaign_list","model");
             $lists = $classLists->getReceivers($mailid,false);
             if(empty($lists)) return 0;
@@ -174,7 +96,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
     $dispatcher->trigger('onAcySendNewsletter',array($mailid));*/
             return $totalinserted;
     }
-    
+
     function getDelayed($mailid=0){
         if(!$mailid) return array();
         $query = 'SELECT c.*,a.* FROM [wysija]queue as a';
@@ -189,7 +111,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
 
         return $results;
     }
-    
+
     function getReady($limit,$mailid = 0,$user_id=false){
         $query = 'SELECT c.*,a.* FROM [wysija]queue as a';
         $query .= ' JOIN [wysija]email as b on a.`email_id` = b.`email_id` ';
@@ -203,7 +125,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
         $results=$this->query("get_res",$query,OBJECT_K);
         //$results = $this->database->loadObjectList();
         if($results === null){
-            $this->query('REPAIR TABLE [wysija]queue, [wysija]user, [wysija]email');    
+            $this->query('REPAIR TABLE [wysija]queue, [wysija]user, [wysija]email');
         }
 
         if(!empty($results)){

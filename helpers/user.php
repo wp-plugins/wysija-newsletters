@@ -76,7 +76,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         $modelUser=&WYSIJA::get("user","model");
         $modelUser->update(array("status"=>$status),array("user_id"=>$user_id));
         
-        if($status){        
+        if($status){
             $lists=$this->getUserLists($user_id);
             $this->sendAutoNl($user_id,$lists);
         }
@@ -132,6 +132,7 @@ class WYSIJA_help_user extends WYSIJA_object{
             }
         }
     }
+    
     function insertAutoQueue($user_id,$email_id,$emailparams){
         $modelQueue=&WYSIJA::get('queue','model');
         $queueData=array('priority'=>'-1','email_id'=>$email_id,'user_id'=>$user_id);
@@ -158,7 +159,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         if(isset($emailparams['unique_send']) && $emailparams['unique_send']){
             
             $modelEUS=&WYSIJA::get('email_user_stat','model');
-            if(!$modelEUS->exists(array('email_id'=>$email_id,'user_id'=>$user_id))) 
+            if(!$modelEUS->exists(array('email_id'=>$email_id,'user_id'=>$user_id)))
                     $modelQueue->insert($queueData);
         }else{
             $modelQueue->insert($queueData);
@@ -167,6 +168,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         if($delay==0){
             $queueH=&WYSIJA::get('queue','helper');
             $queueH->report=false;
+            WYSIJA::log('insertAutoQueue queue process',array('email_id'=>$email_id,'user_id'=>$user_id));
             $queueH->process($email_id,$user_id);
         }
         return true;
@@ -196,7 +198,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         else return $resultsend;
         return true;
     }
-    
+
     function delete($user_ids,$sendone=false){
         if($sendone){
             
@@ -226,7 +228,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         else    $this->notice(sprintf(__(' %1$s subscriber has been deleted.',WYSIJA),  implode(',', $emails)));
         return true;
     }
-    
+
     function addToList($listid,$userids){
         $modelUser=&WYSIJA::get("user","model");
         $query="INSERT IGNORE INTO `[wysija]user_list` (`list_id`,`user_id`)";
@@ -238,7 +240,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         }
         $modelUser->query($query);
     }
-    
+
     function _notify($email,$subscribed=true,$listids=false){
         
         $modelUser=&WYSIJA::get("user_list","model");
@@ -284,7 +286,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         $modelC->save(array('total_subscribers'=>$count));
         return true;
     }
-    
+
     function synchList($listid,$total=false){
         $model=&WYSIJA::get("list","model");
         $data=$model->getOne(false,array("list_id"=>(int)$listid,"is_enabled"=>"0"));
