@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.0.9.5
+Stable tag: 2.1
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -12,14 +12,18 @@ Send your post notifications or newsletters from WordPress easily, and beautiful
 Drag and drop your posts, images, social icons in our visual editor. Pick one of 20 themes. Change fonts and colors on the fly. Send the latest posts when you want or as a single newsletter. Configuration is dummy proof. This baby is fully supported.
 
 
-= One minute video demo =
+= 2 minute video demo =
 
 http://vimeo.com/35054446
+
+= Wysija's post notification demo =
+
+http://vimeo.com/46247528
 
 = Features =
 
 * Drag & drop visual editor, an HTML-free experience
-* Post notifications, like Feedburner or Subscribe2
+* Post notifications, like Feedburner, Subscribe2 or MailChimp's RSS-to-Email
 * [Selection of over 20 themes](http://www.wysija.com/newsletter-templates-wordpress/). Photoshop files included
 * Get stats for each newsletter: opens, clicks, unreads, unsubscribes
 * Add a subscription form in your sidebar or pages
@@ -42,6 +46,8 @@ http://vimeo.com/35054446
 * Total clicks for each link in your newsletter
 * Access to Premium themes
 * Automated bounce handling. Keeps your list clean, avoid being labeled a spammer
+* Unlimited spam score tests with mail-tester.com
+* Improve deliverability with DKIM signature
 * We trigger your email queue, like a real cron job
 * Don't reinstall. Simply activate!
 * Priority support
@@ -50,15 +56,15 @@ http://vimeo.com/35054446
 
 = Upcoming major release =
 
-* Spam check tool
-* "View it in your browser" link
+* Subscriber profiles, ie. gender, city, or whatever you want
+* Dozens of mini improvements based on user feedback
+* Possibility to insert your own HTML in newsletter
 
 = Future releases =
 
 * New stats page
-* Subscriber profile: add any field you want, such as age, city, gender
 * Custom post types support
-* Display a list of newsletters sent in a page of your site (shortcode)
+* Display a list of past newsletters sent in a page of your site (shortcode)
 
 = Support =
 
@@ -68,26 +74,28 @@ We got a dedicated website just to help you out. And we're quite quick to reply.
 
 = Translations in your language =
 
-* Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
-* Chinese - Mandarin (thanks Michael!)
-* Czech (thx Ondra)
-* Danish (thx Frederik)
-* Dutch (dank je wel John)
-* French (our bird did it)
-* German (danke Wolfgang & others)
-* Greek (thx Giorgio)
-* Hungarian (thx Csaba!)
-* Italian (grazie Nick & Federico)
-* Norwegian (tysen takk Magnus)
-* Polish (thx to Marcin)
-* Portuguese PT (obrigado Jorge & Alvaro)
-* Portuguese BR (Raphael & Djio)
-* Romanian (multumesc Silviu)
-* Slovak (thx Jan)
-* Spanish (gracias Fernando & Federico)
-* Turkish (thx to Cihat)
+Translations are included in the plugin. Join the translation teams on [our Transifex page](https://www.transifex.com/projects/p/wysija/).
 
-Note: some languages need to be updated. Get in touch if you want to complete the translations.
+* Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
+* Chinese
+* Czech
+* Danish
+* Dutch
+* French
+* German
+* Greek
+* Hungarian
+* Italian
+* Norwegian
+* Polish
+* Portuguese PT
+* Portuguese BR
+* Romanian
+* Russian
+* Slovak
+* Spanish
+* Swedish
+* Turkish
 
 == Installation ==
 
@@ -136,6 +144,31 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+
+= 2.1 - 2012-08-?? =
+
+* added ability for subscribers to change their email and lists.
+* added "View it in your browser" option.
+* added advanced access rights with capabilities for subscribers management, newsletter management, settings and subscription widget.
+* added new WordPress 3.3 plupload used when possible to use.
+* added mail-tester.com integration for Premium (fight against spam).
+* added DKIM signature for Premium to improve deliverability.
+* added the possibility to preview your newsletter without images in visual editor.
+* added background colors for blocks within the visual editor.
+* added alternate background colors for automatic latest post widget.
+* added possibility to add total number of subscribers in widget with shortcode.
+* added widget option "Display label within for Email field".
+* improved image upload with ssl.
+* improved compatibility with access rights plugins like "Advanced Access Manager" or "User Role Editor".
+* improved import system with clearer message.
+* improved subscription widget, added security if there is no list selected.
+* improved Auto newsletter edition, warning added before pausing it.
+* improved popups for the visual editor (themes, images, add link,...)
+* compatibility with [Magic Action Box](http://wordpress.org/extend/plugins/magic-action-box/).
+* fixed links style in headings.
+* fixed no default value in optin form when JS disabled.
+* fixed issue with automatic latest post widget where one article could appear more than once.
 
 = 2.0.9.5 - 2012-08-15 =
 

@@ -52,12 +52,19 @@ if(isset($_REQUEST['debug'])){
             
 if(isset($_REQUEST['debug']))   echo '<h2>isset email_id and user_id</h2>';
             
+            $requesturlencoded=false;
             if(isset($_REQUEST['urlencoded'])){
+                $requesturlencoded=$_REQUEST['urlencoded'];
+            }elseif(isset($_REQUEST['urlpassed'])){
+                $requesturlencoded=$_REQUEST['urlpassed'];
+            }
+
+            if($requesturlencoded){
                 /* clicked stats */
                 if(isset($_REQUEST['no64'])){
-                    $recordedUrl=$decodedUrl=$_REQUEST['urlencoded'];
+                    $recordedUrl=$decodedUrl=$requesturlencoded;
                 }else{
-                    $recordedUrl=$decodedUrl=base64_decode($_REQUEST['urlencoded']);
+                    $recordedUrl=$decodedUrl=base64_decode($requesturlencoded);
                 }
                 if(strpos($recordedUrl, 'utm_source')!==false){
                     $recordedUrl=$this->rm_url_param(array('utm_source','utm_campaign','utm_medium'),$recordedUrl);
@@ -114,17 +121,26 @@ if(isset($_REQUEST['debug']))   echo '<h2>isset urlencoded '.$decodedUrl.'</h2>'
                     //$modelEmail->update(array('number_clicked'=>"[increment]"),array("email_id"=>$email_id));
 
                     $statusEmailUserStat=2;
-                    if(in_array($recordedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
+                    if(in_array($recordedUrl,array('[unsubscribe_link]','[subscriptions_link]','[view_in_browser_link]'))){
                         $this->subscriberClass = &WYSIJA::get("user","model");
                         $this->subscriberClass->getFormat=OBJECT;
                         $receiver = $this->subscriberClass->getOne($user_id);
                         switch($recordedUrl){
-                            case "[unsubscribe_link]":
+                            case '[unsubscribe_link]':
                                 $link=$this->subscriberClass->getUnsubLink($receiver,true);
                                 $statusEmailUserStat=3;
                                 break;
-                            case "[subscriptions_link]":
+                            case '[subscriptions_link]':
                                 $link=$this->subscriberClass->getEditsubLink($receiver,true);
+                                break;
+                            case '[view_in_browser_link]':
+                                $modelEmail=&WYSIJA::get('email','model');
+                                
+                                $dataEmail=$modelEmail->getOne(false,array('email_id'=>$email_id));
+                                
+                                $emailH=&WYSIJA::get('email','helper');
+                                $link=$emailH->getVIB($dataEmail);                           
+
                                 break;
                         }
  
@@ -139,6 +155,19 @@ if(isset($_REQUEST['debug']))   echo '<h2>isset urlencoded '.$decodedUrl.'</h2>'
                             $this->subscriberClass->getFormat=OBJECT;
                             $receiver = $this->subscriberClass->getOne($user_id);
                             $decodedUrl=$this->subscriberClass->getUnsubLink($receiver,true);
+                        }
+                        
+                        if(strpos($decodedUrl, '[view_in_browser_link]')!==false){
+                            $paramsurl=array(
+                                    'wysija-page'=>1,
+                                    'controller'=>"email",
+                                    'action'=>"view",
+                                    'email_id'=>$email_id,
+                                    'user_id'=>0
+                                    );
+                                $config=&WYSIJA::get('config','model');
+                                $link=WYSIJA::get_permalink($config->getValue("confirm_email_link"),$paramsurl);
+                            $decodedUrl=$link;
                         }
 
                     }
@@ -159,7 +188,7 @@ if(isset($_REQUEST['debug']))   echo '<h2>isset decoded url '.$decodedUrl.'</h2>
                     
                     
                 }else{
-                   if(in_array($recordedUrl,array("[unsubscribe_link]","[subscriptions_link]"))){
+                   if(in_array($recordedUrl,array("[unsubscribe_link]","[subscriptions_link]","[view_in_browser_link]"))){
                         $modelU=&WYSIJA::get("user","model");
                         $modelU->getFormat=OBJECT;
                         $objUser=$modelU->getOne(false,array('wpuser_id'=>get_current_user_id()));
@@ -171,6 +200,19 @@ if(isset($_REQUEST['debug']))   echo '<h2>isset decoded url '.$decodedUrl.'</h2>
                             case "[subscriptions_link]":
                                 $link=$modelU->getConfirmLink($objUser,"subscriptions",false,true).'&demo=1';
                                 //$link=$this->subscriberClass->getEditsubLink($receiver,true);
+                                break;
+                            case "view_in_browser_link":
+                                if(!$email_id) $email_id=$_REQUEST['id'];
+                                $paramsurl=array(
+                                    'wysija-page'=>1,
+                                    'controller'=>"email",
+                                    'action'=>"view",
+                                    'email_id'=>$email_id,
+                                    'user_id'=>0,
+                                    'demo'=>1
+                                    );
+                                $config=&WYSIJA::get('config','model');
+                                $link=WYSIJA::get_permalink($config->getValue("confirm_email_link"),$paramsurl);
                                 break;
                         }
                         $decodedUrl=$link;

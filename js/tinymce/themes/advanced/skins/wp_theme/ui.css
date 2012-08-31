@@ -3,12 +3,13 @@
 border:0; margin:0; padding:0; white-space:nowrap; text-decoration:none; font-weight:normal; cursor:default; vertical-align:baseline; width:auto; border-collapse:separate;
 }
 .wp_themeSkin a:hover, .wp_themeSkin a:link, .wp_themeSkin a:visited, .wp_themeSkin a:active {text-decoration:none; font-weight:normal; cursor:default;}
-.wp_themeSkin table td {vertical-align:middle}
+.wp_themeSkin table td {vertical-align:middle;}
 
 /* Containers */
 .wp_themeSkin table {}
-.wp_themeSkin iframe {display:block;}
+.wp_themeSkin iframe {display:block; }
 .wp_themeSkin .mceToolbar {padding: 2px;}
+.wp_themeSkin td.mceToolbar.mceLeft { height:61px;}
 
 /* External */
 .wp_themeSkin .mceExternalToolbar {position:absolute; border-bottom:0; display:none}

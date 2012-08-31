@@ -55,6 +55,7 @@ class WYSIJA_model_email extends WYSIJA_model{
         if(!isset($this->values["from_name"])) $this->values["from_name"]=$modelConfig->getValue("from_name");
         if(!isset($this->values["replyto_email"])) $this->values["replyto_email"]=$modelConfig->getValue("replyto_email");
         if(!isset($this->values["replyto_name"])) $this->values["replyto_name"]=$modelConfig->getValue("replyto_name");
+        if(!isset($this->values['modified_at'])) $this->values['modified_at']=time();
 
         return true;
     }
@@ -64,19 +65,19 @@ class WYSIJA_model_email extends WYSIJA_model{
             return true;
         }else $emailid=$conditions['email_id'];
 
-        $modelQ=&WYSIJA::get("queue","model");
+        $modelQ=&WYSIJA::get('queue','model');
         $modelQ->delete(array('email_id'=>$conditions['email_id']));
         return true;
     }
 
     function beforeUpdate(){
 
-        if(isset($this->values["params"]) && is_array($this->values["params"])){
+        if(isset($this->values['params']) && is_array($this->values['params'])){
 
             //update the nextSend value
-            if(!isset($this->values["params"]['autonl']['nextSend']) && isset($this->values['type']) && $this->values['type']=='2'){
+            if(!isset($this->values['params']['autonl']['nextSend']) && isset($this->values['type']) && $this->values['type']=='2'){
                 $auton=&WYSIJA::get('autonews','helper');
-                $this->values["params"]['autonl']['nextSend']=$auton->getNextSend($this->values);
+                $this->values['params']['autonl']['nextSend']=$auton->getNextSend($this->values);
             }
         }
 
@@ -212,6 +213,18 @@ class WYSIJA_model_email extends WYSIJA_model{
                 $modelQ->queueCampaign($email['email_id']);
             }
         }
+
+        $my_post = array(
+                    'post_status' => 'publish',
+                    'post_type' => 'wysija',
+                    'post_author' => $current_user->ID,
+                    );
+
+        $my_post['post_title']=$email['subject'];
+        $my_post['post_content'] ='[wysija_view]'.$email['email_id'].'[/wysija_view]';
+        
+        /*$post_id=wp_insert_post( $my_post );
+        $sentstatus['params']=array('vib_id'=>$post_id);*/
 
         $this->reset();
         $this->update($sentstatus,array('email_id'=>$email['email_id']));

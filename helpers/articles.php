@@ -96,6 +96,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
         $content = strip_tags($content, '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li>');
 
+        $content = str_replace(array('$'), array('&#36;'), $content);
+
         if(strlen(trim($post['post_title'])) > 0) {
 
             $post['post_title'] = trim(str_replace(array('$'), array('&#36;'), strip_tags($post['post_title'])));
@@ -127,7 +129,13 @@ class WYSIJA_help_articles extends WYSIJA_object {
                         $post_image['width'] = min($post_image['width'], 554);
                         break;
                 }
-                $post_image['height'] = (int)($post_image['width'] / $ratio);
+                if($ratio > 0) {
+
+                    $post_image['height'] = (int)($post_image['width'] / $ratio);
+                } else {
+
+                    $post_image = null;
+                }
             }
         }
         $block = array(
@@ -168,7 +176,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                 'alt' => urlencode($altText)
             );
         } else {
-            $matches = $matches2 = array(); 
+            $matches = $matches2 = array();
             $output = preg_match_all('/<img.+src=['."'".'"]([^'."'".'"]+)['."'".'"].*>/i', $post['post_content'], $matches);
             if(isset($matches[0][0])){
                 preg_match_all('/(src|height|width|alt)="([^"]*)"/i', $matches[0][0], $matches2);
@@ -184,7 +192,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                                 $post_image[$v2] = $matches2[2][$k2];
                             }
                         }
-                    } 
+                    }
                 }
             }
         }

@@ -12,6 +12,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
     var $_data = null;
     var $_styles = null;
 
+    var $VIEWBROWSER_SIZES = array(7, 8, 9, 10, 11, 12, 13, 14);
     var $TEXT_SIZES = array(8, 9, 10, 11, 12, 13, 14, 16, 18, 24, 36, 48, 72);
     var $TITLE_SIZES = array(16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 40, 44, 48, 54, 60, 66, 72);
     var $FONTS = array("Arial", "Arial Black", "Comic Sans MS", "Courier New", "Georgia", "Impact", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana");
@@ -38,19 +39,20 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'customDividerLabel' => __('Custom horizontal line',WYSIJA),
             'postLabel' => __('WordPress post',WYSIJA),
             'styleBodyLabel' => __('Text',WYSIJA),
+            'styleViewbrowserLabel' => __('"View in browser"', WYSIJA),
             'styleH1Label' => __('Heading 1',WYSIJA),
             'styleH2Label' => __('Heading 2',WYSIJA),
             'styleH3Label' => __('Heading 3',WYSIJA),
             'styleLinksLabel' => __('Links',WYSIJA),
-            'styleLinksDecorationLabel' => __('Underline links',WYSIJA),
+            'styleLinksDecorationLabel' => __('underline',WYSIJA),
             'styleFooterLabel' => __('Footer text',WYSIJA),
             'styleFooterBackgroundLabel' => __('Footer background',WYSIJA),
-            'styleBodyBackgroundLabel' => __('Newsletter color',WYSIJA),
-            'styleHtmlBackgroundLabel' => __('Background color', WYSIJA),
-            'styleHeaderBackgroundLabel' => __('Header background color', WYSIJA),
+            'styleBodyBackgroundLabel' => __('Newsletter',WYSIJA),
+            'styleHtmlBackgroundLabel' => __('Background', WYSIJA),
+            'styleHeaderBackgroundLabel' => __('Header background', WYSIJA),
             'styleDividerLabel' => __('Horizontal line',WYSIJA),
-            'styleUnsubscribeColorLabel' => __('Unsubscribe color',WYSIJA),
-            'articleSelectionTitle' => __('Article Selection', WYSIJA),
+            'styleUnsubscribeColorLabel' => __('Unsubscribe',WYSIJA),
+            'articleSelectionTitle' => __('Post Selection', WYSIJA),
             'bookmarkSelectionTitle' => __('Social Bookmark Selection', WYSIJA),
             'dividerSelectionTitle' => __('Divider Selection', WYSIJA),
             'abouttodeletetheme' => __('You are about to delete the theme : %1$s. Do you really want to do that?', WYSIJA),
@@ -60,7 +62,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'customFieldsLabel' => __('Add first or last name of subscriber', WYSIJA),
             'autoPostSettingsTitle' => __('Post selection options', WYSIJA),
             'autoPostEditSettings' => __('Edit Automatic latest posts', WYSIJA),
-            'autoPostImmediateNotice' => __('You can only add one widget when designing a post notification sent immediately after an article is published', WYSIJA)
+            'autoPostImmediateNotice' => __('You can only add one widget when designing a post notification sent immediately after an article is published', WYSIJA),
+            'toggleImagesTitle' => __('Preview without images', WYSIJA)
         );
     }
     
@@ -207,6 +210,11 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             ),
             'unsubscribe' => array(
                 'color' => '000000'
+            ),
+            'viewbrowser' => array(
+                'color' => '000000',
+                'family' => 'Arial',
+                'size' => $this->VIEWBROWSER_SIZES[3]
             )
         );
     }
@@ -226,8 +234,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 'footer' => $this->renderEditorFooter(),
                 'unsubscribe' => $config->emailFooterLinks(true),
                 'company_address' => nl2br($config->getValue('company_address')),
-                'is_debug' => $this->isDebug()
+                'is_debug' => $this->isDebug(),
+                'i18n' => $this->getTranslations()
             );
+            $viewbrowser = $config->viewInBrowserLink(true);
+            if($viewbrowser) {
+                $data['viewbrowser'] = $viewbrowser;
+            }
             return $wjParser->render($data, 'templates/editor/editor_template.html');
         }
     }
@@ -275,7 +288,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $block['i18n'] = $this->getTranslations();
         return $wjParser->render($block, 'templates/editor/block_'.$block['type'].'.html');
     }
-     
+    
     function renderEditorAutoPost($posts = array(), $params = array()) {
         $wjParser =& WYSIJA::get('wj_parser', 'helper');
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
@@ -327,6 +340,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 if(isset($matches[1])) {
 
                     $styles[$tag] = $this->extractStyles($matches[1]);
+                } else {
+
+                    $styles[$tag] = $defaults[$tag];
                 }
             }
             $this->setStyles($styles);
@@ -429,6 +445,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $data = $this->getStyles();
         $data['i18n'] = $this->getTranslations();
         $data['TEXT_SIZES'] = $this->TEXT_SIZES;
+        $data['VIEWBROWSER_SIZES'] = $this->VIEWBROWSER_SIZES;
         $data['TITLE_SIZES'] = $this->TITLE_SIZES;
         $data['FONTS'] = $this->FONTS;
         return $wjParser->render($data, 'templates/toolbar/styles.html');
@@ -474,11 +491,14 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
     function renderStyles() {
         $wjParser =& WYSIJA::get('wj_parser', 'helper');
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
+        $wjParser->setStripSpecialchars(true);
+        $wjParser->setInline(true);
         $data = $this->getStyles();
         $data['context'] = $this->getContext();
         switch($data['context']) {
             case 'editor':
                 $wjParser->setStripSpecialchars(false);
+                $data['viewbrowser_container'] = '#wysija_viewbrowser';
                 $data['wysija_container'] = '#wysija_wrapper';
                 $data['header_container'] = '#wysija_header';
                 $data['body_container'] = '#wysija_body';
@@ -489,12 +509,15 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             break;
             case 'email':
                 $wjParser->setStripSpecialchars(true);
+                $data['viewbrowser_container'] = '#wysija_viewbrowser';
                 $data['wysija_container'] = '#wysija_wrapper';
                 $data['header_container'] = '#wysija_header_content';
                 $data['body_container'] = '#wysija_body_content';
                 $data['footer_container'] = '#wysija_footer_content';
                 $data['text_container'] = '.wysija-text-container';
                 $data['unsubscribe_container'] = '#wysija_unsubscribe';
+
+                $data['is_rtl'] = is_rtl();
             break;
         }
         return $wjParser->render($data, 'styles/css-'.$data['context'].'.html');
@@ -511,12 +534,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             $this->setEmailData($email);
 
             $data = array(
+                'viewbrowser' => $this->renderEmailViewBrowser(),
                 'header' => $this->renderEmailHeader(),
                 'body' => $this->renderEmailBody(),
                 'footer' => $this->renderEmailFooter(),
                 'unsubscribe' => $this->renderEmailUnsubscribe(),
                 'css' => $this->renderStyles(),
-                'styles' => $this->getStyles(),
+                'styles' => $this->getStyles()
             );
 
             $data['subject'] = $this->getEmailData('subject');
@@ -525,11 +549,27 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             $wjParser->setStripSpecialchars(true);
             $wjParser->setInline(true);
             try {
-                $template = $wjParser->render($data, 'templates/email/email_template.html');
+                $template = $wjParser->render($data, 'templates/email_v2/email_template.html');
                 return $template;
             } catch(Exception $e) {
                 return '';
             }
+        }
+    }
+    function renderEmailViewBrowser() {
+        $wjParser =& WYSIJA::get('wj_parser', 'helper');
+        $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
+        $wjParser->setStripSpecialchars(true);
+        $config=&WYSIJA::get('config','model');
+        $data = $config->viewInBrowserLink();
+        if(!isset($data['link'])) {
+            return '';
+        } else {
+
+            $viewbrowser = $wjParser->render($data, 'templates/email_v2/viewbrowser_template.html');
+
+            $viewbrowser = $this->applyInlineStyles('viewbrowser', $viewbrowser);
+            return $viewbrowser;
         }
     }
     function renderEmailUnsubscribe() {
@@ -542,7 +582,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'company_address' => nl2br($config->getValue('company_address'))
         );
 
-        $unsubscribe = $wjParser->render($data, 'templates/email/unsubscribe_template.html');
+        $unsubscribe = $wjParser->render($data, 'templates/email_v2/unsubscribe_template.html');
 
         $unsubscribe = $this->applyInlineStyles('unsubscribe', $unsubscribe);
         return $unsubscribe;
@@ -559,7 +599,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
         $data['block_width'] = 600;
 
-        $header = $wjParser->render($data, 'templates/email/header_template.html');
+        $header = $wjParser->render($data, 'templates/email_v2/header_template.html');
 
         $header = $this->applyInlineStyles('header', $header);
         return $header;
@@ -569,10 +609,17 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
         $wjParser->setStripSpecialchars(true);
         $blocks = $this->getData('body');
+        $styles = array('body' => $this->getStyles('body'));
         $body = '';
         foreach($blocks as $key => $block) {
 
-            $block['block_width'] = 564;
+            $block_background_color = null;
+
+            if(isset($block['background_color']) && strlen($block['background_color']) === 6) {
+                $block_background_color = $block['background_color'];
+            }
+
+            $block['block_width'] = 600;
             if($block['type'] === 'auto-post') {
 
 
@@ -618,42 +665,65 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 if(empty($posts)) {
 
                     if(!isset($params['nopost_message']) || strlen($params['nopost_message']) === 0) {
-                        $block = '';
+                        $blockHTML = '';
                     } else {
-                        $data = array('params' => $params);
-                        $block = $wjParser->render($data, 'templates/email/block_auto-post.html');
+                        $data = array('text' => array('value' => $params['nopost_message']));
+                        $blockHTML = $wjParser->render($data, 'templates/email_v2/block_content.html');
                     }
                 } else {
-                    foreach($posts as $key => $post) {
-
-                        $postIds[] = $post['ID'];
-
-                        $postCount++;
-                        if(strlen(trim($post['post_title'])) > 0 and empty($email['params']['autonl']['articles']['first_subject'])) {
-                            $email['params']['autonl']['articles']['first_subject'] = trim($post['post_title']);
-                        }
-                        if($params['image_alignment'] !== 'none') {
-
-                            $posts[$key]['post_image'] = $articlesHelper->getImage($post);
-                        }
-
-                        $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $params);
-                    }
+                    $blockHTML = '';
+                    $divider = null;
 
                     if($params['show_divider'] === 'yes') {
                         if(isset($email['params']['divider'])) {
-                            $params['divider'] = $email['params']['divider'];
+                            $divider = $email['params']['divider'];
                         } else {
                             $dividersHelper =& WYSIJA::get('dividers', 'helper');
-                            $params['divider'] = $dividersHelper->getDefault();
+                            $divider = $dividersHelper->getDefault();
                         }
                     }
-                    $data = array(
-                        'posts' => $posts,
-                        'params' => $params
-                    );
+                    $postIterator= 1;
+                    $postCount = count($posts);
+                    for($key = 0; $key < $postCount; $key++) {
 
-                    $block = $wjParser->render($data, 'templates/email/block_auto-post.html');
+                        $postIds[] = $posts[$key]['ID'];
+                        if(strlen(trim($posts[$key]['post_title'])) > 0 and empty($email['params']['autonl']['articles']['first_subject'])) {
+                            $email['params']['autonl']['articles']['first_subject'] = trim($posts[$key]['post_title']);
+                        }
+                        if($params['image_alignment'] !== 'none') {
+
+                            $posts[$key]['post_image'] = $articlesHelper->getImage($posts[$key]);
+
+                            if($params['image_alignment'] === 'alternate') {
+                                $image_alignment = ($postIterator > 0) ? 'left' : 'right';
+                            } else {
+                                $image_alignment = $params['image_alignment'];
+                            }
+                        } else {
+
+                            $image_alignment = 'left';
+                        }
+
+                        $post_params = array_merge($params, array('image_alignment' => $image_alignment));
+
+                        $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $post_params);
+
+                        if(strlen($params['bgcolor1']) > 0 && $postIterator > 0) {
+                            $posts[$key]['background_color'] = $params['bgcolor1'];
+                        }
+                        if(strlen($params['bgcolor2']) > 0 && $postIterator < 0) {
+                            $posts[$key]['background_color'] = $params['bgcolor2'];
+                        }
+                        $postIterator *= -1;
+
+                        $data = array_merge($posts[$key], array('styles' => $styles));
+
+                        $blockHTML .= $this->applyInlineStyles('body', $wjParser->render($data, 'templates/email_v2/block_content.html'), array('background_color' => $posts[$key]['background_color']));
+
+                        if($divider !== null and $key !== ($postCount - 1)) {
+                            $blockHTML .= $wjParser->render($divider, 'templates/email_v2/block_divider.html');
+                        }
+                    }
                 }
 
                 $email['params']['autonl']['articles']['ids'] = array_unique(array_merge($email['params']['autonl']['articles']['ids'], $postIds));
@@ -662,13 +732,18 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 $this->setEmailData($email);
             } else {
 
-                $block = $wjParser->render($block, 'templates/email/block_template.html');
+                $block['styles'] = $styles;
+
+                $blockHTML = $wjParser->render($block, 'templates/email_v2/block_template.html');
+                if($block['type'] !== 'raw') {
+
+                    $blockHTML = $this->applyInlineStyles('body', $blockHTML, array('background_color' => $block_background_color));
+                }
             }
-            if($block !== '') {
 
-                $block = $this->applyInlineStyles('body', $block);
+            if($blockHTML !== '') {
 
-                $body .= $block;
+                $body .= $blockHTML;
             }
         }
         return $body;
@@ -685,13 +760,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
         $data['block_width'] = 600;
 
-        $footer = $wjParser->render($data, 'templates/email/footer_template.html');
+        $footer = $wjParser->render($data, 'templates/email_v2/footer_template.html');
 
         $footer = $this->applyInlineStyles('footer', $footer);
         return $footer;
     }
     
-    function applyInlineStyles($area, $block) {
+    function applyInlineStyles($area, $block, $extra = array()) {
         $wjParser =& WYSIJA::get('wj_parser', 'helper');
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
         $wjParser->setInline(true);
@@ -707,11 +782,15 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 );
             break;
             case 'body':
+
+                $block = preg_replace_callback('#(<h([1|2|3])[^>]*>(.*)<\/h[1|2|3]>)#Ui',
+                    create_function('$matches', '$class = \'h\'.(int)$matches[2].\'-link\'; return str_replace(\'<a\', \'<a class="\'.$class.\'"\', $matches[0]);'),
+                    $block);
                 $tags = array(
-                    'h1' => array_merge($this->getStyles('h1'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1.3em')),
-                    'h2' => array_merge($this->getStyles('h2'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1.2em')),
-                    'h3' => array_merge($this->getStyles('h3'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1.1em')),
-                    'p' => array_merge($this->getStyles('body'), array('padding' => '3px 0 0 0', 'margin' => '0 0 1.3em 0', 'line-height' => '1.5em', 'vertical-align' => 'top')),
+                    'h1' => array_merge($this->getStyles('h1'), array('word-wrap' => true, 'padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1.3em')),
+                    'h2' => array_merge($this->getStyles('h2'), array('word-wrap' => true, 'padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1.2em')),
+                    'h3' => array_merge($this->getStyles('h3'), array('word-wrap' => true, 'padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1.1em')),
+                    'p' => array_merge($this->getStyles('body'), array('word-wrap' => true, 'padding' => '3px 0 0 0', 'margin' => '0 0 1em 0', 'line-height' => '1.5em', 'vertical-align' => 'top')),
                     'a' => array_merge($this->getStyles('body'), $this->getStyles('a')),
                     'ul' => array('line-height' => '1.5em', 'margin' => '0 0 1em 0', 'padding' => '0'),
                     'ol' => array('line-height' => '1.5em', 'margin' => '0 0 1em 0', 'padding' => '0'),
@@ -719,24 +798,37 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 );
                 $classes = array(
                     'wysija-image-container alone-left' => array('margin' => '0', 'padding' => '0'),
-                    'wysija-image-container alone-center' => array('margin' => '0 auto 1.1em auto', 'padding' => '0', 'text-align' => 'center'),
+                    'wysija-image-container alone-center' => array('margin' => '1em auto 1em auto', 'padding' => '0', 'text-align' => 'center'),
                     'wysija-image-container alone-right' => array('margin' => '0', 'padding' => '0'),
                     'wysija-image-left' => array('vertical-align' => 'top'),
                     'wysija-image-center' => array('margin' => '0 auto 0 auto', 'vertical-align' => 'top'),
                     'wysija-image-right' => array('vertical-align' => 'top'),
-                    'wysija-image-container align-left' => array('float' => 'left', 'margin' => '4px 15px 1.1em 0', 'padding' => '0'),
-                    'wysija-image-container align-center' => array('margin' => '0 auto 1.1em auto', 'text-align' => 'center', 'padding' => '0'),
-                    'wysija-image-container align-right' => array('float' => 'right', 'margin' => '4px 0 1.1em 15px', 'padding' => '0'),
-                    'wysija-divider-container' => array('margin' => '0 auto 1.1em auto', 'padding' => '0', 'text-align' => 'center'),
+                    'wysija-image-container align-left' => array('float' => 'left', 'margin' => '0', 'padding' => '0'),
+                    'wysija-image-container align-center' => array('margin' => '0 auto 0 auto', 'text-align' => 'center', 'padding' => '0'),
+                    'wysija-image-container align-right' => array('float' => 'right', 'margin' => '0', 'padding' => '0'),
+                    'wysija-divider-container' => array('margin' => '0 auto 0 auto', 'padding' => '0', 'text-align' => 'center'),
                     'align-left' => array('text-align' => 'left'),
                     'align-center' => array('text-align' => 'center'),
                     'align-right' => array('text-align' => 'right'),
-                    'align-justify' => array('text-align' => 'justify')
+                    'align-justify' => array('text-align' => 'justify'),
+                    'h1-link' => array_merge($this->getStyles('h1'), $this->getStyles('a')),
+                    'h2-link' => array_merge($this->getStyles('h2'), $this->getStyles('a')),
+                    'h3-link' => array_merge($this->getStyles('h3'), $this->getStyles('a'))
                 );
+
+                if(array_key_exists('background_color', $extra) and $extra['background_color'] !== null) {
+                    $tags['p']['background'] = $extra['background_color'];
+                    $tags['a']['background'] = $extra['background_color'];
+                }
             break;
             case 'unsubscribe':
                 $tags = array(
                     'a' => $this->getStyles('unsubscribe')
+                );
+            break;
+            case 'viewbrowser':
+                $tags = array(
+                    'a' => $this->getStyles('viewbrowser')
                 );
             break;
         }
@@ -755,12 +847,14 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 $classes['#<([^ /]+) ((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)class="'.$class.'"((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)>#Ui'] = '<$1 $2$4$5$7 style="$3$6'.$wjParser->render($styles, 'styles/inline.html').'">';
                 unset($classes[$class]);
             }
-            $blockafter = preg_replace(array_keys($classes), $classes, $block);
+            $styledBlock = preg_replace(array_keys($classes), $classes, $block);
             
-            if($blockafter) $block=$blockafter;
+            if(strlen(trim($styledBlock)) > 0) {
+                $block = $styledBlock;
+            }
         }
 
-        if($area === 'body') {
+        if($area === 'body' && strlen($block) > 0) {
 
 
             $block = preg_replace('#<\/p>#Ui', "<!--[if gte mso 9]></p><![endif]--></p>", $block);
@@ -778,6 +872,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             $pFixStyles = $this->splitSpacing(array_merge($this->getStyles('body'), array('padding' => '3px 0 0 0', 'margin' => '0 0 1.3em 0', 'line-height' => '1em', 'vertical-align' => 'top')));
             $h2FixStyles = $this->splitSpacing(array_merge($this->getStyles('h2'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1em')));
             $h3FixStyles = $this->splitSpacing(array_merge($this->getStyles('h3'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1em')));
+
+            if(array_key_exists('background_color', $extra) and $extra['background_color'] !== null) {
+                $pFixStyles['background'] = $extra['background_color'];
+                $h2FixStyles['background'] = $extra['background_color'];
+                $h3FixStyles['background'] = $extra['background_color'];
+            }
             $block = str_replace('class="wysija-fix-paragraph"', 'style="'.$wjParser->render($pFixStyles, 'styles/inline.html').'"', $block);
             $block = str_replace('class="wysija-fix-h2"', 'style="'.$wjParser->render($h2FixStyles, 'styles/inline.html').'"', $block);
             $block = str_replace('class="wysija-fix-h3"', 'style="'.$wjParser->render($h3FixStyles, 'styles/inline.html').'"', $block);
@@ -815,5 +915,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             }
         }
         return $styles;
+    }
+    function formatColor($color) {
+        if(strlen(trim($color)) === 0 or $color === 'transparent') {
+            return 'transparent';
+        } else {
+            return '#'.$color;
+        }
     }
 }

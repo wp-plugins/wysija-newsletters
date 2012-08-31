@@ -4,8 +4,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wysija v1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-14 12:06+0100\n"
-"PO-Revision-Date: 2012-06-14 12:06+0100\n"
+"POT-Creation-Date: 2012-08-24 03:40-0500\n"
+"PO-Revision-Date: 2012-08-24 03:41-0500\n"
 "Last-Translator: Wysija <kim@wysija.com>\n"
 "Language-Team: Your name <your@email.com>\n"
 "MIME-Version: 1.0\n"
@@ -17,40 +17,46 @@ msgstr ""
 "X-Poedit-KeywordsList: __;_e;_n:1,2\n"
 "X-Poedit-SearchPath-0: ..\n"
 
-#: ../controllers/back.php:260
-#: ../controllers/back.php:265
-#: ../controllers/ajax/campaigns.php:531
-#: ../controllers/back/config.php:54
+#: ../controllers/back.php:266 ../controllers/back.php:271
+#: ../controllers/ajax/campaigns.php:574 ../controllers/back/config.php:68
+#: ../views/back/campaigns.php:727 ../views/back/subscribers.php:513
 msgid "Get Premium now"
 msgstr ""
 
-#: ../controllers/back.php:261
+#: ../controllers/back.php:267
 #, php-format
-msgid "Yikes. You're over the limit of 2000 subscribers for the free version of Wysija (%1$s in total). Sending is disabled now. Please upgrade your version to [link]premium[/link] to send without limits."
+msgid ""
+"Yikes. You're over the limit of 2000 subscribers for the free version of "
+"Wysija (%1$s in total). Sending is disabled now. Please upgrade your version "
+"to [link]premium[/link] to send without limits."
 msgstr ""
 
-#: ../controllers/back.php:266
+#: ../controllers/back.php:272
 #, php-format
-msgid "Yikes! You're near the limit of %1$s subscribers for Wysija's free version. Upgrade to [link]Premium[/link] to send without limits, and more."
+msgid ""
+"Yikes! You're near the limit of %1$s subscribers for Wysija's free version. "
+"Upgrade to [link]Premium[/link] to send without limits, and more."
 msgstr ""
 
-#: ../controllers/back.php:394
+#: ../controllers/back.php:400
 msgid "Elements deleted"
 msgstr ""
 
-#: ../controllers/back.php:406
+#: ../controllers/back.php:412
 msgid "Element has been deleted."
 msgstr ""
 
-#: ../controllers/back.php:457
+#: ../controllers/back.php:467 ../controllers/back.php:470
+#: ../views/back/campaigns.php:1848 ../views/back/campaigns.php:2341
+#: ../views/back/campaigns.php:2343 ../views/back/campaigns.php:2489
 msgid "Upload"
 msgstr ""
 
-#: ../controllers/back.php:458
+#: ../controllers/back.php:473
 msgid "Newsletter Images"
 msgstr ""
 
-#: ../controllers/back.php:459
+#: ../controllers/back.php:474
 msgid "WordPress Posts' Images"
 msgstr ""
 
@@ -58,81 +64,84 @@ msgstr ""
 msgid "The theme you selected could not be loaded."
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:78
+#: ../controllers/ajax/campaigns.php:79
 msgid "Your email could not be saved"
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:81
+#: ../controllers/ajax/campaigns.php:82
 msgid "Your email has been saved"
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:122
+#: ../controllers/ajax/campaigns.php:123
 msgid "Styles could not be saved"
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:125
+#: ../controllers/ajax/campaigns.php:126
 msgid "Styles have been saved"
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:140
-#: ../controllers/back/campaigns.php:1891
+#: ../controllers/ajax/campaigns.php:141
+#: ../controllers/back/campaigns.php:1971
 msgid "Image has been deleted."
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:182
+#: ../controllers/ajax/campaigns.php:183
 msgid "Image selection has not been saved."
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:185
+#: ../controllers/ajax/campaigns.php:186
 msgid "Image selection has been saved."
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:288
+#: ../controllers/ajax/campaigns.php:289
 msgid "There are no posts corresponding to that search."
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:338
-msgid "You have sent us your newsletter successfully. Thanks! We'll be in touch if we feature your design."
-msgstr ""
-
-#: ../controllers/ajax/campaigns.php:363
+#: ../controllers/ajax/campaigns.php:376
 #, php-format
 msgid "Your email preview has been sent to %1$s"
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:532
-msgid "Theme is available in premium version only. [link]11 good reasons to upgrade.[/link]"
+#: ../controllers/ajax/campaigns.php:411
+msgid "You don't have any tries left."
 msgstr ""
 
-#: ../controllers/ajax/campaigns.php:558
-#: ../controllers/back/campaigns.php:1709
-msgid "We were unable to contact the API, the site may be down. Please try again later."
+#: ../controllers/ajax/campaigns.php:575
+msgid ""
+"Theme is available in premium version only. [link]11 good reasons to upgrade."
+"[/link]"
 msgstr ""
 
-#: ../controllers/ajax/config.php:46
-#: ../controllers/ajax/config.php:90
-#: ../controllers/back/campaigns.php:79
+#: ../controllers/ajax/campaigns.php:601
+#: ../controllers/back/campaigns.php:1751
+msgid ""
+"We were unable to contact the API, the site may be down. Please try again "
+"later."
+msgstr ""
+
+#: ../controllers/ajax/config.php:51 ../controllers/ajax/config.php:95
+#: ../controllers/back/campaigns.php:80
 #, php-format
 msgid "Successfully connected to %1$s"
 msgstr ""
 
-#: ../controllers/ajax/config.php:47
-#: ../controllers/ajax/config.php:99
-#: ../controllers/back/campaigns.php:88
+#: ../controllers/ajax/config.php:52 ../controllers/ajax/config.php:104
+#: ../controllers/back/campaigns.php:89
 #, php-format
 msgid "There are %1$s messages in your mailbox"
 msgstr ""
 
-#: ../controllers/ajax/config.php:50
+#: ../controllers/ajax/config.php:55
 msgid "There are no bounced messages to process right now!"
 msgstr ""
 
-#: ../controllers/ajax/config.php:63
-msgid "Are you sure you selected the right port? You can leave it empty if you do not know what to specify"
+#: ../controllers/ajax/config.php:68
+msgid ""
+"Are you sure you selected the right port? You can leave it empty if you do "
+"not know what to specify"
 msgstr ""
 
-#: ../controllers/ajax/config.php:95
-#: ../controllers/back/campaigns.php:84
+#: ../controllers/ajax/config.php:100 ../controllers/back/campaigns.php:85
 msgid "There are no messages"
 msgstr ""
 
@@ -142,7 +151,7 @@ msgid "User has been inserted."
 msgstr ""
 
 #: ../controllers/ajax/subscribers.php:20
-#: ../controllers/front/subscribers.php:16
+#: ../controllers/front/subscribers.php:16 ../helpers/user.php:166
 msgid "User has not been inserted."
 msgstr ""
 
@@ -156,17 +165,6 @@ msgstr ""
 msgid "User has not been updated."
 msgstr ""
 
-#: ../controllers/ajax/subscribers.php:36
-#: ../controllers/front/subscribers.php:40
-#, php-format
-msgid "The email %1$s is not valid!"
-msgstr ""
-
-#: ../controllers/ajax/subscribers.php:53
-#: ../controllers/front/subscribers.php:52
-msgid "Oops! You're already subscribed."
-msgstr ""
-
 #: ../controllers/ajax/tmce.php:13
 msgid "Insert Newsletter Registration Form"
 msgstr ""
@@ -175,158 +173,160 @@ msgstr ""
 msgid "Edit Newsletter Registration Form"
 msgstr ""
 
-#: ../controllers/ajax/tmce.php:75
-#: ../core/base.php:1061
+#: ../controllers/ajax/tmce.php:84 ../core/base.php:1058 ../core/base.php:1088
+#: ../core/base.php:1234 ../models/user_field.php:21
+#: ../views/back/campaigns.php:833 ../views/back/subscribers.php:180
+#: ../views/back/subscribers.php:346 ../views/back/subscribers.php:804
+#: ../views/front/confirm.php:36 ../views/front/widget_nl.php:139
+#: ../views/front/widget_nl.php:190
 msgid "Email"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:21
+#: ../controllers/back/campaigns.php:21 ../helpers/licence.php:52
 msgid "Premium version is valid for your site."
 msgstr ""
 
 #: ../controllers/back/campaigns.php:26
-msgid "Premium licence does not exist for your site. Purchase it [link]here[/link]."
+msgid ""
+"Premium licence does not exist for your site. Purchase it [link]here[/link]."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:57
+#: ../controllers/back/campaigns.php:58
 msgid "Queue is empty!"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:59
+#: ../controllers/back/campaigns.php:60
 msgid "Go premium, you cannot send anymore!"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:99
-#: ../controllers/back/campaigns.php:289
-#: ../controllers/back/campaigns.php:330
-#: ../controllers/back/campaigns.php:475
+#: ../controllers/back/campaigns.php:100 ../controllers/back/campaigns.php:289
+#: ../controllers/back/campaigns.php:330 ../controllers/back/campaigns.php:486
 #, php-format
 msgid "Step %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:105
-msgid "Insert [total] to show number of posts, [post_title] to show the latest post's title & [number] to display the issue number."
+#: ../controllers/back/campaigns.php:106 ../views/back/campaigns.php:1401
+msgid ""
+"Insert [total] to show number of posts, [post_title] to show the latest "
+"post's title & [number] to display the issue number."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:106
-msgid "This is the subject of the email. Be creative since it’s the first thing your subscribers will see."
+#: ../controllers/back/campaigns.php:107
+msgid ""
+"It's the first thing your subscribers see. Be creative to increase your open "
+"rates!"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:108
+#: ../controllers/back/campaigns.php:109
 msgid "First step : main details"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:123
+#: ../controllers/back/campaigns.php:124
 msgid "once a day at..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:124
+#: ../controllers/back/campaigns.php:125
 msgid "weekly on..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:125
+#: ../controllers/back/campaigns.php:126
 msgid "monthly on the..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:126
+#: ../controllers/back/campaigns.php:127
 msgid "monthly every..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:127
+#: ../controllers/back/campaigns.php:128
 msgid "immediately when a post is published."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:157
+#: ../controllers/back/campaigns.php:158
 msgid "there are new posts, send..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:158
+#: ../controllers/back/campaigns.php:159
 msgid "someone subscribes to the list..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:159
+#: ../controllers/back/campaigns.php:160
 msgid "a new WordPress user is added to your site..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:183
+#: ../controllers/back/campaigns.php:184
 msgid "in any role,"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:184
+#: ../controllers/back/campaigns.php:185
 msgid "as an administrator,"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:185
+#: ../controllers/back/campaigns.php:186
 msgid "as an editor,"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:186
+#: ../controllers/back/campaigns.php:187
 msgid "as an author,"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:187
+#: ../controllers/back/campaigns.php:188
 msgid "as a contributor,"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:188
+#: ../controllers/back/campaigns.php:189
 msgid "as a subscriber,"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:198
+#: ../controllers/back/campaigns.php:199
 msgid "immediately."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:199
+#: ../controllers/back/campaigns.php:200
 msgid "hour(s) after."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:200
+#: ../controllers/back/campaigns.php:201
 msgid "day(s) after."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:201
+#: ../controllers/back/campaigns.php:202
 msgid "week(s) after."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:204
+#: ../controllers/back/campaigns.php:205
 msgid "immediately"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:205
+#: ../controllers/back/campaigns.php:206
 msgid "hour(s)"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:206
+#: ../controllers/back/campaigns.php:207
 msgid "day(s)"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:207
+#: ../controllers/back/campaigns.php:208
 msgid "week(s)"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:308
+#: ../controllers/back/campaigns.php:310
 msgid "Saving newsletter..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:309
+#: ../controllers/back/campaigns.php:311
 msgid "Error Saving newsletter..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:310
+#: ../controllers/back/campaigns.php:312
 msgid "Newsletter has been saved."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:311
-#: ../controllers/back/campaigns.php:443
+#: ../controllers/back/campaigns.php:313 ../controllers/back/campaigns.php:452
 msgid "Sending preview..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:312
-msgid "Would you like to have your theme design featured on Wysija's blog?"
-msgstr ""
-
-#: ../controllers/back/campaigns.php:313
-msgid "If so, click Ok to submit the newsletter you're currently working on for our showcase on www.wysija.com"
+#: ../controllers/back/campaigns.php:314
+msgid "Spam test results"
 msgstr ""
 
 #: ../controllers/back/campaigns.php:329
@@ -334,383 +334,506 @@ msgstr ""
 msgid "Second step :  \"%1$s\""
 msgstr ""
 
-#: ../controllers/back/campaigns.php:345
+#: ../controllers/back/campaigns.php:354
 msgid "Sending is now paused."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:358
+#: ../controllers/back/campaigns.php:367
 msgid "Sending has resumed."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:370
-#: ../controllers/back/campaigns.php:376
-#: ../controllers/back/campaigns.php:396
+#: ../controllers/back/campaigns.php:379 ../controllers/back/campaigns.php:385
+#: ../controllers/back/campaigns.php:405
 #: ../controllers/back/subscribers.php:349
 msgid "Copy of "
 msgstr ""
 
-#: ../controllers/back/campaigns.php:386
-#: ../controllers/back/campaigns.php:400
+#: ../controllers/back/campaigns.php:395 ../controllers/back/campaigns.php:409
 msgid "The newsletter has been duplicated."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:416
+#: ../controllers/back/campaigns.php:425
 #, php-format
 msgid "%1$s emails every %2$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:417
-msgid "Your sending settings ([settings]) can't send that quickly to [number] subscribers. Expect delivery delays. [link]Read more[/link]"
+#: ../controllers/back/campaigns.php:426
+msgid ""
+"Your sending settings ([settings]) can't send that quickly to [number] "
+"subscribers. Expect delivery delays. [link]Read more[/link]"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:440
+#: ../controllers/back/campaigns.php:449
 msgid "Final step : last details"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:444
+#: ../controllers/back/campaigns.php:453
 msgid "Pick a date"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:445
+#: ../controllers/back/campaigns.php:454 ../views/back/campaigns.php:1490
+#: ../views/back/campaigns.php:1495 ../views/back/campaigns.php:1496
 msgid "Save & close"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:446
+#: ../controllers/back/campaigns.php:455
 msgid "Send later"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:468
+#: ../controllers/back/campaigns.php:457
+msgid "Schedule"
+msgstr ""
+
+#: ../controllers/back/campaigns.php:458 ../views/back/campaigns.php:1493
+#: ../views/back/campaigns.php:1494
+msgid "Send"
+msgstr ""
+
+#: ../controllers/back/campaigns.php:480
 msgid "[#] emails are about to be sent to the list(s) [#nms]."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:499
-#: ../controllers/back/campaigns.php:517
+#: ../controllers/back/campaigns.php:510 ../controllers/back/campaigns.php:528
 msgid "Newsletter deleted."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:503
-#: ../controllers/back/campaigns.php:521
+#: ../controllers/back/campaigns.php:514 ../controllers/back/campaigns.php:532
 msgid "Newsletter can't be deleted."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:593
-#: ../controllers/back/campaigns.php:605
+#: ../controllers/back/campaigns.php:612 ../controllers/back/campaigns.php:624
+#: ../helpers/articles.php:68
 msgid "Read online."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:630
+#: ../controllers/back/campaigns.php:649
 #, php-format
 msgid "The posts below were added with the widget %sAutomatic latest posts%s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:646
+#: ../controllers/back/campaigns.php:665
 #, php-format
 msgid "%sTo edit%s, mouse over to show edit button below."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:712
+#: ../controllers/back/campaigns.php:731
 msgid "The Messenger Pigeon's Tale"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:722
-msgid "The pigeon spread his wings to catch the wind. Even the smallest breeze could make me rise above the Northern peaks, he thought."
+#: ../controllers/back/campaigns.php:741
+msgid ""
+"The pigeon spread his wings to catch the wind. Even the smallest breeze "
+"could make me rise above the Northern peaks, he thought."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:723
-msgid "The city's highrises spread below him. His shadow a simple dot on a sidewalk. For a moment he forgot the weary task at hand. A messenger pigeon he is, after all."
+#: ../controllers/back/campaigns.php:742
+msgid ""
+"The city's highrises spread below him. His shadow a simple dot on a "
+"sidewalk. For a moment he forgot the weary task at hand. A messenger pigeon "
+"he is, after all."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:745
+#: ../controllers/back/campaigns.php:764
 msgid "Newsletter successfully created."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:773
+#: ../controllers/back/campaigns.php:803
 msgid "Information is missing."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:779
-msgid "The Google Campaign name needs to be only letters and number, with no spaces allowed. We'll improve this in the future!"
+#: ../controllers/back/campaigns.php:813
+msgid ""
+"The Google Campaign name needs to be only letters and number, with no spaces "
+"allowed. We'll improve this in the future!"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:798
+#: ../controllers/back/campaigns.php:832 ../controllers/back/campaigns.php:858
 msgid "Newsletter has been scheduled."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:799
+#: ../controllers/back/campaigns.php:833
 msgid "Newsletter has been saved as a draft."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:824
-msgid "Your newsletter has been scheduled!"
-msgstr ""
-
-#: ../controllers/back/campaigns.php:826
+#: ../controllers/back/campaigns.php:860
 msgid "Your latest newsletter is being sent."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:828
+#: ../controllers/back/campaigns.php:862
 msgid "Your auto newsletter has been activated."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:915
+#: ../controllers/back/campaigns.php:951 ../helpers/back.php:273
+#: ../helpers/back.php:327
 msgid "Newsletters"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:918
+#: ../controllers/back/campaigns.php:954
 msgid "Please select a newsletter."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:919
+#: ../controllers/back/campaigns.php:955
 msgid "Delete this newsletter for ever?"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:920
+#: ../controllers/back/campaigns.php:956
 msgid "Sending batch of emails..."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:921
+#: ../controllers/back/campaigns.php:957
 msgid "View newsletter"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1253
+#: ../controllers/back/campaigns.php:958
+msgid ""
+"The newsletter will be deactivated, you will need to reactivate it once "
+"you're over editing it. Do you want to proceed?"
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1299
 msgid "The list has been deleted."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1254
+#: ../controllers/back/campaigns.php:1300
 msgid "Sending suspended."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1262
-msgid "We looked everywhere, but we couldn't find the newsletter you're looking for."
+#: ../controllers/back/campaigns.php:1308
+msgid ""
+"We looked everywhere, but we couldn't find the newsletter you're looking for."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1319
+#: ../controllers/back/campaigns.php:1365
 #, php-format
 msgid "Stats : %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1494
+#: ../controllers/back/campaigns.php:1540 ../views/back/subscribers.php:496
 #, php-format
 msgid "%1$s hit"
 msgid_plural "%1$s hits"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../controllers/back/campaigns.php:1503
+#: ../controllers/back/campaigns.php:1549
 msgid "Your request can't retrieve any subscribers. Change your filters!"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1545
+#: ../controllers/back/campaigns.php:1592
 #, php-format
 msgid "Segment of %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1549
+#: ../controllers/back/campaigns.php:1596
 msgid "List created based on a newsletter segment."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1559
+#: ../controllers/back/campaigns.php:1606
 #, php-format
 msgid "A new list \"%1$s\" has been created out of this segment."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1574
+#: ../controllers/back/campaigns.php:1621
 msgid "The segment has been unbsubscribed from all the lists."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1602
+#: ../controllers/back/campaigns.php:1649
 msgid "The segment has been removed from the queue of this newsletter."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1632
+#: ../controllers/back/campaigns.php:1679
 #, php-format
 msgid "The segment has been unbsubscribed from the list \"%1$s\""
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1634
+#: ../controllers/back/campaigns.php:1681
 msgid "The segment cannot be unbsubscribed from an [IMPORT] list."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1643
-msgid "Article Selection"
+#: ../controllers/back/campaigns.php:1690 ../helpers/wj_engine.php:63
+msgid "Post Selection"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1662
-#: ../controllers/back/subscribers.php:607
+#: ../controllers/back/campaigns.php:1709
+#: ../controllers/back/subscribers.php:612
 #, php-format
 msgid "Upload error, file %1$s is too large! (MAX:%2$s)"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1677
-msgid "Wysija themes need to be in the zip format."
-msgstr ""
-
-#: ../controllers/back/campaigns.php:1685
+#: ../controllers/back/campaigns.php:1727
 msgid "Install Themes"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1688
+#: ../controllers/back/campaigns.php:1730
 msgid "Details & PSD"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1689
+#: ../controllers/back/campaigns.php:1731 ../views/back/campaigns.php:1833
 msgid "<< Back"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1690
+#: ../controllers/back/campaigns.php:1732
 msgid "Install"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1691
+#: ../controllers/back/campaigns.php:1733
 msgid "Reinstall"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1692
+#: ../controllers/back/campaigns.php:1734
 msgid "Premium Only"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1698
-msgid "Photoshop file available for Premium users. [link]11 good reasons to upgrade.[/link]"
+#: ../controllers/back/campaigns.php:1740
+msgid ""
+"Photoshop file available for Premium users. [link]11 good reasons to upgrade."
+"[/link]"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1704
+#: ../controllers/back/campaigns.php:1746
 msgid "Show all themes"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1705
+#: ../controllers/back/campaigns.php:1747
 #, php-format
 msgid "(%1$s votes)"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1706
+#: ../controllers/back/campaigns.php:1748
 msgid "Your vote has been recorded."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1707
+#: ../controllers/back/campaigns.php:1749
 msgid "Your vote could not be recorded."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1708
+#: ../controllers/back/campaigns.php:1750
 #, php-format
-msgid "Watch out! If you reinstall this theme all the files which are in the folder:/wp-content/uploads/wysija/themes/%1$s will be overwritten. Are you sure you want to reinstall?"
+msgid ""
+"Watch out! If you reinstall this theme all the files which are in the "
+"folder:/wp-content/uploads/wysija/themes/%1$s will be overwritten. Are you "
+"sure you want to reinstall?"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1711
+#: ../controllers/back/campaigns.php:1753
 #, php-format
 msgid "View all themes by %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1712
+#: ../controllers/back/campaigns.php:1754
 msgid "Download original Photoshop file"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1713
+#: ../controllers/back/campaigns.php:1755
 msgid "View author's website"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1714
+#: ../controllers/back/campaigns.php:1756
 #, php-format
 msgid "Average rating: %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1715
+#: ../controllers/back/campaigns.php:1757
 #, php-format
 msgid "My rating: %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1716
+#: ../controllers/back/campaigns.php:1758
 #, php-format
 msgid "Downloads: %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1717
+#: ../controllers/back/campaigns.php:1759
 #, php-format
 msgid "Tags: %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1718
+#: ../controllers/back/campaigns.php:1760
 #, php-format
 msgid "Last updated: %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1719
+#: ../controllers/back/campaigns.php:1761
 #, php-format
 msgid "Includes: %1$s"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1736
+#: ../controllers/back/campaigns.php:1778
 msgid "Bookmarks Selection"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1743
+#: ../controllers/back/campaigns.php:1821
 msgid "Dividers Selection"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1790
+#: ../controllers/back/campaigns.php:1868
 msgid "Add / Edit group of posts"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1804
+#: ../controllers/back/campaigns.php:1883
 msgid "Read more."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1807
+#: ../controllers/back/campaigns.php:1886
 msgid "No new posts."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1858
+#: ../controllers/back/campaigns.php:1939
 msgid "Image Parameters"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1870
+#: ../controllers/back/campaigns.php:1950
 msgid "Delete image for all newsletters?"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1876
+#: ../controllers/back/campaigns.php:1956
 msgid "This image might be in an article. Delete anyway?"
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1945
+#: ../controllers/back/campaigns.php:1984
+msgid "You have attempted to queue too many files."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1985
+#, php-format
+msgid "%s exceeds the maximum upload size for this site."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1986
+msgid "This file is empty. Please try another."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1987
+msgid "This file type is not allowed. Please try another."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1988
+msgid "This file is not an image. Please try another."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1989
+msgid "Memory exceeded. Please try another smaller file."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1990
+msgid "This is larger than the maximum size. Please try another."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1991
+msgid "An error occurred in the upload. Please try again later."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1992
+msgid ""
+"There was a configuration error. Please contact the server administrator."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1993
+msgid "You may only upload 1 file."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1994
+msgid "HTTP error."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1995
+msgid "Upload failed."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1996
+#, php-format
+msgid "Please try uploading this file with the %1$sbrowser uploader%2$s."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1997
+#, php-format
+msgid ""
+"%s exceeds the maximum upload size for the multi-file uploader when used in "
+"your browser."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1998
+msgid "IO error."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:1999
+msgid "Security error."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2000
+msgid "File canceled."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2001
+msgid "Upload stopped."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2002
+msgid "Dismiss"
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2003
+msgid "Crunching&hellip;"
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2004
+msgid "moved to the trash."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2005
+#, php-format
+msgid "&#8220;%s&#8221; has failed to upload."
+msgstr ""
+
+#: ../controllers/back/campaigns.php:2069
 msgid "Saved."
 msgstr ""
 
-#: ../controllers/back/campaigns.php:1959
+#: ../controllers/back/campaigns.php:2083
 msgid "The newsletter doesn't exist."
 msgstr ""
 
-#: ../controllers/back/config.php:44
+#: ../controllers/back/config.php:58
 msgid "Sending a test email"
 msgstr ""
 
-#: ../controllers/back/config.php:45
+#: ../controllers/back/config.php:59
 msgid "Bounce handling connection test"
 msgstr ""
 
-#: ../controllers/back/config.php:46
+#: ../controllers/back/config.php:60
 msgid "Bounce handling processing"
 msgstr ""
 
-#: ../controllers/back/config.php:47
-msgid "Subscribers will now need to activate their subscription by email in order to receive your newsletters. This is recommended."
+#: ../controllers/back/config.php:61
+msgid ""
+"Subscribers will now need to activate their subscription by email in order "
+"to receive your newsletters. This is recommended."
 msgstr ""
 
-#: ../controllers/back/config.php:48
-msgid "Unconfirmed subscribers will receive your newslettters from now on without the need to activate their subscriptions."
+#: ../controllers/back/config.php:62
+msgid ""
+"Unconfirmed subscribers will receive your newslettters from now on without "
+"the need to activate their subscriptions."
 msgstr ""
 
-#: ../controllers/back/config.php:49
+#: ../controllers/back/config.php:63
 msgid "Process bounce handling now!"
 msgstr ""
 
-#: ../controllers/back/config.php:50
-msgid "When setting up the bounce system, you need to have a different address for the bounce email and the forward to address"
+#: ../controllers/back/config.php:64
+msgid ""
+"When setting up the bounce system, you need to have a different address for "
+"the bounce email and the forward to address"
 msgstr ""
 
-#: ../controllers/back/config.php:55
-msgid "You're almost there. Click this [link]link[/link] to activate the licence you have just purchased."
+#: ../controllers/back/config.php:69
+msgid ""
+"You're almost there. Click this [link]link[/link] to activate the licence "
+"you have just purchased."
 msgstr ""
 
-#: ../controllers/back/config.php:71
+#: ../controllers/back/config.php:105
 msgid "Reinstall Wysija?"
 msgstr ""
 
@@ -718,12 +841,12 @@ msgstr ""
 msgid "Subscribers per page:"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:68
+#: ../controllers/back/subscribers.php:68 ../views/back/campaigns.php:12
 msgid "Please select some users first!"
 msgstr ""
 
 #: ../controllers/back/subscribers.php:237
-msgid "Yikes! Couldn't find any subscriber."
+msgid "Yikes! Couldn't find any subscribers."
 msgstr ""
 
 #: ../controllers/back/subscribers.php:243
@@ -770,7 +893,8 @@ msgstr ""
 msgid "List \"%1$s\" has been duplicated."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:369
+#: ../controllers/back/subscribers.php:369 ../views/back/subscribers.php:28
+#: ../views/back/subscribers.php:335
 msgid "Add Subscriber"
 msgstr ""
 
@@ -778,27 +902,33 @@ msgstr ""
 msgid "No subscriber found, most probably because he was deleted."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:419
+#: ../controllers/back/subscribers.php:419 ../views/back/campaigns.php:194
 msgid "Bounced"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:419
+#: ../controllers/back/subscribers.php:419 ../views/back/campaigns.php:188
 msgid "Unopened"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:419
+#: ../controllers/back/subscribers.php:419 ../views/back/campaigns.php:191
 msgid "Opened"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:419
+#: ../controllers/back/subscribers.php:419 ../views/back/campaigns.php:197
 msgid "Clicked"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:419
+#: ../controllers/back/subscribers.php:419 ../views/back/campaigns.php:859
+#: ../views/back/subscribers.php:64 ../views/back/subscribers.php:206
+#: ../views/back/subscribers.php:380 ../views/back/subscribers.php:383
+#: ../views/back/subscribers.php:557 ../views/front/confirm.php:68
 msgid "Unsubscribed"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:441
+#: ../controllers/back/subscribers.php:441 ../views/back.php:16
+#: ../views/back/campaigns.php:14 ../views/back/campaigns.php:456
+#: ../views/back/campaigns.php:469 ../views/back/campaigns.php:482
+#: ../views/back/subscribers.php:14 ../views/back/subscribers.php:579
 msgid "Edit"
 msgstr ""
 
@@ -811,129 +941,142 @@ msgstr ""
 msgid "The list does not exists or cannot be deleted."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:522
+#: ../controllers/back/subscribers.php:527
 msgid "List has been updated."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:528
+#: ../controllers/back/subscribers.php:533
 msgid "Your brand-new list awaits its first subscriber."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:551
+#: ../controllers/back/subscribers.php:556
 #, php-format
 msgid "Import from plugin %1$s has been completed."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:553
+#: ../controllers/back/subscribers.php:558
 #, php-format
 msgid "Import from plugin %1$s has been cancelled."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:566
+#: ../controllers/back/subscribers.php:571
 msgid "Import subscribers from plugins"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:582
+#: ../controllers/back/subscribers.php:587
 msgid "There is no plugin to import from."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:591
-#: ../controllers/back/subscribers.php:774
+#: ../controllers/back/subscribers.php:596
+#: ../controllers/back/subscribers.php:782
 msgid "Import Subscribers"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:604
+#: ../controllers/back/subscribers.php:609
 msgid "which you have pasted"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:636
-msgid "The list you've pasted is too big for the browser. <strong>Upload the file</strong> instead."
+#: ../controllers/back/subscribers.php:641
+msgid ""
+"The list you've pasted is too big for the browser. <strong>Upload the file</"
+"strong> instead."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:692
-msgid "The data you are trying to import doesn't appear to be in the CSV format (Comma Separated Values). [link]Read more[/link]."
+#: ../controllers/back/subscribers.php:697
+msgid ""
+"The data you are trying to import doesn't appear to be in the CSV format "
+"(Comma Separated Values). [link]Read more[/link]."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:693
-msgid "The first line of a CSV file should be the column headers : \"email\",\"lastname\",\"firstname\"."
+#: ../controllers/back/subscribers.php:698
+msgid ""
+"The first line of a CSV file should be the column headers : \"email\","
+"\"lastname\",\"firstname\"."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:694
-msgid "The second line of a CSV file should be a set of values : \"joeeg@example.com\",\"Average\",\"Joe\"."
+#: ../controllers/back/subscribers.php:699
+msgid ""
+"The second line of a CSV file should be a set of values : \"joeeg@example.com"
+"\",\"Average\",\"Joe\"."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:696
+#: ../controllers/back/subscribers.php:701
 msgid "The two first lines of the file you've uploaded are as follow:"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:700
-#: ../controllers/back/subscribers.php:704
+#: ../controllers/back/subscribers.php:705
+#: ../controllers/back/subscribers.php:709
 msgid "Line is empty"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:747
+#: ../controllers/back/subscribers.php:755
 #, php-format
-msgid "There might be a problem with the list you are trying to import. We have identified %1$s emails out of %2$s rows."
+msgid ""
+"There might be a problem with the list you are trying to import. We have "
+"identified %1$s emails out of %2$s rows."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:750
+#: ../controllers/back/subscribers.php:758
 #, php-format
 msgid "We have identified email addresses in the column(s) named \"%1$s\"."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:800
+#: ../controllers/back/subscribers.php:808
 msgid "You need to select at least one list."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:814
+#: ../controllers/back/subscribers.php:822
 #, php-format
 msgid "Cannot access CSV file. Verify access rights to this directory \"%1$s\""
 msgstr ""
 
-#: ../controllers/back/subscribers.php:873
+#: ../controllers/back/subscribers.php:882
 msgid "There seems to be an error with the list you're trying to import."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:914
+#: ../controllers/back/subscribers.php:925
 #, php-format
-msgid "%1$s subscribers have been added to \"%2$s\"."
+msgid "%1$s subscribers have been added to database. (%2$s were ignored)"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:918
+#: ../controllers/back/subscribers.php:927
 #, php-format
-msgid "%1$s were ignored because they are already subscribed."
+msgid ""
+"%1$s subscribers have been added to %2$s. (%3$s insertions were ignored out "
+"of %4$s)"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:930
+#: ../controllers/back/subscribers.php:938
 #, php-format
 msgid "%1$s emails appear more than once in your file : %2$s."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:934
+#: ../controllers/back/subscribers.php:942
 #, php-format
 msgid "%1$s emails are not valid : %2$s."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:1002
+#: ../controllers/back/subscribers.php:1016
 msgid "Error when inserting emails."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:1021
+#: ../controllers/back/subscribers.php:1040
 msgid "Error when inserting list."
 msgstr ""
 
-#: ../controllers/back/subscribers.php:1031
+#: ../controllers/back/subscribers.php:1050
 msgid "Export Subscribers"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:1050
+#: ../controllers/back/subscribers.php:1069
 #, php-format
 msgid "Exporting %1$s subscribers"
 msgstr ""
 
-#: ../controllers/back/subscribers.php:1125
+#: ../controllers/back/subscribers.php:1151
 #, php-format
-msgid "%1$s subscribers were exported. Get the exported file [link]here[/link]."
+msgid ""
+"%1$s subscribers were exported. Get the exported file [link]here[/link]."
 msgstr ""
 
 #: ../controllers/front/confirm.php:20
@@ -952,12 +1095,17 @@ msgstr ""
 msgid "You are already unsubscribed."
 msgstr ""
 
-#: ../controllers/front/confirm.php:98
+#: ../controllers/front/confirm.php:99
 #, php-format
-msgid "Edit your newsletter profile: %1$s"
+msgid "Edit your subscriber profile: %1$s"
 msgstr ""
 
-#: ../controllers/front/confirm.php:158
+#: ../controllers/front/confirm.php:136
+#, php-format
+msgid "Email %1$s already exists."
+msgstr ""
+
+#: ../controllers/front/confirm.php:171
 msgid "Newsletter profile has been updated."
 msgstr ""
 
@@ -970,264 +1118,305 @@ msgstr ""
 msgid "Subscription without JavaScript is disabled."
 msgstr ""
 
-#: ../core/base.php:108
+#: ../core/base.php:109
 msgid "An error occured. [link]Show more details.[/link]"
 msgstr ""
 
-#: ../core/base.php:112
+#: ../core/base.php:113
 msgid "[link]Show more details.[/link]"
 msgstr ""
 
-#: ../core/base.php:390
+#: ../core/base.php:420
 msgid "Once every minutes"
 msgstr ""
 
-#: ../core/base.php:394
+#: ../core/base.php:424
 msgid "Once every two minutes"
 msgstr ""
 
-#: ../core/base.php:398
+#: ../core/base.php:428
 msgid "Once every five minutes"
 msgstr ""
 
-#: ../core/base.php:402
+#: ../core/base.php:432
 msgid "Once every ten minutes"
 msgstr ""
 
-#: ../core/base.php:406
+#: ../core/base.php:436
 msgid "Once every fifteen minutes"
 msgstr ""
 
-#: ../core/base.php:410
+#: ../core/base.php:440
 msgid "Once every thirty minutes"
 msgstr ""
 
-#: ../core/base.php:414
+#: ../core/base.php:444
 msgid "Once every two hours"
 msgstr ""
 
-#: ../core/base.php:418
+#: ../core/base.php:448
 msgid "Once a week"
 msgstr ""
 
-#: ../core/base.php:422
+#: ../core/base.php:452
 msgid "Once every 28 days"
 msgstr ""
 
-#: ../core/base.php:576
-#: ../core/base.php:577
+#: ../core/base.php:606 ../core/base.php:607
 msgid "Wysija page"
 msgstr ""
 
-#: ../core/base.php:849
-#: ../core/base.php:877
+#: ../core/base.php:999 ../helpers/backloader.php:102
+#: ../helpers/wj_engine.php:69
+msgid "Loading..."
+msgstr ""
+
+#: ../core/base.php:1014 ../core/base.php:1042 ../views/front/widget_nl.php:14
 msgid "Wysija Subscription"
 msgstr ""
 
-#: ../core/base.php:850
-#: ../core/base.php:878
+#: ../core/base.php:1015 ../core/base.php:1043
 msgid "Subscription form for your newsletters."
 msgstr ""
 
-#: ../core/base.php:881
+#: ../core/base.php:1046
 msgid "Check your inbox now to confirm your subscription."
 msgstr ""
 
-#: ../core/base.php:882
-msgid "You’ve successfully subscribed."
+#: ../core/base.php:1047
+msgid "You've successfully subscribed."
 msgstr ""
 
-#: ../core/base.php:889
+#: ../core/base.php:1054
 msgid "Title:"
 msgstr ""
 
-#: ../core/base.php:889
+#: ../core/base.php:1054
 msgid "Subscribe to our Newsletter"
 msgstr ""
 
-#: ../core/base.php:890
-msgid "To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!"
+#: ../core/base.php:1055
+msgid ""
+"To subscribe to our dandy newsletter simply add your email below. A "
+"confirmation email will be sent to you!"
 msgstr ""
 
-#: ../core/base.php:891
+#: ../core/base.php:1056
 msgid "Select a list:"
 msgstr ""
 
-#: ../core/base.php:892
-msgid "Let the user select his lists of interests:"
+#: ../core/base.php:1057
+msgid "Let subscribers select their lists:"
 msgstr ""
 
-#: ../core/base.php:893
+#: ../core/base.php:1058
 msgid "Ask for:"
 msgstr ""
 
-#: ../core/base.php:894
+#: ../core/base.php:1059
 msgid "Display labels in inputs"
 msgstr ""
 
-#: ../core/base.php:895
+#: ../core/base.php:1060
 msgid "Button label:"
 msgstr ""
 
-#: ../core/base.php:895
+#: ../core/base.php:1060
 msgid "Subscribe!"
 msgstr ""
 
-#: ../core/base.php:896
+#: ../core/base.php:1061
 msgid "Success message:"
 msgstr ""
 
-#: ../core/base.php:897
+#: ../core/base.php:1062
 msgid "Get iframe version"
 msgstr ""
 
-#: ../core/base.php:1002
-#: ../core/base.php:1048
+#: ../core/base.php:1115
+msgid ""
+"Before creating a subscription widget you'll need to create at least one "
+"list to add your subscribers to."
+msgstr ""
+
+#: ../core/base.php:1115
+msgid "Create a list."
+msgstr ""
+
+#: ../core/base.php:1171 ../core/base.php:1221 ../views/back/config.php:207
+#: ../views/back/config.php:378 ../views/back/config.php:640
+#: ../views/back/config.php:763 ../views/back/subscribers.php:964
 msgid "Yes"
 msgstr ""
 
-#: ../core/base.php:1010
-#: ../core/base.php:1056
+#: ../core/base.php:1179 ../core/base.php:1229 ../views/back/config.php:199
+#: ../views/back/config.php:378 ../views/back/config.php:607
+#: ../views/back/config.php:632 ../views/back/config.php:763
+#: ../views/back/subscribers.php:965
 msgid "No"
 msgstr ""
 
-#: ../core/base.php:1060
+#: ../core/base.php:1233
 msgid "Label for email:"
 msgstr ""
 
-#: ../core/base.php:1069
+#: ../core/base.php:1246
 #, php-format
 msgid "Label for %1$s:"
 msgstr ""
 
-#: ../core/base.php:1147
+#: ../core/base.php:1286
+msgid "Get iFrame version"
+msgstr ""
+
+#: ../core/base.php:1286
+msgid "Get PHP version"
+msgstr ""
+
+#: ../core/base.php:1369
 msgid "Subscription Wysija"
 msgstr ""
 
-#: ../core/model.php:568
+#: ../core/model.php:569
 msgid "Error Validating the fields"
 msgstr ""
 
-#: ../core/model.php:651
+#: ../core/model.php:652
 #, php-format
 msgid "Field \"%1$s\" is required in table \"%2$s\"."
 msgstr ""
 
-#: ../core/model.php:659
+#: ../core/model.php:660
 #, php-format
 msgid "Field \"%1$s\" needs to be a valid Email."
 msgstr ""
 
 #: ../core/view.php:18
-msgid "Your server's configuration doesn't allow us to complete Wysija's Installation!"
+msgid ""
+"Your server's configuration doesn't allow us to complete Wysija's "
+"Installation!"
 msgstr ""
 
-#: ../helpers/articles.php:218
+#: ../helpers/articles.php:255
 msgid "Click here to view media."
 msgstr ""
 
-#: ../helpers/back.php:111
-msgid "It doesn't always work the way we want it to, doesn't it? We have a [link]dedicated support website[/link] with documentation and a ticketing system."
+#: ../helpers/back.php:107
+msgid ""
+"It doesn't always work the way we want it to, doesn't it? We have a [link]"
+"dedicated support website[/link] with documentation and a ticketing system."
 msgstr ""
 
-#: ../helpers/back.php:121
+#: ../helpers/back.php:117
 msgid "[link]Request a feature for Wysija[/link] in User Voice."
 msgstr ""
 
-#: ../helpers/back.php:128
-#: ../helpers/back.php:373
+#: ../helpers/back.php:124 ../helpers/back.php:377
 msgid "Wysija Version: "
 msgstr ""
 
-#: ../helpers/back.php:131
+#: ../helpers/back.php:127
 msgid "Wysija"
 msgstr ""
 
-#: ../helpers/back.php:132
-#: ../helpers/back.php:248
+#: ../helpers/back.php:128 ../helpers/back.php:272
 msgid "Subscribers"
 msgstr ""
 
-#: ../helpers/back.php:133
+#: ../helpers/back.php:129 ../views/back/config.php:10
+#: ../views/back/config.php:245
 msgid "Settings"
 msgstr ""
 
-#: ../helpers/back.php:141
-msgid "The CRON system is disabled on your WordPress site. Wysija will not work correctly while it stays disabled."
+#: ../helpers/back.php:138
+msgid "Tired of waiting more than 48h to send your emails?"
 msgstr ""
 
-#: ../helpers/back.php:141
-#: ../helpers/back.php:396
+#: ../helpers/back.php:138
+msgid "[link]Find out[/link] how you can improve this."
+msgstr ""
+
+#: ../helpers/back.php:139 ../helpers/back.php:149 ../helpers/back.php:400
 msgid "Hide!"
 msgstr ""
 
-#: ../helpers/back.php:153
+#: ../helpers/back.php:148
+msgid ""
+"The CRON system is disabled on your WordPress site. Wysija will not work "
+"correctly while it stays disabled."
+msgstr ""
+
+#: ../helpers/back.php:169
 #, php-format
-msgid "Would you like to import the %1$s lists with a total of %2$s subscribers from the plugin %3$s. [link]Yes[/link]. [link_ignore]I'll import them later.[/link_ignore]"
+msgid ""
+"Would you like to import the %1$s lists with a total of %2$s subscribers "
+"from the plugin %3$s. [link]Yes[/link]. [link_ignore]I'll import them later."
+"[/link_ignore]"
 msgstr ""
 
-#: ../helpers/back.php:179
-msgid "Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] and confirm your site can send emails in the [link]Settings[/link]. [link_ignore]Ignore[/link_ignore]."
+#: ../helpers/back.php:195
+msgid ""
+"Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] "
+"and confirm your site can send emails in the [link]Settings[/link]. "
+"[link_ignore]Ignore[/link_ignore]."
 msgstr ""
 
-#: ../helpers/back.php:261
+#: ../helpers/back.php:285
 msgid "Get Help!"
 msgstr ""
 
-#: ../helpers/back.php:312
+#: ../helpers/back.php:316
 msgid "Go Premium!"
 msgstr ""
 
-#: ../helpers/back.php:372
+#: ../helpers/back.php:376
 msgid "Support & documentation"
 msgstr ""
 
-#: ../helpers/back.php:372
-msgid "Request a feature"
+#: ../helpers/back.php:376
+msgid "Request feature"
 msgstr ""
 
-#: ../helpers/back.php:372
-msgid "Help us out"
-msgstr ""
-
-#: ../helpers/backloader.php:23
-msgid "Please make a selection first!"
+#: ../helpers/back.php:376
+msgid "Spread da word."
 msgstr ""
 
 #: ../helpers/backloader.php:24
+msgid "Please make a selection first!"
+msgstr ""
+
+#: ../helpers/backloader.php:25
 msgid "Deleting a list will not delete any subscribers."
 msgstr ""
 
-#: ../helpers/backloader.php:101
-msgid "Loading..."
-msgstr ""
-
-#: ../helpers/backloader.php:134
+#: ../helpers/backloader.php:135
 msgid "Next &gt;"
 msgstr ""
 
-#: ../helpers/backloader.php:135
+#: ../helpers/backloader.php:136
 msgid "&lt; Prev"
 msgstr ""
 
-#: ../helpers/backloader.php:136
+#: ../helpers/backloader.php:137
 msgid "Image"
 msgstr ""
 
-#: ../helpers/backloader.php:137
+#: ../helpers/backloader.php:138
 msgid "of"
 msgstr ""
 
-#: ../helpers/backloader.php:138
+#: ../helpers/backloader.php:139
 msgid "Close"
 msgstr ""
 
-#: ../helpers/backloader.php:139
-msgid "This feature requires inline frames. You have iframes disabled or your browser does not support them."
+#: ../helpers/backloader.php:140
+msgid ""
+"This feature requires inline frames. You have iframes disabled or your "
+"browser does not support them."
 msgstr ""
 
-#: ../helpers/bounce.php:293
-#: ../helpers/bounce.php:296
+#: ../helpers/bounce.php:293 ../helpers/bounce.php:296
+#: ../views/back/config.php:217
 msgid "Bounce Handling"
 msgstr ""
 
@@ -1249,7 +1438,56 @@ msgstr ""
 msgid "Actions will be executed after %1$s messages"
 msgstr ""
 
-#: ../helpers/file.php:137
+#: ../helpers/email.php:31
+msgid "Yup, it works. You can start blasting away emails to the moon."
+msgstr ""
+
+#: ../helpers/email.php:57
+msgid "You're all setup! You've successfully sent with Gmail."
+msgstr ""
+
+#: ../helpers/email.php:61
+msgid ""
+"Looking for a faster method to send? [link]Read more[/link] on sending with "
+"a professional SMTP."
+msgstr ""
+
+#: ../helpers/email.php:75
+msgid "[send_method] works with Wysija"
+msgstr ""
+
+#: ../helpers/email.php:79
+#, php-format
+msgid "Test email successfully sent to <b><i>%s</i></b>"
+msgstr ""
+
+#: ../helpers/email.php:85
+msgid ""
+"The PHP Extension openssl is not enabled on your server. Ask your host to "
+"enable it if you want to use an SSL connection."
+msgstr ""
+
+#: ../helpers/email.php:87
+#, php-format
+msgid ""
+"The bounce email address \"%1$s\" might actually cause the problem. Leave "
+"the field empty and try again."
+msgstr ""
+
+#: ../helpers/email.php:90
+msgid ""
+"You specified an SMTP password but you don't require an authentification, "
+"you might want to turn the SMTP authentification ON."
+msgstr ""
+
+#: ../helpers/email.php:94
+msgid ""
+"Your localhost may not have a mail server. To verify, please log out and "
+"click on the \"Lost your password?\" link on the login page. Do you receive "
+"the reset password email from your WordPress?"
+msgstr ""
+
+#: ../helpers/file.php:137 ../helpers/toolbox.php:58
 msgid "File does not exists."
 msgstr ""
 
@@ -1269,37 +1507,35 @@ msgstr ""
 msgid "10 minutes"
 msgstr ""
 
-#: ../helpers/forms.php:12
+#: ../helpers/forms.php:12 ../views/back/config.php:794
 msgid "15 minutes"
 msgstr ""
 
-#: ../helpers/forms.php:13
+#: ../helpers/forms.php:13 ../views/back/config.php:795
 msgid "30 minutes"
 msgstr ""
 
-#: ../helpers/forms.php:14
+#: ../helpers/forms.php:14 ../views/back/config.php:796
 msgid "1 hour"
 msgstr ""
 
-#: ../helpers/forms.php:15
+#: ../helpers/forms.php:15 ../views/back/config.php:797
 msgid "2 hours"
 msgstr ""
 
-#: ../helpers/forms.php:16
+#: ../helpers/forms.php:16 ../views/back/config.php:798
 msgid "Twice daily"
 msgstr ""
 
-#: ../helpers/forms.php:17
+#: ../helpers/forms.php:17 ../views/back/config.php:799
 msgid "Day"
 msgstr ""
 
-#: ../helpers/forms.php:138
-#: ../helpers/forms.php:143
+#: ../helpers/forms.php:138 ../helpers/forms.php:143
 msgid "HTML"
 msgstr ""
 
-#: ../helpers/forms.php:139
-#: ../helpers/forms.php:144
+#: ../helpers/forms.php:139 ../helpers/forms.php:144
 msgid "Visual"
 msgstr ""
 
@@ -1330,7 +1566,8 @@ msgstr ""
 
 #: ../helpers/import.php:226
 #, php-format
-msgid "The list created automatically on import of the plugin's subscribers : \"%1$s"
+msgid ""
+"The list created automatically on import of the plugin's subscribers : \"%1$s"
 msgstr ""
 
 #: ../helpers/import.php:310
@@ -1348,173 +1585,218 @@ msgstr ""
 msgid "%1$s users from %2$s have been imported into the new list %3$s"
 msgstr ""
 
-#: ../helpers/install.php:67
-msgid "Wysija has been installed successfully. Go to the [link]settings page[/link] now, and start blasting emails."
+#: ../helpers/install.php:71
+msgid ""
+"Wysija has been installed successfully. Go to the [link]settings page[/link] "
+"now, and start blasting emails."
 msgstr ""
 
-#: ../helpers/install.php:106
+#: ../helpers/install.php:114
 #, php-format
-msgid "The MySQL user you have setup on your Wordpress site (wp-config.php) doesn't have enough privileges to CREATE MySQL tables. Please change this user yourself or contact the administrator of your site in order to complete Wysija's installation. mysql errors:(%1$s)"
+msgid ""
+"The MySQL user you have setup on your Wordpress site (wp-config.php) doesn't "
+"have enough privileges to CREATE MySQL tables. Please change this user "
+"yourself or contact the administrator of your site in order to complete "
+"Wysija's installation. mysql errors:(%1$s)"
 msgstr ""
 
-#: ../helpers/install.php:117
-#: ../helpers/themes.php:257
+#: ../helpers/install.php:125 ../helpers/themes.php:257
 #, php-format
-msgid "The folder \"%1$s\" is not writable, please change the access rights to this folder so that Wysija can setup itself properly."
+msgid ""
+"The folder \"%1$s\" is not writable, please change the access rights to this "
+"folder so that Wysija can setup itself properly."
 msgstr ""
 
-#: ../helpers/install.php:117
-#: ../helpers/themes.php:257
+#: ../helpers/install.php:125 ../helpers/themes.php:257
 msgid "Read documentation"
 msgstr ""
 
-#: ../helpers/install.php:128
+#: ../helpers/install.php:136
 msgid "My first list"
 msgstr ""
 
-#: ../helpers/install.php:131
+#: ../helpers/install.php:139
 msgid "The list created automatically on install of the Wysija."
 msgstr ""
 
-#: ../helpers/install.php:140
-#: ../helpers/install.php:150
+#: ../helpers/install.php:148 ../helpers/install.php:158
 msgid "Example Newsletter"
 msgstr ""
 
-#: ../helpers/install.php:141
+#: ../helpers/install.php:149
 msgid "Default newsletter created automatically during installation."
 msgstr ""
 
-#: ../helpers/install.php:186
-msgid "Wysija Bootcamp"
-msgstr ""
-
-#: ../helpers/install.php:187
-msgid "This example newsletter is for you to <span style='color: #008000;'>experiment</span> with. It takes about 15 minutes to read through this guide. Its pretty intuitive altogether."
-msgstr ""
-
-#: ../helpers/install.php:188
-msgid "Things you can do right in this newsletter :"
-msgstr ""
-
-#: ../helpers/install.php:189
-msgid "Drop a WordPress post"
-msgstr ""
-
-#: ../helpers/install.php:190
-msgid "<strong>Insert</strong> images"
-msgstr ""
-
-#: ../helpers/install.php:191
-msgid "Change your <strong>divider style</strong>"
-msgstr ""
-
-#: ../helpers/install.php:192
-msgid "Click on this text to <strong>edit</strong> it"
-msgstr ""
-
-#: ../helpers/install.php:193
-msgid "<strong>Reorder</strong> items around"
-msgstr ""
-
 #: ../helpers/install.php:194
-msgid "Install a <strong>new theme</strong> and apply it"
+msgid "Example & Guide"
 msgstr ""
 
 #: ../helpers/install.php:195
+msgid ""
+"This example newsletter is for you to <span style='color: "
+"#008000;'>experiment</span> with. It takes about 15 minutes to read through "
+"this guide. Its pretty intuitive altogether."
+msgstr ""
+
+#: ../helpers/install.php:196
+msgid "Things you can do right in this newsletter :"
+msgstr ""
+
+#: ../helpers/install.php:197
+msgid "Drop a WordPress post"
+msgstr ""
+
+#: ../helpers/install.php:198
+msgid "<strong>Insert</strong> images"
+msgstr ""
+
+#: ../helpers/install.php:199
+msgid "Change your <strong>divider style</strong>"
+msgstr ""
+
+#: ../helpers/install.php:200
+msgid "Click on this text to <strong>edit</strong> it"
+msgstr ""
+
+#: ../helpers/install.php:201
+msgid "<strong>Reorder</strong> items around"
+msgstr ""
+
+#: ../helpers/install.php:202
+msgid "Install a <strong>new theme</strong> and apply it"
+msgstr ""
+
+#: ../helpers/install.php:203
 msgid "Change the styles in the Style tab"
 msgstr ""
 
-#: ../helpers/install.php:208
+#: ../helpers/install.php:216
 msgid "Duplicate, Don't Save"
 msgstr ""
 
-#: ../helpers/install.php:209
-msgid "We often get asked: <strong><em>How can I save my design</em>?</strong> Well, you can't."
+#: ../helpers/install.php:217
+msgid ""
+"We often get asked: <strong><em>How can I save my design</em>?</strong> "
+"Well, you can't."
 msgstr ""
 
-#: ../helpers/install.php:210
-msgid "You simply need to duplicate a previous newsletter to take its design. If you're installing Wysija for a colleague or a client, create a draft newsletter he or she can duplicate at will."
+#: ../helpers/install.php:218
+msgid ""
+"You simply need to duplicate a previous newsletter to take its design. If "
+"you're installing Wysija for a colleague or a client, create a draft "
+"newsletter he or she can duplicate at will."
 msgstr ""
 
-#: ../helpers/install.php:223
+#: ../helpers/install.php:231
 msgid "Images and Text Together"
 msgstr ""
 
-#: ../helpers/install.php:236
-msgid "It's possible to mix text with images.</p><p><strong>Try it:</strong> mouse over the image to realign it left or right."
+#: ../helpers/install.php:244
+msgid ""
+"It's possible to mix text with images.</p><p><strong>Try it:</strong> mouse "
+"over the image to realign it left or right."
 msgstr ""
 
-#: ../helpers/install.php:237
+#: ../helpers/install.php:245
 msgid "You can replace that image by dropping a new one over it."
 msgstr ""
 
-#: ../helpers/install.php:238
-msgid "Because email clients don't load images by default, you can add an <strong>alternate text</strong> that will show."
+#: ../helpers/install.php:246
+msgid ""
+"Because email clients don't load images by default, you can add an "
+"<strong>alternate text</strong> that will show."
 msgstr ""
 
-#: ../helpers/install.php:239
+#: ../helpers/install.php:247
 msgid "<strong>Try it:</strong> click on the link button of the image."
 msgstr ""
 
-#: ../helpers/install.php:240
-msgid "When you drop a <strong>WordPress post, it will include the first image in that post or the post's featured image</strong>. All other images will be ignored!"
+#: ../helpers/install.php:248
+msgid ""
+"When you drop a <strong>WordPress post, it will include the first image in "
+"that post or the post's featured image</strong>. All other images will be "
+"ignored!"
 msgstr ""
 
-#: ../helpers/install.php:283
-msgid "If you want to use a special font for your titles, you'll have to create them as an image in <strong>Photoshop</strong>, just like the example title above."
+#: ../helpers/install.php:275
+msgid "Lorem Ipsum Venus Vinci"
 msgstr ""
 
-#: ../helpers/install.php:284
-msgid "<strong>Why? </strong>The choices of fonts on newsletters are very very limited."
+#: ../helpers/install.php:276
+msgid ""
+"If you want to use a special font for your titles, you'll have to create "
+"them as an image in <strong>Photoshop</strong>, just like the example title "
+"above."
 msgstr ""
 
-#: ../helpers/install.php:285
-msgid "Fonts aren't sent with emails. Fonts reside in the email clients of the world (Outlook, Gmail, Yahoo) and the computers that open those emails. Only a few fonts are really on all these machines. Crazy but true."
+#: ../helpers/install.php:277
+msgid ""
+"<strong>Why? </strong>The choices of fonts on newsletters are very very "
+"limited."
 msgstr ""
 
-#: ../helpers/install.php:303
+#: ../helpers/install.php:278
+msgid ""
+"Fonts aren't sent with emails. Fonts reside in the email clients of the "
+"world (Outlook, Gmail, Yahoo) and the computers that open those emails. Only "
+"a few fonts are really on all these machines. Crazy but true."
+msgstr ""
+
+#: ../helpers/install.php:296
 msgid "Can I Insert Videos in my Newsletters?"
 msgstr ""
 
-#: ../helpers/install.php:316
-msgid "You <strong>can't</strong> insert videos in your emails. Instead, use an image that looks like the player."
+#: ../helpers/install.php:309
+msgid ""
+"You <strong>can't</strong> insert videos in your emails. Instead, use an "
+"image that looks like the player."
 msgstr ""
 
-#: ../helpers/install.php:317
-msgid "Find images of popular players by visiting this page (copy and paste it!):"
+#: ../helpers/install.php:310
+msgid ""
+"Find images of popular players by visiting this page (copy and paste it!):"
 msgstr ""
 
-#: ../helpers/install.php:337
+#: ../helpers/install.php:330
 msgid "Social Bookmark Icons"
 msgstr ""
 
-#: ../helpers/install.php:390
-msgid "The icons above were added using the <em>Social bookmarks</em> widget. Try it. It's in the <em>Contents</em> tab on the right. You'll see you have plenty of icon choices. Neat!"
+#: ../helpers/install.php:383
+msgid ""
+"The icons above were added using the <em>Social bookmarks</em> widget. Try "
+"it. It's in the <em>Contents</em> tab on the right. You'll see you have "
+"plenty of icon choices. Neat!"
 msgstr ""
 
-#: ../helpers/install.php:403
+#: ../helpers/install.php:396
 msgid "Get Help on support.wysija.com"
 msgstr ""
 
-#: ../helpers/install.php:404
-msgid "Of course, things don't always work the way they should. But we're here to help. Find us on support.wysija.com. We have documentation and a ticket system if you need to get us involved."
+#: ../helpers/install.php:397
+msgid ""
+"Of course, things don't always work the way they should. But we're here to "
+"help. Find us on support.wysija.com. We have documentation and a ticket "
+"system if you need to get us involved."
 msgstr ""
 
-#: ../helpers/install.php:417
+#: ../helpers/install.php:410
 msgid "I Want to Change my Footer's Content!"
 msgstr ""
 
-#: ../helpers/install.php:418
+#: ../helpers/install.php:411
 msgid "You can change the footer text in Wysija's Settings, and not here."
 msgstr ""
 
-#: ../helpers/install.php:419
-msgid "In <em>The Basics</em> tab, you can add <strong>your postal address</strong> (good against spam filters), or whatever you see fit."
+#: ../helpers/install.php:412
+msgid ""
+"In <em>The Basics</em> tab, you can add <strong>your postal address</strong> "
+"(good against spam filters), or whatever you see fit."
 msgstr ""
 
-#: ../helpers/install.php:420
-msgid "Change the text for the \"<strong>Unsubscribe</strong>\" link in the <em>Advanced</em> tab of the Settings."
+#: ../helpers/install.php:413
+msgid ""
+"Change the text for the \"<strong>Unsubscribe</strong>\" link in the "
+"<em>Advanced</em> tab of the Settings."
 msgstr ""
 
 #: ../helpers/install.php:491
@@ -1526,7 +1808,10 @@ msgstr ""
 msgid "These tables could not be created on installation: %1$s"
 msgstr ""
 
-#: ../helpers/install.php:610
+#: ../helpers/install.php:610 ../models/user_field.php:21
+#: ../views/back/subscribers.php:355 ../views/back/subscribers.php:804
+#: ../views/front/confirm.php:45 ../views/front/widget_nl.php:140
+#: ../views/front/widget_nl.php:188
 msgid "First name"
 msgstr ""
 
@@ -1534,7 +1819,10 @@ msgstr ""
 msgid "Please enter first name"
 msgstr ""
 
-#: ../helpers/install.php:611
+#: ../helpers/install.php:611 ../models/user_field.php:21
+#: ../views/back/subscribers.php:364 ../views/back/subscribers.php:804
+#: ../views/front/confirm.php:54 ../views/front/widget_nl.php:141
+#: ../views/front/widget_nl.php:189
 msgid "Last name"
 msgstr ""
 
@@ -1547,87 +1835,96 @@ msgid "Subscription confirmation"
 msgstr ""
 
 #: ../helpers/licence.php:57
-msgid "Premium licence does not exist for your site. Purchase from our website [link]here[/link]."
+msgid ""
+"Premium licence does not exist for your site. Purchase from our website "
+"[link]here[/link]."
 msgstr ""
 
-#: ../helpers/mailer.php:116
+#: ../helpers/mailer.php:123
 msgid "There is no subject or body in this email"
 msgstr ""
 
-#: ../helpers/mailer.php:144
+#: ../helpers/mailer.php:151
 #, php-format
 msgid "Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>"
 msgstr ""
 
-#: ../helpers/mailer.php:159
+#: ../helpers/mailer.php:171
 #, php-format
 msgid "Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>"
 msgstr ""
 
-#: ../helpers/mailer.php:334
+#: ../helpers/mailer.php:346
 #, php-format
 msgid "The email ID %s is not published"
 msgstr ""
 
-#: ../helpers/mailer.php:378
+#: ../helpers/mailer.php:390
 #, php-format
 msgid "Subscriber not found : <b><i>%s</i></b>"
 msgstr ""
 
-#: ../helpers/mailer.php:389
+#: ../helpers/mailer.php:401
 #, php-format
 msgid " The subscriber <b><i>%s</i></b> is not confirmed"
 msgstr ""
 
-#: ../helpers/queue.php:58
+#: ../helpers/queue.php:63
 #, php-format
 msgid "There are %1$s delayed email(s)"
 msgstr ""
 
-#: ../helpers/queue.php:61
+#: ../helpers/queue.php:66
 #, php-format
 msgid "Email will be sent to %1$s at %2$s"
 msgstr ""
 
-#: ../helpers/queue.php:76
-#: ../helpers/queue.php:80
+#: ../helpers/queue.php:82 ../helpers/queue.php:86
 msgid "Send Process"
 msgstr ""
 
-#: ../helpers/queue.php:153
+#: ../helpers/queue.php:165
 #, php-format
 msgid "Next try in %s minutes."
 msgstr ""
 
-#: ../helpers/queue.php:179
+#: ../helpers/queue.php:193
 msgid "Process refreshed to avoid a time limit."
 msgstr ""
 
-#: ../helpers/queue.php:184
+#: ../helpers/queue.php:198
 msgid "Process refreshed to avoid a possible loss of connection."
 msgstr ""
 
-#: ../helpers/queue.php:233
-msgid "Newsletters are already being sent. Your latest newsletter will be sent afterwards."
+#: ../helpers/queue.php:252
+msgid ""
+"Newsletters are already being sent. Your latest newsletter will be sent "
+"afterwards."
 msgstr ""
 
-#: ../helpers/queue.php:270
+#: ../helpers/queue.php:289
 msgid "The Send Process stopped because there are too many errors."
 msgstr ""
 
-#: ../helpers/queue.php:272
-msgid "We kept all non delivered emails in the queue, so you will be able to resume the send process later."
+#: ../helpers/queue.php:291
+msgid ""
+"We kept all non delivered emails in the queue, so you will be able to resume "
+"the send process later."
 msgstr ""
 
-#: ../helpers/queue.php:276
-msgid "Please verify your mail configuration and make sure you can send a test of this email."
+#: ../helpers/queue.php:295
+msgid ""
+"Please verify your mail configuration and make sure you can send a test of "
+"this email."
 msgstr ""
 
-#: ../helpers/queue.php:278
-msgid "If you recently, successfully, sent a lot of emails, those errors may also be due to your server limitations."
+#: ../helpers/queue.php:297
+msgid ""
+"If you recently, successfully, sent a lot of emails, those errors may also "
+"be due to your server limitations."
 msgstr ""
 
-#: ../helpers/queue.php:280
+#: ../helpers/queue.php:299
 msgid "Your server apparently refuses to send more emails."
 msgstr ""
 
@@ -1739,7 +2036,9 @@ msgstr ""
 
 #: ../helpers/themes.php:294
 #, php-format
-msgid "A theme called %1$s exists already. To overwrite it, tick the corresponding checkbox before uploading."
+msgid ""
+"A theme called %1$s exists already. To overwrite it, tick the corresponding "
+"checkbox before uploading."
 msgstr ""
 
 #: ../helpers/themes.php:324
@@ -1748,7 +2047,8 @@ msgid "The theme %1$s has been installed on your site."
 msgstr ""
 
 #: ../helpers/themes.php:326
-msgid "We could not install your theme. It appears it's not in the valid format."
+msgid ""
+"We could not install your theme. It appears it's not in the valid format."
 msgstr ""
 
 #: ../helpers/themes.php:343
@@ -1761,140 +2061,101 @@ msgstr ""
 msgid "Theme %1$s could not be deleted."
 msgstr ""
 
-#: ../helpers/toolbox.php:73
-msgid "Yup, it works. You can start blasting away emails to the moon."
-msgstr ""
-
-#: ../helpers/toolbox.php:99
-msgid "You're all setup! You've successfully sent with Gmail."
-msgstr ""
-
-#: ../helpers/toolbox.php:103
-msgid "Looking for a faster method to send? [link]Read more[/link] on sending with a professional SMTP."
-msgstr ""
-
-#: ../helpers/toolbox.php:117
-msgid "[send_method] works with Wysija"
-msgstr ""
-
-#: ../helpers/toolbox.php:121
-#, php-format
-msgid "Test email successfully sent to <b><i>%s</i></b>"
-msgstr ""
-
-#: ../helpers/toolbox.php:127
-msgid "The PHP Extension openssl is not enabled on your server. Ask your host to enable it if you want to use an SSL connection."
-msgstr ""
-
-#: ../helpers/toolbox.php:129
-#, php-format
-msgid "The bounce email address \"%1$s\" might actually cause the problem. Leave the field empty and try again."
-msgstr ""
-
-#: ../helpers/toolbox.php:132
-msgid "You specified an SMTP password but you don't require an authentification, you might want to turn the SMTP authentification ON."
-msgstr ""
-
-#: ../helpers/toolbox.php:136
-msgid "Your localhost may not have a mail server. To verify, please log out and click on the \"Lost your password?\" link on the login page. Do you receive the reset password email from your WordPress?"
-msgstr ""
-
-#: ../helpers/toolbox.php:273
+#: ../helpers/toolbox.php:166
 #, php-format
 msgid "%1$s year"
 msgid_plural "%1$s years"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../helpers/toolbox.php:274
+#: ../helpers/toolbox.php:167
 #, php-format
 msgid "%1$s week"
 msgid_plural "%1$s weeks"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../helpers/toolbox.php:275
+#: ../helpers/toolbox.php:168
 #, php-format
 msgid "%1$s day"
 msgid_plural "%1$s days"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../helpers/toolbox.php:276
+#: ../helpers/toolbox.php:169
 #, php-format
 msgid "%1$s hour"
 msgid_plural "%1$s hours"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../helpers/toolbox.php:277
+#: ../helpers/toolbox.php:170
 #, php-format
 msgid "%1$s minute"
 msgid_plural "%1$s minutes"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../helpers/toolbox.php:278
+#: ../helpers/toolbox.php:171
 #, php-format
 msgid "%1$s second"
 msgid_plural "%1$s seconds"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../helpers/toolbox.php:320
+#: ../helpers/toolbox.php:213
 msgid "Monday"
 msgstr ""
 
-#: ../helpers/toolbox.php:321
+#: ../helpers/toolbox.php:214
 msgid "Tuesday"
 msgstr ""
 
-#: ../helpers/toolbox.php:322
+#: ../helpers/toolbox.php:215
 msgid "Wednesday"
 msgstr ""
 
-#: ../helpers/toolbox.php:323
+#: ../helpers/toolbox.php:216
 msgid "Thursday"
 msgstr ""
 
-#: ../helpers/toolbox.php:324
+#: ../helpers/toolbox.php:217
 msgid "Friday"
 msgstr ""
 
-#: ../helpers/toolbox.php:325
+#: ../helpers/toolbox.php:218
 msgid "Saturday"
 msgstr ""
 
-#: ../helpers/toolbox.php:326
+#: ../helpers/toolbox.php:219
 msgid "Sunday"
 msgstr ""
 
-#: ../helpers/toolbox.php:333
-#: ../helpers/toolbox.php:348
+#: ../helpers/toolbox.php:226 ../helpers/toolbox.php:241
 msgid "1st"
 msgstr ""
 
-#: ../helpers/toolbox.php:334
-#: ../helpers/toolbox.php:351
+#: ../helpers/toolbox.php:227 ../helpers/toolbox.php:244
 msgid "2nd"
 msgstr ""
 
-#: ../helpers/toolbox.php:335
-#: ../helpers/toolbox.php:354
+#: ../helpers/toolbox.php:228 ../helpers/toolbox.php:247
 msgid "3rd"
 msgstr ""
 
-#: ../helpers/toolbox.php:336
+#: ../helpers/toolbox.php:229
 msgid "Last"
 msgstr ""
 
-#: ../helpers/toolbox.php:357
+#: ../helpers/toolbox.php:250
 #, php-format
 msgid "%1$sth"
 msgstr ""
 
 #: ../helpers/uninstall.php:10
-msgid "Wysija has been reinstalled successfully using the same version. Your settings and data has been deleted."
+msgid ""
+"Wysija has been reinstalled successfully using the same version. Settings "
+"and data have been deleted."
 msgstr ""
 
 #: ../helpers/uninstall.php:15
@@ -1903,7 +2164,10 @@ msgstr ""
 
 #: ../helpers/update.php:41
 #, php-format
-msgid "There is a new version of %1$s available. <a href=\"%2$s\" class=\"thickbox\" title=\"%3$s\">View version %4$s details</a> or <a href=\"%5$s\">update automatically</a>."
+msgid ""
+"There is a new version of %1$s available. <a href=\"%2$s\" class=\"thickbox"
+"\" title=\"%3$s\">View version %4$s details</a> or <a href=\"%5$s\">update "
+"automatically</a>."
 msgstr ""
 
 #: ../helpers/update.php:66
@@ -1911,32 +2175,44 @@ msgstr ""
 msgid "Update procedure to Wysija version \"%1$s\" failed!"
 msgstr ""
 
-#: ../helpers/user.php:32
-#: ../helpers/user.php:36
+#: ../helpers/user.php:32 ../helpers/user.php:36
 msgid "Page is not accessible."
 msgstr ""
 
-#: ../helpers/user.php:223
+#: ../helpers/user.php:133
+#, php-format
+msgid "The email %1$s is not valid!"
+msgstr ""
+
+#: ../helpers/user.php:140
+msgid " Oops! This user already exists. Find him [link]here[/link]."
+msgstr ""
+
+#: ../helpers/user.php:146
+msgid "Oops! You're already subscribed."
+msgstr ""
+
+#: ../helpers/user.php:330
 #, php-format
 msgid "%1$d emails have been sent to unconfirmed subscribers."
 msgstr ""
 
-#: ../helpers/user.php:263
+#: ../helpers/user.php:370
 #, php-format
-msgid " %1$s users have been deleted."
+msgid " %1$s subscribers have been deleted."
 msgstr ""
 
-#: ../helpers/user.php:264
+#: ../helpers/user.php:371
 #, php-format
 msgid " %1$s subscriber has been deleted."
 msgstr ""
 
-#: ../helpers/user.php:294
+#: ../helpers/user.php:420
 #, php-format
 msgid "New subscriber to %1$s"
 msgstr ""
 
-#: ../helpers/user.php:295
+#: ../helpers/user.php:421
 #, php-format
 msgid ""
 "Howdy,\n"
@@ -1948,12 +2224,12 @@ msgid ""
 "The Wysija Plugin"
 msgstr ""
 
-#: ../helpers/user.php:297
+#: ../helpers/user.php:423
 #, php-format
 msgid "One less subscriber to %1$s"
 msgstr ""
 
-#: ../helpers/user.php:298
+#: ../helpers/user.php:424
 #, php-format
 msgid ""
 "Howdy,\n"
@@ -1965,175 +2241,187 @@ msgid ""
 "The Wysija Plugin"
 msgstr ""
 
-#: ../helpers/user.php:375
+#: ../helpers/user.php:502
 #, php-format
 msgid "List \"%1$s\" has been synchronised."
 msgstr ""
 
-#: ../helpers/user.php:378
+#: ../helpers/user.php:505
 msgid "The list does not exists or cannot be synched."
 msgstr ""
 
-#: ../helpers/wj_engine.php:31
+#: ../helpers/wj_engine.php:32
 msgid "Drop your logo in this header."
 msgstr ""
 
-#: ../helpers/wj_engine.php:32
+#: ../helpers/wj_engine.php:33
 msgid "Drop your footer image here."
 msgstr ""
 
-#: ../helpers/wj_engine.php:33
-msgid "If you leave this area empty, it will not display once you send your email"
-msgstr ""
-
 #: ../helpers/wj_engine.php:34
-msgid "Click here to add a title or text."
+msgid ""
+"If you leave this area empty, it will not display once you send your email"
 msgstr ""
 
 #: ../helpers/wj_engine.php:35
-msgid "Align left"
+msgid "Click here to add a title or text."
 msgstr ""
 
 #: ../helpers/wj_engine.php:36
-msgid "Align center"
+msgid "Align left"
 msgstr ""
 
 #: ../helpers/wj_engine.php:37
-msgid "Align right"
+msgid "Align center"
 msgstr ""
 
 #: ../helpers/wj_engine.php:38
-msgid "Add link / Alternative text"
+msgid "Align right"
 msgstr ""
 
 #: ../helpers/wj_engine.php:39
-msgid "Remove link"
+msgid "Add link / Alternative text"
 msgstr ""
 
 #: ../helpers/wj_engine.php:40
-msgid "Remove image"
+msgid "Remove link"
 msgstr ""
 
 #: ../helpers/wj_engine.php:41
-msgid "Remove"
+msgid "Remove image"
 msgstr ""
 
 #: ../helpers/wj_engine.php:42
-msgid "Edit text"
+msgid "Remove"
 msgstr ""
 
 #: ../helpers/wj_engine.php:43
-msgid "Remove text"
+msgid "Edit text"
 msgstr ""
 
 #: ../helpers/wj_engine.php:44
+msgid "Remove text"
+msgstr ""
+
+#: ../helpers/wj_engine.php:45 ../views/back/campaigns.php:1061
 msgid "Plain text"
 msgstr ""
 
-#: ../helpers/wj_engine.php:45
-#: ../helpers/wj_engine.php:59
+#: ../helpers/wj_engine.php:46 ../helpers/wj_engine.php:61
 msgid "Horizontal line"
 msgstr ""
 
-#: ../helpers/wj_engine.php:46
+#: ../helpers/wj_engine.php:47
 msgid "Custom horizontal line"
 msgstr ""
 
-#: ../helpers/wj_engine.php:47
+#: ../helpers/wj_engine.php:48 ../views/back/campaigns.php:1062
 msgid "WordPress post"
 msgstr ""
 
-#: ../helpers/wj_engine.php:48
+#: ../helpers/wj_engine.php:49
 msgid "Text"
 msgstr ""
 
-#: ../helpers/wj_engine.php:49
+#: ../helpers/wj_engine.php:50
+msgid "\"View in browser\""
+msgstr ""
+
+#: ../helpers/wj_engine.php:51 ../views/back/campaigns.php:2004
 msgid "Heading 1"
 msgstr ""
 
-#: ../helpers/wj_engine.php:50
+#: ../helpers/wj_engine.php:52 ../views/back/campaigns.php:2005
 msgid "Heading 2"
 msgstr ""
 
-#: ../helpers/wj_engine.php:51
+#: ../helpers/wj_engine.php:53 ../views/back/campaigns.php:2006
 msgid "Heading 3"
 msgstr ""
 
-#: ../helpers/wj_engine.php:52
+#: ../helpers/wj_engine.php:54
 msgid "Links"
 msgstr ""
 
-#: ../helpers/wj_engine.php:53
-msgid "Underline links"
-msgstr ""
-
-#: ../helpers/wj_engine.php:54
-msgid "Footer text"
-msgstr ""
-
 #: ../helpers/wj_engine.php:55
-msgid "Footer background"
+msgid "underline"
 msgstr ""
 
 #: ../helpers/wj_engine.php:56
-msgid "Newsletter color"
+msgid "Footer text"
 msgstr ""
 
 #: ../helpers/wj_engine.php:57
-msgid "Background color"
+msgid "Footer background"
 msgstr ""
 
 #: ../helpers/wj_engine.php:58
-msgid "Header background color"
+msgid "Newsletter"
+msgstr ""
+
+#: ../helpers/wj_engine.php:59
+msgid "Background"
 msgstr ""
 
 #: ../helpers/wj_engine.php:60
-msgid "Unsubscribe color"
+msgid "Header background"
 msgstr ""
 
-#: ../helpers/wj_engine.php:62
-msgid "Social Bookmark Selection"
-msgstr ""
-
-#: ../helpers/wj_engine.php:63
-msgid "Divider Selection"
+#: ../helpers/wj_engine.php:62 ../models/config.php:86
+#: ../views/back/campaigns.php:200
+msgid "Unsubscribe"
 msgstr ""
 
 #: ../helpers/wj_engine.php:64
-#, php-format
-msgid "You are about to delete the theme : %1$s. Do you really want to do that?"
+msgid "Social Bookmark Selection"
 msgstr ""
 
 #: ../helpers/wj_engine.php:65
-msgid "Add Link & Alternative text"
+msgid "Divider Selection"
 msgstr ""
 
 #: ../helpers/wj_engine.php:66
-msgid "Check this box if you want transparency"
+#, php-format
+msgid ""
+"You are about to delete the theme : %1$s. Do you really want to do that?"
+msgstr ""
+
+#: ../helpers/wj_engine.php:67
+msgid "Add Link & Alternative text"
 msgstr ""
 
 #: ../helpers/wj_engine.php:68
-msgid "Add first or last name of subscriber"
-msgstr ""
-
-#: ../helpers/wj_engine.php:69
-msgid "Post selection options"
+msgid "Check this box if you want transparency"
 msgstr ""
 
 #: ../helpers/wj_engine.php:70
-msgid "Edit Automatic latest posts"
+msgid "Add first or last name of subscriber"
 msgstr ""
 
 #: ../helpers/wj_engine.php:71
-msgid "You can only add one widget when designing a post notification sent immediately after an article is published"
+msgid "Post selection options"
 msgstr ""
 
-#: ../models/config.php:76
+#: ../helpers/wj_engine.php:72
+msgid "Edit Automatic latest posts"
+msgstr ""
+
+#: ../helpers/wj_engine.php:73
+msgid ""
+"You can only add one widget when designing a post notification sent "
+"immediately after an article is published"
+msgstr ""
+
+#: ../helpers/wj_engine.php:74
+msgid "Preview without images"
+msgstr ""
+
+#: ../models/config.php:80
 #, php-format
 msgid "Confirm your subscription to %1$s"
 msgstr ""
 
-#: ../models/config.php:77
+#: ../models/config.php:81
 msgid ""
 "Hello!\n"
 "\n"
@@ -2147,79 +2435,93 @@ msgid ""
 " The team!\n"
 msgstr ""
 
-#: ../models/config.php:78
+#: ../models/config.php:82
 msgid "You've subscribed!"
 msgstr ""
 
-#: ../models/config.php:79
+#: ../models/config.php:83
 msgid "Yup, we've added you to our list. You'll hear from us shortly."
 msgstr ""
 
-#: ../models/config.php:80
+#: ../models/config.php:84
 msgid "You've unsubscribed!"
 msgstr ""
 
-#: ../models/config.php:81
+#: ../models/config.php:85
 msgid "Great, you'll never hear from us again!"
 msgstr ""
 
-#: ../models/config.php:82
-msgid "Unsubscribe"
+#: ../models/config.php:87
+msgid "Edit your subscription"
 msgstr ""
 
-#: ../models/config.php:83
-msgid "Manage Subscriptions"
+#: ../models/config.php:88
+msgid "Display problems? [link]View this newsletter in your browser.[/link]"
 msgstr ""
 
-#: ../models/config.php:181
-#: ../models/config.php:187
-msgid "empty"
+#: ../models/config.php:178
+msgid "Who can create newsletters?"
+msgstr ""
+
+#: ../models/config.php:180
+msgid "Who can manage subscribers?"
 msgstr ""
 
 #: ../models/config.php:182
-#, php-format
-msgid "The <strong>from email</strong> value you have entered (%1$s) is not a valid email address."
+msgid "Who can add forms to posts/pages?"
 msgstr ""
 
-#: ../models/config.php:188
-#, php-format
-msgid "The <strong>reply to</strong> email value you have entered (%1$s) is not a valid email address."
+#: ../models/config.php:184
+msgid "Who can change Wysija's settings?"
 msgstr ""
 
-#: ../models/config.php:269
+#: ../models/config.php:250 ../models/config.php:256
+msgid "empty"
+msgstr ""
+
+#: ../models/config.php:251
+#, php-format
+msgid ""
+"The <strong>from email</strong> value you have entered (%1$s) is not a valid "
+"email address."
+msgstr ""
+
+#: ../models/config.php:257
+#, php-format
+msgid ""
+"The <strong>reply to</strong> email value you have entered (%1$s) is not a "
+"valid email address."
+msgstr ""
+
+#: ../models/config.php:343
 msgid "Your Wysija settings have been updated!"
 msgstr ""
 
-#: ../models/email.php:166
+#: ../models/email.php:167 ../views/back.php:16 ../views/back/campaigns.php:33
+#: ../views/back/campaigns.php:442
 msgid "View"
 msgstr ""
 
-#: ../models/list.php:24
+#: ../models/list.php:25 ../views/back/campaigns.php:311
+#: ../views/back/subscribers.php:547 ../views/back/subscribers.php:647
 msgid "Name"
 msgstr ""
 
-#: ../models/list.php:25
+#: ../models/list.php:26 ../views/back/subscribers.php:677
 msgid "Description"
 msgstr ""
 
-#: ../models/list.php:26
+#: ../models/list.php:27
 msgid "Enabled"
 msgstr ""
 
-#: ../models/list.php:27
+#: ../models/list.php:28
 msgid "Ordering"
 msgstr ""
 
-#: ../models/queue.php:118
-msgid "Queue is empty."
-msgstr ""
-
-#: ../models/user.php:20
-#: ../models/user_field.php:21
-#: ../views/back/campaigns.php:298
-#: ../views/back/subscribers.php:185
-#: ../views/back/subscribers.php:372
-#: ../views/front/confirm.php:53
+#: ../models/user.php:20 ../models/user_field.php:21
+#: ../views/back/campaigns.php:314 ../views/back/subscribers.php:185
+#: ../views/back/subscribers.php:372 ../views/front/confirm.php:63
 msgid "Status"
 msgstr ""
 
@@ -2227,20 +2529,15 @@ msgstr ""
 msgid "Created on"
 msgstr ""
 
-#: ../models/user.php:32
-msgid " Oops! This user already exists. Find him [link]here[/link]."
-msgstr ""
-
-#: ../models/user.php:91
+#: ../models/user.php:111
 msgid "Click here to subscribe"
 msgstr ""
 
-#: ../models/user.php:124
+#: ../models/user.php:144
 msgid "Edit your subscriptions"
 msgstr ""
 
-#: ../models/user_field.php:21
-#: ../views/back/subscribers.php:781
+#: ../models/user_field.php:21 ../views/back/subscribers.php:804
 msgid "IP address"
 msgstr ""
 
@@ -2248,68 +2545,58 @@ msgstr ""
 msgid "Subscription date"
 msgstr ""
 
-#: ../views/back.php:15
-#: ../views/back.php:17
-#: ../views/back/campaigns.php:14
-#: ../views/back/campaigns.php:451
-#: ../views/back/campaigns.php:463
-#: ../views/back/campaigns.php:490
-#: ../views/back/subscribers.php:14
+#: ../views/back.php:16 ../views/back.php:18 ../views/back/campaigns.php:14
+#: ../views/back/campaigns.php:462 ../views/back/campaigns.php:474
+#: ../views/back/campaigns.php:501 ../views/back/subscribers.php:14
 #: ../views/back/subscribers.php:587
 msgid "Delete"
 msgstr ""
 
-#: ../views/back.php:181
-#: ../views/back/subscribers.php:92
+#: ../views/back.php:186 ../views/back/subscribers.php:92
 msgid "Bulk Actions"
 msgstr ""
 
-#: ../views/back.php:188
-#: ../views/back/campaigns.php:254
+#: ../views/back.php:193 ../views/back/campaigns.php:267
 #: ../views/back/subscribers.php:116
 msgid "Apply"
 msgstr ""
 
-#: ../views/back.php:211
+#: ../views/back.php:216
 #, php-format
 msgid "Displaying %1$d-%2$d of %3$d."
 msgstr ""
 
-#: ../views/back.php:212
+#: ../views/back.php:217
 #, php-format
 msgid "%1$d Items"
 msgstr ""
 
-#: ../views/back.php:228
-#: ../views/back.php:229
-#: ../views/back.php:283
-#: ../views/back.php:284
+#: ../views/back.php:233 ../views/back.php:234 ../views/back.php:288
+#: ../views/back.php:289
 #, php-format
 msgid "Page %1$s"
 msgstr ""
 
-#: ../views/back.php:330
+#: ../views/back.php:335
 #, php-format
 msgid "Split subscribers into %1$s pages."
 msgstr ""
 
-#: ../views/back.php:350
+#: ../views/back.php:355
 msgid "Subscribers to show per page:"
 msgstr ""
 
-#: ../views/back.php:711
+#: ../views/back.php:721
 msgid "Modify"
 msgstr ""
 
-#: ../views/back.php:713
+#: ../views/back.php:723
 msgid "Add"
 msgstr ""
 
-#: ../views/back.php:810
-#: ../views/back/campaigns.php:1666
-#: ../views/back/campaigns.php:1687
-#: ../views/back/subscribers.php:520
-#: ../views/front/confirm.php:140
+#: ../views/back.php:820 ../views/back/campaigns.php:1776
+#: ../views/back/campaigns.php:1794 ../views/back/subscribers.php:520
+#: ../views/front/confirm.php:150
 msgid "Save"
 msgstr ""
 
@@ -2321,1245 +2608,1362 @@ msgstr ""
 msgid "Search newsletters"
 msgstr ""
 
-#: ../views/back/campaigns.php:14
-#: ../views/back/campaigns.php:31
-#: ../views/back/campaigns.php:448
-#: ../views/back/campaigns.php:460
-#: ../views/back/campaigns.php:487
-#: ../views/back/subscribers.php:14
+#: ../views/back/campaigns.php:14 ../views/back/campaigns.php:33
+#: ../views/back/campaigns.php:459 ../views/back/campaigns.php:471
+#: ../views/back/campaigns.php:498 ../views/back/subscribers.php:14
 #: ../views/back/subscribers.php:582
 msgid "Duplicate"
 msgstr ""
 
-#: ../views/back/campaigns.php:31
-#: ../views/back/subscribers.php:28
+#: ../views/back/campaigns.php:33 ../views/back/subscribers.php:28
 msgid "Back"
 msgstr ""
 
-#: ../views/back/campaigns.php:31
-msgid "Create a new newsletter"
+#: ../views/back/campaigns.php:33
+msgid "Create a new email"
 msgstr ""
 
-#: ../views/back/campaigns.php:61
+#: ../views/back/campaigns.php:74
 msgid "... or duplicate one below to copy its design."
 msgstr ""
 
-#: ../views/back/campaigns.php:85
-#: ../views/back/campaigns.php:163
-#: ../views/back/subscribers.php:58
-#: ../views/back/subscribers.php:283
+#: ../views/back/campaigns.php:98 ../views/back/campaigns.php:176
+#: ../views/back/subscribers.php:58 ../views/back/subscribers.php:283
 msgid "All"
 msgstr ""
 
-#: ../views/back/campaigns.php:88
+#: ../views/back/campaigns.php:101
 msgid "Sent"
 msgstr ""
 
-#: ../views/back/campaigns.php:91
+#: ../views/back/campaigns.php:104
 msgid "Sending"
 msgstr ""
 
-#: ../views/back/campaigns.php:94
-#: ../views/back/campaigns.php:323
-#: ../views/back/campaigns.php:390
+#: ../views/back/campaigns.php:107 ../views/back/campaigns.php:340
+#: ../views/back/campaigns.php:407
 msgid "Draft"
 msgstr ""
 
-#: ../views/back/campaigns.php:97
+#: ../views/back/campaigns.php:110
 msgid "Paused"
 msgstr ""
 
-#: ../views/back/campaigns.php:100
-#: ../views/back/campaigns.php:388
+#: ../views/back/campaigns.php:113 ../views/back/campaigns.php:405
 msgid "Scheduled"
 msgstr ""
 
-#: ../views/back/campaigns.php:103
+#: ../views/back/campaigns.php:116
 msgid "Regular Newsletters"
 msgstr ""
 
-#: ../views/back/campaigns.php:106
+#: ../views/back/campaigns.php:119
 msgid "Auto Newsletters"
 msgstr ""
 
-#: ../views/back/campaigns.php:126
+#: ../views/back/campaigns.php:139
 msgid "Show all months"
 msgstr ""
 
-#: ../views/back/campaigns.php:141
-#: ../views/back/subscribers.php:122
+#: ../views/back/campaigns.php:154 ../views/back/subscribers.php:122
 msgid "View by lists"
 msgstr ""
 
-#: ../views/back/campaigns.php:151
-#: ../views/back/subscribers.php:133
+#: ../views/back/campaigns.php:164 ../views/back/subscribers.php:133
 msgid "Filter"
 msgstr ""
 
-#: ../views/back/campaigns.php:166
+#: ../views/back/campaigns.php:179
 msgid "All Sent"
 msgstr ""
 
-#: ../views/back/campaigns.php:169
+#: ../views/back/campaigns.php:182
 msgid "In Queue"
 msgstr ""
 
-#: ../views/back/campaigns.php:172
+#: ../views/back/campaigns.php:185
 msgid "Not Sent"
 msgstr ""
 
-#: ../views/back/campaigns.php:225
+#: ../views/back/campaigns.php:238
 msgid "With this segment"
 msgstr ""
 
-#: ../views/back/campaigns.php:235
+#: ../views/back/campaigns.php:248
 msgid "Remove from the queue"
 msgstr ""
 
-#: ../views/back/campaigns.php:239
+#: ../views/back/campaigns.php:252
 msgid "Create a new list"
 msgstr ""
 
-#: ../views/back/campaigns.php:245
-#: ../views/back/subscribers.php:93
+#: ../views/back/campaigns.php:258 ../views/back/subscribers.php:93
 msgid "Unsubscribe from all lists"
 msgstr ""
 
-#: ../views/back/campaigns.php:248
+#: ../views/back/campaigns.php:261
 #, php-format
 msgid "Unsubscribe from list: %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:251
+#: ../views/back/campaigns.php:264
 msgid "Export to CSV"
 msgstr ""
 
-#: ../views/back/campaigns.php:299
-#: ../views/back/campaigns.php:826
-#: ../views/back/campaigns.php:933
-#: ../views/back/campaigns.php:1303
-#: ../views/back/subscribers.php:184
-#: ../views/back/subscribers.php:405
+#: ../views/back/campaigns.php:315 ../views/back/campaigns.php:837
+#: ../views/back/campaigns.php:944 ../views/back/campaigns.php:1410
+#: ../views/back/subscribers.php:184 ../views/back/subscribers.php:405
 msgid "Lists"
 msgstr ""
 
-#: ../views/back/campaigns.php:300
+#: ../views/back/campaigns.php:316
 msgid "Open, clicks, unsubscribed"
 msgstr ""
 
-#: ../views/back/campaigns.php:306
+#: ../views/back/campaigns.php:322
 msgid "Modified On"
 msgstr ""
 
 #: ../views/back/campaigns.php:323
+msgid "Sent On"
+msgstr ""
+
+#: ../views/back/campaigns.php:340
 #, php-format
 msgid "Sent to %1$s out of %2$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:323
+#: ../views/back/campaigns.php:340
 #, php-format
 msgid "%1$s out of %2$s sent."
 msgstr ""
 
-#: ../views/back/campaigns.php:377
+#: ../views/back/campaigns.php:394
 #, php-format
 msgid "Scheduled to be sent in %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:381
+#: ../views/back/campaigns.php:398
 #, php-format
 msgid "Scheduled to be sent on %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:479
+#: ../views/back/campaigns.php:490
 msgid "Stats"
-msgstr ""
-
-#: ../views/back/campaigns.php:535
-#, php-format
-msgid "Next send out in %1$s"
-msgstr ""
-
-#: ../views/back/campaigns.php:539
-#, php-format
-msgid "Next send out on %1$s"
 msgstr ""
 
 #: ../views/back/campaigns.php:546
 #, php-format
+msgid "Next send out in %1$s"
+msgstr ""
+
+#: ../views/back/campaigns.php:550
+#, php-format
+msgid "Next send out on %1$s"
+msgstr ""
+
+#: ../views/back/campaigns.php:557
+#, php-format
 msgid "Sent daily at %1$s."
 msgstr ""
 
-#: ../views/back/campaigns.php:549
+#: ../views/back/campaigns.php:560
 #, php-format
 msgid "Sent weekly on %1$s at %2$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:552
+#: ../views/back/campaigns.php:563
 #, php-format
 msgid "Sent monthly on the %1$s at %2$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:555
+#: ../views/back/campaigns.php:566
 #, php-format
 msgid "Sent monthly on the %1$s %2$s at %3$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:561
-msgid "Won't be sent until a new post is published."
-msgstr ""
-
-#: ../views/back/campaigns.php:580
-msgid "Pause"
-msgstr ""
-
-#: ../views/back/campaigns.php:588
-#: ../views/back/campaigns.php:601
-msgid "Not active."
-msgstr ""
-
-#: ../views/back/campaigns.php:588
-msgid "Activate"
+#: ../views/back/campaigns.php:572
+msgid "if there are new posts"
 msgstr ""
 
 #: ../views/back/campaigns.php:591
-msgid "Resume"
+msgid "Pause"
+msgstr ""
+
+#: ../views/back/campaigns.php:599 ../views/back/campaigns.php:612
+msgid "Not active."
+msgstr ""
+
+#: ../views/back/campaigns.php:599
+msgid "Activate"
 msgstr ""
 
 #: ../views/back/campaigns.php:602
+msgid "Resume"
+msgstr ""
+
+#: ../views/back/campaigns.php:613
 msgid "Not sent yet."
 msgstr ""
 
-#: ../views/back/campaigns.php:640
+#: ../views/back/campaigns.php:652
 msgid "Send immediately when a post is published."
 msgstr ""
 
-#: ../views/back/campaigns.php:646
+#: ../views/back/campaigns.php:658
 #, php-format
 msgid "Sending immediately after someone subscribes to the mailing list %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:647
+#: ../views/back/campaigns.php:659
 #, php-format
 msgid "Sent %2$s after someone subscribes to the mailing list %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:650
+#: ../views/back/campaigns.php:662
 #, php-format
 msgid "Sent immediately after a new user is added to your site as %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:654
+#: ../views/back/campaigns.php:666
 #, php-format
 msgid "Sent %2$s after a new user is added to your site as %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:661
+#: ../views/back/campaigns.php:673
 msgid "Sending per event"
 msgstr ""
 
-#: ../views/back/campaigns.php:677
+#: ../views/back/campaigns.php:689
 #, php-format
 msgid "Sent to %1$s subscribers."
 msgstr ""
 
-#: ../views/back/campaigns.php:692
+#: ../views/back/campaigns.php:704
 #, php-format
 msgid "Time remaining: %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:693
+#: ../views/back/campaigns.php:705
 msgid "Show more details"
 msgstr ""
 
-#: ../views/back/campaigns.php:703
+#: ../views/back/campaigns.php:715
 #, php-format
 msgid "%1$s email(s) pending."
 msgstr ""
 
-#: ../views/back/campaigns.php:706
+#: ../views/back/campaigns.php:718
 #, php-format
 msgid "Next batch of %1$s emails will be sent in %2$s. "
 msgstr ""
 
-#: ../views/back/campaigns.php:707
+#: ../views/back/campaigns.php:719
 msgid "Don't wait & send right now."
 msgstr ""
 
-#: ../views/back/campaigns.php:716
+#: ../views/back/campaigns.php:728
 msgid "To resume send [link]Go premium now![/link]"
 msgstr ""
 
-#: ../views/back/campaigns.php:731
+#: ../views/back/campaigns.php:742
 msgid "Search recipients"
 msgstr ""
 
-#: ../views/back/campaigns.php:740
+#: ../views/back/campaigns.php:751
 #, php-format
 msgid "%1$s emails sent %2$s ago"
 msgstr ""
 
-#: ../views/back/campaigns.php:741
+#: ../views/back/campaigns.php:752
 msgid "No emails have been sent yet."
 msgstr ""
 
-#: ../views/back/campaigns.php:756
+#: ../views/back/campaigns.php:767
 msgid "What got clicked?"
 msgstr ""
 
-#: ../views/back/campaigns.php:766
+#: ../views/back/campaigns.php:777
 msgid "see links with a [link]Premium licence[/link]."
 msgstr ""
 
-#: ../views/back/campaigns.php:773
+#: ../views/back/campaigns.php:784
 msgid "Nothing yet!"
 msgstr ""
 
-#: ../views/back/campaigns.php:825
+#: ../views/back/campaigns.php:836
 msgid "Email Status"
 msgstr ""
 
-#: ../views/back/campaigns.php:827
+#: ../views/back/campaigns.php:838
 msgid "Subscriber Status"
 msgstr ""
 
-#: ../views/back/campaigns.php:831
-#: ../views/back/subscribers.php:189
+#: ../views/back/campaigns.php:842 ../views/back/subscribers.php:189
 msgid "Subscribed on"
 msgstr ""
 
-#: ../views/back/campaigns.php:848
-#: ../views/back/subscribers.php:61
-#: ../views/back/subscribers.php:206
-#: ../views/back/subscribers.php:380
+#: ../views/back/campaigns.php:859 ../views/back/subscribers.php:61
+#: ../views/back/subscribers.php:206 ../views/back/subscribers.php:380
 #: ../views/back/subscribers.php:553
 msgid "Unconfirmed"
 msgstr ""
 
-#: ../views/back/campaigns.php:848
-#: ../views/back/subscribers.php:67
-#: ../views/back/subscribers.php:206
-#: ../views/back/subscribers.php:380
-#: ../views/back/subscribers.php:383
-#: ../views/back/subscribers.php:549
-#: ../views/front/confirm.php:58
+#: ../views/back/campaigns.php:859 ../views/back/subscribers.php:67
+#: ../views/back/subscribers.php:206 ../views/back/subscribers.php:380
+#: ../views/back/subscribers.php:383 ../views/back/subscribers.php:549
+#: ../views/front/confirm.php:68
 msgid "Subscribed"
 msgstr ""
 
-#: ../views/back/campaigns.php:869
-#: ../views/back/subscribers.php:231
+#: ../views/back/campaigns.php:880 ../views/back/subscribers.php:231
 msgid "View stats or edit"
 msgstr ""
 
-#: ../views/back/campaigns.php:910
-#: ../views/back/campaigns.php:1290
+#: ../views/back/campaigns.php:921 ../views/back/campaigns.php:1397
 msgid "What type of newsletter is this?"
 msgstr ""
 
-#: ../views/back/campaigns.php:916
-#: ../views/back/campaigns.php:1281
+#: ../views/back/campaigns.php:927 ../views/back/campaigns.php:1388
 msgid "When..."
 msgstr ""
 
-#: ../views/back/campaigns.php:924
-#: ../views/back/campaigns.php:1274
+#: ../views/back/campaigns.php:935 ../views/back/campaigns.php:1381
 msgid "Subject line"
 msgstr ""
 
-#: ../views/back/campaigns.php:926
-#: ../views/back/campaigns.php:1276
-msgid "This is the subject of the email. Be creative since it's the first thing your subscribers will see."
+#: ../views/back/campaigns.php:937 ../views/back/campaigns.php:1383
+msgid ""
+"This is the subject of the email. Be creative since it's the first thing "
+"your subscribers will see."
 msgstr ""
 
-#: ../views/back/campaigns.php:935
-#: ../views/back/campaigns.php:1306
+#: ../views/back/campaigns.php:946 ../views/back/campaigns.php:1413
 msgid "The list of subscribers which will be used for that campaign."
 msgstr ""
 
-#: ../views/back/campaigns.php:950
-msgid "Yikes! Your browser might not be supported. Get the latest [linkchrome]Chrome[/linkchrome], [linkff]Firefox[/linkff], [linkie]Internet Explorer[/linkie] or [linksafari]Safari[/linksafari]. It seems to work?[link_ignore]Ignore message[/link_ignore]."
+#: ../views/back/campaigns.php:961
+msgid ""
+"Yikes! Your browser might not be supported. Get the latest [linkchrome]Chrome"
+"[/linkchrome], [linkff]Firefox[/linkff], [linkie]Internet Explorer[/linkie] "
+"or [linksafari]Safari[/linksafari]. It seems to work?[link_ignore]Ignore "
+"message[/link_ignore]."
 msgstr ""
 
-#: ../views/back/campaigns.php:969
-#: ../views/back/campaigns.php:1124
+#: ../views/back/campaigns.php:981 ../views/back/campaigns.php:1180
+msgid "Save and reactivate"
+msgstr ""
+
+#: ../views/back/campaigns.php:983 ../views/back/campaigns.php:1176
 msgid "Next step"
 msgstr ""
 
-#: ../views/back/campaigns.php:1037
+#: ../views/back/campaigns.php:1051
 msgid "Content"
 msgstr ""
 
-#: ../views/back/campaigns.php:1039
+#: ../views/back/campaigns.php:1053
 msgid "Images"
 msgstr ""
 
-#: ../views/back/campaigns.php:1040
+#: ../views/back/campaigns.php:1054
 msgid "Styles"
 msgstr ""
 
-#: ../views/back/campaigns.php:1041
+#: ../views/back/campaigns.php:1055
 msgid "Themes"
 msgstr ""
 
-#: ../views/back/campaigns.php:1046
+#: ../views/back/campaigns.php:1060
 msgid "Drag the widgets below into your newsletter."
 msgstr ""
 
-#: ../views/back/campaigns.php:1049
+#: ../views/back/campaigns.php:1063
 msgid "Automatic latest posts"
 msgstr ""
 
-#: ../views/back/campaigns.php:1051
+#: ../views/back/campaigns.php:1065
 msgid "Divider"
 msgstr ""
 
-#: ../views/back/campaigns.php:1054
+#: ../views/back/campaigns.php:1068
 msgid "Social bookmarks"
 msgstr ""
 
-#: ../views/back/campaigns.php:1060
-msgid "Add images"
+#: ../views/back/campaigns.php:1082
+msgid "Add Images"
 msgstr ""
 
-#: ../views/back/campaigns.php:1094
+#: ../views/back/campaigns.php:1116
 msgid "Install themes"
 msgstr ""
 
-#: ../views/back/campaigns.php:1118
-#: ../views/back/campaigns.php:1369
+#: ../views/back/campaigns.php:1136 ../views/back/campaigns.php:1479
 msgid "Send preview"
 msgstr ""
 
-#: ../views/back/campaigns.php:1125
+#: ../views/back/campaigns.php:1155
+#, php-format
+msgid "%1$s tries left. Get [link]Premium[/link] for unlimited use."
+msgstr ""
+
+#: ../views/back/campaigns.php:1161
+msgid "How spammy is this newsletter?"
+msgstr ""
+
+#: ../views/back/campaigns.php:1193
 msgid "go back to Step 1"
 msgstr ""
 
-#: ../views/back/campaigns.php:1149
-msgid "If you confirm the theme switch, it will override your header, footer, dividers and styles"
+#: ../views/back/campaigns.php:1217
+msgid ""
+"If you confirm the theme switch, it will override your header, footer, "
+"dividers and styles"
 msgstr ""
 
-#: ../views/back/campaigns.php:1312
-#: ../views/back/config.php:198
+#: ../views/back/campaigns.php:1419 ../views/back/config.php:346
 msgid "From name & email"
 msgstr ""
 
-#: ../views/back/campaigns.php:1313
+#: ../views/back/campaigns.php:1420
 msgid "This is name & email of the sender. ie, yourself or your company."
 msgstr ""
 
-#: ../views/back/campaigns.php:1320
-#: ../views/back/config.php:793
+#: ../views/back/campaigns.php:1427 ../views/back/config.php:906
 msgid "Reply-to name & email"
 msgstr ""
 
-#: ../views/back/campaigns.php:1321
-msgid "When the subscribers hit \"reply\", this is to who they will send their email "
+#: ../views/back/campaigns.php:1428
+msgid ""
+"When the subscribers hit \"reply\", this is to who they will send their "
+"email "
 msgstr ""
 
-#: ../views/back/campaigns.php:1330
+#: ../views/back/campaigns.php:1437
 msgid "Google Analytics Campaign"
 msgstr ""
 
-#: ../views/back/campaigns.php:1331
+#: ../views/back/campaigns.php:1438
 msgid "For example, \"Spring email\". [link]Read the guide.[/link]"
 msgstr ""
 
-#: ../views/back/campaigns.php:1340
+#: ../views/back/campaigns.php:1454
 msgid "Schedule it"
 msgstr ""
 
-#: ../views/back/campaigns.php:1378
-#: ../views/back/campaigns.php:1379
+#: ../views/back/campaigns.php:1488 ../views/back/campaigns.php:1489
 msgid "Activate now"
 msgstr ""
 
-#: ../views/back/campaigns.php:1383
-#: ../views/back/campaigns.php:1384
-msgid "Send"
-msgstr ""
-
-#: ../views/back/campaigns.php:1412
+#: ../views/back/campaigns.php:1522
 msgid "or simply [link]go back to design[/link]."
 msgstr ""
 
-#: ../views/back/campaigns.php:1534
+#: ../views/back/campaigns.php:1644
 msgid "Regular newsletter"
 msgstr ""
 
-#: ../views/back/campaigns.php:1539
+#: ../views/back/campaigns.php:1649
 msgid "Automatically..."
 msgstr ""
 
-#: ../views/back/campaigns.php:1644
-#: ../views/back/subscribers.php:486
+#: ../views/back/campaigns.php:1754 ../views/back/subscribers.php:486
 msgid "Added"
 msgstr ""
 
-#: ../views/back/campaigns.php:1677
+#: ../views/back/campaigns.php:1786
 msgid "Address:"
 msgstr ""
 
-#: ../views/back/campaigns.php:1682
+#: ../views/back/campaigns.php:1790
 msgid "Alternative text:"
 msgstr ""
 
-#: ../views/back/campaigns.php:1685
-msgid "This text is displayed when email clients block images, which is most of the time."
+#: ../views/back/campaigns.php:1793
+msgid ""
+"This text is displayed when email clients block images, which is most of the "
+"time."
 msgstr ""
 
-#: ../views/back/campaigns.php:1712
+#: ../views/back/campaigns.php:1822
 msgid "Upload Theme"
 msgstr ""
 
-#: ../views/back/campaigns.php:1737
-#: ../views/back/subscribers.php:747
+#: ../views/back/campaigns.php:1845 ../views/back/subscribers.php:770
 #, php-format
 msgid "total max upload file size : %1$s"
 msgstr ""
 
-#: ../views/back/campaigns.php:1738
+#: ../views/back/campaigns.php:1846
 msgid "If a theme with the same name exists, overwrite it."
 msgstr ""
 
-#: ../views/back/campaigns.php:1758
+#: ../views/back/campaigns.php:1867
 msgid "Search"
 msgstr ""
 
-#: ../views/back/campaigns.php:1767
+#: ../views/back/campaigns.php:1876
 msgid "Insert entire post, not just excerpt"
 msgstr ""
 
-#: ../views/back/campaigns.php:1799
-#: ../views/back/campaigns.php:1958
-#: ../views/back/campaigns.php:2033
-#: ../views/back/campaigns.php:2069
+#: ../views/back/campaigns.php:1910 ../views/back/campaigns.php:2086
+#: ../views/back/campaigns.php:2125 ../views/back/campaigns.php:2158
 msgid "Done"
 msgstr ""
 
-#: ../views/back/campaigns.php:1830
-msgid "Category"
+#: ../views/back/campaigns.php:1950
+msgid "Number of latest posts to show"
 msgstr ""
 
-#: ../views/back/campaigns.php:1832
+#: ../views/back/campaigns.php:1963
+msgid "Filter by category"
+msgstr ""
+
+#: ../views/back/campaigns.php:1965
 msgid "All categories"
 msgstr ""
 
-#: ../views/back/campaigns.php:1869
-msgid "Title"
+#: ../views/back/campaigns.php:2002
+msgid "Title style"
 msgstr ""
 
-#: ../views/back/campaigns.php:1877
+#: ../views/back/campaigns.php:2010
 msgid "Left aligned"
 msgstr ""
 
-#: ../views/back/campaigns.php:1878
+#: ../views/back/campaigns.php:2011
 msgid "Centered"
 msgstr ""
 
-#: ../views/back/campaigns.php:1879
+#: ../views/back/campaigns.php:2012
 msgid "Right aligned"
 msgstr ""
 
-#: ../views/back/campaigns.php:1885
+#: ../views/back/campaigns.php:2018
 msgid "Image alignment"
 msgstr ""
 
-#: ../views/back/campaigns.php:1887
+#: ../views/back/campaigns.php:2020
 msgid "alternate left & right"
 msgstr ""
 
-#: ../views/back/campaigns.php:1889
+#: ../views/back/campaigns.php:2022
 msgid "left"
 msgstr ""
 
-#: ../views/back/campaigns.php:1890
+#: ../views/back/campaigns.php:2023
 msgid "center"
 msgstr ""
 
-#: ../views/back/campaigns.php:1891
+#: ../views/back/campaigns.php:2024
 msgid "right"
 msgstr ""
 
-#: ../views/back/campaigns.php:1892
+#: ../views/back/campaigns.php:2025
 msgid "no image"
 msgstr ""
 
-#: ../views/back/campaigns.php:1898
+#: ../views/back/campaigns.php:2031
 msgid "Display..."
 msgstr ""
 
-#: ../views/back/campaigns.php:1899
+#: ../views/back/campaigns.php:2032
 msgid "Which excerpt does it use? [link]Read more[/link]"
 msgstr ""
 
-#: ../views/back/campaigns.php:1901
+#: ../views/back/campaigns.php:2034
 msgid "excerpt"
 msgstr ""
 
-#: ../views/back/campaigns.php:1902
+#: ../views/back/campaigns.php:2035
 msgid "full post"
 msgstr ""
 
-#: ../views/back/campaigns.php:1907
+#: ../views/back/campaigns.php:2040
 msgid "\"Read more\" text"
 msgstr ""
 
-#: ../views/back/campaigns.php:1922
+#: ../views/back/campaigns.php:2053
 msgid "Show divider between posts"
 msgstr ""
 
-#: ../views/back/campaigns.php:1923
+#: ../views/back/campaigns.php:2054
 msgid "yes"
 msgstr ""
 
-#: ../views/back/campaigns.php:1924
+#: ../views/back/campaigns.php:2055
 msgid "no"
 msgstr ""
 
-#: ../views/back/campaigns.php:1928
-msgid "Max number of articles"
+#: ../views/back/campaigns.php:2059
+msgid "Background color with alternate"
 msgstr ""
 
-#: ../views/back/campaigns.php:1945
+#: ../views/back/campaigns.php:2073
 msgid "If there are no new posts, display:"
 msgstr ""
 
-#: ../views/back/campaigns.php:1946
+#: ../views/back/campaigns.php:2074
 msgid "You can also leave it empty"
 msgstr ""
 
-#: ../views/back/campaigns.php:2023
+#: ../views/back/campaigns.php:2113
 msgid "Size:"
 msgstr ""
 
-#: ../views/back/campaigns.php:2024
+#: ../views/back/campaigns.php:2114
 msgid "small"
 msgstr ""
 
-#: ../views/back/campaigns.php:2025
+#: ../views/back/campaigns.php:2115
 msgid "medium"
 msgstr ""
 
-#: ../views/back/campaigns.php:2026
+#: ../views/back/campaigns.php:2116
 msgid "large"
 msgstr ""
 
-#: ../views/back/campaigns.php:2104
+#: ../views/back/campaigns.php:2195
 msgid "&laquo;"
 msgstr ""
 
-#: ../views/back/campaigns.php:2105
+#: ../views/back/campaigns.php:2196
 msgid "&raquo;"
 msgstr ""
 
-#: ../views/back/campaigns.php:2191
+#: ../views/back/campaigns.php:2236
+msgid ""
+"The web browser on your device cannot be used to upload files. You may be "
+"able to use the <a href=\"http://wordpress.org/extend/mobile/\">native app "
+"for your device</a> instead."
+msgstr ""
+
+#: ../views/back/campaigns.php:2275 ../views/back/campaigns.php:2418
 #, php-format
 msgid "Sorry, you have filled your storage quota (%s MB)."
 msgstr ""
 
-#: ../views/back/campaigns.php:2203
+#: ../views/back/campaigns.php:2302
+msgid "Allowed Files"
+msgstr ""
+
+#: ../views/back/campaigns.php:2330
+msgid "Drop files here"
+msgstr ""
+
+#: ../views/back/campaigns.php:2344 ../views/back/campaigns.php:2490
+msgid "Cancel"
+msgstr ""
+
+#: ../views/back/campaigns.php:2350
+#, php-format
+msgid "Maximum upload file size: %d%s."
+msgstr ""
+
+#: ../views/back/campaigns.php:2353
+msgid ""
+"Your browser has some limitations uploading large files with the multi-file "
+"uploader. Please use the browser uploader for files over 100MB."
+msgstr ""
+
+#: ../views/back/campaigns.php:2430
 msgid "Select Files"
 msgstr ""
 
-#: ../views/back/campaigns.php:2250
+#: ../views/back/campaigns.php:2477
 msgid "Choose files to upload"
 msgstr ""
 
-#: ../views/back/campaigns.php:2254
-#: ../views/back/campaigns.php:2266
+#: ../views/back/campaigns.php:2481 ../views/back/campaigns.php:2493
 #, php-format
 msgid "Maximum upload file size: %d%s"
 msgstr ""
 
-#: ../views/back/campaigns.php:2263
-msgid "Cancel"
+#: ../views/back/campaigns.php:2495
+msgid ""
+"If you want to use all capabilities of the uploader, like uploading multiple "
+"files at once, please upgrade to lighttpd 1.5."
 msgstr ""
 
-#: ../views/back/campaigns.php:2268
-msgid "If you want to use all capabilities of the uploader, like uploading multiple files at once, please upgrade to lighttpd 1.5."
-msgstr ""
-
-#: ../views/back/campaigns.php:2318
-msgid "This tab will be filled with images from your current and previous newsletters."
+#: ../views/back/campaigns.php:2545
+msgid ""
+"This tab will be filled with images from your current and previous "
+"newsletters."
 msgstr ""
 
 #: ../views/back/config.php:18
-msgid "If you confirm this, all your current Wysija data will be erased (newsletters, statistics, lists, subscribers, etc.)."
+msgid ""
+"If you confirm this, all your current Wysija data will be erased "
+"(newsletters, statistics, lists, subscribers, etc.)."
 msgstr ""
 
 #: ../views/back/config.php:20
 msgid "Confirm Reinstallation"
 msgstr ""
 
-#: ../views/back/config.php:47
+#: ../views/back/config.php:77
+msgid "Configure your DNS by adding a key/value record in TXT as shown below."
+msgstr ""
+
+#: ../views/back/config.php:80
+msgid "Key"
+msgstr ""
+
+#: ../views/back/config.php:80
+msgid "Value"
+msgstr ""
+
+#: ../views/back/config.php:82
+msgid "Domain"
+msgstr ""
+
+#: ../views/back/config.php:112
+msgid "Roles and permissions"
+msgstr ""
+
+#: ../views/back/config.php:169
 msgid "When someone subscribes"
 msgstr ""
 
-#: ../views/back/config.php:48
+#: ../views/back/config.php:170
 msgid "When someone unsubscribes"
 msgstr ""
 
-#: ../views/back/config.php:49
+#: ../views/back/config.php:171
 msgid "Daily summary of emails sent"
 msgstr ""
 
-#: ../views/back/config.php:95
+#: ../views/back/config.php:214
 msgid "Basics"
 msgstr ""
 
-#: ../views/back/config.php:96
+#: ../views/back/config.php:215
 msgid "Activation Email"
 msgstr ""
 
-#: ../views/back/config.php:97
+#: ../views/back/config.php:216
 msgid "Sending Method"
 msgstr ""
 
-#: ../views/back/config.php:99
+#: ../views/back/config.php:218
 msgid "Advanced"
 msgstr ""
 
-#: ../views/back/config.php:103
-msgid "Premium Activated"
-msgstr ""
-
-#: ../views/back/config.php:105
+#: ../views/back/config.php:219
 msgid "Premium Upgrade"
 msgstr ""
 
-#: ../views/back/config.php:114
-#: ../views/back/config.php:120
-#: ../views/back/config.php:126
-#: ../views/back/config.php:140
-#: ../views/back/config.php:146
+#: ../views/back/config.php:228
+msgid "Premium Activated"
+msgstr ""
+
+#: ../views/back/config.php:246
+msgid "Actions & Notifications"
+msgstr ""
+
+#: ../views/back/config.php:269 ../views/back/config.php:275
+#: ../views/back/config.php:281 ../views/back/config.php:295
+#: ../views/back/config.php:301
 msgid "Save settings"
 msgstr ""
 
-#: ../views/back/config.php:135
-msgid "Purchase Wysija PREMIUM"
+#: ../views/back/config.php:290
+msgid "See all Premium features"
 msgstr ""
 
-#: ../views/back/config.php:135
-msgid "[link]Purchase the premium version[/link] and get access to the <strong>Automated Bounce Handling</strong> system."
+#: ../views/back/config.php:290
+msgid ""
+"Spam filters will notice when you send to invalid addresses. Let Wysija "
+"handle your invalid email addresses automatically. This feature is part of "
+"the [link]Premium features[/link]</strong>."
 msgstr ""
 
-#: ../views/back/config.php:180
-#: ../views/back/config.php:805
-msgid "Purchase the premium version."
-msgstr ""
-
-#: ../views/back/config.php:185
+#: ../views/back/config.php:333
 msgid "Your company's address"
 msgstr ""
 
-#: ../views/back/config.php:186
-msgid "The address will be added to your newsletters' footer. This helps avoid spam filters."
+#: ../views/back/config.php:334
+msgid ""
+"The address will be added to your newsletters' footer. This helps avoid spam "
+"filters."
 msgstr ""
 
-#: ../views/back/config.php:192
+#: ../views/back/config.php:340
 msgid "Email notifications"
 msgstr ""
 
-#: ../views/back/config.php:193
-msgid "Put in the emails of the person who should received all notifications, comma separated."
+#: ../views/back/config.php:341
+msgid ""
+"Put in the emails of the person who should received all notifications, comma "
+"separated."
 msgstr ""
 
-#: ../views/back/config.php:199
-msgid "The plugin sends automated notifications, but also to your subscribers, like the subscription activation email. Put in the name that should show up in these emails."
+#: ../views/back/config.php:347
+msgid ""
+"The plugin sends automated notifications, but also to your subscribers, like "
+"the subscription activation email. Put in the name that should show up in "
+"these emails."
 msgstr ""
 
-#: ../views/back/config.php:231
+#: ../views/back/config.php:379
 msgid "Send Activation Email"
 msgstr ""
 
-#: ../views/back/config.php:232
-msgid "Subscribers will not receive any emails until they activate their subscriptions. Keep this activated to stop fake subscriptions by humans and robots."
+#: ../views/back/config.php:380
+msgid ""
+"Subscribers will not receive any emails until they activate their "
+"subscriptions. Keep this activated to stop fake subscriptions by humans and "
+"robots."
 msgstr ""
 
-#: ../views/back/config.php:232
-#: ../views/back/config.php:323
+#: ../views/back/config.php:380 ../views/back/config.php:466
 msgid "Read more on support.wysija.com"
 msgstr ""
 
-#: ../views/back/config.php:236
+#: ../views/back/config.php:384
 msgid "Email subject"
 msgstr ""
 
-#: ../views/back/config.php:241
+#: ../views/back/config.php:389
 msgid "Email content"
 msgstr ""
 
-#: ../views/back/config.php:251
+#: ../views/back/config.php:399
 msgid "Confirmation page title"
 msgstr ""
 
-#: ../views/back/config.php:252
-msgid "When subscribers click on the activation link, they are redirected to this [link]confirmation page[/link]"
+#: ../views/back/config.php:400
+msgid ""
+"When subscribers click on the activation link, they are redirected to this "
+"[link]confirmation page[/link]"
 msgstr ""
 
-#: ../views/back/config.php:253
-#: ../views/back/config.php:824
+#: ../views/back/config.php:401 ../views/back/config.php:941
+#: ../views/back/config.php:953
 msgid "Preview page"
 msgstr ""
 
-#: ../views/back/config.php:257
+#: ../views/back/config.php:405
 msgid "Confirmation page content"
 msgstr ""
 
-#: ../views/back/config.php:293
+#: ../views/back/config.php:438
 msgid "Your own website"
 msgstr ""
 
-#: ../views/back/config.php:294
-msgid "The simplest of all solutions for small lists. Your host sets the limit of emails per day."
+#: ../views/back/config.php:439
+msgid ""
+"The simplest of all solutions for small lists. Your host sets the limit of "
+"emails per day."
 msgstr ""
 
-#: ../views/back/config.php:309
-msgid "Easy to setup. Limited to 500 emails a day. We recommend that you open a dedicated Gmail account for this purpose."
+#: ../views/back/config.php:452
+msgid ""
+"Easy to setup. Limited to 500 emails a day. We recommend that you open a "
+"dedicated Gmail account for this purpose."
 msgstr ""
 
-#: ../views/back/config.php:322
-msgid "SMTP server"
+#: ../views/back/config.php:465
+msgid "SMTP"
 msgstr ""
 
-#: ../views/back/config.php:323
-msgid "Perfect for sending with a professional SMTP provider, which we highly recommended for big and small lists. We negotiated promotional offers with a few providers for you."
+#: ../views/back/config.php:466
+msgid ""
+"Perfect for sending with a professional SMTP provider, which we highly "
+"recommended for big and small lists. We negotiated promotional offers with a "
+"few providers for you."
 msgstr ""
 
-#: ../views/back/config.php:335
+#: ../views/back/config.php:478
 msgid "Delivery method"
 msgstr ""
 
-#: ../views/back/config.php:336
-msgid "Send yourself some test emails to confirm which method works with your server."
+#: ../views/back/config.php:479
+msgid ""
+"Send yourself some test emails to confirm which method works with your "
+"server."
 msgstr ""
 
-#: ../views/back/config.php:351
-#: ../views/back/config.php:363
-#: ../views/back/config.php:518
+#: ../views/back/config.php:494 ../views/back/config.php:506
+#: ../views/back/config.php:661
 msgid "Send a test mail"
 msgstr ""
 
-#: ../views/back/config.php:352
+#: ../views/back/config.php:495
 #, php-format
 msgid "This email engine works on 95% of servers"
 msgstr ""
 
-#: ../views/back/config.php:364
+#: ../views/back/config.php:507
 #, php-format
 msgid "This method works on 5% of servers"
 msgstr ""
 
-#: ../views/back/config.php:368
+#: ../views/back/config.php:511
 msgid "Sendmail path"
 msgstr ""
 
-#: ../views/back/config.php:380
+#: ../views/back/config.php:523
 msgid "SMTP Hostname"
 msgstr ""
 
-#: ../views/back/config.php:399
-#: ../views/back/config.php:610
+#: ../views/back/config.php:542 ../views/back/config.php:748
 msgid "Login"
 msgstr ""
 
-#: ../views/back/config.php:418
-#: ../views/back/config.php:613
+#: ../views/back/config.php:561 ../views/back/config.php:751
 msgid "Password"
 msgstr ""
 
-#: ../views/back/config.php:436
+#: ../views/back/config.php:579
 msgid "SMTP port"
 msgstr ""
 
-#: ../views/back/config.php:455
+#: ../views/back/config.php:598
 msgid "Secure connection"
 msgstr ""
 
-#: ../views/back/config.php:473
+#: ../views/back/config.php:616
 msgid "Authentication"
 msgstr ""
 
-#: ../views/back/config.php:474
-msgid "Leave this option to Yes. Only a tiny portion of SMTP services ask Authentication to be turned off."
+#: ../views/back/config.php:617
+msgid ""
+"Leave this option to Yes. Only a tiny portion of SMTP services ask "
+"Authentication to be turned off."
 msgstr ""
 
-#: ../views/back/config.php:530
+#: ../views/back/config.php:673
 msgid "Send..."
 msgstr ""
 
-#: ../views/back/config.php:532
-msgid "Your web host's has limits. We suggest 70 emails per 15 minutes to be safe. [link]Find out more[/link] on support.wysija.com"
+#: ../views/back/config.php:675
+msgid ""
+"Your web host's has limits. We suggest 70 emails per 15 minutes to be safe. "
+"[link]Find out more[/link] on support.wysija.com"
 msgstr ""
 
-#: ../views/back/config.php:544
+#: ../views/back/config.php:687
 msgid "emails every"
 msgstr ""
 
-#: ../views/back/config.php:551
+#: ../views/back/config.php:694
 msgid "This is fast!"
 msgstr ""
 
-#: ../views/back/config.php:551
-msgid "We suggest you setup a cron job. [link]Read more[/link] on support.wysija.com"
+#: ../views/back/config.php:694
+msgid ""
+"We suggest you setup a cron job. [link]Read more[/link] on support.wysija.com"
 msgstr ""
 
-#: ../views/back/config.php:567
+#: ../views/back/config.php:709
 msgid "How does it work?"
 msgstr ""
 
-#: ../views/back/config.php:569
-msgid "Create an email account dedicated solely to bounce handling, like on Gmail or your own domain. "
-msgstr ""
-
-#: ../views/back/config.php:570
-msgid "Fill out the form below so we can connect to it. "
-msgstr ""
-
-#: ../views/back/config.php:571
-msgid "Take it easy, the plugin does the rest."
-msgstr ""
-
-#: ../views/back/config.php:573
-msgid "Need help?"
-msgstr ""
-
-#: ../views/back/config.php:573
-msgid "Check out [link]our guide[/link] on how to fill out the form."
-msgstr ""
-
-#: ../views/back/config.php:581
-msgid "Actions & Notifications"
-msgstr ""
-
-#: ../views/back/config.php:588
-msgid "There are plenty of reasons for bounces. Configure what to do in each scenario."
-msgstr ""
-
-#: ../views/back/config.php:602
-#: ../views/back/config.php:803
-msgid "Bounce Email"
-msgstr ""
-
-#: ../views/back/config.php:606
-msgid "Hostname"
-msgstr ""
-
-#: ../views/back/config.php:616
-msgid "Port"
-msgstr ""
-
-#: ../views/back/config.php:621
-msgid "POP3 without imap extension"
-msgstr ""
-
-#: ../views/back/config.php:622
-msgid "Connection method"
-msgstr ""
-
-#: ../views/back/config.php:626
-msgid "Secure connection(SSL)"
-msgstr ""
-
-#: ../views/back/config.php:629
-msgid "Self-signed certificates"
-msgstr ""
-
-#: ../views/back/config.php:633
 #: ../views/back/config.php:711
-msgid "Unsubscribe the user"
+msgid ""
+"Create an email account dedicated solely to bounce handling, like on Gmail "
+"or your own domain."
 msgstr ""
 
-#: ../views/back/config.php:633
-msgid "Delete the subscriber"
-msgstr ""
-
-#: ../views/back/config.php:633
-#: ../views/back/config.php:711
-msgid "Do nothing"
-msgstr ""
-
-#: ../views/back/config.php:637
-msgid "When email does not exist... "
-msgstr ""
-
-#: ../views/back/config.php:642
-msgid "When mailbox full..."
-msgstr ""
-
-#: ../views/back/config.php:689
-msgid "Process bounce automatically"
-msgstr ""
-
-#: ../views/back/config.php:689
-msgid "each"
-msgstr ""
-
-#: ../views/back/config.php:691
-msgid "Does it work? Try to connect."
-msgstr ""
-
-#: ../views/back/config.php:711
-msgid "Delete the user"
+#: ../views/back/config.php:712
+msgid "Fill out the form below so we can connect to it."
 msgstr ""
 
 #: ../views/back/config.php:713
+msgid "Take it easy, the plugin does the rest."
+msgstr ""
+
+#: ../views/back/config.php:715
+msgid "Need help?"
+msgstr ""
+
+#: ../views/back/config.php:715
+msgid "Check out [link]our guide[/link] on how to fill out the form."
+msgstr ""
+
+#: ../views/back/config.php:727
+msgid ""
+"There are plenty of reasons for bounces. Configure what to do in each "
+"scenario."
+msgstr ""
+
+#: ../views/back/config.php:740 ../views/back/config.php:916
+msgid "Bounce Email"
+msgstr ""
+
+#: ../views/back/config.php:744
+msgid "Hostname"
+msgstr ""
+
+#: ../views/back/config.php:754
+msgid "Port"
+msgstr ""
+
+#: ../views/back/config.php:759
+msgid "POP3 without imap extension"
+msgstr ""
+
+#: ../views/back/config.php:760
+msgid "Connection method"
+msgstr ""
+
+#: ../views/back/config.php:764
+msgid "Secure connection(SSL)"
+msgstr ""
+
+#: ../views/back/config.php:767
+msgid "Self-signed certificates"
+msgstr ""
+
+#: ../views/back/config.php:771 ../views/back/config.php:829
+msgid "Unsubscribe the user"
+msgstr ""
+
+#: ../views/back/config.php:771
+msgid "Delete the subscriber"
+msgstr ""
+
+#: ../views/back/config.php:771 ../views/back/config.php:829
+msgid "Do nothing"
+msgstr ""
+
+#: ../views/back/config.php:775
+msgid "When email does not exist... "
+msgstr ""
+
+#: ../views/back/config.php:780
+msgid "When mailbox full..."
+msgstr ""
+
+#: ../views/back/config.php:804
+msgid "Process bounce automatically"
+msgstr ""
+
+#: ../views/back/config.php:804
+msgid "each"
+msgstr ""
+
+#: ../views/back/config.php:806
+msgid "Does it work? Try to connect."
+msgstr ""
+
+#: ../views/back/config.php:829
+msgid "Delete the user"
+msgstr ""
+
+#: ../views/back/config.php:831
 #, php-format
 msgid "Unsubscribe the user and add him to the list \"%1$s\" "
 msgstr ""
 
-#: ../views/back/config.php:720
+#: ../views/back/config.php:838
 #, php-format
 msgid "after %1$s try"
 msgid_plural "after %1$s tries"
 msgstr[0] ""
 msgstr[1] ""
 
-#: ../views/back/config.php:782
-msgid "Who can create newsletters?"
+#: ../views/back/config.php:907
+msgid ""
+"You can change the default reply-to name and email for your newsletters. "
+"This option is also used for the activation emails and Admin notifications "
+"(in Basics)."
 msgstr ""
 
-#: ../views/back/config.php:783
-#: ../views/back/config.php:788
-msgid "These are based on Wordpress user accounts."
+#: ../views/back/config.php:917
+msgid ""
+"To which address should all the bounced emails go? Get the [link]Premium "
+"version[/link] to automatically handle these."
 msgstr ""
 
-#: ../views/back/config.php:783
-#: ../views/back/config.php:788
-msgid "Settings are restricted to Admins only, regardless of your changes here."
+#: ../views/back/config.php:918
+msgid "Purchase the premium version."
 msgstr ""
 
-#: ../views/back/config.php:787
-msgid "Who can manage subscribers?"
+#: ../views/back/config.php:928
+msgid "Link to browser version"
 msgstr ""
 
-#: ../views/back/config.php:794
-msgid "You can change the default reply-to name and email for your newsletters. This option is also used for the activation emails and Admin notifications (in Basics)."
+#: ../views/back/config.php:929
+msgid ""
+"Displays at the top of your newsletters. Don't forget to include the link "
+"tag, ie: [link]The link[/link]"
 msgstr ""
 
-#: ../views/back/config.php:804
-msgid "To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these."
-msgstr ""
-
-#: ../views/back/config.php:817
+#: ../views/back/config.php:934
 msgid "Text of \"Unsubscribe\" link"
 msgstr ""
 
-#: ../views/back/config.php:818
-msgid "This changes the label for the unsubscribe link in the footer of your newsletters."
+#: ../views/back/config.php:935
+msgid ""
+"This changes the label for the unsubscribe link in the footer of your "
+"newsletters."
 msgstr ""
 
-#: ../views/back/config.php:822
+#: ../views/back/config.php:939
 msgid "Unsubscribe page title"
 msgstr ""
 
-#: ../views/back/config.php:823
-msgid "This is the [link]unsubscription confirmation[/link] page a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter."
+#: ../views/back/config.php:940
+msgid ""
+"This is the [link]unsubscription confirmation[/link] page a user is directed "
+"to after clicking on the unsubscribe link at the bottom of a newsletter."
 msgstr ""
 
-#: ../views/back/config.php:829
+#: ../views/back/config.php:946
 msgid "Unsubscribe page content"
 msgstr ""
 
-#: ../views/back/config.php:849
-msgid "Charset"
-msgstr ""
-
-#: ../views/back/config.php:850
-msgid "Squares or weird characters are displayed in your emails? Select the encoding for your language."
-msgstr ""
-
-#: ../views/back/config.php:853
-msgid "Debug mode"
-msgstr ""
-
-#: ../views/back/config.php:854
-msgid "Enable this to show Wysija's errors. Our support might ask you to enable this if you seek their help."
-msgstr ""
-
-#: ../views/back/config.php:864
-msgid "Reinstall from scratch"
-msgstr ""
-
-#: ../views/back/config.php:865
-msgid "Want to start all over again? This will wipe out Wysija and reinstall anew."
-msgstr ""
-
-#: ../views/back/config.php:867
-msgid "Reinstall now..."
-msgstr ""
-
-#: ../views/back/config.php:883
-#: ../views/back/config.php:990
-msgid "Send to more than 2000 subscribers."
-msgstr ""
-
-#: ../views/back/config.php:884
-#: ../views/back/config.php:991
-msgid "You have no more limits. Send to 100 000 if you want."
-msgstr ""
-
-#: ../views/back/config.php:887
-#: ../views/back/config.php:978
-msgid "Find out which links are clicked."
-msgstr ""
-
-#: ../views/back/config.php:888
-#: ../views/back/config.php:979
-msgid "This is the most important engagement metric. You'll get hooked."
-msgstr ""
-
-#: ../views/back/config.php:891
-msgid "Track clicked links for each subscriber."
-msgstr ""
-
-#: ../views/back/config.php:892
-msgid "Find out who is really addicted to your newsletters."
-msgstr ""
-
-#: ../views/back/config.php:895
-#: ../views/back/config.php:974
-msgid "Track with Google Analytics."
-msgstr ""
-
-#: ../views/back/config.php:896
-msgid "Find out what your subscribers do once on your site."
-msgstr ""
-
-#: ../views/back/config.php:899
-msgid "We activate a cron job for you."
-msgstr ""
-
-#: ../views/back/config.php:900
-msgid "We make sure you're sending every 15 minutes to avoid unregular delivery."
-msgstr ""
-
-#: ../views/back/config.php:903
-msgid "Let us handle your bounces."
-msgstr ""
-
-#: ../views/back/config.php:904
-msgid "It's bad to send to invalid addresses. Wysija removes them for you. Your reputation stays clean."
-msgstr ""
-
-#: ../views/back/config.php:907
-msgid "Download more beautiful themes."
-msgstr ""
-
-#: ../views/back/config.php:908
-msgid "We work with top notch designers. The latest and prettiest are exclusive."
-msgstr ""
-
-#: ../views/back/config.php:911
-msgid "Fast and efficient support."
-msgstr ""
-
-#: ../views/back/config.php:912
-msgid "It's like a valet service from the engineers themselves: Ben, Jo and Kim."
-msgstr ""
-
-#: ../views/back/config.php:915
-msgid "Upgrade in a few clicks."
-msgstr ""
-
-#: ../views/back/config.php:916
-msgid "You don't need to reinstall. We'll simply activate your site."
-msgstr ""
-
-#: ../views/back/config.php:919
-msgid "Join our happy users."
-msgstr ""
-
-#: ../views/back/config.php:920
-msgid "Wysija is getting better everyday thanks to users like you. <br />Read [link]what they are saying[/link]."
-msgstr ""
-
-#: ../views/back/config.php:924
-msgid "Try it now. Not happy? Get your money back."
-msgstr ""
-
-#: ../views/back/config.php:925
-msgid "30-Day money back guarantee. Good reason to try us out."
-msgstr ""
-
-#: ../views/back/config.php:931
-msgid "11 Cool Reasons to Upgrade to Premium"
+#: ../views/back/config.php:951
+msgid "Subscribers can edit their profile"
 msgstr ""
 
 #: ../views/back/config.php:952
-msgid "Upgrade for $99 a year for 1 site."
+msgid ""
+"Add a link in the footer of all your newsletters so subscribers can edit "
+"their profile and lists. [link]See your own subscriber profile page.[/link]"
 msgstr ""
 
-#: ../views/back/config.php:953
-msgid "Already paid?"
+#: ../views/back/config.php:962
+msgid "Charset"
 msgstr ""
 
-#: ../views/back/config.php:953
-msgid "Activate your Premium licence."
+#: ../views/back/config.php:963
+msgid ""
+"Squares or weird characters are displayed in your emails? Select the "
+"encoding for your language."
 msgstr ""
 
-#: ../views/back/config.php:955
-#: ../views/back/config.php:1032
-msgid "Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben."
+#: ../views/back/config.php:967
+msgid "DKIM signature"
 msgstr ""
 
-#: ../views/back/config.php:956
-msgid "Read our simple and easy [link]terms and conditions.[/link]"
+#: ../views/back/config.php:968
+msgid ""
+"Spam filters like this. Wysija can sign all your emails with DKIM. Spam "
+"filters then check if your signature matches the one on your domain."
 msgstr ""
 
-#: ../views/back/config.php:970
-msgid "To do: create a bounce address."
+#: ../views/back/config.php:973
+msgid "Debug mode"
 msgstr ""
 
-#: ../views/back/config.php:971
-msgid "Click on the Bounce Handling tab and read our guide if you need help."
-msgstr ""
-
-#: ../views/back/config.php:971
-msgid "Note: Mailjet handles its own bounce."
-msgstr ""
-
-#: ../views/back/config.php:975
-msgid "See how it works."
-msgstr ""
-
-#: ../views/back/config.php:982
-msgid "See which links are clicked."
+#: ../views/back/config.php:974
+msgid ""
+"Enable this to show Wysija's errors. Our support might ask you to enable "
+"this if you seek their help."
 msgstr ""
 
 #: ../views/back/config.php:983
-msgid "Find out if a subscriber is really addicted to your newsletters."
+msgid "Reinstall from scratch"
+msgstr ""
+
+#: ../views/back/config.php:984
+msgid ""
+"Want to start all over again? This will wipe out Wysija and reinstall anew."
 msgstr ""
 
 #: ../views/back/config.php:986
-msgid "We check every 15 min. that your newsletter is being sent."
+msgid "Reinstall now..."
 msgstr ""
 
-#: ../views/back/config.php:987
-msgid "We trigger your sending mecanism every 15 minutes to avoid unregular delivery. Avoid setting up a \"cron job\"."
+#: ../views/back/config.php:1000 ../views/back/config.php:1115
+msgid "Send to more than 2000 subscribers."
 msgstr ""
 
-#: ../views/back/config.php:994
-msgid "Download beautiful themes by known designers."
+#: ../views/back/config.php:1001 ../views/back/config.php:1116
+msgid "You have no more limits. Send to 100 000 if you want."
 msgstr ""
 
-#: ../views/back/config.php:995
-msgid "Get beautiful themes and their Photoshop files directly in the visual editor."
+#: ../views/back/config.php:1004 ../views/back/config.php:1103
+msgid "Find out which links are clicked."
 msgstr ""
 
-#: ../views/back/config.php:998
-msgid "Final tip: send with a professional email provider."
+#: ../views/back/config.php:1005 ../views/back/config.php:1104
+msgid "This is the most important engagement metric. You'll get hooked."
 msgstr ""
 
-#: ../views/back/config.php:999
-msgid "Wysija highly recommends you send with a professional Email Provider. This will increase your deliverability. [link]Read more.[/link]"
+#: ../views/back/config.php:1008
+msgid "Track clicked links for each subscriber."
 msgstr ""
 
-#: ../views/back/config.php:1007
-msgid "The Little Guide to Premium"
+#: ../views/back/config.php:1009
+msgid "Find out who is really addicted to your newsletters."
+msgstr ""
+
+#: ../views/back/config.php:1012 ../views/back/config.php:1099
+msgid "Track with Google Analytics."
+msgstr ""
+
+#: ../views/back/config.php:1013
+msgid "Find out what your subscribers do once on your site."
+msgstr ""
+
+#: ../views/back/config.php:1016
+msgid "We activate a cron job for you."
+msgstr ""
+
+#: ../views/back/config.php:1017
+msgid ""
+"We make sure you're sending every 15 minutes to avoid unregular delivery."
+msgstr ""
+
+#: ../views/back/config.php:1020
+msgid "Let us handle your bounces."
+msgstr ""
+
+#: ../views/back/config.php:1021
+msgid ""
+"It's bad to send to invalid addresses. Wysija removes them for you. Your "
+"reputation stays clean."
+msgstr ""
+
+#: ../views/back/config.php:1024
+msgid "Download more beautiful themes."
+msgstr ""
+
+#: ../views/back/config.php:1025
+msgid ""
+"We work with top notch designers. The latest and prettiest are exclusive."
+msgstr ""
+
+#: ../views/back/config.php:1028
+msgid "Fast and efficient support."
 msgstr ""
 
 #: ../views/back/config.php:1029
+msgid ""
+"It's like a valet service from the engineers themselves: Ben, Jo and Kim."
+msgstr ""
+
+#: ../views/back/config.php:1032
+msgid "Increase your deliverability with DKIM."
+msgstr ""
+
+#: ../views/back/config.php:1033
+msgid ""
+"Add this signature to your emails with Wysija. Spam filters can then "
+"authenticate your emails and your domain."
+msgstr ""
+
+#: ../views/back/config.php:1036
+msgid "Upgrade in a few clicks."
+msgstr ""
+
+#: ../views/back/config.php:1037
+msgid "You don't need to reinstall. We'll simply activate your site."
+msgstr ""
+
+#: ../views/back/config.php:1040
+msgid "Join our happy users."
+msgstr ""
+
+#: ../views/back/config.php:1041
+msgid ""
+"Wysija is getting better everyday thanks to users like you. <br />Read [link]"
+"what they are saying[/link]."
+msgstr ""
+
+#: ../views/back/config.php:1045
+msgid "Try it now. Not happy? Get your money back."
+msgstr ""
+
+#: ../views/back/config.php:1046
+msgid "30-Day money back guarantee. Good reason to try us out."
+msgstr ""
+
+#: ../views/back/config.php:1052
+msgid "11 Cool Reasons to Upgrade to Premium"
+msgstr ""
+
+#: ../views/back/config.php:1073
+msgid "Upgrade for $99 a year for 1 site."
+msgstr ""
+
+#: ../views/back/config.php:1074
+msgid "Already paid?"
+msgstr ""
+
+#: ../views/back/config.php:1074
+msgid "Activate your Premium licence."
+msgstr ""
+
+#: ../views/back/config.php:1076 ../views/back/config.php:1157
+msgid ""
+"Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben."
+msgstr ""
+
+#: ../views/back/config.php:1077
+msgid "Read our simple and easy [link]terms and conditions.[/link]"
+msgstr ""
+
+#: ../views/back/config.php:1091
+msgid "To do: create a bounce address."
+msgstr ""
+
+#: ../views/back/config.php:1092
+msgid "Click on the Bounce Handling tab and read our guide if you need help."
+msgstr ""
+
+#: ../views/back/config.php:1092
+msgid "Note: Mailjet handles its own bounce."
+msgstr ""
+
+#: ../views/back/config.php:1095
+msgid "Set up your DKIM signature."
+msgstr ""
+
+#: ../views/back/config.php:1096
+msgid "Find the option in the Advanced tab!"
+msgstr ""
+
+#: ../views/back/config.php:1100
+msgid "See how it works."
+msgstr ""
+
+#: ../views/back/config.php:1107
+msgid "See which links are clicked."
+msgstr ""
+
+#: ../views/back/config.php:1108
+msgid "Find out if a subscriber is really addicted to your newsletters."
+msgstr ""
+
+#: ../views/back/config.php:1111
+msgid "We check every 15 min. that your newsletter is being sent."
+msgstr ""
+
+#: ../views/back/config.php:1112
+msgid ""
+"We trigger your sending mecanism every 15 minutes to avoid unregular "
+"delivery. Avoid setting up a \"cron job\"."
+msgstr ""
+
+#: ../views/back/config.php:1119
+msgid "Download beautiful themes by known designers."
+msgstr ""
+
+#: ../views/back/config.php:1120
+msgid ""
+"Get beautiful themes and their Photoshop files directly in the visual editor."
+msgstr ""
+
+#: ../views/back/config.php:1123
+msgid "Final tip: send with a professional email provider."
+msgstr ""
+
+#: ../views/back/config.php:1124
+msgid ""
+"Wysija highly recommends you send with a professional Email Provider. This "
+"will increase your deliverability. [link]Read more.[/link]"
+msgstr ""
+
+#: ../views/back/config.php:1132
+msgid "The Little Guide to Premium"
+msgstr ""
+
+#: ../views/back/config.php:1154
 msgid "Get support"
 msgstr ""
 
@@ -3575,8 +3979,7 @@ msgstr ""
 msgid "Back to lists"
 msgstr ""
 
-#: ../views/back/subscribers.php:28
-#: ../views/back/subscribers.php:667
+#: ../views/back/subscribers.php:28 ../views/back/subscribers.php:690
 msgid "Add List"
 msgstr ""
 
@@ -3584,15 +3987,12 @@ msgstr ""
 msgid "Edit Lists"
 msgstr ""
 
-#: ../views/back/subscribers.php:28
-#: ../views/back/subscribers.php:763
-#: ../views/back/subscribers.php:917
-#: ../views/back/subscribers.php:952
+#: ../views/back/subscribers.php:28 ../views/back/subscribers.php:786
+#: ../views/back/subscribers.php:940 ../views/back/subscribers.php:975
 msgid "Import"
 msgstr ""
 
-#: ../views/back/subscribers.php:28
-#: ../views/back/subscribers.php:105
+#: ../views/back/subscribers.php:28 ../views/back/subscribers.php:105
 #: ../views/back/subscribers.php:326
 msgid "Export"
 msgstr ""
@@ -3641,7 +4041,9 @@ msgid "Total of %1$s clicks:"
 msgstr ""
 
 #: ../views/back/subscribers.php:514
-msgid "Note: Find out what this subscribers opens and clicks with our [link]Premium version.[/link]"
+msgid ""
+"Note: Find out what this subscribers opens and clicks with our [link]Premium "
+"version.[/link]"
 msgstr ""
 
 #: ../views/back/subscribers.php:548
@@ -3660,79 +4062,101 @@ msgstr ""
 msgid "Synch All Multisite"
 msgstr ""
 
+#: ../views/back/subscribers.php:664
+msgid "Show in subscriber profile page?"
+msgstr ""
+
 #: ../views/back/subscribers.php:665
+msgid "See your own subscriber profile page."
+msgstr ""
+
+#: ../views/back/subscribers.php:665
+msgid ""
+"Display this list to all subscribers in their [link]subscriber profile page[/"
+"link]?"
+msgstr ""
+
+#: ../views/back/subscribers.php:678
+msgid "For your own use and never shown to your subscribers."
+msgstr ""
+
+#: ../views/back/subscribers.php:688
 msgid "Update List"
 msgstr ""
 
-#: ../views/back/subscribers.php:695
+#: ../views/back/subscribers.php:718
 msgid "How do you want to import ?"
 msgstr ""
 
-#: ../views/back/subscribers.php:700
+#: ../views/back/subscribers.php:723
 msgid "Copy paste in a text box"
 msgstr ""
 
-#: ../views/back/subscribers.php:703
-#: ../views/back/subscribers.php:741
+#: ../views/back/subscribers.php:726 ../views/back/subscribers.php:764
 msgid "Upload a file"
 msgstr ""
 
-#: ../views/back/subscribers.php:716
+#: ../views/back/subscribers.php:739
 #, php-format
 msgid "Import from %1$s"
 msgstr ""
 
-#: ../views/back/subscribers.php:730
+#: ../views/back/subscribers.php:753
 msgid "Then paste your list here"
 msgstr ""
 
-#: ../views/back/subscribers.php:731
-msgid "This needs to be in CSV style or a simple paste from Gmail, Hotmail or Yahoo. See [link]examples in our support site[/link]."
-msgstr ""
-
-#: ../views/back/subscribers.php:742
-msgid "This needs to be in CSV style. See [link]examples in our support site[/link]."
-msgstr ""
-
 #: ../views/back/subscribers.php:754
+msgid ""
+"This needs to be in CSV style or a simple paste from Gmail, Hotmail or "
+"Yahoo. See [link]examples in our support site[/link]."
+msgstr ""
+
+#: ../views/back/subscribers.php:765
+msgid ""
+"This needs to be in CSV style. See [link]examples in our support site[/link]."
+msgstr ""
+
+#: ../views/back/subscribers.php:777
 msgid "Warning..."
 msgstr ""
 
-#: ../views/back/subscribers.php:755
-msgid "The emails you are importing need to come from people who requested to be subscribed. Otherwise, your emails will quickly be filtered by spam engines. Don’t fool yourself! [link]Read more here[/link]."
+#: ../views/back/subscribers.php:778
+msgid ""
+"The emails you are importing need to come from people who requested to be "
+"subscribed. Otherwise, your emails will quickly be filtered by spam engines. "
+"Don’t fool yourself! [link]Read more here[/link]."
 msgstr ""
 
-#: ../views/back/subscribers.php:779
+#: ../views/back/subscribers.php:802
 msgid "Match the data"
 msgstr ""
 
-#: ../views/back/subscribers.php:781
+#: ../views/back/subscribers.php:804
 msgid "Ignore column..."
 msgstr ""
 
-#: ../views/back/subscribers.php:883
+#: ../views/back/subscribers.php:906
 msgid "Pick one or many lists"
 msgstr ""
 
-#: ../views/back/subscribers.php:884
+#: ../views/back/subscribers.php:907
 msgid "Pick the lists you want to import those subscribers to."
 msgstr ""
 
-#: ../views/back/subscribers.php:893
+#: ../views/back/subscribers.php:916
 msgid "New list"
 msgstr ""
 
-#: ../views/back/subscribers.php:900
+#: ../views/back/subscribers.php:923
 msgid "Name for new list:"
 msgstr ""
 
-#: ../views/back/subscribers.php:940
+#: ../views/back/subscribers.php:963
 #, php-format
 msgid "Import the %1$s subscribers from the plugin: %2$s "
 msgstr ""
 
-#: ../views/back/tmce.php:68
-#: ../views/back/tmce.php:79
+#: ../views/back/tmce.php:68 ../views/back/tmce.php:79
 msgid "Preview"
 msgstr ""
 
@@ -3748,7 +4172,6 @@ msgstr ""
 msgid "Subscriber details"
 msgstr ""
 
-#: ../views/front/confirm.php:73
-msgid "List of newsletter subscriptions"
+#: ../views/front/confirm.php:83
+msgid "Your lists"
 msgstr ""
-

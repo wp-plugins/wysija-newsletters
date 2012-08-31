@@ -16,7 +16,15 @@
         {/if}
         {if ! $image_alignment}{set var="$image_alignment" value="$params.image_alignment"}{/if}
 
-        <div class="wysija_content {$image_alignment} clearfix">
+        {if #IS_PAIR && $params.bgcolor1 != ''}
+            {set var="$background_color" value="$params.bgcolor1"}
+        {/if}
+
+        {if ! #IS_PAIR && $params.bgcolor2 != ''}
+            {set var="$background_color" value="$params.bgcolor2"}
+        {/if}
+
+        <div class="wysija_content {$image_alignment} {if #IS_FIRST}first{/if}{if #IS_LAST}last{/if} clearfix" {if $background_color}wysija_bg_color="{$background_color}"{/if}>
             {if #image}
                 <div class="wysija_image {$image_alignment}" style="width:{#image.width}px;">
                     <img src="{#image.src}" width="{#image.width}" height="{#image.height}" alt="{#image.alt}" />
@@ -27,7 +35,7 @@
             {/if}
         </div>
         {if ! #IS_LAST && $params.divider.src}
-            <div class="wysija_divider">
+            <div class="wysija_divider" {if $background_color}wysija_bg_color="{$background_color}"{/if}>
                 <img src="{$params.divider.src}" height="{$params.divider.height}" width="{$params.divider.width}" />
             </div>
         {/if}

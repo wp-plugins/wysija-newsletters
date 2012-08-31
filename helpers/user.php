@@ -86,6 +86,67 @@ class WYSIJA_help_user extends WYSIJA_object{
         }
         return $listidsenableduser;
     }
+    function checkData(&$data){
+         if(isset($data['user']['abs'])){
+            foreach($data['user']['abs'] as $honeyKey => $honeyVal){
+
+                if($honeyVal) return false;
+            }
+            unset($data['user']['abs']);
+        }
+        return true;
+    }
+    
+    function addSubscriber($data){
+
+        $userHelper=&WYSIJA::get("user","helper");
+        if(!$this->validEmail($data['user']['email'])) return $this->error(sprintf(__('The email %1$s is not valid!',WYSIJA),"<strong>".$data['user']['email']."</strong>"),true);
+
+        $modelUser=&WYSIJA::get("user","model");
+        $userGet=$modelUser->getOne(false,array('email'=>trim($data['user']['email'])));
+        if($userGet){
+
+            if(defined('WP_ADMIN') && WP_ADMIN) $this->error(str_replace(array("[link]","[/link]"),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$userGet['user_id'].'" >',"</a>"),__(' Oops! This user already exists. Find him [link]here[/link].',WYSIJA)),true);
+
+            if((int)$userGet['status']<1){
+                $emailsent=$this->sendConfirmationEmail((object)$userGet,true);
+            }
+            $this->notice(__("Oops! You're already subscribed.",WYSIJA));
+
+            return $this->addToLists($data['user_list']['list_ids'], $userGet['user_id']);
+        }
+
+        $config=&WYSIJA::get('config','model');
+        $dbloptin=$config->getValue('confirm_dbleoptin');
+        $dataInsert=$data['user'];
+        $dataInsert['ip']=$this->getIP();
+        if(!$dbloptin){
+            $dataInsert['status']=1;
+        }
+        $modelUser->reset();
+        $user_id=$modelUser->insert($dataInsert);
+        if($user_id ){
+            if(isset($data['message_success'])) $this->notice($data['message_success']);
+        }else{
+            $this->notice(__("User has not been inserted.",WYSIJA));
+        }
+
+
+        $this->addToLists($data['user_list']['list_ids'], $user_id);
+
+        $emailsent=true;
+        if($dbloptin){
+            $modelUser->reset();
+            $modelUser->getFormat=OBJECT;
+            $receiver=$modelUser->getOne(false,array('email'=>trim($data['user']['email'])));
+            $emailsent=$this->sendConfirmationEmail($receiver,true);
+        }else{
+            if($config->getValue('emails_notified') && $config->getValue('emails_notified_when_sub')){
+                $this->uid=$uid;
+                $this->_notify($data['user']['email']);
+            }
+        }
+    }
     
     function sendAutoNl($user_id,$extraparams=false,$checkfortype='subs-2-nl'){
 
@@ -224,7 +285,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         $modelU->delete(array("user_id"=>$user_ids));
         $emails=array();
         foreach($emailsarr as $emobj)   $emails[]=$emobj['email'];
-        if(count($user_ids)>1)  $this->notice(sprintf(__(' %1$s users have been deleted.',WYSIJA),count($user_ids)));
+        if(count($user_ids)>1)  $this->notice(sprintf(__(' %1$s subscribers have been deleted.',WYSIJA),count($user_ids)));
         else    $this->notice(sprintf(__(' %1$s subscriber has been deleted.',WYSIJA),  implode(',', $emails)));
         return true;
     }
@@ -238,7 +299,18 @@ class WYSIJA_help_user extends WYSIJA_object{
             $query.="(".(int)$listid.",".(int)$uid.")\n";
             if($total>($key+1)) $query.=",";
         }
-        $modelUser->query($query);
+        return $modelUser->query($query);
+    }
+    function addToLists($listids,$userid){
+        $modelUser=&WYSIJA::get("user","model");
+        $query="INSERT IGNORE INTO `[wysija]user_list` (`list_id`,`user_id`)";
+        $query.=" VALUES ";
+        $total=count($listids);
+        foreach($listids as $key=> $listid){
+            $query.="(".(int)$listid.",".(int)$userid.")\n";
+            if($total>($key+1)) $query.=",";
+        }
+        return $modelUser->query($query);
     }
 
     function _notify($email,$subscribed=true,$listids=false){

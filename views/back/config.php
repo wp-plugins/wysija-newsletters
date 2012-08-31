@@ -4,11 +4,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     var $title="Settings";
     var $icon="icon-options-general";
+    var $skip_header = true;
 
     function WYSIJA_view_back_support(){
         $this->title=__("Settings",WYSIJA);
         $this->WYSIJA_view_back();
-
     }
     function reinstall(){
         ?>
@@ -22,6 +22,22 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             </p>
         </form>
         <?php
+
+    }
+
+    function fieldFormHTML_viewinbrowser($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get("forms","helper");
+        $checked=false;
+        if($this->model->getValue($key))   $checked=true;
+        $field='<p><label for="'.$key.'">';
+        $field.=$formsHelp->checkbox(array("id"=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
+        $field.='</label>';
+        $value=$this->model->getValue($key.'_linkname');
+
+        $field.=$formsHelp->input(array("id"=>$key.'_linkname','name'=>'wysija['.$model.']['.$key.'_linkname]', 'size'=>'75'),$value).'</p>';
+
+        return $field;
     }
 
     function fieldFormHTML_debugnew($key,$value,$model,$paramsex){
@@ -30,9 +46,47 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $selected=$this->model->getValue($key);
         if(!$selected)   $selected=0;
         $field='<p><label for="'.$key.'">';
-        $options=array(0=>'off',1=>'log + SQL',2=>'log + SQL + PHP errors',/*99=>'log + Admin(SQL + PHP errors) Public(Debug for admins)'*/);
+        $options=array(0=>'off',1=>'SQL queries',2=>'&nbsp+log',3=>'&nbsp&nbsp+safe PHP errors',4=>'&nbsp&nbsp&nbsp+safe PHP errors wp-admin',99=>'&nbsp&nbsp&nbsp&nbsp+PHP errors wp-admin(to use carefully)');
         $field.=$formsHelp->dropdown(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'),$options,$selected);
         $field.='</label></p>';
+
+        return $field;
+    }
+
+    function fieldFormHTML_dkim($key,$value,$model,$paramsex){
+
+        $field='';
+        $keypublickey=$key.'_pubk';
+
+        if(!$this->model->getValue($keypublickey)){
+            //refresh the public key private key generation
+            $helpersLi=&WYSIJA::get('licence','helper');
+            $helpersLi->dkim_config();
+        }else{
+            WYSIJA::update_option('dkim_autosetup',false);
+            $formsHelp=&WYSIJA::get("forms","helper");
+
+
+            $realkey=$key.'_active';
+            $field.='<p>';
+            $field.=$formsHelp->checkbox(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']','style'=>'margin-left:0px;','class'=>'activateInput'),$this->model->getValue($realkey));
+            $field.='</p>';
+
+            $field.='<div id="'.$realkey.'_linkname" >';
+            //$titlelink=str_replace(array('[link]','[\link]'), array('<a href="">','</a>'),'');
+            $titlelink= __('Configure your DNS by adding a key/value record in TXT as shown below.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/guide-to-dkim-in-wysija/?utm_source=wpadmin&utm_campaign=settings" target="_blank">'.__('Read more',WYSIJA).'</a>';
+            $field.='<fieldset style=" border: 1px solid #ccc;margin: 0;padding: 10px;"><legend>'.$titlelink.'</legend>';
+
+            $field.='<label id="drlab" for="domainrecord">'.__('Key',WYSIJA).' <input readonly="readonly" id="domainrecord" style="margin-right:10px;" type="text" value="wys._domainkey"/></label><label id="drpub" for="dkimpub">'.__('Value',WYSIJA).' <input readonly="readonly" id="dkimpub" type="text" size="70" value="v=DKIM1;k=rsa;g=*;s=email;h=sha1;t=s;p='.$this->model->getValue($keypublickey).'"/>';
+            $field.='</fieldset>';
+            $realkey=$key.'_domain';
+            $field.='<p><label class="dkim" for="'.$realkey.'">'.__('Domain',WYSIJA).'</label>';
+
+            $field.=$formsHelp->input(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']'),$this->model->getValue($realkey));
+            $field.='</p>';
+
+            $field.='</div>';
+        }
 
         return $field;
     }
@@ -48,6 +102,62 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         return $field;
     }
+
+    function fieldFormHTML_capabilities($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get("forms","helper");
+
+        $field='<table width="400" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" border="0" style="background-color:#FFFFFF" class="fixed">
+    <thead>
+        <tr>
+<th class="rolestitle" style="width:200px">'.__('Roles and permissions',WYSIJA).'</th>';
+
+        $wptools=&WYSIJA::get('wp_tools','helper');
+        $editable_roles=$wptools->wp_get_roles();
+
+
+        foreach($editable_roles as $role){
+            $field.='<th class="rolestable" >'.$role['name'].'</th>';
+        }
+
+	$field.='</tr></thead><tbody>';
+
+        $alternate=true;
+        foreach($this->model->capabilities as $keycap=>$capability){
+            $classAlternate='';
+            if($alternate) $classAlternate=' class="alternate" ';
+            $field.='<tr'.$classAlternate.'><td class="title"><p class="description">'.$capability['label'].'</p></td>';
+
+                    foreach($editable_roles as $role){
+                        $checked=false;
+                        $keycheck='rolescap---'.$role['key'].'---'.$keycap;
+
+                        //if($this->model->getValue($keycheck))   $checked=true;
+                        $checkboxparams=array("id"=>$keycheck,'name'=>'wysija['.$model.']['.$keycheck.']');
+                        if(in_array($role['key'], array('administrator','super_admin'))){
+                            $checkboxparams['disabled']='disabled';
+                        }
+
+                        $roling = get_role( $role['key'] );
+
+                        // add "organize_gallery" to this role object
+                        if($roling->has_cap( 'wysija_'.$keycap )){
+                            $checked=true;
+                        }
+
+                        $field.='<td class="rolestable" >'.$formsHelp->checkbox($checkboxparams,1,$checked).'</td>';
+                    }
+
+            $field.='</tr>';
+            $alternate=!$alternate;
+        }
+
+        $field.='</tbody></table>';
+
+        return $field;
+    }
+
+
 
     function fieldFormHTML_email_notifications($key,$value,$model,$paramsex){
         /* first part concerning the field itself */
@@ -100,52 +210,85 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         return $field;
     }
 
+    function tabs($current = 'basics') {
+        $tabs = array(
+            'basics' => __('Basics', WYSIJA),
+            'emailactiv' => __('Activation Email', WYSIJA),
+            'sendingmethod' => __('Sending Method', WYSIJA),
+            'bounce' => __('Bounce Handling', WYSIJA),
+            'advanced' => __('Advanced', WYSIJA),
+            'premium' => __('Premium Upgrade', WYSIJA)
+        );
+
+        $modelC =& WYSIJA::get('config', 'model');
+        // check whether the user is premium or not
+        $is_premium = (bool)($modelC->getValue('premium_key'));
+
+        if($is_premium) {
+            // change premium tab label
+            $tabs['premium'] = __('Premium Activated',WYSIJA);
+        } else {
+            // remove bounce tab
+            unset($tabs['bounce']);
+        }
+        echo '<div id="icon-options-general" class="icon32"><br /></div>';
+        echo '<h2 id="wysija-tabs" class="nav-tab-wrapper">';
+        foreach($tabs as $tab => $name) {
+            $class = ( $tab == $current ) ? ' nav-tab-active' : '';
+            $extra = ($tab === 'premium') ? ' tab-premium' : '';
+            echo "<a class='nav-tab$class$extra' href='#$tab'>$name</a>";
+        }
+        echo '</h2>';
+    }
+
+    function innertabs($current = 'connection') {
+        $tabs = array(
+            'connection' => __('Settings', WYSIJA),
+            'actions' => __('Actions & Notifications', WYSIJA)
+        );
+
+        echo '<h3 id="wysija-innertabs" class="nav-tab-wrapper">';
+        foreach($tabs as $tab => $name) {
+            $class = ( $tab == $current ) ? ' nav-tab-active' : '';
+            echo "<a class='nav-tab$class' href='#$tab'>$name</a>";
+        }
+        echo '</h2>';
+    }
+
+
     function main(){
-
+        $modelC =& WYSIJA::get('config', 'model');
+        $is_premium = (bool)($modelC->getValue('premium_key'));
+        echo $this->messages();
         ?>
-        <div id="tabs">
-            <ul id="mainmenu" >
-                <li><a href="#basics"><?php _e('Basics',WYSIJA);?></a></li>
-                <li><a href="#emailactiv"><?php _e('Activation Email',WYSIJA);?></a></li>
-                <li><a href="#sendingmethod"><?php _e('Sending Method',WYSIJA);?></a></li>
-                <li><a href="#bounce"><?php _e('Bounce Handling',WYSIJA);?></a></li>
-                <li><a href="#advanced"><?php _e('Advanced',WYSIJA);?></a></li>
-                <li class="premium"><a href="#premium"><?php
-                $modelC=&WYSIJA::get("config","model");
-                if($modelC->getValue("premium_key")){
-                   _e('Premium Activated',WYSIJA);
-                }else{
-                   _e('Premium Upgrade',WYSIJA);
-                }
-
-                ?></a></li>
-            </ul>
+        <div id="wysija-config">
+            <?php $this->tabs(); ?>
             <form name="wysija-settings" method="post" id="wysija-settings" action="" class="form-valid" autocomplete="off">
-                <div id="basics">
+                <div id="basics" class="wysija-panel">
                     <?php $this->basics(); ?>
                     <p class="submit">
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
-                <div id="emailactiv">
+                <div id="emailactiv" class="wysija-panel">
                     <?php $this->emailactiv(); ?>
                     <p class="submit">
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
-                <div id="sendingmethod">
+                <div id="sendingmethod" class="wysija-panel">
                     <?php $this->sendingmethod(); ?>
                     <p class="submit">
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
 
-                <div id="bounce">
+                <div id="bounce" class="wysija-panel">
                     <?php
                     $config=&WYSIJA::get("config","model");
 
                     if(!$config->getValue("premium_key")){
-                        echo str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;" title="'.__("Purchase Wysija PREMIUM",WYSIJA).'">','</a>'),__("[link]Purchase the premium version[/link] and get access to the <strong>Automated Bounce Handling</strong> system.",WYSIJA));
+                        echo str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;" title="'.__("See all Premium features",WYSIJA).'">','</a>'),__("Spam filters will notice when you send to invalid addresses. Let Wysija handle your invalid email addresses automatically. This feature is part of the [link]Premium features[/link]</strong>.",WYSIJA));
                     }else {
                         $this->bounce();
                     } ?>
@@ -153,13 +296,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
-                <div id="advanced">
+                <div id="advanced" class="wysija-panel">
                     <?php $this->advanced(); ?>
                     <p class="submit">
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
-                <div id="premium">
+                <div id="premium" class="wysija-panel">
                     <?php
                     $modelC=&WYSIJA::get("config","model");
                     if($modelC->getValue("premium_key")){
@@ -284,48 +427,43 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         <table class="form-table">
             <tbody>
 
-                <tr>
-                    <th scope="row" class="row">
+                <tr class="methods">
+                    <th scope="row">
                         <?php
-
-
-
                             $checked=false;
                             $value="site";
                             $id=str_replace("_",'-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
-                            $field='<label for="'.$id.'">';
+                            $field='<label for="'.$id.'" class="clearfix">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-                            $field.=__('Your own website',WYSIJA).'</label>';
+                            $field.='<h3>'.__('Your own website',WYSIJA).'</h3></label>';
                             $field.='<p>'.__('The simplest of all solutions for small lists. Your host sets the limit of emails per day.',WYSIJA).'</p>';
                             echo $field;
                         ?>
                     </th>
-                    <th scope="row" class="row">
+                    <th scope="row">
                         <?php
-
-
                             $checked=false;
                             $value="gmail";
                             $id=str_replace("_",'-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
-                            $field='<label for="'.$id.'">';
+                            $field='<label for="'.$id.'" class="clearfix">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-                            $field.='Gmail</label>';
+                            $field.='<h3>Gmail</h3></label>';
                             $field.='<p>'.__("Easy to setup. Limited to 500 emails a day. We recommend that you open a dedicated Gmail account for this purpose.",WYSIJA).'</p>';
                             echo $field;
                         ?>
                     </th>
-                    <th scope="row" class="row">
+                    <th scope="row">
                         <?php
-                            $checked=false;
-                            $value="smtp";
-                            if($value ==$realvalue) $checked=true;
+                            $checked = false;
+                            $value = 'smtp';
+                            if($value === $realvalue) $checked = true;
 
-                            $id=str_replace("_",'-',$key).'-'.$value;
-                            $field='<label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-                            $field.=__('SMTP server',WYSIJA).'</label>';
+                            $id = str_replace('_', '-', $key).'-'.$value;
+                            $field ='<label for="'.$id.'" class="clearfix">';
+                            $field.= $formsHelp->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
+                            $field.= '<h3>'.__('SMTP',WYSIJA).'</h3></label>';
                             $field.='<p>'.__('Perfect for sending with a professional SMTP provider, which we highly recommended for big and small lists. We negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=sending method" target="_blank">'.__('Read more on support.wysija.com',WYSIJA).'</a></p>';
                             echo $field;
                         ?>
@@ -567,38 +705,33 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         <?php
     }
 
-    function bounce(){
+    function bounce() {
+        $intro = '<div class="intro">';
+        $intro.= '<p><h3>'.__('How does it work?',WYSIJA).'</h3></p>';
+        $intro.= '<ol>';
+        $intro.= '  <li>'.__('Create an email account dedicated solely to bounce handling, like on Gmail or your own domain.',WYSIJA).'</li>';
+        $intro.= '  <li>'.__('Fill out the form below so we can connect to it.',WYSIJA).'</li>';
+        $intro.= '  <li>'.__('Take it easy, the plugin does the rest.',WYSIJA).'</li>';
+        $intro.= '</ol>';
+        $intro.= '<p class="description">'.__('Need help?',WYSIJA).' '.str_replace(array('[link]', '[/link]'), array('<a href="http://support.wysija.com/knowledgebase/automated-bounce-handling-install-guide/">', '</a>'), __('Check out [link]our guide[/link] on how to fill out the form.', WYSIJA)).'</p>';
+        $intro.= '</div>';
 
+        echo $intro;
+?>
+        <div id="innertabs">
+            <?php $this->innertabs(); ?>
 
-    $field='<p class="description"><span class="title">'.__('How does it work?',WYSIJA).'</span> </p>';
-    $field.="<ol>";
-    $field.="<li>".__('Create an email account dedicated solely to bounce handling, like on Gmail or your own domain. ',WYSIJA)."</li>";
-    $field.="<li>".__('Fill out the form below so we can connect to it. ',WYSIJA)."</li>";
-    $field.="<li>".__('Take it easy, the plugin does the rest.',WYSIJA)."</li>";
-    $field.='</ol>';
-    $field.='<p class="description"><span class="title">'.__('Need help?',WYSIJA).'</span> '.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/automated-bounce-handling-install-guide/">','</a>'),__('Check out [link]our guide[/link] on how to fill out the form.',WYSIJA));
-    $field.='</p>';
+            <div id="connection" class="wysija-innerpanel">
+                <?php $this->connection(); ?>
+            </div>
+            <div id="actions" class="wysija-innerpanel">
+                <p class="description"><?php echo __('There are plenty of reasons for bounces. Configure what to do in each scenario.',WYSIJA)?></p>
+                <div id="bounce-msg-error"></div>
 
-    echo $field;
-    ?>
-    <div id="innertabs">
-        <ul>
-            <li><a href="#connection"><?php _e('Settings',WYSIJA);?></a></li>
-            <li><a href="#actions"><?php _e('Actions & Notifications',WYSIJA);?></a></li>
-        </ul>
-        <div id="connection">
-
-            <?php $this->connection(); ?>
+                <?php $this->rules(); ?>
+            </div>
         </div>
-        <div id="actions">
-            <p class="description"><?php echo __('There are plenty of reasons for bounces. Configure what to do in each scenario.',WYSIJA)?></p>
-            <div id="bounce-msg-error"></div>
-
-            <?php $this->rules(); ?>
-        </div>
-    </div>
-
-        <?php
+<?php
     }
 
     function connection(){
@@ -653,29 +786,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 <?php
 
                 echo $this->buildMyForm($step,"","config");
-                /*
-                $formFields="";
-                foreach($step as $row =>$colparams){
-                    $formFields.='<tr>';
-                    $value=$this->model->getValue($row);
 
-                    if(isset($colparams['label'])) $label=$colparams['label'];
-                    else  $label=ucfirst($row);
-                    $desc='';
-                    if(isset($colparams['desc'])) $desc='<p class="description">'.$colparams['desc'].'</p>';
-                    $formFields.='<th scope="row">
-                                <label for="'.$row.'">'.$label.$desc.' </label>
-                            </th><td>';
-
-                    $formFields.=$this->fieldHTML($row,$value,"config",$colparams);
-                    $formFields.='</td>';
-
-
-
-                    $formFields.='</tr>';
-                }
-                echo $formFields;
-                */
                 $name='bouncing_emails_each';
                 $id=str_replace('_','-',$name);
                 $value=$this->model->getValue($name);
@@ -690,7 +801,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         $value);
                 $checked="";
                 if($this->model->getValue("bounce_process_auto")) $checked='checked="checked"';
-                //echo $field;
                 echo '<tr><td><label for="bounce-process-auto"><input type="checkbox" '.$checked.' id="bounce-process-auto" value="1" name="wysija[config][bounce_process_auto]" />
                     '.__("Process bounce automatically",WYSIJA).'</label></td><td id="bounce-frequency"><label for="'.$id.'">'.__("each",WYSIJA)."</label> ".$field.'</td></tr>';
                 /*try to connect button*/
@@ -784,17 +894,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function advanced(){
+
         $step=array();
 
         $step['role_campaign']=array(
-            'type'=>'roles',
-            'label'=>__('Who can create newsletters?',WYSIJA),
-            'desc'=>__('These are based on WordPress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
-
-        $step['role_subscribers']=array(
-            'type'=>'roles',
-            'label'=>__('Who can manage subscribers?',WYSIJA),
-            'desc'=>__('These are based on WordPress user accounts.',WYSIJA)." ".__("Settings are restricted to Admins only, regardless of your changes here.",WYSIJA));
+            'type'=>'capabilities',
+            '1col'=>1);
 
         $step['replyto_name']=array(
             'type'=>'fromname',
@@ -816,10 +921,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
 
 
-        $modelU=&WYSIJA::get("user","model");
-        $modelU->getFormat=OBJECT;
+        $modelU=&WYSIJA::get('user','model');
+        $objUser=$modelU->getCurrentSubscriber();
 
-        $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
+        $step['viewinbrowser']=array(
+            'type'=>'viewinbrowser',
+            'label'=>__('Link to browser version',WYSIJA),
+            'desc'=>__('Displays at the top of your newsletters. Don\'t forget to include the link tag, ie: [link]The link[/link]',WYSIJA),
+            );
 
         $step['unsubscribe_linkname']=array(
             'type'=>'input',
@@ -837,18 +946,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'input',
             'label'=>__('Unsubscribe page content',WYSIJA));
 
-        /*
-        $step['manage_subscriptions']=array(
-        'type'=>'debug',
-        'label'=>_de_('Subscribers can manage their subscriptions',WYSIJA),
-        'desc'=>_de_('Check this option to add a "Manage your subscriptions" link in the footer of your newsletters. This allows subscribers to decide which lists they\'ll unsubscribe from. [link]Preview the Manage Subscripton page.[/link] The "Unsubscribe" link always unsubscribes a users from all lists.',WYSIJA),
-        'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"subscriptions",false,true).'" target="_blank" title="'.__("Preview page",WYSIJA).'">');
 
-        $step['manage_subscriptions_linkname']=array(
-            'type'=>'input',
-            'label'=>_de_('Text of "Manage Subscriptions" link',WYSIJA),
-            'desc'=>_de_('This changes the label for the manage subscriptions link in the footer of your newsletters.',WYSIJA));
-        */
+        $step['manage_subscriptions']=array(
+        'type'=>'viewinbrowser',
+        'label'=>__('Subscribers can edit their profile',WYSIJA),
+        'desc'=>__('Add a link in the footer of all your newsletters so subscribers can edit their profile and lists. [link]See your own subscriber profile page.[/link]',WYSIJA),
+        'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"subscriptions",false,true).'" target="_blank" title="'.__("Preview page",WYSIJA).'">',);
+
+
         $step['advanced_charset']=array(
             'type'=>'dropdown_keyval',
             'values'=>array('UTF-8','UTF-7',
@@ -857,6 +962,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                 'Windows-1251','Windows-1252'),
             'label'=>__('Charset',WYSIJA),
             'desc'=>__('Squares or weird characters are displayed in your emails? Select the encoding for your language.',WYSIJA));
+        if($config->getValue("premium_key")){
+            $step['dkim']=array(
+            'type'=>'dkim',
+            'label'=>__('DKIM signature',WYSIJA),
+            'desc'=>__('Spam filters like this. Wysija can sign all your emails with DKIM. Spam filters then check if your signature matches the one on your domain.',WYSIJA));
+        }
+
         $step['debug_new']=array(
             'type'=>'debugnew',
             'label'=>__('Debug mode',WYSIJA),
@@ -917,6 +1029,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                'title'=>__('Fast and efficient support.',WYSIJA),
                'desc'=>__('It\'s like a valet service from the engineers themselves: Ben, Jo and Kim.',WYSIJA)
                ),
+           'dkim'=>array(
+               'title'=>__('Increase your deliverability with DKIM.',WYSIJA),
+               'desc'=>__('Add this signature to your emails with Wysija. Spam filters can then authenticate your emails and your domain.',WYSIJA)
+               ),
            'install'=>array(
                'title'=>__('Upgrade in a few clicks.',WYSIJA),
                'desc'=>__('You don\'t need to reinstall. We\'ll simply activate your site.',WYSIJA)
@@ -975,6 +1091,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
            'act-createbounce'=>array(
                'title'=>__('To do: create a bounce address.',WYSIJA),
                'desc'=>__('Click on the Bounce Handling tab and read our guide if you need help.',WYSIJA)."\n".__('Note: Mailjet handles its own bounce.',WYSIJA)
+               ),
+            'act-dkim'=>array(
+               'title'=>__('Set up your DKIM signature.',WYSIJA),
+               'desc'=>__('Find the option in the Advanced tab!',WYSIJA)
                ),
            'act-trackga'=>array(
                'title'=>__('Track with Google Analytics.',WYSIJA),

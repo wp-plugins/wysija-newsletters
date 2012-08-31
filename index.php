@@ -3,7 +3,7 @@
 Plugin Name: Wysija Newsletters
 Plugin URI: http://www.wysija.com/
 Description: Create and send newsletters. Import and manage your lists. Add subscription forms in widgets, articles and pages. Wysija is a freemium plugin updated regularly with new features.
-Version: 2.0.9.5
+Version: 2.1
 Author: Wysija
 Author URI: http://www.wysija.com/
 License: GPLv2 or later
@@ -27,4 +27,5 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 /*require vital parts*/
+
 require_once(dirname(__FILE__).DIRECTORY_SEPARATOR."core".DIRECTORY_SEPARATOR."base.php");

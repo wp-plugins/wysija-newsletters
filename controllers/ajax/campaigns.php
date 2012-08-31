@@ -4,7 +4,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
     function WYSIJA_control_back_campaigns(){
         $modelC=&WYSIJA::get("config","model");
-        if(!current_user_can($modelC->getValue("role_campaign")))  die("Action is forbidden.");
+        if(!WYSIJA::current_user_can('wysija_newsletters'))  die("Action is forbidden.");
         parent::WYSIJA_control();
     }
 
@@ -294,9 +294,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         return $res;
     }
 
-    function send_preview($showcase=false){
+    function send_preview($spamtest=false){
         $mailer=&WYSIJA::get("mailer","helper");
         $email_id = $_REQUEST['id'];
+        $resultarray=array();
 
         // update data in DB
         $modelEmail =& WYSIJA::get('email', 'model');
@@ -333,36 +334,47 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         $receivers=explode(',',$_REQUEST['receiver']);
+        foreach($receivers as &$receiver){
+            $dummyreceiver=new stdClass();
+            $dummyreceiver->user_id=0;
+            $dummyreceiver->email=$receiver;
+            $dummyreceiver->status=1;
+            $dummyreceiver->lastname=$dummyreceiver->firstname =$langextra='';
+            if($spamtest){
+                $dummyreceiver->firstname ='Mail-Tester.com';
+                if(WPLANG) $langextra='&lang='.WPLANG;
+                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($receiver).$langextra;
+            }
 
-        if($showcase){
-            $emailObject->subject="[Wysija Showcase from : ".get_site_url()." ] ".$emailObject->subject;
-            $successmsg=__("You have sent us your newsletter successfully. Thanks! We'll be in touch if we feature your design.", WYSIJA);
-        }else{
+            $receiver=$dummyreceiver;
 
-            $emailClone=array();
-            foreach($emailObject as $kk=>$vv)  $emailClone[$kk]=$vv;
-
-
-            $wjEngine =& WYSIJA::get('wj_engine', 'helper');
-            // set data & styles
-            if(isset($emailClone['wj_data'])) { $wjEngine->setData($emailClone['wj_data'], true); } else { $wjEngine->setData(); }
-            if(isset($emailClone['wj_styles'])) { $wjEngine->setStyles($emailClone['wj_styles'], true); } else { $wjEngine->setStyles(); }
-
-            // generate email html body
-            $body = $wjEngine->renderEmail($emailClone);
-
-            // get back email data as it will be updated during the rendering (articles ids + articles count)
-            $emailChild = $wjEngine->getEmailData();
-
-            $emailObject->subject = str_replace(
-                    array('[total]','[number]','[post_title]'),
-                    array((int)$emailChild['params']['autonl']['articles']['count'],
-                        (int)$paramsVal['autonl']['total_child'],
-                        $emailChild['params']['autonl']['articles']['first_subject']),
-                    $emailChild['subject']);
-
-            $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
         }
+
+
+        $emailClone=array();
+        foreach($emailObject as $kk=>$vv)  $emailClone[$kk]=$vv;
+
+
+        $wjEngine =& WYSIJA::get('wj_engine', 'helper');
+        // set data & styles
+        if(isset($emailClone['wj_data'])) { $wjEngine->setData($emailClone['wj_data'], true); } else { $wjEngine->setData(); }
+        if(isset($emailClone['wj_styles'])) { $wjEngine->setStyles($emailClone['wj_styles'], true); } else { $wjEngine->setStyles(); }
+
+        // generate email html body
+        $body = $wjEngine->renderEmail($emailClone);
+
+        // get back email data as it will be updated during the rendering (articles ids + articles count)
+        $emailChild = $wjEngine->getEmailData();
+
+        $emailObject->subject = str_replace(
+                array('[total]','[number]','[post_title]'),
+                array((int)$emailChild['params']['autonl']['articles']['count'],
+                    (int)$paramsVal['autonl']['total_child'],
+                    $emailChild['params']['autonl']['articles']['first_subject']),
+                $emailChild['subject']);
+
+        $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
+
         if(isset($emailObject->params)) {
             $params['params']=$emailObject->params;
 
@@ -380,17 +392,34 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             }
 
         }
+
+        $params['email_id']=$emailObject->email_id;
         foreach($receivers as $receiver){
             $res=$mailer->sendSimple($receiver,$emailObject->subject,$emailObject->body,$params);
             if($res)    $this->notice(sprintf($successmsg,$_REQUEST['receiver']));
         }
-
-        return array('result' => $res);
+        $resultarray['result']=$res;
+        return $resultarray;
     }
 
-    function send_showcase(){
-       $_REQUEST['receiver']="team@wysija.com";
-        return $this->send_preview(true);
+
+    function send_spamtest(){
+        $config=&WYSIJA::get("config","model");
+        $spamtesttries=$config->getValue('spamtest_tries');
+
+        if(!$config->getValue('premium_key') && $spamtesttries>1) {
+            return array('result'=>false,'notriesleft'=>__('You don\'t have any tries left.',WYSIJA));
+        }
+        //send a message to wysija-WEBSITE-email_id@mail-tester.com
+        $_REQUEST['receiver']= 'wysija-'.base64_encode(get_site_url()).'-'.$_REQUEST['id'].'@mail-tester.com';
+
+        $results=$this->send_preview(true);
+
+        if($results['result']){
+            $config->save(array('spamtest_tries'=>((int)$spamtesttries+1)));
+        }
+
+        return $results;
     }
 
     function set_divider()
@@ -586,6 +615,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         return array("result"=>$result, 'themes' => $themes);
     }
 
+    function refresh_themes() {
+        // refresh themes list
+        $wjEngine =& WYSIJA::get('wj_engine', 'helper');
+        return array("result"=>true, 'themes' => $wjEngine->renderThemes());
+    }
+
     function generate_auto_post() {
         // get params and generate html
         $wjEngine =& WYSIJA::get('wj_engine', 'helper');
@@ -701,6 +736,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                     $params['divider'] = $dividersHelper->getDefault();
                 }
             }
+
+            // TODO - set color dynamically
+            //$params['bgcolor1'] = '990000';
+            //$params['bgcolor2'] = '99CC00';
             return base64_encode($wjEngine->renderEditorAutoPost($posts, $params));
         }
     }

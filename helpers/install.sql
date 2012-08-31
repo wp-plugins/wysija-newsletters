@@ -2,7 +2,7 @@
 -- Table 'user_list'
 -- Save the user subscription
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `user_list` (
   `list_id` INT unsigned NOT NULL,
   `user_id` INT unsigned NOT NULL,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `user_list` (
 -- Table 'user'
 -- store user information
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `user` (
   `user_id` INT unsigned NOT NULL AUTO_INCREMENT,
   `wpuser_id` INT unsigned NOT NULL DEFAULT 0,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `user` (
 -- Table 'list'
 -- save list
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `list` (
   `list_id` INT unsigned NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
@@ -45,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `list` (
   `unsub_mail_id` INT unsigned NOT NULL DEFAULT 0,
   `welcome_mail_id` INT unsigned NOT NULL DEFAULT 0,
   `is_enabled` TINYINT unsigned  NOT NULL DEFAULT 0,
+  `is_public` TINYINT unsigned  NOT NULL DEFAULT 0,
   `created_at` INT unsigned NULL,
   `ordering` INT unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`list_id`)
@@ -55,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `list` (
 -- Table 'campaign'
 -- A campaign is a private name to manage e-mails
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `campaign` (
   `campaign_id` INT unsigned AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
@@ -68,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `campaign` (
 -- Table 'campaign_list'
 -- attach a campaign to one or several lists
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `campaign_list` (
   `list_id` INT unsigned NOT NULL,
   `campaign_id` INT unsigned NOT NULL,
@@ -81,7 +82,7 @@ CREATE TABLE IF NOT EXISTS `campaign_list` (
 -- Table 'email'
 -- this table stores all the e-mails
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `email` (
   `email_id` INT unsigned AUTO_INCREMENT,
   `campaign_id` INT unsigned NOT NULL DEFAULT 0,
@@ -115,7 +116,7 @@ CREATE TABLE IF NOT EXISTS `email` (
 -- Handle extra fields for the user table
 -- ---
 
-		
+
 CREATE TABLE IF NOT EXISTS `user_field` (
   `field_id` INT unsigned AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
@@ -133,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `user_field` (
 -- Table 'queue'
 -- handle the queue management
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `queue` (
   `user_id` INT unsigned NOT NULL,
   `email_id` INT unsigned NOT NULL,
@@ -150,7 +151,7 @@ CREATE TABLE IF NOT EXISTS `queue` (
 -- Table 'user_history'
 -- keep an history of the user modification
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `user_history` (
   `history_id` INT unsigned AUTO_INCREMENT NOT NULL,
   `user_id` INT unsigned NOT NULL,
@@ -168,7 +169,7 @@ CREATE TABLE IF NOT EXISTS `user_history` (
 -- Table 'email_user_stat'
 -- handle detailed statistics
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `email_user_stat` (
   `user_id` INT unsigned NOT NULL,
   `email_id` INT unsigned NOT NULL,
@@ -183,7 +184,7 @@ CREATE TABLE IF NOT EXISTS `email_user_stat` (
 -- Table 'url'
 -- all urls
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `url` (
   `url_id` INT unsigned AUTO_INCREMENT,
   `name` VARCHAR(250) NULL,
@@ -196,7 +197,7 @@ CREATE TABLE IF NOT EXISTS `url` (
 -- Table 'email_user_url'
 -- handle detail stats, who clicked on which link
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `email_user_url` (
   `email_id` INT unsigned NOT NULL,
   `user_id` INT unsigned NOT NULL,
@@ -210,7 +211,7 @@ CREATE TABLE IF NOT EXISTS `email_user_url` (
 -- ---
 -- Table 'url_mail'
 -- ---
-		
+
 CREATE TABLE IF NOT EXISTS `url_mail` (
   `email_id` INT AUTO_INCREMENT NOT NULL,
   `url_id` INT unsigned NOT NULL,

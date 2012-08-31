@@ -3,120 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_toolbox extends WYSIJA_object{
     function WYSIJA_help_toolbox(){
     }
-    function return_bytes($size_str)
-    {
-        switch (substr ($size_str, -1))
-        {
-            case 'M': case 'm': return (int)$size_str * 1048576;
-            case 'K': case 'k': return (int)$size_str * 1024;
-            case 'G': case 'g': return (int)$size_str * 1073741824;
-            default: return $size_str;
-        }
-    }
-    function wp_get_editable_roles() {
-        
-        global $wp_roles;
-        $all_roles = $wp_roles->roles;
-        $editable_roles = apply_filters('editable_roles', $all_roles);
-        $possible_values=array();
-        foreach ( $all_roles as $role => $details ) {
-            $name = translate_user_role($details['name'] );
-            switch($role){
-                case 'administrator':
-                    $keyrole='switch_themes';
-                    break;
-                case 'editor':
-                    $keyrole='moderate_comments';
-                    break;
-                case 'author':
-                    $keyrole='upload_files';
-                    break;
-                case 'contributor':
-                    $keyrole='edit_posts';
-                    break;
-                case 'subscriber':
-                    $keyrole='read';
-                    break;
-                default:
-                    $keyrole=$role;
-            }
-            $possible_values[$keyrole]=$name;
 
-        }
-        return $possible_values;
-    }
-    function get_max_file_upload(){
-        $u_bytes = ini_get( 'upload_max_filesize' );
-        $p_bytes = ini_get( 'post_max_size' );
-        $data=array();
-        $data['maxbytes']=$this->return_bytes(min($u_bytes, $p_bytes));
-        $data['maxmegas'] = apply_filters( 'upload_size_limit', min($u_bytes, $p_bytes), $u_bytes, $p_bytes );
-        $data['maxchars'] =(int)floor(($p_bytes*1024*1024)/200);
-        return $data;
-    }
-    
-    function send_test_mail($values,$send_method=false){
-        $content_email=__("Yup, it works. You can start blasting away emails to the moon.",WYSIJA);
-        if(!$send_method){
-            switch($values["sending_method"]){
-                case "site":
-                    if($values["sending_emails_site_method"]=="phpmail") $send_method="PHP Mail";
-                    else $send_method="Sendmail";
-                    if($values["sending_emails_site_method"]=="phpmail"){
-                        $send_method="PHP Mail";
-                    }else{
-                        $sendmail_path=$_POST['data']['wysija[config][sendmail_path]'];
-                        $send_method="Sendmail";
-                    }
-                    break;
-                case "smtp":
-                    $smtp=array();
-                    $send_method="SMTP";
-                    break;
-                case "gmail":
-                    $send_method="Gmail";
-                    $values['smtp_host']='smtp.gmail.com';
-                    $values['smtp_port']='465';
-                    $values['smtp_secure']='ssl';
-                    $values['smtp_auth']=true;
-                    $content_email=__("You're all setup! You've successfully sent with Gmail.",WYSIJA)."<br/><br/>";
-                    $content_email.=str_replace(
-                            array('[link]','[/link]'),
-                            array('<a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/" target="_blank" title="SendGrid partnership">','</a>'),
-                            __("Looking for a faster method to send? [link]Read more[/link] on sending with a professional SMTP.",WYSIJA));
-                    break;
-            }
-        }
-        $mailer=&WYSIJA::get("mailer","helper");
-        $mailer->WYSIJA_help_mailer("",$values);
-        
-        $current_user=WYSIJA::wp_get_userdata();
-
-        $mailer->testemail=true;
-        $mailer->wp_user=&$current_user->data;
-        $res=$mailer->sendSimple($current_user->data->user_email,str_replace("[send_method]",$send_method,__("[send_method] works with Wysija",WYSIJA)),$content_email);
-
-        if($res){
-            $this->notice(sprintf(__("Test email successfully sent to <b><i>%s</i></b>",WYSIJA),$current_user->data->user_email));
-            return true;
-        }else{
-            $config=&WYSIJA::get("config","model");
-            $bounce = $config->getValue('bounce_email');
-            if(in_array($config->getValue('sending_method'),array('smtp','gmail')) && $config->getValue('smtp_secure')=='ssl' && !function_exists('openssl_sign')){
-                $this->error(__('The PHP Extension openssl is not enabled on your server. Ask your host to enable it if you want to use an SSL connection.',WYSIJA));
-            }elseif(!empty($bounce) AND !in_array($config->getValue('sending_method'),array('smtp_com','elasticemail'))){
-                $this->error(sprintf(__('The bounce email address "%1$s" might actually cause the problem. Leave the field empty and try again.',WYSIJA),$bounce));
-
-            }elseif(in_array($config->getValue('sending_method'),array('smtp','gmail')) AND !$config->getValue('smtp_auth') AND strlen($config->getValue('smtp_password')) > 1){
-                $this->error(__("You specified an SMTP password but you don't require an authentification, you might want to turn the SMTP authentification ON.",WYSIJA));
-
-            }elseif((strpos(WYSIJA_URL,'localhost') || strpos(WYSIJA_URL,'127.0.0.1')) && in_array($config->getValue('sending_method'),array('sendmail','qmail','mail'))){
-                $this->error(__('Your localhost may not have a mail server. To verify, please log out and click on the "Lost your password?" link on the login page. Do you receive the reset password email from your WordPress?',WYSIJA));
-            }
-            $this->error($mailer->reportMessage);
-            return false;
-        }
-    }
     
     function temp($content,$key="temp",$format=".tmp"){
         $helperF=&WYSIJA::get("file","helper");
@@ -172,19 +59,43 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
             }
         }
     }
+    function closetags($html) {
+        #put all opened tags into an array
+        preg_match_all('#<([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result);
+        $openedtags = $result[1];   #put all closed tags into an array
+        preg_match_all('#</([a-z]+)>#iU', $html, $result);
+        $closedtags = $result[1];
+        $len_opened = count($openedtags);
+        # all tags are closed
+        if(count($closedtags) === $len_opened) {
+            return $html;
+        }
+        $openedtags = array_reverse($openedtags);
+        # close tags
+        for($i=0; $i < $len_opened; $i++) {
+            if(!in_array($openedtags[$i], $closedtags)){
+                $html .= '</'.$openedtags[$i].'>';
+            } else {
+                unset($closedtags[array_search($openedtags[$i], $closedtags)]);
+            }
+        }
+        return $html;
+    }
     function excerpt($text,$num_words=8,$more=" ..."){
-        $words_array = preg_split( "/[\n\r\t ]+/", $text, $num_words + 1, PREG_SPLIT_NO_EMPTY );
-        if ( count( $words_array ) > $num_words ) {
-                array_pop( $words_array );
-                $text = implode( ' ', $words_array );
+        $words_array = preg_split('/[\n\r\t ]+/', $text, $num_words + 1, PREG_SPLIT_NO_EMPTY);
+        if(count($words_array) > $num_words) {
+                array_pop($words_array);
+                $text = implode(' ', $words_array);
                 $text = $text . $more;
         } else {
-                $text = implode( ' ', $words_array );
+            $text = implode( ' ', $words_array );
         }
-        return  $text;
+        return $this->closetags($text);
     }
-    function _make_domain_name($url){
+    function _make_domain_name($url=false){
+        if(!$url) $url=admin_url('admin.php');
         $domain_name=str_replace(array("https://","http://","www."),"",$url);
+
         $domain_name=explode('/',$domain_name);
         return $domain_name[0];
     }

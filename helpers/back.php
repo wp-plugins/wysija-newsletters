@@ -11,13 +11,17 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         error_reporting(0);
         ini_set('display_errors', '0');
-        if(WYSIJA_DBG>0) include_once(WYSIJA_INC.'debug.php');
+
         
         if(isset($_GET['page']) && substr($_GET['page'],0,7)=='wysija_'){
             define('WYSIJA_ITF',TRUE);
             $this->controller=&WYSIJA::get(str_replace('wysija_','',$_GET['page']),'controller');
         }else{
             define('WYSIJA_ITF',FALSE);
+        }
+        if(WYSIJA_DBG>0) include_once(WYSIJA_INC.'debug.php');
+        if(!function_exists('dbg')) {
+            function dbg($mixed,$exit=true){}
         }
         
         if(defined('DOING_AJAX')){
@@ -27,10 +31,15 @@ class WYSIJA_help_back extends WYSIJA_help{
         }else{
             if(WYSIJA_ITF)  {
                 add_action('admin_init', array($this->controller, 'main'));
-                add_action('admin_footer',array($this,'version'),9);
+                if(!isset($_REQUEST['action']) || (isset($_REQUEST['action']) && $_REQUEST['action'] !== 'editTemplate')) {
+                    add_action('admin_footer',array($this,'version'),9);
+                }
                 add_action('after_setup_theme',array($this,'resolveConflicts'));
             }
             
+
+            
+            add_action('after_setup_theme', array('WYSIJA', 'update_user_caps'),11);
             add_action('admin_menu', array($this, 'define_translated_strings'),98);
             add_action('admin_menu', array($this, 'add_menus'),99);
             add_action('admin_enqueue_scripts',array($this, 'add_js'),10,1);
@@ -38,9 +47,13 @@ class WYSIJA_help_back extends WYSIJA_help{
             
             add_action('admin_head-post-new.php',array($this,'addCodeToPagePost'));
             add_action('admin_head-post.php',array($this,'addCodeToPagePost'));
+            
+             $wptools =& WYSIJA::get('wp_tools', 'helper');
+             $wptools->set_default_rolecaps();
         }
 
     }
+
     function resolveConflicts(){
         
         $modelConfig=&WYSIJA::get('config','model');
@@ -92,6 +105,15 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         );
         $this->menuHelp=$truelinkhelp;
+        if($config->getValue("queue_sends_slow")){
+            $msg=$config->getValue("ignore_msgs");
+            if(!isset($msg['queuesendsslow'])){
+                $this->notice(
+                        __('Tired of waiting more than 48h to send your emails?',WYSIJA).' '. str_replace(array('[link]','[/link]'), array('<a href="http://support.wysija.com/knowledgebase/how-fast-can-i-send-emails-optimal-sending-configurations-explained/?utm_source=wpadmin&utm_campaign=slowqueue" target="_blank">','</a>'), __('[link]Find out[/link] how you can improve this.',WYSIJA)).
+                        ' <a class="linkignore queuesendsslow" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
+            }
+        }
+
         if(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
             $msg=$config->getValue("ignore_msgs");
             if(!isset($msg['crondisabled'])){
@@ -115,7 +137,7 @@ class WYSIJA_help_back extends WYSIJA_help{
                             str_replace(array("[link_ignore]","[link]","[/link]","[/link_ignore]"),
                                     array('<a class="linkignore importplugins-'.$tableName.'" href="javascript:;">','<a href="admin.php?page=wysija_subscribers&action=importplugins">','</a>','</a>'),
                                     $sprintfedmsg
-                                    ));
+                                    ),true,true);
                     }
                 }
             }
@@ -124,16 +146,15 @@ class WYSIJA_help_back extends WYSIJA_help{
             global $wysija_installing;
             if( !$config->getValue("sending_emails_ok")){
                 $msg=$config->getValue("ignore_msgs");
-                $urlsendingmethod='admin.php?page=wysija_config#sendingmethod';
-                if($_REQUEST['page']=='wysija_config'){
-                    $urlsendingmethod="#sendingmethod";
+                $urlsendingmethod='admin.php?page=wysija_config#tab-sendingmethod';
+                if($_REQUEST['page'] === 'wysija_config') {
+                    $urlsendingmethod="#tab-sendingmethod";
                 }
                 if(!isset($msg['setupmsg']) && $wysija_installing!==true){
                     $this->notice(str_replace(array("[link_widget]","[link_ignore]","[link]","[/link]","[/link_widget]","[/link_ignore]"),
                         array('<a href="widgets.php">','<a class="linkignore setupmsg" href="javascript:;">','<a id="linksendingmethod" href="'.$urlsendingmethod.'">','</a>','</a>','</a>'),
                         __('Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] and confirm your site can send emails in the [link]Settings[/link]. [link_ignore]Ignore[/link_ignore].',WYSIJA)),true,true);
                 }
-
             }
             
         }
@@ -145,11 +166,6 @@ class WYSIJA_help_back extends WYSIJA_help{
         
         global $menu,$submenu;
 
-        $role = get_role( 'administrator' );
-
-        $role->add_cap( 'wysija_newsletters' );
-        $role->add_cap( 'wysija_subscribers' );
-        $role->add_cap( 'wysija_config' );
         
         $position=50;
         $positionplus1=$position+1;
@@ -165,8 +181,8 @@ class WYSIJA_help_back extends WYSIJA_help{
         foreach($this->menus as $action=> $menutemp){
             $actionFull='wysija_'.$action;
             if(!isset($menutemp['subtitle'])) $menutemp['subtitle']=$menutemp['title'];
-            if($action=='campaigns')    $roleformenu=$modelC->getValue('role_campaign');
-            elseif($action=='subscribers')    $roleformenu=$modelC->getValue('role_subscribers');
+            if($action=='campaigns')    $roleformenu='wysija_newsletters';
+            elseif($action=='subscribers')    $roleformenu='wysija_subscribers';
             else $roleformenu='wysija_config';
             if($wysija_installing===true){
                 if($count==0){
@@ -207,8 +223,6 @@ class WYSIJA_help_back extends WYSIJA_help{
             'title'	=> __('Get Help!',WYSIJA),
             'content'=> $this->menuHelp));
             $tabfunc=true;
-            
-            
 
         }
     }
@@ -237,16 +251,16 @@ class WYSIJA_help_back extends WYSIJA_help{
             $backloader->localize($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
         }
             $jstrans["newsletters"]=__('Newsletters',WYSIJA);
-            $jstrans["urlpremium"]='admin.php?page=wysija_config#premium';
+            $jstrans["urlpremium"]='admin.php?page=wysija_config#tab-premium';
             if(isset($_REQUEST['page']) && $_REQUEST['page']=='wysija_config'){
-                $jstrans["urlpremium"]="#premium";
+                $jstrans["urlpremium"]="#tab-premium";
             }
             wp_localize_script('wysija-admin', 'wysijatrans', $jstrans);
     }
     
     function addCodeToPagePost(){
         
-        if ( get_user_option('rich_editing') == 'true') {
+        if(current_user_can('wysija_subscriwidget') &&  get_user_option('rich_editing') == 'true') {
          add_filter("mce_external_plugins", array($this,"addRichPlugin"));
          add_filter('mce_buttons', array($this,'addRichButton1'),999);
          $myStyleUrl = "../../plugins/wysija-newsletters/css/tmce/style.css";
@@ -275,7 +289,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $config=&WYSIJA::get('config','model');
         $msg=$config->getValue("ignore_msgs");
         $wysijaversion.='<div class="social-foot">';
-        $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request a feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Help us out',WYSIJA).'</a> </div>';
+        $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Spread da word.',WYSIJA).'</a> </div>';
         $wysijaversion.= '<div class="version">'.__("Wysija Version: ",WYSIJA)."<strong>".WYSIJA::get_version()."</strong></div></div>";
         if(!isset($msg['socialfoot'])){
             $wysijaversion.='<div class="socials removeme">

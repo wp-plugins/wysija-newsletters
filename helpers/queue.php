@@ -352,13 +352,10 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	}
 
         function clear(){
-            
-
             $configM=&WYSIJA::get('config','model');
-
-            $queryUnsubscribed='SELECT C.user_id FROM `[wysija]user` as C WHERE C.status < '.$configM->getValue('confirm_dbleoptin');
             $modelQ=&WYSIJA::get('queue','model');
-            $realquery='DELETE FROM `[wysija]queue`  WHERE `user_id` in ('.$queryUnsubscribed.')';
+
+            $realquery='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.status< '.$configM->getValue('confirm_dbleoptin');
             $modelQ->query($realquery);
 
             $realquery='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]email` as b on a.email_id = b.email_id WHERE b.email_id IS NULL';
@@ -366,6 +363,13 @@ class WYSIJA_help_queue extends WYSIJA_object{
 
             $realquery='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.user_id IS NULL';
             $modelQ->query($realquery);
+
+            $conditions=array();
+            $conditions["less"]=array('send_at'=>time()-(3600*48));
+            if($modelQ->exists($conditions)){
+
+                $configM->save(array('queue_sends_slow'=>1));
+            }
             return true;
         }
 }

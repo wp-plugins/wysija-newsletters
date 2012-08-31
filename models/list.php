@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_list extends WYSIJA_model{
-    
+
     var $pk="list_id";
     var $table_name="list";
     var $columns=array(
@@ -12,14 +12,15 @@ class WYSIJA_model_list extends WYSIJA_model{
         'unsub_mail_id' => array("req"=>true,"type"=>"integer"),
         'welcome_mail_id' => array("req"=>true,"type"=>"integer"),
         'is_enabled' => array("req"=>true,"type"=>"boolean"),
+        'is_public' => array("req"=>true,"type"=>"boolean"),
         'ordering' => array("req"=>true,"type"=>"integer"),
         'created_at' => array("req"=>true,"type"=>"integer"),
     );
     var $escapeFields=array('name','description');
     var $escapingOn=true;
-    
-    
-    
+
+
+
     function WYSIJA_model_list(){
         $this->columns['name']['label']=__('Name',WYSIJA);
         $this->columns['description']['label']=__('Description',WYSIJA);
@@ -27,28 +28,28 @@ class WYSIJA_model_list extends WYSIJA_model{
         $this->columns['ordering']['label']=__('Ordering',WYSIJA);
         $this->WYSIJA_model();
     }
-    
+
     function beforeInsert() {
         if(!isset($this->values['namekey']) || !$this->values['namekey']){
             if(isset($this->values['name']))    $this->values['namekey']=sanitize_title($this->values['name']);
         }
         return true;
     }
-    
+
     function getLists($id=false){
-        
+
         if($id){
-            $query="SELECT A.name, A.list_id, A.description, A.is_enabled, A.namekey
+            $query="SELECT A.name, A.list_id, A.description, A.is_enabled, A.is_public, A.namekey
                 FROM ".$this->getPrefix()."list as A
-                LEFT JOIN ".$this->getPrefix()."email as B on A.welcome_mail_id=B.email_id 
+                LEFT JOIN ".$this->getPrefix()."email as B on A.welcome_mail_id=B.email_id
                 WHERE A.list_id=".(int)$id;
                 $result=$this->getResults($query);
                 $this->escapeQuotesFromRes($result);
                 return $result[0];
         }else{
-            $query="SELECT A.name, A.list_id, A.created_at, A.is_enabled, A.namekey, 0 as subscribers, 0 as campaigns_sent
+            $query="SELECT A.name, A.list_id, A.created_at, A.is_enabled, A.is_public, A.namekey, 0 as subscribers, 0 as campaigns_sent
             FROM ".$this->getPrefix()."list as A";
-        
+
             $this->countRows=$this->count($query);
 
             if(isset($this->_limitison) && $this->_limitison)  $query.=$this->setLimit();
@@ -89,11 +90,11 @@ class WYSIJA_model_list extends WYSIJA_model{
                             $listres[$key]['unconfirmed']=$listres[$key]['unconfirmed']+$subscriber['total'];
                         }
                     }
-                    
+
                     //if($subscriber['list_id']==$res['list_id']) $listres[$key]['subscribers']=$subscriber['nbsub'];
                 }
             }
-            
+
           /*  foreach($unconfirmed as $subscriber){
                 foreach($listres as $key=>$res){
                     if($subscriber['list_id']==$res['list_id']) $listres[$key]['unconfirmed']=$subscriber['nbsub'];
@@ -117,8 +118,8 @@ class WYSIJA_model_list extends WYSIJA_model{
             $this->escapeQuotesFromRes($listres);
             return $listres;
         }
-        
+
     }
-    
+
 
 }

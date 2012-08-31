@@ -51,7 +51,7 @@ function tb_show(caption, url, imageGroup,classname) {//function called when the
 				jQuery("#TB_overlay").click(tb_remove);
 			}
 		}
-                
+
 		if(tb_detectMacXFF()){
 			jQuery("#TB_overlay").addClass("TB_overlayMacFFBGHack");//use png overlay so hide flash
 		}else{
@@ -282,13 +282,7 @@ function tb_remove() {
 		jQuery("html").css("overflow","");
 	}
 	jQuery(document).unbind('.thickbox');
-        
-        if(typeof(WysijaPopup) != "undefined") {
-            if(WysijaPopup.getInstance()) {
-                WysijaPopup.getInstance().close();
-            }
-        }
-        
+
 	return false;
 }
 

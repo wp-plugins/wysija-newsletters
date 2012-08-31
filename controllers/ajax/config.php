@@ -1,9 +1,9 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_control_back_config extends WYSIJA_control{
-    
+
     function WYSIJA_control_back_config(){
-        if(!current_user_can('administrator'))  die("Action is forbidden.");
+        if(!WYSIJA::current_user_can('wysija_config'))  die("Action is forbidden.");
         parent::WYSIJA_control();
     }
 
@@ -16,31 +16,36 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         }
        @ini_set("display_errors", 1);
     }
-       
+
+    function _hideErrors(){
+       error_reporting(0);
+       @ini_set('display_errors', '0');
+    }
+
     function send_test_mail(){
         $this->_displayErrors();
         /*switch the send method*/
         $configVal=$this->_convertPostedInarray();
 
         /*send a test mail*/
-        $toolbox=&WYSIJA::get("toolbox","helper");
+        $toolbox=&WYSIJA::get('email','helper');
         $res['result']=$toolbox->send_test_mail($configVal);
-        
+
         if($res['result']){
             $modelConf=&WYSIJA::get("config","model");
-            $modelConf->save(array('sending_emails_ok'=>$res['result']));  
+            $modelConf->save(array('sending_emails_ok'=>$res['result']));
         }
-        
-        return $res; 
+        $this->_hideErrors();
+        return $res;
     }
-    
+
     function bounce_connect(){
-        
+
 
         $configVal=$this->_convertPostedInarray();
-        
 
-        
+
+
         /*try to connect to thebounce server*/
         $bounceClass=&WYSIJA::get("bounce","helper");
         $bounceClass->report = true;
@@ -70,12 +75,12 @@ class WYSIJA_control_back_config extends WYSIJA_control{
                 }
             }
         }
-        
 
-        return $res; 
+
+        return $res;
     }
-    
-    
+
+
     function bounce_process(){
 
         @ini_set('max_execution_time',0);
@@ -94,7 +99,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         }
         $this->notice(sprintf(__('Successfully connected to %1$s'),$config->getValue('bounce_login')));
         $nbMessages = $bounceClass->getNBMessages();
-        
+
 
         if(empty($nbMessages)){
             $this->error(__('There are no messages'),true);
@@ -103,62 +108,64 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         }else{
             $this->notice(sprintf(__('There are %1$s messages in your mailbox'),$nbMessages));
         }
-        
+
 
         $bounceClass->handleMessages();
         $bounceClass->close();
 
         $res['result']=true;
-        
-        return $res; 
+
+        return $res;
     }
-    
+
     function linkshareme(){
         $this->_displayErrors();
 
         $modelConf=&WYSIJA::get("config","model");
-        $modelConf->save(array('sharedata'=>true));  
-        
+        $modelConf->save(array('sharedata'=>true));
+
         $res['result']=true;
-        return $res; 
+        $this->_hideErrors();
+        return $res;
     }
-    
+
     function linkignore(){
         $this->_displayErrors();
 
         $modelConf=&WYSIJA::get("config","model");
-        
+
         $ignore_msgs=$modelConf->getValue('ignore_msgs');
         if(!$ignore_msgs) $ignore_msgs=array();
 
         $ignore_msgs[$_REQUEST['ignorewhat']]=1;
-        $modelConf->save(array('ignore_msgs'=>$ignore_msgs));  
-        
+        $modelConf->save(array('ignore_msgs'=>$ignore_msgs));
+
         $res['result']=true;
-        return $res; 
+        $this->_hideErrors();
+        return $res;
     }
-    
-    
+
+
     function validate(){
-        
+
         $helpLic=&WYSIJA::get("licence","helper");
         $res=$helpLic->check();
 
         if(!isset($res['result']))  $res['result']=false;
         return $res;
     }
-    
+
     function devalidate(){
-        
+
         $modelCOnfig=&WYSIJA::get('config','model');
         $res=$modelCOnfig->save(array('premium_key'=>false));
 
         if(!isset($res['result']))  $res['result']=false;
         return $res;
     }
-    
-    
-    
+
+
+
     function _convertPostedInarray(){
         $_POST   = stripslashes_deep($_POST);
         $dataTemp=$_POST['data'];

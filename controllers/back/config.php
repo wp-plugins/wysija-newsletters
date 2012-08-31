@@ -27,6 +27,13 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
                 break;
             case "reinstall":
                 $this->reinstall();
+                //if(defined('WYSIJA_REDIRECT'))  $this->redirectProcess();
+
+                return;
+                break;
+            case 'dkimcheck':
+
+                $this->dkimcheck();
                 if(defined('WYSIJA_REDIRECT'))  $this->redirectProcess();
                 return;
                 break;
@@ -41,7 +48,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
                 break;
         }
 
-        if(WYSIJA_DBG){
+        if(WYSIJA_DBG>1){
             $this->viewObj->arrayMenus=array('log'=>'View log');
         }
 
@@ -65,6 +72,25 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
 
     }
 
+    function dkimcheck(){
+
+        if(isset($_REQUEST['xtz'])){
+            $dataconf=json_decode(base64_decode($_REQUEST['xtz']));
+
+            if(isset($dataconf->dkim_pubk) && isset($dataconf->dkim_privk)){
+
+                $modelConf=&WYSIJA::get('config','model');
+                $dataconfsave=array('dkim_pubk'=>$dataconf->dkim_pubk->key, 'dkim_privk'=>$dataconf->dkim_privk);
+
+                $modelConf->save($dataconfsave);
+                WYSIJA::update_option('dkim_autosetup',false);
+            }
+        }
+
+        $this->redirect('admin.php?page=wysija_config');
+        return true;
+    }
+
     function save(){
         $_REQUEST   = stripslashes_deep($_REQUEST);
         $_POST   = stripslashes_deep($_POST);
@@ -75,7 +101,15 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function reinstall(){
+
         $this->viewObj->title=__('Reinstall Wysija?',WYSIJA);
+        return true;
+    }
+
+    function changeMode(){
+        $helperFile=&WYSIJA::get('file','helper');
+        $helperFile->chmodr(WYSIJA_UPLOADS_DIR, 0666, 0777);
+        $this->redirect("admin.php?page=wysija_config");
         return true;
     }
 
