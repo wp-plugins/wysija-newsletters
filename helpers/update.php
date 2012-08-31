@@ -52,20 +52,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                 $modelEmails=&WYSIJA::get('email','model');
                 $modelEmails->reset();
                 $emailsLoaded=$modelEmails->get(array('subject','email_id'),array('status'=>2,'type'=>1));
-                global $current_user;
-                $my_post = array(
-                    'post_status' => 'publish',
-                    'post_type' => 'wysija',
-                    'post_author' => $current_user->ID,
-                    );
-                foreach($emailsLoaded as $emailLoaded){
-                    $my_post['post_title']=$emailLoaded['subject'];
-                    $my_post['post_content'] ='[wysija_view]'.$emailLoaded['email_id'].'[/wysija_view]';
-                    $post_id=wp_insert_post( $my_post );
-                    $modelEmails->reset();
-                    $modelEmails->update(array('params'=>array('vib_id'=>$post_id)),array('email_id'=>$emailLoaded['email_id']));
-                }
-                flush_rewrite_rules();
+                
                 
                 $wptools =& WYSIJA::get('wp_tools', 'helper');
                 $wptools->set_default_rolecaps();
