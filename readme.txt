@@ -99,7 +99,7 @@ Translations are included in the plugin. Join the translation teams on [our Tran
 
 == Installation ==
 
-There's 3 ways to install this plugin:
+There are 3 ways to install this plugin:
 
 Note: premium users don't need to reinstall anything. It's the same plugin.
 
@@ -146,7 +146,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 == Changelog ==
 
 
-= 2.1 - 2012-08-?? =
+= 2.1 - 2012-08-31 =
 
 * added ability for subscribers to change their email and lists.
 * added "View it in your browser" option.
@@ -159,6 +159,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * added alternate background colors for automatic latest post widget.
 * added possibility to add total number of subscribers in widget with shortcode.
 * added widget option "Display label within for Email field".
+* improved email rendering and email clients compatibility including the new Outlook 2013
 * improved image upload with ssl.
 * improved compatibility with access rights plugins like "Advanced Access Manager" or "User Role Editor".
 * improved import system with clearer message.
