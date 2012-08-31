@@ -425,4 +425,4 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * minor bugfixes
 
 = 0.9 - 2011/12/23 =
-* Hello World.
+* Hello World!
