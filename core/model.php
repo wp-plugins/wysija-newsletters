@@ -45,6 +45,7 @@ class WYSIJA_model extends WYSIJA_object{
         $this->groupby=false;
         $this->getFormat=ARRAY_A;
         $this->getOne=false;
+        $this->limitON=false;
     }
     
     /**

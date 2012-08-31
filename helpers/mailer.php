@@ -72,10 +72,15 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->Encoding = '8bit';
 
             $this->WordWrap = 150;
+            if($this->config->getValue('premium_key') && $this->config->getValue('dkim_pubk') ){
+               $this->DKIM_domain = $this->config->getValue('dkim_domain');
+               $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
+           }
+
 	}//endfct
 
 	function send(){
-            if($this->sendHTML){
+            if(!empty($this->sendHTML)){
                 $this->AltBody = $this->textVersion($this->Body,true);
             }else{
                 $this->Body = $this->textVersion($this->Body,false);
@@ -102,7 +107,6 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject);
             $this->Body = str_replace(chr(194),chr(32),$this->Body);
-            WYSIJA::log('Mail -> send',array('subject'=>$this->Subject,'Recipient'=>$this->to));
             ob_start();
             $result = parent::Send();
             $warnings = ob_get_clean();
@@ -494,6 +498,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $emailObj=new StdClass();
 
             $emailObj->email_id=0;
+            if(isset($params['email_id'])) $emailObj->email_id=$params['email_id'];
             while(isset($this->defaultMail[$emailObj->email_id])){
                 $emailObj->email_id=$emailObj->email_id-1;
             }
@@ -515,7 +520,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             $emailObj->mail_format=$format;
             $emailObj->simple=1;
-            $this->autoAddUser=true;
+
             
             $this->checkConfirmField=false;
             if(!$this->testemail){
@@ -525,7 +530,14 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
             
 
-            return $this->sendOne($emailObj,$sendto);
+            if(is_string($sendto)){
+                $dummyreceiver=new stdClass();
+                $dummyreceiver->user_id=0;
+                $dummyreceiver->email=trim($sendto);
+                $dummyreceiver->status=1;
+                $dummyreceiver->lastname=$dummyreceiver->firstname ='';
+            }else $dummyreceiver=$sendto;
+            return $this->sendOne($emailObj,$dummyreceiver);
         }
         function replacetags($email_id){
             $find=array();
@@ -578,7 +590,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
         }
         function tracker_replaceusertags($email,$user){
-            if(empty($user->user_id)) return;
+
 
 
             $urls = array();
@@ -590,7 +602,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $coreUrl=false;
                 if(isset($urls[$results[0][$i]])|| strpos($url, "wysija-key")) continue;
                 $urlreuse=$url;
-                if(strpos($urlreuse, '[unsubscribe_link]')===false && isset($email->params['googletrackingcode']) && trim($email->params['googletrackingcode']) ){
+                if((strpos($urlreuse, '[view_in_browser_link]')===false || strpos($urlreuse, '[unsubscribe_link]')===false) && isset($email->params['googletrackingcode']) && trim($email->params['googletrackingcode']) ){
                     if (strpos($urlreuse, '?') !== false) $charStart='&';
                     else $charStart='?';
                     $urlreuse.=$charStart;
@@ -609,6 +621,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $Wysijaurls=array();
                 $Wysijaurls["action=unsubscribe"]="[unsubscribe_link]";
                 $Wysijaurls["action=subscriptions"]="[subscriptions_link]";
+                $Wysijaurls["action=viewinbrowser"]="[view_in_browser_link]";
                 $urlsportions=array_keys($Wysijaurls);
 
                 if(preg_match('#'.implode('|',$urlsportions).'|\{|%7B#i',$urlreuse)){
@@ -634,7 +647,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $args = array();
                 $args['email_id'] = $email->email_id;
                 $args['user_id'] = $user->user_id;
-                $args['urlencoded'] = $urlencoded;
+                if(empty($user->user_id)) $args['demo']=1;
+                $args['urlpassed'] = $urlencoded;
                 $args['controller'] = 'stats';
                 $forbiddenparams=$modelConf->getValue('params_forbidden');
                 if(isset($forbiddenparams['controller']['stats'])) $args['controller'] = $forbiddenparams['controller']['stats'];

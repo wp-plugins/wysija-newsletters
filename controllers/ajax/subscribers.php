@@ -23,81 +23,70 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
     }
     
     function save(){
-        $data=array();
+        $datarequested=array();
         $i=0;
         foreach($_REQUEST['data'] as $vals){
             if($vals['name']=='wysija[user_list][list_id][]'){
-                $data[str_replace('wysija[user_list][list_id][]', 'wysija[user_list][list_id]['.$i.']', $vals['name'])]=$vals['value'];
+                $datarequested[str_replace('wysija[user_list][list_id][]', 'wysija[user_list][list_id]['.$i.']', $vals['name'])]=$vals['value'];
                 $i++;
-            }else   $data[$vals['name']]=$vals['value'];
+            }else   $datarequested[$vals['name']]=$vals['value'];
         }
         
-        $_REQUEST['_wpnonce']=$data['_wpnonce'];
+        $_REQUEST['_wpnonce']=$datarequested['_wpnonce'];
+        
+        
+        $data=$this->convertUserData($datarequested);
+        
+        $helperUser=&WYSIJA::get('user','helper');
+        if(!$helperUser->checkData($data))return false;
 
-        /* validate the email*/
-        $userHelper=&WYSIJA::get("user","helper");
-        if(!$userHelper->validEmail($data['wysija['.$this->model.'][email]'])) return $this->error(sprintf(__('The email %1$s is not valid!',WYSIJA),"<strong>".$data['wysija['.$this->model.'][email]']."</strong>"),true);
-        
-        $emailsent=true;
-        $config=&WYSIJA::get('config','model');
-        $dbloptin=$config->getValue('confirm_dbleoptin');
-        $this->modelObj=&WYSIJA::get("user","model");
-        /*Test if email already exists*/
-        $resexists=$this->modelObj->exists(array('email'=>trim($data['wysija['.$this->model.'][email]'])));
+        $helperUser->addSubscriber($data);
 
-        if($resexists){
-
-            if($dbloptin){
-                $this->modelObj->getFormat=OBJECT;
-                $receiver=$this->modelObj->getOne(false,array('email'=>trim($data['wysija['.$this->model.'][email]'])));
-
-                $emailsent=$userHelper->sendConfirmationEmail($receiver,true);
-                
-            }else $this->notice(__("Oops! You're already subscribed.",WYSIJA));
-            $this->registerToLists($data,$resexists[0]["user_id"]);
-            return true;
-        }
-        $this->modelObj->reset();
-
-        /*record the ip and save the user*/
-        $_REQUEST['wysija'][$this->model]['email']=$data['wysija['.$this->model.'][email]'];
-        $_REQUEST['wysija'][$this->model]['ip']=$userHelper->getIP();
-        
-        /*custom fields*/
-        if(isset($data['wysija['.$this->model.'][firstname]'])) $_REQUEST['wysija'][$this->model]['firstname']=$data['wysija['.$this->model.'][firstname]'];
-        if(isset($data['wysija['.$this->model.'][lastname]'])) $_REQUEST['wysija'][$this->model]['lastname']=$data['wysija['.$this->model.'][lastname]'];
-        
-        
-        $uid=parent::save();
-        if(!$uid) return false;
-        //if(!$uid) return false;
-        /*global $EZSQL_ERROR;
-        if($EZSQL_ERROR){
-            foreach($EZSQL_ERROR as $sqlarray){
-                $this->error('DBG: qry :'.$sqlarray['query'].' error_str :'.$sqlarray['error_str']);
-            }
-        }*/
-        
-        
-        $this->registerToLists($data,$uid);
-        
-        /* if the doble optin is activated then we send a confirmation email */
-        if($dbloptin){
-            /* TODO send a confirmation email now */
-            $emailsent=$userHelper->sendConfirmationEmail($uid,true);
-        }else{
-            if($config->getValue("emails_notified") && $config->getValue("emails_notified_when_sub")){
-                
-                $this->helperUser=&WYSIJA::get("user","helper");
-                $this->helperUser->uid=$uid;
-                $this->helperUser->_notify($_REQUEST['wysija'][$this->model]['email']);
-            }
-        }
-        
-        
-
-        return $emailsent;
+        return true;
     }
+    
+    function convertUserData($datarequested){
+        $data=array();
+        
+        //get the lists
+        if(isset($datarequested['wysija[user_list][list_ids]'])){
+            $listids=explode(',',$datarequested['wysija[user_list][list_ids]']);
+            $subdate=time();
+            unset($datarequested['wysija[user_list][list_ids]']);
+        }else{
+            $i=0;
+            $listids=array();
+            for ($i = 0; $i <= 25; $i++) {
+                $testkey='wysija[user_list][list_id]['.$i.']';
+                if(isset($datarequested[$testkey])) $listids[]=$datarequested[$testkey];
+                unset($datarequested[$testkey]);
+            }
+        }
+        $data['user_list']['list_ids']=$listids;
+        
+        //get the user info and the rest of the data posted
+        foreach($datarequested as $key => $val){
+            if(strpos($key, 'wysija[user]')!== false){
+                $keymodified=str_replace(array('wysija[','][',']'),array('','#',''),$key);
+                $keystabcol=explode('#',$keymodified);
+                switch(count($keystabcol)){
+                    case 2:
+                        $data[$keystabcol[0]][$keystabcol[1]]=$val;
+                        break;
+                    case 3:
+                        $data[$keystabcol[0]][$keystabcol[1]][$keystabcol[2]]=$val;
+                        break;
+                    default:
+                }
+
+            }else{
+                if(!isset($data[$key])) $data[$key]=$val;
+            }
+        }
+        
+        return $data;
+    }
+    
     function registerToLists($data,$uid){
         $model=&WYSIJA::get('user_list',"model");
         if(isset($data['wysija[user_list][list_ids]'])){

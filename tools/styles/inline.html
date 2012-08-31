@@ -7,7 +7,7 @@
 {if #outline}outline:{#outline};{/if}
 {if #height}height:{#height}px;{/if}
 {if !#border}border:0;{/if}
-{if #border && #border.size && #border.style && #border.color}border-top:{#border.size}px {#border.style} {#border.color|color};border-right:0 none;border-bottom:0 none;border-left:0 none;{/if}
+{if #border}border:{#border.size} {#border.style} {#border.color};{/if}
 {if #text-align}text-align:{#text-align};{/if}
 {if #font-weight}font-weight:{#font-weight};{/if}
 {if #line-height}line-height:{#line-height};{/if}
@@ -28,3 +28,4 @@
 {if #clear}clear:{#clear};{/if}
 {if #float}float:{#float};{/if}
 {if #vertical-align}vertical-align:{#vertical-align};{/if}
+{if #word-wrap}word-wrap: break-word;{/if}

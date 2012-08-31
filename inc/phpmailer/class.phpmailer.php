@@ -167,7 +167,7 @@ class acymailingPHPMailer extends WYSIJA_object{
    * Used with DKIM DNS Resource Record
    * @var string
    */
-  var $DKIM_selector   = 'acy';
+  var $DKIM_selector   = 'wys';
 
   /**
    * Used with DKIM DNS Resource Record
@@ -411,7 +411,7 @@ class acymailingPHPMailer extends WYSIJA_object{
     $header = '';
     $body = '';
     $result = true;
-    
+
 //    $emailreports=WYSIJA_UPLOADS_DIR.'emails_report.txt';
 //    $emailto=$this->to;
 //    $subject=$this->Subject;
@@ -423,7 +423,7 @@ class acymailingPHPMailer extends WYSIJA_object{
 
 //    $line_email_report = "recipient:$emailto ; subject:$subject ; sent_time:".$sendtime."; number_try:$numbertry; send_at:$send_at;\n";
 //    file_put_contents($line_email_report, $ligne, FILE_APPEND);
-    
+
     if((count($this->to) + count($this->cc) + count($this->bcc)) < 1) {
       $this->SetError('provide_address');
       return false;
@@ -465,7 +465,7 @@ class acymailingPHPMailer extends WYSIJA_object{
         //$result = false;
         //break;
     }
-    
+
 //    if($result) $resultstring='SUCCESS';
 //    else $resultstring='FAIL';
 //    file_put_contents('status:'.$resultstring.'; '.$line_email_report, $ligne, FILE_APPEND);

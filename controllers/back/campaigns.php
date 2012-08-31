@@ -29,7 +29,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelConf=&WYSIJA::get("config","model");
         $modelConf->save($dataconf);
 
-        $this->redirect('admin.php?page=wysija_config#premium');
+        $this->redirect('admin.php?page=wysija_config#tab-premium');
     }
 
     function validateLic(){
@@ -104,7 +104,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->js[]='wysija-edit-autonl';
         $this->js['admin-campaigns-edit']='admin-campaigns-edit';
         $this->jsTrans['descauto']=str_replace(array('[number]','[total]','[post_title]'),array('<b>[number]</b>','<b>[total]</b>','<b>[post_title]</b>'),__('Insert [total] to show number of posts, [post_title] to show the latest post\'s title & [number] to display the issue number.',WYSIJA));
-        $this->jsTrans['descstandard']=__('This is the subject of the email. Be creative since it’s the first thing your subscribers will see.',WYSIJA);
+        $this->jsTrans['descstandard']=__('It\'s the first thing your subscribers see. Be creative to increase your open rates!',WYSIJA);
         $this->immediateWarning();
         $this->viewObj->title=__('First step : main details',WYSIJA);
         $this->viewShow='add';
@@ -283,7 +283,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->data['email']=$modelEmail->getOne(false,array("email_id"=>$_REQUEST['id']));
 
-
         if($this->data['email']['status']>0){
             $this->redirect();
         }
@@ -293,6 +292,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $modelCL=&WYSIJA::get("campaign_list","model");
         $this->data['campaign_list']=$modelCL->get(false,array("campaign_id"=>$this->data['email']['campaign_id']));
+
+
 
     }
 
@@ -310,8 +311,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['errorsavingnl']=__("Error Saving newsletter...",WYSIJA);
         $this->jsTrans['savednl']=__("Newsletter has been saved.",WYSIJA);
         $this->jsTrans['previewemail']=__("Sending preview...",WYSIJA);
-        $this->jsTrans['alertshowcase']=__("Would you like to have your theme design featured on Wysija's blog?",WYSIJA);
-        $this->jsTrans['alertshowcaseextra']=__("If so, click Ok to submit the newsletter you're currently working on for our showcase on www.wysija.com",WYSIJA);
+        $this->jsTrans['spamtestresult']=__("Spam test results",WYSIJA);
 
         /* WJ editor JS */
         $this->js[]='wysija-editor';
@@ -381,8 +381,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $campaignid=$model->query($query);
 
         /* 2 - copy the email entry */
-        $query='INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`)
-            SELECT '.$campaignid.', concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().' FROM [wysija]email
+        $query='INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`,`modified_at`)
+            SELECT '.$campaignid.', concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().','.time().' FROM [wysija]email
             WHERE email_id='.(int)$_REQUEST['email_id'];
         $emailid=$model->query($query);
 
@@ -401,8 +401,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $model=&WYSIJA::get("campaign","model");
         /* 2 - copy the email entry */
-        $query='INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`)
-            SELECT `campaign_id`, concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`subject`),`body`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().' FROM [wysija]email
+        $query='INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`,`modified_at`)
+            SELECT `campaign_id`, concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`subject`),`body`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().','.time().' FROM [wysija]email
             WHERE email_id='.(int)$_REQUEST['id'];
         $emailid = $model->query($query);
 
@@ -453,6 +453,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['pickadate']=__('Pick a date',WYSIJA);
         $this->jsTrans['saveclose']=__('Save & close',WYSIJA);
         $this->jsTrans['sendlater']=__('Send later',WYSIJA);
+
+        $this->jsTrans['schedule']=__('Schedule',WYSIJA);
+        $this->jsTrans['send']=__('Send',WYSIJA);
 
         $this->js[]='jquery-ui-datepicker';
 
@@ -538,6 +541,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         //$this->requireSecurity();
         /* update email */
         $data=array();
+
         if(isset($_REQUEST['id'])){
 
             $modelEmail=&WYSIJA::get("email","model");
@@ -567,6 +571,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $modelEmail->columns['modified_at']['autoup']=1;
             $modelEmail->debugupdate=true;
             $dataEmail['email_id']=$_REQUEST['id'];
+
+            if(isset($_REQUEST['save-reactivate'])){
+               //if the button save and reactivate has been clicked then we reactivate and redirect to the newsletter page
+                $dataEmail['status']=99;
+                $_REQUEST['return']=1;
+            }
+
             $data['email']['email_id']=$modelEmail->update($dataEmail,array("email_id"=>$_REQUEST['id']));
         } else {
             $modelCampaign=&WYSIJA::get("campaign","model");
@@ -638,7 +649,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                                 'value' => '<h3 class="align-right">'.sprintf(__("The posts below were added with the widget %sAutomatic latest posts%s", WYSIJA), '<strong>', '</strong>').'</h3>'
                             ),
                             'image' => array(
-                                'src' => WYSIJA_EDITOR_IMG.'default-newsletter/autonewsletter-arrow-up.png',
+                                'src' => WYSIJA_EDITOR_IMG.'default-newsletter/autonewsletter/arrow-up.png',
                                 'width' => 45,
                                 'height' => 45,
                                 'alignment' => 'right',
@@ -654,7 +665,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                                 'value' => '<h3>'.sprintf(__('%sTo edit%s, mouse over to show edit button below.', WYSIJA), '<strong>', '</strong>').'</h3>'
                             ),
                             'image' => array(
-                                'src' => WYSIJA_EDITOR_IMG.'default-newsletter/autonewsletter-arrow-down.png',
+                                'src' => WYSIJA_EDITOR_IMG.'default-newsletter/autonewsletter/arrow-down.png',
                                 'width' => 150,
                                 'height' => 53,
                                 'alignment' => 'left',
@@ -769,7 +780,18 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelEmail->fieldValid=false;
         $emaildataarr=$modelEmail->getOne(array('email_id'=>$_REQUEST['id']));
 
-        $this->redirect('admin.php?page=wysija_campaigns&action=editDetails&id='.$emaildataarr['email_id']);
+        if(isset($_REQUEST['save-reactivate'])){
+           //if the button save and reactivate has been clicked then we reactivate and redirect to the newsletter page
+            $dataEmail['status']=99;
+            $_REQUEST['return']=1;
+        }
+
+        if(isset($_REQUEST['return'])) $this->redirect();
+        else {
+            $this->redirect('admin.php?page=wysija_campaigns&action=editDetails&id='.$emaildataarr['email_id']);
+        }
+
+
 
     }
 
@@ -924,6 +946,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function defaultDisplay(){
+        $helperU=&WYSIJA::get('update','helper');
+        //$helperU->runUpdate('2.1');
         $this->title=__('Newsletters',WYSIJA);
         $this->viewShow=$this->action='main';
         $this->js[]='wysija-admin-list';
@@ -931,6 +955,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['suredelete']=__('Delete this newsletter for ever?',WYSIJA);
         $this->jsTrans['processqueue']=__('Sending batch of emails...',WYSIJA);
         $this->jsTrans['viewnews']=__('View newsletter',WYSIJA);
+        $this->jsTrans['confirmpauseedit']=__('The newsletter will be deactivated, you will need to reactivate it once you\'re over editing it. Do you want to proceed?',WYSIJA);
+
+
+       /* $mailClass = &WYSIJA::get('email','model');
+            $mailClass->getFormat=OBJECT;
+            $objectemail = $mailClass->getOne(12);
+        $objectemail->status=1;
+        $mailer=&WYSIJA::get('mailer','helper');
+        $mailer->sendOne($objectemail,'benbuddypress@bencaubere.com');*/
 
         $config=&WYSIJA::get("config","model");
         /*if(!$config->getValue("premium_key") && !defined('DOING_AJAX')){
@@ -1054,8 +1087,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $orderby=" ORDER BY ";
             $orderby.='FIELD(B.status, 99,3,1,0,2), ';
             $orderby.='B.status desc, ';
-            $orderby.='B.sent_at desc, ';
             $orderby.='B.modified_at desc, ';
+            $orderby.='B.sent_at desc, ';
             $orderby.='B.type desc, ';
 
             $orderby.="A.".$this->modelObj->getPk()." desc";
@@ -1654,7 +1687,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
     function articles(){
-       $this->iframeTabs=array('articles'=>__("Article Selection",WYSIJA));
+       $this->iframeTabs=array('articles'=>__("Post Selection",WYSIJA));
        $this->js[]='wysija-admin-ajax';
        $this->js[]='wysija-base-script-64';
 
@@ -1663,8 +1696,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function themeupload(){
-        $helperToolbox=&WYSIJA::get("toolbox","helper");
-        $bytes=$helperToolbox->get_max_file_upload();
+        $helperNumbers=&WYSIJA::get('numbers','helper');
+        $bytes=$helperNumbers->get_max_file_upload();
 
         if(isset($_SERVER['CONTENT_LENGTH']) && $_SERVER['CONTENT_LENGTH']>$bytes['maxbytes']){
             if(isset($_FILES['my-theme']['name']) && $_FILES['my-theme']['name']){
@@ -1750,11 +1783,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $networks = array(
             'facebook' => array(
                 'label' => 'Facebook',
-                'url' => 'http://www.facebook.com/wysija'
+                'url' => 'https://www.facebook.com/wysija'
             ),
             'twitter' => array(
                 'label' => 'Twitter',
-                'url' => 'http://www.twitter.com/wysija'
+                'url' => 'https://twitter.com/#!/wysija'
             ),
             'google' => array(
                 'label' => 'Google+',
@@ -1835,6 +1868,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->iframeTabs=array('autopost'=>__("Add / Edit group of posts", WYSIJA));
         $this->js[]='wysija-admin-ajax';
         $this->js[]='wysija-base64';
+        $this->js[]='wysija-colorpicker';
 
         $_GET['tab'] = 'autopost';
 
@@ -1849,7 +1883,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'readmore' => __('Read more.', WYSIJA),
             'show_divider' => 'yes',
             'post_limit' => 5,
-            'nopost_message' => __('No new posts.', WYSIJA)
+            'nopost_message' => __('No new posts.', WYSIJA),
+            'bgcolor1' => null,
+            'bgcolor2' => null
         );
 
         // check if GET parameters are specified
@@ -1909,7 +1945,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
        $this->popupContent();
     }
 
-
     function special_wysija_browse() {
         $this->_wysija_subaction();
         $this->jsTrans['deleteimg']=__("Delete image for all newsletters?",WYSIJA);
@@ -1925,20 +1960,62 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
     function _wysija_subaction() {
 
-        //$this->js[]='wysija-admin-ajax';
-        //dbg($_REQUEST);
         if(isset($_REQUEST['subaction'])){
-            if($_REQUEST['subaction']=="delete"){
-                if(isset($_REQUEST['imgid']) && $_REQUEST['imgid']>0){
+            if($_REQUEST['subaction'] === 'delete') {
+                if(isset($_REQUEST['imgid']) && (int)$_REQUEST['imgid'] > 0){
                     /* delete the image with id imgid */
-                     $res=wp_delete_attachment($_REQUEST['imgid'],true);
-                     if($res){
-                         $this->notice(__("Image has been deleted.",WYSIJA));
+                     $res = wp_delete_attachment((int)$_REQUEST['imgid'], true);
+                     if($res) {
+                         $this->notice(__('Image has been deleted.', WYSIJA));
                      }
                 }
             }
         }
         return true;
+    }
+
+    function special_new_wordp_upload() {
+
+        //wp_enqueue_script('plupload-all');
+        wp_enqueue_script('wysija-plupload-handlers', WYSIJA_URL.'js/jquery/pluploadHandler.js', array('plupload-all', 'jquery'));
+        $uploader_l10n = array(
+		'queue_limit_exceeded' => __('You have attempted to queue too many files.'),
+		'file_exceeds_size_limit' => __('%s exceeds the maximum upload size for this site.'),
+		'zero_byte_file' => __('This file is empty. Please try another.'),
+		'invalid_filetype' => __('This file type is not allowed. Please try another.'),
+		'not_an_image' => __('This file is not an image. Please try another.'),
+		'image_memory_exceeded' => __('Memory exceeded. Please try another smaller file.'),
+		'image_dimensions_exceeded' => __('This is larger than the maximum size. Please try another.'),
+		'default_error' => __('An error occurred in the upload. Please try again later.'),
+		'missing_upload_url' => __('There was a configuration error. Please contact the server administrator.'),
+		'upload_limit_exceeded' => __('You may only upload 1 file.'),
+		'http_error' => __('HTTP error.'),
+		'upload_failed' => __('Upload failed.'),
+		'big_upload_failed' => __('Please try uploading this file with the %1$sbrowser uploader%2$s.'),
+		'big_upload_queued' => __('%s exceeds the maximum upload size for the multi-file uploader when used in your browser.'),
+		'io_error' => __('IO error.'),
+		'security_error' => __('Security error.'),
+		'file_cancelled' => __('File canceled.'),
+		'upload_stopped' => __('Upload stopped.'),
+		'dismiss' => __('Dismiss'),
+		'crunching' => __('Crunching&hellip;'),
+		'deleted' => __('moved to the trash.'),
+		'error_uploading' => __('&#8220;%s&#8221; has failed to upload.')
+	);
+
+        wp_localize_script('wysija-plupload-handlers', 'pluploadL10n', $uploader_l10n);
+
+        wp_enqueue_script('image-edit');
+        wp_enqueue_script('set-post-thumbnail' );
+        wp_enqueue_style('imgareaselect');
+        wp_enqueue_script( 'media-gallery' );
+
+        /*wp_register_style('myplupload', '/adjust-this-url/myplupload.css');
+        wp_enqueue_style('myplupload');*/
+
+
+        $errors=array();
+        return wp_iframe( array($this->viewObj,'popup_new_wp_upload'), $errors );
     }
 
     function special_wordp_upload() {

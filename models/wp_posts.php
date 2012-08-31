@@ -1,65 +1,62 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_wp_posts extends WYSIJA_model{
-    
-    var $pk="ID";
+
+    var $pk='ID';
     var $tableWP=true;
-    var $table_name="posts";
+    var $table_name='posts';
     var $columns=array(
-        'ID'=>array("req"=>true,"type"=>"integer"), 
-        'post_author'=>array("type"=>"integer"),
-        'post_date' => array(), 
+        'ID'=>array('req' => true, 'type' => 'integer'),
+        'post_author' => array('type' => 'integer'),
+        'post_date' => array(),
         'post_date_gmt' => array(),
         'post_content' => array(),
-        'post_title' => array(), 
-        'post_excerpt' => array(), 
-        'post_status' => array(), 
-        'comment_status' => array(), 
+        'post_title' => array(),
+        'post_excerpt' => array(),
+        'post_status' => array(),
+        'comment_status' => array(),
         'ping_status' => array(),
         'post_password' => array(),
-        'post_name' => array(), 
-        'to_ping' => array(), 
-        'pinged' => array(), 
-        'post_modified' => array(), 
+        'post_name' => array(),
+        'to_ping' => array(),
+        'pinged' => array(),
+        'post_modified' => array(),
         'post_modified_gmt' => array(),
         'post_content_filtered' => array(),
-        'post_parent'=>array("type"=>"integer"), 
+        'post_parent' => array('type' => 'integer'),
         'guid' => array(),
-        'menu_order'=>array("type"=>"integer"), 
-        'post_type' => array(), 
+        'menu_order'=> array('type' => 'integer'),
+        'post_type' => array(),
         'post_mime_type' => array(),
-        'comment_count'=>array("type"=>"integer"),
+        'comment_count' =>array('type' => 'integer'),
     );
-    
-    
-    
+
     function WYSIJA_model_wp_posts(){
         $this->WYSIJA_model();
         $this->table_prefix='';
     }
-    
-    
+
     function get_posts($args=array()){
         if(!$args) return false;
         $customQuery='';
-        
+
         /**
-         * SELECT A.ID, A.post_title, A.post_content, A.post_date FROM `wp_posts` A 
+         * SELECT A.ID, A.post_title, A.post_content, A.post_date FROM `wp_posts` A
          * LEFT JOIN `wp_term_relationships` B ON (A.ID = B.object_id)
          * LEFT JOIN `wp_term_taxonomy` C ON (C.term_taxonomy_id = B.term_taxonomy_id)
          * WHERE C.term_id IN (326) AND A.post_type IN ('post') AND A.post_status IN ('publish') ORDER BY post_date DESC LIMIT 0,10;
-         * 
+         *
          */
-        
-        $customQuery='SELECT A.ID, A.post_title, A.post_content, A.post_excerpt FROM `[wp]'.$this->table_name.'` A ';
-        
+
+        $customQuery='SELECT DISTINCT A.ID, A.post_title, A.post_content, A.post_excerpt FROM `[wp]'.$this->table_name.'` A ';
+
         if(isset($args['category']) && $args['category']) {
-            $customQuery.='LEFT JOIN `[wp]term_relationships` as B ON (A.ID = B.object_id) ';
-            $customQuery.='LEFT JOIN `[wp]term_taxonomy` C ON (C.term_taxonomy_id = B.term_taxonomy_id) ';
+            $customQuery.='JOIN `[wp]term_relationships` as B ON (A.ID = B.object_id) ';
+            $customQuery.='JOIN `[wp]term_taxonomy` C ON (C.term_taxonomy_id = B.term_taxonomy_id) ';
         }
-        
+
         $conditionsOut=$conditionsIn=array();
-        
+
         foreach($args as $col => $val){
             if(!$val) continue;
             switch($col){
@@ -80,10 +77,10 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
                     $conditionsIn['A.post_status']=array('sign'=>'IN','val' =>$val);
                     break;
                 case 'post_date':
-                    //convert the date 
+                    //convert the date
                     $toob=&WYSIJA::get('toolbox','helper');
                     $val= $toob->time_tzed($val);
-                    
+
                     if($val !== '') {
                         $conditionsIn['A.post_date']=array('sign'=>'>','val' =>$val);
                     }
@@ -91,35 +88,35 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
                 default:
             }
         }
-        
+
         $customQuery.='WHERE ';
 
         $customQuery.=$this->setWhereCond($conditionsIn);
-        
+
         if(isset($args['orderby'])){
             $customQuery.=' ORDER BY '.$args['orderby'];
             if(isset($args['order'])) $customQuery.=' '.$args['order'];
         }
-        
+
         if(isset($args['numberposts'])){
             $customQuery.=' LIMIT 0,'.$args['numberposts'];
         }
 
         return $this->query('get_res',$customQuery);
     }
-    
+
     function setWhereCond($conditionsIn){
         $customQuery='';
         $i = 0;
-        
+
         foreach($conditionsIn as $col => $data) {
-            
+
             if($i > 0) $customQuery .=' AND ';
-            
+
             $customQuery .= $col.' ';
-            
-            $value = $data['val'];            
-            
+
+            $value = $data['val'];
+
             switch($data['sign']) {
                 case 'IN':
                 case 'NOT IN':
@@ -153,9 +150,9 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
                 default:
                     $sign='=';
                     if(isset($data['sign'])) $sign = $data['sign'];
-                    
+
                     if(array_key_exists('cast', $data) && $data['cast'] === 'int') {
-                        $customQuery.= $sign."'".(int)$value."' ";
+                        $customQuery.= $sign.(int)$value." ";
                     } else {
                         $customQuery.= $sign."'".$value."' ";
                     }

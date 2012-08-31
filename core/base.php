@@ -233,7 +233,7 @@ class WYSIJA extends WYSIJA_object{
         }
 
         $paramsquery=parse_url($url);
-        $params[$post->post_type]=$post->post_name;
+        if($params!==false) $params[$post->post_type]=$post->post_name;
         //make a simple url to the home
         if($simple){
 
@@ -295,7 +295,10 @@ class WYSIJA extends WYSIJA_object{
             }
             //if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
             $extensionloaded[$extendedplugin] = $transstring;
-            WYSIJA::load_lang_init();
+            $config=&WYSIJA::get('config','model');
+
+            //TODO I don't remember why do we load_lang_init twice I think it has to do with qTranslate compatibility ....
+            if(!((int)$config->getValue('debug_new')>1))    WYSIJA::load_lang_init();
         }
 
     }
@@ -305,6 +308,20 @@ class WYSIJA extends WYSIJA_object{
      * @param type $extendedplugin
      */
     function load_lang_init($extendedplugin=false){
+        $loadtranslation=true;
+        //to allow wysija team mebers to work in english mode if debug is activated
+        $config=&WYSIJA::get('config','model');
+
+        if((int)$config->getValue('debug_new')>1){
+            global $current_user;
+
+            if($current_user && strpos($current_user->data->user_email, '@wysija.com')!==false || strpos($current_user->data->user_email, 'bencaubere.com')!==false){
+                $loadtranslation=false;
+            }
+
+        }
+        if(!$loadtranslation)    return;
+
         $extensionloaded=WYSIJA::load_lang('get_all');
 
         foreach($extensionloaded as $extendedplugin => $transstring){
@@ -395,7 +412,7 @@ class WYSIJA extends WYSIJA_object{
 
     function log($key='default',$data='empty'){
         $config=&WYSIJA::get('config','model');
-        if((int)$config->getValue('debug_new')>0){
+        if((int)$config->getValue('debug_new')>1){
             $optionlog=get_option('wysija_log');
             if ( false === $optionlog ){
                 add_option( 'wysija_log', array() ,'','no');
@@ -524,35 +541,33 @@ class WYSIJA extends WYSIJA_object{
     function croned_daily() {
         @ini_set('max_execution_time',0);
         /*user refresh count total*/
-        $helperU=&WYSIJA::get("user","helper");
+        $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
 
         /*clear temporary folders*/
-        $helperF=&WYSIJA::get("file","helper");
+        $helperF=&WYSIJA::get('file','helper');
         $helperF->clear();
 
         /*clear queue from unsubscribed*/
-        $helperQ=&WYSIJA::get("queue","helper");
+        $helperQ=&WYSIJA::get('queue','helper');
         $helperQ->clear();
 
         /* send daily report about emails sent */
-        $modelC=&WYSIJA::get("config","model");
-        if($modelC->getValue("emails_notified_when_dailysummary")){
-            $helperS=&WYSIJA::get("stats","helper");
+        $modelC=&WYSIJA::get('config','model');
+        if($modelC->getValue('emails_notified_when_dailysummary')){
+            $helperS=&WYSIJA::get('stats','helper');
             $helperS->sendDailyReport();
         }
-
-
     }
 
     function croned_weekly() {
         @ini_set('max_execution_time',0);
 
         /* send daily report about emails sent */
-        $modelC=&WYSIJA::get("config","model");
+        $modelC=&WYSIJA::get('config','model');
         /* if premium let's do a licence check */
-        if($modelC->getValue("premium_key")){
-            $helperS=&WYSIJA::get("licence","helper");
+        if($modelC->getValue('premium_key')){
+            $helperS=&WYSIJA::get('licence','helper');
             $helperS->check();
         }
 
@@ -563,9 +578,9 @@ class WYSIJA extends WYSIJA_object{
         @ini_set('max_execution_time',0);
 
         /* send daily report about emails sent */
-        $modelC=&WYSIJA::get("config","model");
-        if($modelC->getValue("sharedata")){
-            $helperS=&WYSIJA::get("stats","helper");
+        $modelC=&WYSIJA::get('config','model');
+        if($modelC->getValue('sharedata')){
+            $helperS=&WYSIJA::get('stats','helper');
             $helperS->share();
         }
 
@@ -584,8 +599,8 @@ class WYSIJA extends WYSIJA_object{
     function redirect($redirectTo){
          /* save the messages */
         global $wysija_msg,$wysija_queries;
-        WYSIJA::update_option("wysija_msg",$wysija_msg);
-        WYSIJA::update_option("wysija_queries",$wysija_queries);
+        WYSIJA::update_option('wysija_msg',$wysija_msg);
+        WYSIJA::update_option('wysija_queries',$wysija_queries);
         wp_redirect($redirectTo);
         exit;
     }
@@ -620,15 +635,15 @@ class WYSIJA extends WYSIJA_object{
             )
         );
 
-        if(!get_option("wysija_post_type_updated")) {
+        if(!get_option('wysija_post_type_updated')) {
             $modelPosts=new WYSIJA_model();
             $modelPosts->tableWP=true;
-            $modelPosts->table_prefix="";
-            $modelPosts->table_name="posts";
+            $modelPosts->table_prefix='';
+            $modelPosts->table_name='posts';
             $modelPosts->noCheck=true;
-            $modelPosts->pk="ID";
-            if($modelPosts->exists(array("post_type"=>"wysijapage"))){
-                $modelPosts->update(array("post_type"=>"wysijap"),array("post_type"=>"wysijapage"));
+            $modelPosts->pk='ID';
+            if($modelPosts->exists(array('post_type'=>'wysijapage'))){
+                $modelPosts->update(array('post_type'=>'wysijap'),array('post_type'=>'wysijapage'));
                 flush_rewrite_rules( false );
             }
             WYSIJA::update_option('wysija_post_type_updated',time());
@@ -639,6 +654,31 @@ class WYSIJA extends WYSIJA_object{
             flush_rewrite_rules( false );
             WYSIJA::update_option('wysija_post_type_created',time());
         }
+
+        /*
+        $rewritewysija=array('slug'=>'wysija');
+        register_post_type( 'wysija',
+            array(
+                    'labels' => array(
+                            'name' => 'Wysija Archives',
+                            'singular_name' => 'Wysija archives'
+                    ),
+            'public' => true,
+            'has_archive' => false,
+            'show_ui' =>false,
+            'show_in_menu' =>false,
+            'rewrite' => $rewritewysija,
+            'show_in_nav_menus'=>false,
+            'can_export'=>false,
+            'publicly_queryable'=>true,
+            'exclude_from_search'=>true,
+            )
+        );
+
+        if(!get_option('wysija_post_type2_created')) {
+            flush_rewrite_rules( false );
+            WYSIJA::update_option('wysija_post_type2_created',time());
+        }*/
     }
 
 
@@ -885,6 +925,30 @@ class WYSIJA extends WYSIJA_object{
 
     }
 
+    /*make sure that the current user has the good access rights corresponding to its role*/
+    function update_user_caps(){
+        global $current_user;
+
+        if(empty($current_user)) get_currentuserinfo();
+        if(empty($current_user)) return false;
+        $current_user->get_role_caps();
+
+
+        //make sure the current user has all of the capability he wants
+        //$current_user
+
+        //if(!current_user_can($capability)) return false;
+        return true;
+    }
+
+    function current_user_can($capability){
+        if(!$capability) return false;
+        WYSIJA::update_user_caps();
+        if(!current_user_can($capability)) return false;
+        return true;
+    }
+
+
 
 
 }
@@ -992,28 +1056,28 @@ class WYSIJA_NL_Widget extends WP_Widget {
     }
 
     function add_translated_default(){
-        $this->name=__("Wysija Subscription",WYSIJA);
+        $this->name=__('Wysija Subscription',WYSIJA);
         $this->widget_options['description']=__('Subscription form for your newsletters.',WYSIJA);
 
-        $config=&WYSIJA::get("config","model");
+        $config=&WYSIJA::get('config','model');
         $this->successmsgconf=__('Check your inbox now to confirm your subscription.',WYSIJA);
         $this->successmsgsub=__("You've successfully subscribed.",WYSIJA);
-        if($config->getValue("confirm_dbleoptin")){
-            $successmsg=$this->successmsgsub." ".$this->successmsgconf;
+        if($config->getValue('confirm_dbleoptin')){
+            $successmsg=$this->successmsgconf;
         }else{
             $successmsg=$this->successmsgsub;
         }
         $this->fields=array(
-            "title" =>array("label"=>__("Title:",WYSIJA),'default'=>__('Subscribe to our Newsletter',WYSIJA))
-            ,"instruction" =>array("label"=>"",'default'=>__('To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!',WYSIJA))
-            ,"lists" =>array("core"=>1,"label"=>__('Select a list:',WYSIJA),'default'=>array(1))
-            ,"autoregister" =>array("core"=>1,"label"=>__('Let the user select his/her lists of interests:',WYSIJA),'default'=>'not_auto_register')
-            ,"customfields" =>array("core"=>1,"label"=>__('Ask for:',WYSIJA),'default'=>"")
-            ,'labelswithin'=>array('core'=>1,'default'=>true,"label"=>__('Display labels in inputs',WYSIJA),'hidden'=>1)
-            ,"submit" =>array("core"=>1,"label"=>__('Button label:',WYSIJA),'default'=>__('Subscribe!',WYSIJA))
-            ,"success"=>array("core"=>1,"label"=>__('Success message:',WYSIJA),'default'=>$successmsg)
-            ,"iframe"=>array("core"=>1,"label"=>__('Get iframe version',WYSIJA))
-            /*,"php"=>array("core"=>1,"label"=>_x_('Get php version',WYSIJA))*/
+            'title' =>array('label'=>__('Title:',WYSIJA),'default'=>__('Subscribe to our Newsletter',WYSIJA))
+            ,'instruction' =>array('label'=>'','default'=>__('To subscribe to our dandy newsletter simply add your email below. A confirmation email will be sent to you!',WYSIJA))
+            ,'lists' =>array("core"=>1,'label'=>__('Select a list:',WYSIJA),'default'=>array(1))
+            ,'autoregister' =>array('core'=>1,'label'=>__('Let subscribers select their lists:',WYSIJA),'default'=>'not_auto_register')
+            ,'customfields' =>array('core'=>1,'label'=>__('Ask for:',WYSIJA),'default'=>array('email'=>array('label'=>__('Email',WYSIJA))))
+            ,'labelswithin'=>array('core'=>1,'default'=>true,'label'=>__('Display labels in inputs',WYSIJA),'hidden'=>1)
+            ,'submit' =>array('core'=>1,'label'=>__('Button label:',WYSIJA),'default'=>__('Subscribe!',WYSIJA))
+            ,'success'=>array('core'=>1,'label'=>__('Success message:',WYSIJA),'default'=>$successmsg)
+            ,'iframe'=>array('core'=>1,'label'=>__('Get iframe version',WYSIJA))
+            /*,"php"=>array("core"=>1,"label"=>__('Get php version',WYSIJA))*/
         );
     }
 
@@ -1023,19 +1087,24 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         /* check if custom fields are set in the new instance, it if is not then we remove it from the old instance */
         if(isset($instance['customfields']) && !isset($new_instance['customfields'])) unset($instance['customfields']);
-        if(isset($instance['labelswithin']) && !isset($new_instance['labelswithin'])) unset($instance['labelswithin']);
+        //if(isset($instance['labelswithin']) && !isset($new_instance['labelswithin'])) unset($instance['labelswithin']);
 
         /* for each new instance we update the current instance */
         foreach($new_instance as $key => $value) $instance[$key]=$value;
 
 
         /*get the custom fields*/
-        $modelCustomF=&WYSIJA::get("user_field","model");
-        $customs=$modelCustomF->get(false,array('type'=>"0"));
+        $modelCustomF=&WYSIJA::get('user_field','model');
+        $customs=$modelCustomF->get(false,array('type'=>'0'));
 
         /*set an array of custom fields easy to read*/
         $custombyid=array();
         foreach($customs as $customf)   $custombyid[$customf['column_name']]=$customf;
+
+        if(!isset($instance['customfields']) && isset($instance['labelswithin']) && $instance['labelswithin']=='labels_within'){
+            $instance['customfields']=array('email'=>array('label'=>__('Email',WYSIJA)));
+        }
+
 
         /* if there were custom fields set in the previous instance*/
         if(isset($instance['customfields']) && $instance['customfields']){
@@ -1048,22 +1117,16 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 }
             }
 
-            /* if the email label and field are not set we add them this can happend after just the first save*/
-            if(!isset($instance['customfields']['email'])){
-                $instance['customfields']['email']['column_name']='email';
-                $instance['customfields']['email']['label']='Email';
-            /*otherwise if the email custom field is set and is the only one set we can just unset it*/
-            }elseif(count($instance['customfields'])==1) unset($instance['customfields']);
         }
 
         return $instance;
     }
 
     function form( $instance ) {
-        $formObj=&WYSIJA::get("forms","helper");
+        $formObj=&WYSIJA::get('forms','helper');
 
         $html='';
-        $modelList=&WYSIJA::get("list","model");
+        $modelList=&WYSIJA::get('list','model');
         $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
         if(!$lists){
             echo '<p>'.__('Before creating a subscription widget you\'ll need to create at least one list to add your subscribers to.',WYSIJA).' <a href="admin.php?page=wysija_subscribers&action=addlist">'.__('Create a list.',WYSIJA).'</a></p>';
@@ -1090,7 +1153,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
             $classDivLabel=$fieldHTML='';
             $styleDivSeparators='clear:both; max-height: 116px; overflow: auto; float: left;margin: 0 10px 10px 0;';
             switch($field){
-                case "lists":
+                case 'lists':
 
 
                     $classDivLabel='style="float:left"';
@@ -1113,20 +1176,20 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $fieldHTML .= '</div>';
 
                     break;
-                case "autoregister":
+                case 'autoregister':
                     $classDivLabel=$styleDivSeparators;
-                    $value="auto_register";
+                    $value='auto_register';
                     $checked=false;
-                    if((isset($instance["autoregister"]) && $instance["autoregister"]=='auto_register')) $checked=true;
+                    if((isset($instance['autoregister']) && $instance['autoregister']=='auto_register')) $checked=true;
 
                     $id=str_replace("_",'-',$key).'-'.$value;
                     $fieldHTML.='<label for="'.$id.'">';
-                    $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("autoregister")),$value,$checked);
+                    $fieldHTML.=$formObj->radio(array('id'=>$id,'name'=>$this->get_field_name('autoregister')),$value,$checked);
                     $fieldHTML.=__('Yes',WYSIJA).'</label>';
 
-                    $value="not_auto_register";
+                    $value='not_auto_register';
                     $checked=false;
-                    if(!isset($instance["autoregister"]) || $instance["autoregister"]!='auto_register') $checked=true;
+                    if(!isset($instance['autoregister']) || $instance['autoregister']!='auto_register') $checked=true;
                     $id=str_replace("_",'-',$key).'-'.$value;
                     $fieldHTML.='<label for="'.$id.'">';
                     $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("autoregister")),$value,$checked);
@@ -1134,14 +1197,21 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $fieldHTML .= '</p>';
 
                     break;
-                case "customfields":
-                    $modelCustomF=&WYSIJA::get("user_field","model");
-                    $modelCustomF->orderBy("field_id","ASC");
+                case 'customfields':
+
+                    if(!isset($instance['labelswithin']) && !isset($instance['customfields'])){
+                        $instance['customfields']=$fieldParams['default'];
+                        $instance['labelswithin']='labels_within';
+                    }
+
+                    $modelCustomF=&WYSIJA::get('user_field','model');
+                    $modelCustomF->orderBy('field_id','ASC');
                     $customs=$modelCustomF->get(false,array('type'=>"0"));
 
                     $custombyid=array();
                     $classDivLabel='style="float:left"';
                     $fieldHTML= '<div style="'.$styleDivSeparators.'">';
+
                     foreach($customs as $customf){
                         $custombyid[$customf['column_name']]=$customf;
 
@@ -1157,75 +1227,102 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
 
 
+                    $fieldHTML.= '<p style="clear:both;margin: 0;">'.$this->fields['labelswithin']['label'].'</p>';
+                    $value='labels_within';
+                    $checked=true;
+                    if(!isset($instance['labelswithin']) || $instance['labelswithin']!='labels_within') $checked=true;
+
+                    $id=str_replace('_','-',$key).'-'.$value;
+                    $fieldHTML.='<p style="'.$styleDivSeparators.'"><label for="'.$id.'">';
+                    $fieldHTML.=$formObj->radio(array('id'=>$id,'name'=>$this->get_field_name('labelswithin')),$value,$checked);
+                    $fieldHTML.=__('Yes',WYSIJA).'</label>';
+
+                    $value='labels_out';
+                    $checked=false;
+                    if((isset($instance['labelswithin']) && $instance['labelswithin']=='labels_out')) $checked=true;
+                    $id=str_replace('_','-',$key).'-'.$value;
+                    $fieldHTML.='<label for="'.$id.'">';
+                    $fieldHTML.=$formObj->radio(array('id'=>$id,'name'=>$this->get_field_name('labelswithin')),$value,$checked);
+                    $fieldHTML.=__('No',WYSIJA).'</label>';
+                    $fieldHTML .= '</p>';
+
+                    $fieldParamsLabels['email']=array('core'=>1,
+                            'label'=>__('Label for email:',WYSIJA),
+                            'default'=>__('Email',WYSIJA));
+                     $custombyid['email']['name']='email';
+
                     /*custom fields management for labels*/
-                    if(isset($instance["customfields"]) && $instance["customfields"]){
+
+                    if(isset($instance['customfields']) && $instance['customfields']){
                          /* set label as default value */
-                        $fieldHTML.= '<p style="clear:both;margin: 0;">'.$this->fields['labelswithin']['label'].'</p>';
-                        $value="labels_within";
-                        $checked=true;
-                        if(!isset($instance["labelswithin"]) || $instance["labelswithin"]!='labels_within') $checked=true;
-
-                        $id=str_replace("_",'-',$key).'-'.$value;
-                        $fieldHTML.='<p style="'.$styleDivSeparators.'"><label for="'.$id.'">';
-                        $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("labelswithin")),$value,$checked);
-                        $fieldHTML.=__('Yes',WYSIJA).'</label>';
-
-                        $value="labels_out";
-                        $checked=false;
-                        if((isset($instance["labelswithin"]) && $instance["labelswithin"]=='labels_out')) $checked=true;
-                        $id=str_replace("_",'-',$key).'-'.$value;
-                        $fieldHTML.='<label for="'.$id.'">';
-                        $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("labelswithin")),$value,$checked);
-                        $fieldHTML.=__('No',WYSIJA).'</label>';
-                        $fieldHTML .= '</p>';
-
-                        $fieldParamsLabels["email"]=array("core"=>1,
-                                "label"=>__('Label for email:',WYSIJA),
-                                'default'=>__("Email",WYSIJA));
-                         $custombyid["email"]["name"]="email";
-
-                        foreach($instance["customfields"] as $cf_id => $customfield){
-                            $defaultvalue="";
-                            if(isset($valuefield[$cf_id]["label"])) $defaultvalue=$valuefield[$cf_id]["label"];
-                            if(!$defaultvalue) $defaultvalue=$custombyid[$cf_id]["name"];
-                            $fieldParamsLabels[$cf_id]=array("core"=>1,
-                                "label"=>sprintf(__('Label for %1$s:',WYSIJA),$custombyid[$cf_id]["name"]),
+                        foreach($instance['customfields'] as $cf_id => $customfield){
+                            $defaultvalue='';
+                            if(isset($valuefield[$cf_id]['label'])) $defaultvalue=$valuefield[$cf_id]['label'];
+                            if(!$defaultvalue) $defaultvalue=$custombyid[$cf_id]['name'];
+                            $fieldParamsLabels[$cf_id]=array('core'=>1,
+                                'label'=>sprintf(__('Label for %1$s:',WYSIJA),$custombyid[$cf_id]['name']),
                                 'default'=>$defaultvalue);
                         }
+                    }
 
-                        if($fieldParamsLabels){
-                            $fieldHTML2="<div style='clear:both;'>";
-                            foreach($fieldParamsLabels as $cfield_id => $customlabel){
-                                $valuef=$valuefield[$cfield_id]['label'];
-                                if(!$valuef)    $valuef=$customlabel['default'];
-                                $fieldHTML2.= '<p><label for="'.$this->get_field_id($field.$cfield_id).'">'.$customlabel['label'].
-                                    $formObj->input( array('id'=>$this->get_field_id($field.$cfield_id),'name'=>$this->get_field_name($field)."[".$cfield_id."][label]"),$valuef).
-                                    '</label></p>';
+                    if(isset($instance['customfields']) ){
+                        $fieldHTML.="<div style='clear:both;'>";
+
+                        foreach($fieldParamsLabels as $cfield_id => $customlabel){
+                            $valuef='';
+                            if(isset($valuefield[$cfield_id]['label'])) $valuef=$valuefield[$cfield_id]['label'];
+                            if(!$valuef)    $valuef=$customlabel['default'];
+
+                            if(count($fieldParamsLabels) == 1 && isset($instance['labelswithin']) && $instance['labelswithin']=='labels_within' || count($fieldParamsLabels) > 1){
+                                $fieldHTML.= '<p><label for="'.$this->get_field_id($field.$cfield_id).'">'.$customlabel['label'];
+                                $fieldHTML.= $formObj->input( array('id'=>$this->get_field_id($field.$cfield_id),'name'=>$this->get_field_name($field)."[".$cfield_id."][label]"),$valuef);
+                                $fieldHTML.= '</label></p>';
                             }
-                            $fieldHTML2.="<div style='clear:both;'></div></div>";
-                        }
+                            else{
+                                $fieldHTML.= $formObj->hidden( array('id'=>$this->get_field_id($field.$cfield_id),'name'=>$this->get_field_name($field)."[".$cfield_id."][label]"),$valuef);
+                            }
 
-                        $fieldHTML.=$fieldHTML2;
+
+                        }
+                        $fieldHTML.="<div style='clear:both;'></div></div>";
+                        //dbg($fieldHTML,0);
                     }
 
 
+
                     break;
 
-                case "instruction":
-                case "success":
+                case 'instruction':
+                case 'success':
                     $fieldHTML= $formObj->textarea( array('id'=>$this->get_field_id($field),'name'=>$this->get_field_name($field),'value'=>$valuefield,"cols"=>46,"rows"=>4,"style"=>'width:404px'),$valuefield);
                     break;
                 case 'iframe':
-                case 'php':
-                    $fieldHTML='';
+                    $fieldHTML=$textareas=$labels='';
+                    $fieldParams['nolabel']=1;
                     if(!empty($instance)){
-                        if($field=='iframe')    $valuefield=$this->genIframe($instance,true);
-                        else $valuefield=$this->genPhp($instance,true);
+                        $fieldstype=array('iframe'=>__('Get iFrame version',WYSIJA),'php'=>__('Get PHP version',WYSIJA));
 
-                        $extrascriptLabel.=' style="color:#456465;text-decoration:underline;" onClick="document.getElementById(\''.$this->get_field_id($field).'\').style.display = (document.getElementById(\''.$this->get_field_id($field).'\').style.display != \'none\' ? \'none\' : \'block\' );" ';
-                        $fieldHTML.= $formObj->textarea( array('id'=>$this->get_field_id($field),'class'=>'disabled hidden','name'=>'dummyname','value'=>$valuefield,'readonly'=>'readonly',"cols"=>46,"rows"=>4,"style"=>'display:none;width:404px;'),$valuefield);
-                        //$fieldHTML.='<a href="javascript:;" onClick="alert(\'hello\')">'.$fieldParams['label'].'</a></div>';
-                    }else $fieldParams['nolabel']=1;
+                        $i=0;
+                        foreach($fieldstype as $myfield=>$mytitle){
+                            if($myfield=='iframe') {
+                                $scriptCloseOther='document.getElementById(\''.$this->get_field_id('php').'\').style.display=\'none\';';
+                                $valuefield=$this->genIframe($instance,true);
+                            }
+                            else{
+                                $scriptCloseOther='document.getElementById(\''.$this->get_field_id('iframe').'\').style.display=\'none\';';
+                                $valuefield=$this->genPhp($instance,true);
+                            }
+                            $scriptlabel=' style="color:#456465;text-decoration:underline;" onClick="'.$scriptCloseOther.'document.getElementById(\''.$this->get_field_id($myfield).'\').style.display = (document.getElementById(\''.$this->get_field_id($myfield).'\').style.display != \'none\' ? \'none\' : \'block\' );" ';
+                            $labels.='<label for="'.$this->get_field_id($myfield).'" '.$scriptlabel.'>'.$mytitle.'</label>';
+                            if($i<=0)$labels.=' | ';
+                            $textareas.= $formObj->textarea( array('id'=>$this->get_field_id($myfield),'class'=>'disabled hidden','name'=>'dummyname','value'=>$valuefield,'readonly'=>'readonly',"cols"=>46,"rows"=>4,"style"=>'display:none;width:404px;'),$valuefield);
+                            //$fieldHTML.='<a href="javascript:;" onClick="alert(\'hello\')">'.$fieldParams['label'].'</a></div>';
+                            $i++;
+                        }
+                        $fieldHTML='<div>'.$labels.'</div>'.$textareas;
+
+
+                    }
 
                     break;
                 default:

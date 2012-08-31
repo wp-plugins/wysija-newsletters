@@ -11,7 +11,7 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
     
     function view(){
         $data=array();
-        
+
         $emailM=&WYSIJA::get("email","model");
         $configM=&WYSIJA::get("config","model");
         $data=$emailM->getOne(false,array("email_id"=>(int)$_REQUEST['email_id']));
@@ -27,8 +27,11 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
 
         $this->subtitle=str_replace($find,$replace,$data['body']);
         //$this->subtitle=$data['body'];
-
+        
+        $emailH=&WYSIJA::get("email","helper");
+        $this->subtitle=$emailH->stripPersonalLinks($this->subtitle);
         echo $this->subtitle;
+        
         exit;
     }
 

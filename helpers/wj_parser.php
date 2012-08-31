@@ -86,7 +86,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
             throw new Exception('wysija parser needs a template');
         }
     }
-    
+
     protected function _parse ($string, $vars=null)
     {
         $old_string = $string;
@@ -110,7 +110,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                 $loop_replace_pattern = $this->_getEncapsuledPattern ($string, $tag_type, $tag_mask);
                 preg_match ("`".$loop_replace_pattern."`s", $string, $loops);
                 $loop_string = $loops[1];
-                # loop on array 
+                # loop on array
                 preg_match ("`^".self::_VAR."`", $loop_name, $preg);
                 $loop_array = $this->_getValue ($preg, $vars);
 				if ($reverse) {
@@ -331,7 +331,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     $value = null;
                 }
             }
-        } 
+        }
         # object
         else if ($split_count == 2 && isset ($vars[$split[0]]) && is_object($vars[$split[0]])) {
             $object = $vars[$split[0]];
@@ -343,7 +343,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
         # regular var
         if (isset ($vars[$key])) {
             $value = $vars[$key];
-        } else 
+        } else
         # constant
         if (defined ($key)) {
             $value = constant ($key);
@@ -425,7 +425,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                         $strings[] = $preg[1];
                         $command = str_replace ($preg[0], '{'.$i.'}', $command);
                     }
-                }  
+                }
                 $split = explode (':', $command);
                 if (count ($split) > 1) {
                     $command = $split[0];
@@ -441,7 +441,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 }
             }
-            
+
             switch ($command) {
                 case 'default':
                     if(!$value) {
@@ -464,7 +464,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     $image = $value;
                     $ratio = 1;
                     if(isset($image['width']) && isset($image['height'])) {
-                        if((int)$image['height']<=0)$image['height']=1; 
+                        if((int)$image['height']<=0)$image['height']=1;
                         $ratio = round(($image['width'] / $image['height']) * 1000) / 1000;
                     }
                     $value = $ratio;
@@ -544,8 +544,13 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                         $value = '0';
                     }
                 break;
+                case 'colorOrNil':
+                    if($value === 'transparent') {
+                        $value = '';
+                    }
+                break;
                 case 'color':
-                    if($value !== 'transparent') {
+                    if($value !== 'transparent' && $value !== '') {
                         $value = '#'.$value;
                     }
                 break;

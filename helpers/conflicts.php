@@ -16,14 +16,17 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
         }
         foreach($this->cleanHooks as $hookToclean => $info){
             switch($hookToclean){
-               case "admin_head":
-                   add_action("admin_init",array($this,"remove_admin_head"),999);
+               case 'admin_head':
+                   add_action('admin_init', array($this, 'remove_admin_head'), 999);
                    break;
-               case "init":
-                   add_action("after_setup_theme",array($this,"remove_init"),999);
+               case 'admin_print_scripts':
+                   add_action('admin_menu', array($this, 'remove_admin_print_scripts'), 999);
+                   break;
+               case 'init':
+                   add_action('after_setup_theme', array($this, 'remove_init'), 999);
                    break;
                default:
-                   add_action("admin_footer",array($this,"remove_default"),999);
+                   add_action('admin_footer', array($this, 'remove_default'), 999);
             }
         }
     }
@@ -36,6 +39,9 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
     }
     function remove_admin_head(){
         $this->remove_actions('admin_head');
+    }
+    function remove_admin_print_scripts(){
+        $this->remove_actions('admin_print_scripts');
     }
     function remove_actions($actionsToClear){
         

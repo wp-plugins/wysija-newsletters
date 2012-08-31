@@ -79,7 +79,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                                 'controller' => $pagename,
                                 'wysijaplugin' => $plugin,
                                 'dataType'=>"json",
-                                'ajaxurl'=>admin_url( 'admin-ajax.php' ),
+                                'ajaxurl'=>admin_url( 'admin-ajax.php', 'relative' ),
                                 'loadingTrans'  =>__('Loading...',WYSIJA)
                             );
                             if(is_user_logged_in()){
@@ -120,9 +120,12 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_enqueue_script('wysija-tinymce', WYSIJA_URL."js/tinymce/tiny_mce.js",array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-tinymce-init', WYSIJA_URL."js/tinymce_init.js",array(),WYSIJA::get_version());
                             wp_enqueue_style('wysija-editor-css', WYSIJA_URL."css/wysija-editor.css",array(),WYSIJA::get_version());
-                            wp_enqueue_script('wysija-colorpicker', WYSIJA_URL."js/jscolor/jscolor.js",array(),WYSIJA::get_version());
+                            wp_enqueue_script('wysija-colorpicker', WYSIJA_URL."js/excolor/jquery.modcoder.excolor.js",array(),WYSIJA::get_version());
                             
                             wp_localize_script('wysija-editor', 'Wysija_i18n', $controller->jsTrans);
+                            break;
+                        case 'wysija-colorpicker':
+                            wp_enqueue_script('wysija-colorpicker', WYSIJA_URL."js/excolor/jquery.modcoder.excolor.js",array(),WYSIJA::get_version());
                             break;
                         default:
                             if(is_string($kjs)) {

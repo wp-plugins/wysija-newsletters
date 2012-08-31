@@ -27,7 +27,7 @@ class WYSIJA_view extends WYSIJA_object{
      */
     function render($type,$data){
         $this->action=$type;
-        $this->header();
+        $this->header($data);
  
         $this->$type($data);
         $this->footer();
@@ -39,7 +39,7 @@ class WYSIJA_view extends WYSIJA_object{
      */
     function messages($noglobal=false){
         $wysija_msg=$this->getMsgs();
-        
+
         if(isset($wysija_msg['g-updated'])) {
            if(!$noglobal) {
                if(isset($wysija_msg['updated']))  $wysija_msg['updated']=array_merge((array)$wysija_msg['updated'], $wysija_msg['g-updated']);

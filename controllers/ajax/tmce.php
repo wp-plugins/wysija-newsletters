@@ -3,7 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_control_back_tmce extends WYSIJA_control{
     
     function WYSIJA_control_back_tmce(){
-        if(!current_user_can('administrator')) die("Action is forbidden.");
+        if(!WYSIJA::current_user_can('wysija_subscriwidget')) die("Action is forbidden.");
         parent::WYSIJA_control();
         $this->viewObj=&WYSIJA::get('tmce','view');
     }

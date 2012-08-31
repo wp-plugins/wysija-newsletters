@@ -12,9 +12,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->jsTrans['selecmiss']=__('Please select some users first!',WYSIJA);
         $this->search=array('title'=>__('Search newsletters',WYSIJA));
         $this->column_actions=array('editlist'=>__('Edit',WYSIJA),'duplicatelist'=>__('Duplicate',WYSIJA),'deletelist'=>__('Delete',WYSIJA));
-
-
-
     }
 
     function main($data){
@@ -27,24 +24,29 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         echo '</form>';
     }
 
-    function menuTop($actionmenu=false){
-        $arrayTrans=array("back"=>__("Back",WYSIJA),"add"=>__('Create a new newsletter',WYSIJA),"duplicate"=>__('Duplicate',WYSIJA));
+    function menuTop($actionmenu=false,$data=false){
+        $duplicateSuffix='';
+
+        if(isset($data['email']['type']) && (int)$data['email']['type']==1){
+              $duplicateSuffix='Email';
+        }
+        $arrayTrans=array('back'=>__('Back',WYSIJA),'add'=>__('Create a new email',WYSIJA),'duplicate'.$duplicateSuffix=>__('Duplicate',WYSIJA),'view'=>__('View',WYSIJA));
         $arrayMenus=false;
         switch($actionmenu){
             case "add":
             case "edit":
 
                 break;
-            case "main":
+            case 'main':
                  $arrayMenus=array();
                 /*if($this->queuedemails){
                     $arrayTrans["send_test_editor"]=sprintf(__('Send %1$s queued emails right now.',WYSIJA),$this->queuedemails);
                     $arrayMenus[]="send_test_editor";
                 }*/
-                $arrayMenus[]="add";
+                $arrayMenus[]='add';
                 break;
-            case "viewstats":
-                $arrayMenus=array("duplicate");
+            case 'viewstats':
+                $arrayMenus=array('view','duplicate'.$duplicateSuffix);
                 break;
             default:
                $arrayMenus=false;
@@ -53,10 +55,21 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         if($arrayMenus){
             foreach($arrayMenus as $action){
                 $actionParams=$action;
-                if($action=="duplicate"){
+                $extraparams=$link='';
+                if($action=='duplicate'.$duplicateSuffix){
                     $actionParams=$action."&id=".$_REQUEST['id'];
                 }
-                $menu.= '<a id="action-'.str_replace("_","-",$action).'" href="admin.php?page=wysija_campaigns&action='.$actionParams.'" class="action-'.str_replace("_","-",$action).' button-secondary2">'.$arrayTrans[$action].'</a>';
+
+                if($action=='view'){
+                    $emailH=&WYSIJA::get('email','helper');
+
+                    $link=$emailH->getVIB($data['email']);
+                    $extraparams='target="_blank"';
+                }
+
+
+                if(!$link) $link='admin.php?page=wysija_campaigns&action='.$actionParams;
+                $menu.= '<a id="action-'.str_replace("_","-",$action).'" '.$extraparams.' href="'.$link.'" class="action-'.str_replace("_","-",$action).' button-secondary2">'.$arrayTrans[$action].'</a>';
                 if($actionmenu=="main" && $action=="add"){
                      $menu.='<span class="description" > '.__("... or duplicate one below to copy its design.",WYSIJA)."</span>";
                 }
@@ -295,10 +308,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                             }
                             $header='<tr class="thead">
                             <th scope="col" id="campaign-id" class="manage-column column-campaign-id check-column"><input type="checkbox" /></th>
-                            <th class="manage-column column-name'.$namesorting.'" id="name" scope="col" style="width:240px;"><a href="#" class="orderlink" ><span>'.__('Name',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
+                            <th class="manage-column column-name'.$namesorting.'" id="name" scope="col" style="width:220px;"><a href="#" class="orderlink" ><span>'.__('Name',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
                             /*$header.='<th class="manage-column column-fname'.$fnamesorting.'" id="firstname" scope="col" style="width:80px;">'.__('First name',WYSIJA).'</th>
                             <th class="manage-column column-lname'.$lnamesorting.'" id="lastname" scope="col" style="width:80px;">'.__('Last name',WYSIJA).'</th>';*/
-                            $header.='<th class="manage-column column-status'.$statussorting.'" id="status" scope="col" style="width:400px;"><a href="#" class="orderlink" ><span>'.__('Status',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
+                            $header.='<th class="manage-column column-status'.$statussorting.'" id="status" scope="col" style="width:330px;"><a href="#" class="orderlink" ><span>'.__('Status',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
                             $header.='<th class="manage-column column-list-names" id="list-list" scope="col">'.__('Lists',WYSIJA).'</th>';
                             $header.='<th class="manage-column column-opened'.$openedsorting.'" id="number_opened" scope="col" style="width:120px;"><a href="#" class="orderlink" ><span>'.__('Open, clicks, unsubscribed',WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
 
@@ -365,7 +378,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                             ?><a href="admin.php?page=wysija_campaigns&id=<?php
                                             echo $row["email_id"] ?>&action=edit" class="row-title"><?php
                                             echo $row["name"]; ?></a> - <span class="post-state"><?php
-                                            if(isset($row['params']['schedule']['isscheduled'])){
+                                            if(isset($row['params']['schedule']['isscheduled']) && $row['status']==4){
                                                 $toolboxH=&WYSIJA::get('toolbox','helper');
 
 
@@ -409,7 +422,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                           }else{
                                               if($row["type"]==2){
                                                   ?>
-                                              <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="row-title">
+                                              <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="row-title pause-edit">
                                               <?php  echo $row["name"]; ?>
                                               </a><?php
                                               }else{
@@ -421,15 +434,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         ?></strong>
                                         <div class="row-actions">
                                                 <?php
-                                                $paramsurl=array(
-                                                    'wysija-page'=>1,
-                                                    'controller'=>"email",
-                                                    'action'=>"view",
-                                                    'email_id'=>$row["email_id"]
-                                                    );
 
-                                                $modelConf=&WYSIJA::get("config","model");
-                                                $fullurl=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$paramsurl);
+                                                $emailH=&WYSIJA::get('email','helper');
+                                                $fullurl=$emailH->getVIB($row);
 
                                                 ?><span class="viewnl">
                                                     <a href="<?php echo $fullurl ?>" target="_blank" class="viewnews"><?php _e('View',WYSIJA)?></a>
@@ -472,7 +479,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                         if($row['type']==2){
                                                             ?>
                                                           | <span class="edit">
-                                                              <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="submitedit"><?php _e('Edit',WYSIJA)?></a>
+                                                              <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="submitedit pause-edit"><?php _e('Edit',WYSIJA)?></a>
                                                             </span>
                                                             <?php
                                                         }
@@ -480,7 +487,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                            ?>
 
                                                            | <span class="viewstats">
-                                                                <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="submitedit"><?php _e('Stats',WYSIJA)?></a>
+                                                                <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="stats"><?php _e('Stats',WYSIJA)?></a>
                                                             </span>
 
                                                                 <?php
@@ -562,7 +569,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                                                         echo '<p>'.$statussent.'</p>';
 
-                                                        echo '<p>'.$durationsent.' ('.__('Won\'t be sent until a new post is published.',WYSIJA).')</p>';
+                                                        echo '<p>'.$durationsent.' ('.__('if there are new posts',WYSIJA).')</p>';
 
                                                         echo $pause;
                                                     }else{
@@ -695,7 +702,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 $helperToolbox=&WYSIJA::get("toolbox","helper");
                if($row['type']!=2){
                    $return.= "<p><strong>".sprintf(__('Time remaining: %1$s',WYSIJA),$helperToolbox->duration($data['sent'][$row["email_id"]]['remaining_time'],true,4))."</strong><br/>".$statusdata.$pause."</p>";
-                   $return.= "<div class='info-stats'><a href='javascript:;' class='moredetails'>".__("Show more details",WYSIJA)."</a>";
+                   $return.= "<div class='info-stats'>";
                }
 
 
@@ -732,7 +739,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
      */
     function viewstats($data){
 
-        $this->menuTop($this->action);
         $this->search['title']=__("Search recipients",WYSIJA);
         ?>
         <div id="wysistats">
@@ -971,6 +977,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             <?php
             $this->model->table_name='email';
             $this->model->pk='email_id';
+
+            if(isset($data['email']['type']) && $data['email']['type']==2)    $this->immediatewarning='<input type="submit" id="save-reactivate" value="'.__("Save and reactivate",WYSIJA).'" name="save-reactivate" class="button-primary wysija"/>'.$this->immediatewarning;
+
             $this->_savebuttonsecure($data,"savecamp",__("Next step",WYSIJA),$this->immediatewarning);
 
             ?>
@@ -993,12 +1002,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             $wjEngine->setStyles();
         }
 
-//print "\n\n--------\n\n";
-//echo '<div style="width:900px;margin:0 auto;">';
-//echo $wjEngine->renderEmail($data['email']);
-//echo '</div>';
-//print "\n\n--------\n\n";
-//exit;
+        //print "\n\n--------\n\n";
+        //echo '<div style="width:900px;margin:0 auto;">';
+        //echo $wjEngine->renderEmail($data['email']);
+        //echo '</div>';
+        //print "\n\n--------\n\n";
+        //exit;
         ?>
             <style type="text/css" id="wj_css">
                 <?php echo $wjEngine->renderStyles(); ?>
@@ -1062,7 +1071,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <!-- IMAGES BAR -->
                 <div class="wj_images" style="display:none;">
                     <div class="wj_button">
-                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=special_wordp_upload&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add images',WYSIJA) ?></a>
+                        <?php
+
+                        if(version_compare(get_bloginfo('version'), '3.3.0')>= 0){
+                            $action='special_new_wordp_upload';
+                        }else{
+                            $action='special_wordp_upload';
+                        }
+                        ?>
+                        <a id="wysija-upload-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=medias&tab=<?php echo $action; ?>&emailId=<?php echo $_REQUEST['id'] ?>"><?php _e('Add Images',WYSIJA) ?></a>
                     </div>
 
                     <ul id="wj-images-quick" class="clearfix">
@@ -1097,7 +1114,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <div class="wj_themes" style="display:none;">
                     <div class="wj_button">
                         <a id="wysija-themes-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=themes"><?php _e('Install themes',WYSIJA) ?></a>
-                        <?php /*<a id="wysija-themes-showcase" class="button" href="javascript:;"><?php xx_e('Showcase your theme',WYSIJA) ?></a> */ ?>
                     </div>
                     <ul id="wj_themes_list" class="clearfix">
                         <?php
@@ -1112,21 +1128,68 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
         <!-- END: Wysija Toolbar -->
         <?php
-                    $modelU=&WYSIJA::get("user","model");
-                    $modelU->getFormat=OBJECT;
-                    $datauser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
+        global $current_user;
 
-                    $emailuser='';
-                    if(isset($datauser->email)) $emailuser=$datauser->email;
+        $emailuser=$current_user->data->user_email;
 
                 ?>
         <p><input type="text" name="receiver-preview" id="preview-receiver" value="<?php echo $emailuser ?>" /> <a href="javascript:;" id="wj-send-preview" class="button wysija"><?php _e("Send preview",WYSIJA) ?></a></p>
-            <p class="submit">
+        <p>
+            <?php
+            $config=&WYSIJA::get("config","model");
+            $classspammy=$triesleftstring='';
+            $changedid='';
+            if(!$config->getValue('premium_key')){
+                $tries=(int)$config->getValue('spamtest_tries');
+                //change that value to allow more tries
+                $numberoftriesallowed=0;
+                $triesleft=$numberoftriesallowed-$tries;
+                if($triesleft<=0){
+                    $classspammy=' disabled';
+                    $changedid='s';
+                }
+
+                $triesleftstring=str_replace(
+                    array('[link]','[/link]'),
+                    array('<a class="premium-tab" href="javascript:;">','</a>'),
+                    sprintf(__('%1$s tries left. Get [link]Premium[/link] for unlimited use.',WYSIJA),'<span id="counttriesleft">'.$triesleft.'</span>'));
+
+
+            }
+            ?>
+            <a href="javascript:;" id="wysija-send-spamtest<?php echo $changedid ?>" class="button wysija<?php echo $classspammy ?>">
+        <?php _e("How spammy is this newsletter?",WYSIJA) ?>
+            </a>
+            <span class="marginl">
+        <?php
+
+        echo $triesleftstring;
+        ?>
+            </span>
+        </p>
+
+        <p class="submit">
                 <?php $this->secure(array('action'=>"saveemail",'id'=>$data['email']['email_id'])); ?>
                 <input type="hidden" name="wysija[email][email_id]" id="email_id" value="<?php echo esc_attr($data['email']['email_id']) ?>" />
                 <input type="hidden" value="saveemail" name="action" />
 
                 <a id="wj_next" class="button-primary wysija" href="admin.php?page=wysija_campaigns&action=editDetails&id=<?php echo $data['email']['email_id'] ?>"><?php _e("Next step",WYSIJA) ?></a>
+                <?php
+                //we cannot have it everywhere
+                 if(false && $data && $data['email']['type']==2)    {
+                     echo '<a id="save-reactivate" class="button-primary wysija" href="admin.php?page=wysija_campaigns&action=resume&id='.$data['email']['email_id'].'">'.__("Save and reactivate",WYSIJA).'</a>';
+
+                     echo '<script type="text/javascript" charset="utf-8">';
+                     echo  "$('save-reactivate').observe('click', function(e) {
+                Event.stop(e);
+                saveWYSIJA(function() {
+                    window.location.href = e.target.href;
+                });
+            });";
+                    echo '</script>';
+                 }
+
+                ?>
                 <?php echo '<a href="admin.php?page=wysija_campaigns&action=edit&id='.$data['email']['email_id'].'">'.__('go back to Step 1',WYSIJA).'</a>' ?>
             </p>
         <!-- BEGIN: Wysija Toolbar -->
@@ -1168,10 +1231,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         if(response.responseJSON.result.styles.form != null) {
                             // refresh styles form
                             $('wj_styles_form').innerHTML = response.responseJSON.result.styles.form;
-                            // init color pickers
-                            jscolor.init();
-                            // setup styles form and apply styles
+                            // setup color pickers
+                            setupColorPickers();
+
+                            // setup apply styles on value changed
                             setupStylesForm();
+
+                            // apply styles
                             applyStyles();
                         }
 
@@ -1198,9 +1264,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             // auto save
             new Timer(15 * 1000, function(){
               if (this.count > 0) {
-                  if(Wysija.doSave == true) {
+                  if(Wysija.flags.doSave === true) {
                       saveWYSIJA(function() {
-                          Wysija.doSave = false;
+                          Wysija.flags.doSave = false;
                       });
                   }
               }
@@ -1221,6 +1287,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 return false;
             }
 
+            function setupStylesForm() {
+                $$('#wj_styles_form select, #wj_styles_form input').invoke('observe', 'change', applyStyles);
+            }
+
             function updateStyles(styles) {
                 // remove previous styles
                 if($('wj_css') != undefined) $('wj_css').remove();
@@ -1235,15 +1305,35 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 head.appendChild(style);
             }
 
-            // auto apply styles change
-            function setupStylesForm() {
-                $$('#wj_styles_form select, #wj_styles_form input[class!="transparent"]').invoke('observe', 'change', applyStyles);
-                $$('#wj_styles_form input[class="transparent"]').invoke('observe', 'click', function() {
-                    $(this).previous('input.color')[$F(this) ? 'addClassName' : 'removeClassName']('disabled');
-                    applyStyles();
+            function setupColorPickers() {
+                jQuery(function($) {
+                    $(".color").modcoder_excolor({
+                        hue_bar : 1,
+                        border_color : '#969696',
+                        anim_speed : 'fast',
+                        round_corners : false,
+                        shadow_size : 2,
+                        shadow_color : '#f0f0f0',
+                        background_color : '#ececec',
+                        backlight : false,
+                        label_color : '#333333',
+                        effect : 'fade',
+                        show_input: false,
+                        z_index:20000,
+                        hide_on_scroll: true,
+                        callback_on_init: function() {
+                            Wysija.locks.selectingColor = true;
+                        },
+                        callback_on_select: function(color, input) {
+                            Wysija.updateCSSColor(input, color);
+                        },
+                        callback_on_ok : function() {
+                            applyStyles();
+                            Wysija.locks.selectingColor = false;
+                        }
+                    });
                 });
             }
-            setupStylesForm();
 
             function saveIQS(){
                 wysijaAJAX.task = 'save_IQS';
@@ -1256,6 +1346,18 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 Wysija.flyToTheMoon();
             }
             konami.load();
+
+            // prototype on load
+            document.observe('dom:loaded', function() {
+                setupStylesForm();
+            });
+
+            // jquery on load
+            jQuery(function($) {
+                $(function(){
+                    setupColorPickers();
+                });
+            });
         </script>
         <!-- END: Wysija Toolbar -->
         <div id="wysija-konami" >
@@ -1368,11 +1470,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 </tbody>
             </table>
              <?php
-                    $modelU=&WYSIJA::get("user","model");
-                    $modelU->getFormat=OBJECT;
-                    $datauser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
-                    $emailuser='';
-                    if(isset($datauser->email)) $emailuser=$datauser->email;
+                    global $current_user;
+
+        $emailuser=$current_user->data->user_email;
 
                 ?>
 
@@ -1635,7 +1735,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
 
     function edit($data){
-        $this->menuTop("edit");
+        //$this->menuTop("edit");
         $formid='wysija-'.$_REQUEST['action'];
 
         ?>
@@ -1680,77 +1780,76 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     function popup_image_data($data){
         echo $this->messages(true);
         ?>
-        <div style="width:300px;">
-        <form method="post" action="" class="image-data-form" id="image-data-form">
-            <div class="ml-submit">
+        <div class="popup_content addlink">
+            <form method="post" action="" class="image-data-form" id="image-data-form">
                 <p>
-                    <label for="url"><?php _e('Address:', WYSIJA) ?></label>
-                    <br />
-                    <input type="text" size="40" name="url" value="<?php echo (!empty($data['url'])) ? esc_attr($data['url']) : 'http://' ?>" id="url" />
+                    <label for="url"><?php _e('Address:', WYSIJA) ?></label><br/>
+                    <input type="text" name="url" value="<?php echo (!empty($data['url'])) ? esc_attr($data['url']) : 'http://' ?>" id="url" />
                 </p>
                 <p>
-                    <label for="alt"><?php _e('Alternative text:', WYSIJA) ?></label>
-                    <br />
+                    <label for="alt"><?php _e('Alternative text:', WYSIJA) ?></label><br/>
                     <input type="text" name="alt" value="<?php echo (!empty($data['alt'])) ? esc_attr($data['alt']) : '' ?>" id="alt" />
-                    <br /><p class="notice"><?php _e('This text is displayed when email clients block images, which is most of the time.', WYSIJA) ?></p>
                 </p>
-                <p><input id="image-data-submit" class="button-primary alignright" type="submit" name="submit" value="<?php _e('Save',WYSIJA) ?>" /></p>
-            </div>
-        </form>
-
+                <p class="notice"><?php _e('This text is displayed when email clients block images, which is most of the time.', WYSIJA) ?></p>
+                <p class="align-right"><input id="image-data-submit" class="button-primary" type="submit" name="submit" value="<?php _e('Save',WYSIJA) ?>" /></p>
+            </form>
         </div>
         <?php
     }
 
     function popup_themes($errors){
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
         echo $this->messages(true);
         ?>
-        <form enctype="multipart/form-data" method="post" action="" class="wrap media-upload-form validate" id="gallery-form">
-            <div id="searchview" class="ml-submit searchview">
-                <?php /*?>
-                <ul>
-                    <li><?php _e("Newest",WYSIJA)?></li>
-                    <li><a href="javascript:;"><?php _e("Popular",WYSIJA)?></a></li>
-                    <li><a href="javascript:;"><?php _e("Premium",WYSIJA)?></a></li>
-                    <li><a href="javascript:;"><?php _e("For Sale",WYSIJA)?></a></li>
-                </ul>
-                <input type="text" id="search-box" name="search" autocomplete="off" />
-                <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
-                 * <?php */ ?>
-                <div class="clearfix">
-                    <input type="button" id="sub-theme-box" name="submit" value="<?php echo esc_attr(__('Upload Theme',WYSIJA));?>" class="button-secondary"/>
-                    <span id="filter-selection"></span>
-                    <div id="wj_paginator"></div>
+        <div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+        <div class="popup_content themes">
+            <form enctype="multipart/form-data" method="post" action="" class="validate">
+                <div id="search-view" class="panel">
+                    <?php
+                        if(isset($_REQUEST['reload']) && (int)$_REQUEST['reload'] === 1) {
+                            echo '<input type="hidden" id="themes-reload" name="themes-reload" value="1" />';
+                        }
+                    /*?>
+                    <ul>
+                        <li><?php _e("Newest",WYSIJA)?></li>
+                        <li><a href="javascript:;"><?php _e("Popular",WYSIJA)?></a></li>
+                        <li><a href="javascript:;"><?php _e("Premium",WYSIJA)?></a></li>
+                        <li><a href="javascript:;"><?php _e("For Sale",WYSIJA)?></a></li>
+                    </ul>
+                    <input type="text" id="search-box" name="search" autocomplete="off" />
+                    <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
+                    * <?php */ ?>
+                    <div class="clearfix">
+                        <input type="button" id="sub-theme-box" name="submit" value="<?php echo esc_attr(__('Upload Theme',WYSIJA));?>" class="button-secondary"/>
+                        <span id="filter-selection"></span>
+                        <div id="wj_paginator"></div>
+                    </div>
+                    <ul id="themes-list"></ul>
                 </div>
-                <div id="search-results" ></div>
-            </div>
+                <div id="theme-view" class="panel" style="display:none;"></div>
+            </form>
+            <div id="theme-upload" class="panel">
+                <form enctype="multipart/form-data" method="post" action="" class="validate">
+                    <div class="wrap actions">
+                        <a class="button-secondary2 theme-view-back" href="javascript:;"><?php echo __("<< Back",WYSIJA)?></a>
+                    </div>
+                    <div class="form">
+                    <?php
+                        $secure=array('action'=>"themeupload");
+                        $this->secure($secure);
+                        ?>
+                        <p><input type="file" name="my-theme"/>( <?php
+                        $helperNumbers=&WYSIJA::get('numbers','helper');
+                        $data =$helperNumbers->get_max_file_upload();
+                        $bytes=$data['maxmegas'];
 
-            <div id="theme-view" class="ml-submit" ></div>
-
-        </form>
-        <form enctype="multipart/form-data" method="post" action="" class="wrap media-upload-form validate" id="gallery-form">
-            <div id="theme-upload" class="ml-submit" >
-                <div class="actions">
-                    <a class="button-secondary2 theme-view-back" href="javascript:;"><?php echo __("<< Back",WYSIJA)?></a>
+                                        echo sprintf(__('total max upload file size : %1$s',WYSIJA),$bytes)?> )</p>
+                        <p><label for="overwrite"><input type="checkbox" id="overwrite" name="overwriteexistingtheme" /><?php echo __("If a theme with the same name exists, overwrite it.",WYSIJA); ?></label></p>
+                        <p><input type="hidden" name="action" value="themeupload" />
+                        <input type="submit" class="button-primary" name="submitter" value="<?php _e("Upload",WYSIJA)?>" /></p>
+                    </div>
                 </div>
-                <div class="form">
-                <?php
-                    $secure=array('action'=>"themeupload");
-                    $this->secure($secure);
-                    ?>
-                    <p><input type="file" name="my-theme"/>( <?php
-                    $helperToolbox=&WYSIJA::get("toolbox","helper");
-                    $data =$helperToolbox->get_max_file_upload();
-                    $bytes=$data['maxmegas'];
-
-                                    echo sprintf(__('total max upload file size : %1$s',WYSIJA),$bytes)?> )</p>
-                    <p><label for="overwrite"><input type="checkbox" id="overwrite" name="overwriteexistingtheme" /><?php echo __("If a theme with the same name exists, overwrite it.",WYSIJA); ?></label></p>
-                    <p><input type="hidden" name="action" value="themeupload" />
-                    <input type="submit" class="button-primary" name="submitter" value="<?php _e("Upload",WYSIJA)?>" /></p>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
         <?php
     }
 
@@ -1761,26 +1860,27 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     function popup_articles($errors){
         echo $this->messages(true);
         ?>
+        <div class="popup_content articles">
+            <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
+                <div class="ml-submit">
+                    <input type="text" id="search-box" name="search" autocomplete="off" />
+                    <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
+                    <label id="labelfullarticlesget" for="fullarticlesget">
+                        <?php
+                        $modelConfig=&WYSIJA::get("config","model");
+                        $checked="";
+                        if($modelConfig->getValue("editor_fullarticle")) $checked=' checked="checked" ';
+                        ?>
+                        <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
+                        <?php
+                        echo __("Insert entire post, not just excerpt",WYSIJA);
+                        ?>
+                    </label>
+                </div>
+                <div id="search-results"></div>
 
-        <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
-            <div class="ml-submit">
-                <input type="text" id="search-box" name="search" autocomplete="off" />
-                <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
-                <label id="labelfullarticlesget" for="fullarticlesget">
-                    <?php
-                    $modelConfig=&WYSIJA::get("config","model");
-                    $checked="";
-                    if($modelConfig->getValue("editor_fullarticle")) $checked=' checked="checked" ';
-                    ?>
-                    <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
-                    <?php
-                    echo __("Insert entire post, not just excerpt",WYSIJA);
-                    ?>
-                </label>
-            </div>
-            <div id="search-results" class="ml-submit"></div>
-
-        </form>
+            </form>
+        </div>
         <?php
     }
 
@@ -1789,7 +1889,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
         ?>
 
-        <div class="wysija_popup_content dividers">
+        <div class="popup_content dividers">
             <form enctype="multipart/form-data" method="post" action="" class="" id="dividers-form">
                 <ul class="dividers">
                     <?php
@@ -1806,7 +1906,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input type="hidden" name="divider_src" value="<?php echo $data['selected']['src'] ?>" id="divider_src" />
                 <input type="hidden" name="divider_width" value="<?php echo $data['selected']['width'] ?>" id="divider_width" />
                 <input type="hidden" name="divider_height" value="<?php echo $data['selected']['height'] ?>" id="divider_height" />
-                <input type="submit" id="dividers-submit" class="button-primary alignright" name="submit" value="<?php echo esc_attr(__('Done',WYSIJA));?>" />
+                <p class="align-right">
+                    <input type="submit" id="dividers-submit" class="button-primary" name="submit" value="<?php echo esc_attr(__('Done',WYSIJA));?>" />
+                </p>
             </form>
         </div>
 
@@ -1825,7 +1927,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         }
 
         ?>
-        <div class="wysija_popup_content autopost">
+        <div class="popup_content autopost">
             <div style="display:none;" id="category_list">
                 <select name="category" class="categories">
                     <?php foreach($data['categories'] as $category) { ?>
@@ -1835,9 +1937,30 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
             <form enctype="multipart/form-data" method="post" action="" class="" id="autopost-form">
                 <input type="hidden" name="category_ids" id="category_ids" value="<?php echo $category_ids ?>" />
+
+                <!-- max number of articles -->
+                <?php
+                    if($data['autopost_type'] === 'single') {
+                ?>
+                        <input type="hidden" name="post_limit" value="1" />
+                <?php
+                    } else {
+                ?>
+                    <p class="clearfix">
+                        <label for="post_limit"><?php _e('Number of latest posts to show', WYSIJA) ?></label>
+                        <select name="post_limit" id="post_limit">
+                            <?php foreach($data['post_limits'] as $limit) { ?>
+                                <option value="<?php echo $limit ?>"<?php if($limit === (int)$data['params']['post_limit']) echo 'selected="selected"' ?>><?php echo $limit ?></option>
+                            <?php } ?>
+                        </select>
+                    </p>
+                <?php
+                    }
+                ?>
+
                 <!-- category -->
                 <p class="clearfix">
-                    <label for="category"><?php _e('Category', WYSIJA) ?></label>
+                    <label for="category"><?php _e('Filter by category', WYSIJA) ?></label>
                     <select name="category" class="categories">
                         <option value="" selected="selected"><?php _e("All categories", WYSIJA) ?></option>
                         <?php foreach($data['categories'] as $category) {
@@ -1876,7 +1999,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                 <!-- title -->
                 <p class="clearfix">
-                    <label><?php _e('Title', WYSIJA) ?></label>
+                    <label><?php _e('Title style', WYSIJA) ?></label>
                     <select name="title_tag" id="title_tag">
                         <option value="h1"<?php if($data['params']['title_tag'] === 'h1') echo ' selected="selected"'; ?>><?php _e('Heading 1', WYSIJA) ?></option>
                         <option value="h2"<?php if($data['params']['title_tag'] === 'h2') echo ' selected="selected"'; ?>><?php _e('Heading 2', WYSIJA) ?></option>
@@ -1918,16 +2041,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <input type="text" name="readmore" value="<?php echo esc_attr($data['params']['readmore']); ?>" id="readmore" />
                 </p>
 
-                <!-- max number of articles -->
+                <!-- show dividers -->
                 <?php
                     if($data['autopost_type'] === 'single') {
                 ?>
                     <input type="hidden" name="show_divider" value="no" />
-                    <input type="hidden" name="post_limit" value="1" />
                 <?php
                     } else {
                 ?>
-                    <!-- show dividers -->
                     <p class="clearfix">
                         <label><?php _e('Show divider between posts', WYSIJA) ?></label>
                         <label class="radio"><input type="radio" name="show_divider" value="yes"<?php if($data['params']['show_divider'] === 'yes') echo ' checked="checked"'; ?> /><?php _e('yes', WYSIJA) ?></label>
@@ -1935,12 +2056,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     </p>
 
                     <p class="clearfix">
-                        <label for="post_limit"><?php _e('Max number of articles', WYSIJA) ?></label>
-                        <select name="post_limit" id="post_limit">
-                            <?php foreach($data['post_limits'] as $limit) { ?>
-                                <option value="<?php echo $limit ?>"<?php if($limit === (int)$data['params']['post_limit']) echo 'selected="selected"' ?>><?php echo $limit ?></option>
-                            <?php } ?>
-                        </select>
+                        <label><?php _e('Background color with alternate', WYSIJA) ?></label>
+                        <input class="color" type="text" name="bgcolor1" value="<?php if($data['params']['bgcolor1']) echo $data['params']['bgcolor1']; ?>" />
+                        <input class="color" type="text" name="bgcolor2" value="<?php if($data['params']['bgcolor2']) echo $data['params']['bgcolor2']; ?>" />
                     </p>
                 <?php
                     }
@@ -1965,7 +2083,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     }
                 ?>
 
-                <input type="submit" id="autopost-submit" class="button-primary alignright" name="submit" value="<?php echo esc_attr(__('Done',WYSIJA));?>" />
+                <p class="align-right"><input type="submit" id="autopost-submit" class="button-primary" name="submit" value="<?php echo esc_attr(__('Done',WYSIJA));?>" /></p>
             </form>
         </div>
         <?php
@@ -1975,7 +2093,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         echo $this->messages(true);
 
         ?>
-        <div class="wysija_popup_content bookmarks">
+        <div class="popup_content bookmarks">
             <form enctype="multipart/form-data" method="post" action="" class="" id="bookmarks-form">
                 <ul class="networks">
                     <?php
@@ -2003,7 +2121,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input type="hidden" name="bookmarks-iconset" value="" id="bookmarks-iconset" />
                 <input type="hidden" name="bookmarks-theme" value="<?php echo $data['theme'] ?>" id="bookmarks-theme" />
 
-                <p><input type="submit" id="bookmarks-submit" name="submit" value="<?php echo esc_attr(__("Done",WYSIJA)) ?>" class="button-primary alignright"/></p>
+                <p class="align-right">
+                    <input type="submit" id="bookmarks-submit" name="submit" value="<?php echo esc_attr(__("Done",WYSIJA)) ?>" class="button-primary"/></p>
             </form>
 
         </div>
@@ -2012,94 +2131,243 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
     function popup_wysija_browse($errors){
         echo $this->messages(true);
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
-        global $redir_tab, $type;
-
-	$redir_tab = 'wysija_browse';
-	media_upload_header();
-	$post_id = intval($_REQUEST['post_id']);
-
-        ?>
-
-        <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
+        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+        <div class="popup_content media-browse">
             <?php
+            global $redir_tab, $type;
 
-            $secure=array('action'=>"medias");
-            $this->secure($secure); ?>
+            $redir_tab = 'wysija_browse';
+            media_upload_header();
+            $post_id = intval($_REQUEST['post_id']);
+            ?>
 
-            <div id="media-items" class="clearfix">
-            <?php echo $this->_get_media_items($post_id, $errors); ?></div>
-        </form>
+            <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="wysija-browse-form">
+                <?php
+                $secure=array('action'=>"medias");
+                $this->secure($secure); ?>
 
+                <div id="media-items" class="clearfix"><?php echo $this->_get_media_items($post_id, $errors); ?></div>
+            </form>
+            <?php $this->_alt_close(); ?>
+        </div>
         <?php
-        $this->_alt_close();
     }
 
     function _alt_close(){
         ?>
-        <p><input type="submit" id="close-pop-alt" value="<?php echo esc_attr(__("Done",WYSIJA)) ?>" name="submit-draft" class="button-primary wysija"/></p>
+        <p class="align-right"><input type="submit" id="close-pop-alt" value="<?php echo esc_attr(__("Done",WYSIJA)) ?>" name="submit-draft" class="button-primary wysija"/></p>
         <?php
+    }
+
+    function __filterPostParent($query){
+        global $wp_query;
+
+        return $query.' AND post_parent!='.(int)$_REQUEST['post_id'].' ';
     }
 
     function popup_wp_browse($errors){
         echo $this->messages(true);
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div><?php
-        global $redir_tab, $wpdb, $wp_query, $wp_locale, $type, $tab, $post_mime_types;
+        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+        <div class="popup_content media-wp-browse">
+            <?php
+            global $redir_tab, $wpdb, $wp_query, $wp_locale, $type, $tab, $post_mime_types;
 
-	$redir_tab = 'wp_browse';
+            $redir_tab = 'wp_browse';
 
-	media_upload_header();
+            media_upload_header();
 
-        $limit=20;
+            $limit=20;
 
-	$_GET['paged'] = isset( $_GET['paged'] ) ? intval($_GET['paged']) : 0;
-	if ( $_GET['paged'] < 1 )
-		$_GET['paged'] = 1;
-	$start = ( $_GET['paged'] - 1 ) * $limit;
-	if ( $start < 1 )
-		$start = 0;
-	add_filter( 'post_limits', create_function( '$a', "return 'LIMIT $start, $limit';" ) );
+            $_GET['paged'] = isset( $_GET['paged'] ) ? intval($_GET['paged']) : 0;
+            if ( $_GET['paged'] < 1 )
+                    $_GET['paged'] = 1;
+            $start = ( $_GET['paged'] - 1 ) * $limit;
+            if ( $start < 1 )
+                    $start = 0;
+            add_filter( 'post_limits', create_function( '$a', "return 'LIMIT $start, $limit';" ) );
+            add_filter('posts_where_paged', array($this,'__filterPostParent'));
+             //add_filter( 'posts_where_paged', create_function( '$a', "return ' AND post_parent!=1' " ) );
 
-	list($post_mime_types, $avail_post_mime_types) = wp_edit_attachments_query();
+//$attachment->post_parent==$_REQUEST['post_id']
+            list($post_mime_types, $avail_post_mime_types) = wp_edit_attachments_query();
 
-        ?>
+            ?>
 
-        <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="library-form">
+            <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="library-form">
 
-            <div class="tablenav">
+                <div class="tablenav">
+
+                    <?php
+                    $page_links = paginate_links( array(
+                            'base' => add_query_arg( 'paged', '%#%' ),
+                            'format' => '',
+                            'prev_text' => __('&laquo;'),
+                            'next_text' => __('&raquo;'),
+                            'total' => ceil($wp_query->found_posts / $limit),
+                            'current' => $_GET['paged']
+                    ));
+
+                    if ( $page_links )
+                            echo "<div class='tablenav-pages'>$page_links</div>";
+                    ?>
+                </div>
+
 
                 <?php
-                $page_links = paginate_links( array(
-                        'base' => add_query_arg( 'paged', '%#%' ),
-                        'format' => '',
-                        'prev_text' => __('&laquo;'),
-                        'next_text' => __('&raquo;'),
-                        'total' => ceil($wp_query->found_posts / $limit),
-                        'current' => $_GET['paged']
-                ));
 
-                if ( $page_links )
-                        echo "<div class='tablenav-pages'>$page_links</div>";
-                ?>
+                $secure=array('action'=>"medias");
+                $this->secure($secure); ?>
 
-                <br class="clear" />
-            </div>
+                <div id="media-items" class="clearfix"><?php echo $this->_get_media_items(null, $errors,true); ?></div>
+            </form>
 
-
-            <?php
-
-            $secure=array('action'=>"medias");
-            $this->secure($secure); ?>
-
-            <div id="media-items" class="clearfix"><?php echo $this->_get_media_items(null, $errors,true); ?></div>
-            <div class="clear"></div>
-        </form>
-
+            <?php $this->_alt_close(); ?>
+        </div>
         <?php
-        $this->_alt_close();
     }
 
 
+    function popup_new_wp_upload($errors){
+        echo $this->messages(true);
+        ?>
+        <div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+        <div class="popup_content media-wp-upload">
+            <?php
+            global $redir_tab,$type, $tab;
+
+            $redir_tab = 'new_wp_upload';
+
+            media_upload_header();
+
+            global $type, $tab, $pagenow, $is_IE, $is_opera;
+
+            if ( function_exists('_device_can_upload') && ! _device_can_upload() ) {
+                    echo '<p>' . __('The web browser on your device cannot be used to upload files. You may be able to use the <a href="http://wordpress.org/extend/mobile/">native app for your device</a> instead.') . '</p>';
+                    return;
+            }
+
+            $upload_action_url = admin_url('async-upload.php');
+            $post_id = isset($_REQUEST['post_id']) ? intval($_REQUEST['post_id']) : 0;
+            $_type = isset($type) ? $type : '';
+            $_tab = isset($tab) ? $tab : '';
+
+            $upload_size_unit = $max_upload_size = wp_max_upload_size();
+            $sizes = array( 'KB', 'MB', 'GB' );
+
+            for ( $u = -1; $upload_size_unit > 1024 && $u < count( $sizes ) - 1; $u++ ) {
+                    $upload_size_unit /= 1024;
+            }
+
+            if ( $u < 0 ) {
+                    $upload_size_unit = 0;
+                    $u = 0;
+            } else {
+                    $upload_size_unit = (int) $upload_size_unit;
+            }
+            ?>
+            <script type="text/javascript">var post_id = <?php echo $post_id; ?>;</script>
+            <div id="media-upload-notice"><?php
+
+                    if (isset($errors['upload_notice']) )
+                            echo $errors['upload_notice'];
+
+            ?></div>
+            <div id="media-upload-error"><?php
+
+                    if (isset($errors['upload_error']) && is_wp_error($errors['upload_error']))
+                            echo $errors['upload_error']->get_error_message();
+
+            ?></div>
+            <?php
+            // Check quota for this blog if multisite
+            if ( is_multisite() && !is_upload_space_available() ) {
+                    echo '<p>' . sprintf( __( 'Sorry, you have filled your storage quota (%s MB).' ), get_space_allowed() ) . '</p>';
+                    return;
+            }
+
+            do_action('pre-upload-ui');
+
+            $post_params = array(
+                            "post_id" => $post_id,
+                            "_wpnonce" => wp_create_nonce('media-form'),
+                            "type" => $_type,
+                            "tab" => $_tab,
+                            "short" => "1",
+            );
+
+            $post_params = apply_filters( 'upload_post_params', $post_params ); // hook change! old name: 'swfupload_post_params'
+
+            $plupload_init = array(
+                    'runtimes' => 'html5,silverlight,flash,html4',
+                    'browse_button' => 'plupload-browse-button',
+                    'container' => 'plupload-upload-ui',
+                    'drop_element' => 'drag-drop-area',
+                    'file_data_name' => 'async-upload',
+                    'multiple_queues' => true,
+                    'max_file_size' => $max_upload_size . 'b',
+                    'url' => $upload_action_url,
+                    'flash_swf_url' => includes_url('js/plupload/plupload.flash.swf'),
+                    'silverlight_xap_url' => includes_url('js/plupload/plupload.silverlight.xap'),
+                    'filters' => array( array('title' => __( 'Allowed Files' ), 'extensions' => '*') ),
+                    'multipart' => true,
+                    'urlstream_upload' => true,
+                    'multipart_params' => $post_params
+            );
+
+            $plupload_init = apply_filters( 'plupload_init', $plupload_init );
+
+            ?>
+
+            <script type="text/javascript">
+            <?php
+            // Verify size is an int. If not return default value.
+            $large_size_h = absint( get_option('large_size_h') );
+            if( !$large_size_h )
+                    $large_size_h = 1024;
+            $large_size_w = absint( get_option('large_size_w') );
+            if( !$large_size_w )
+                    $large_size_w = 1024;
+            ?>
+            var resize_height = <?php echo $large_size_h; ?>, resize_width = <?php echo $large_size_w; ?>,
+            wpUploaderInit = <?php echo json_encode($plupload_init); ?>;
+            </script>
+
+            <div id="plupload-upload-ui" class="hide-if-no-js">
+            <?php do_action('pre-plupload-upload-ui'); // hook change, old name: 'pre-flash-upload-ui' ?>
+            <div id="drag-drop-area">
+                    <div class="drag-drop-inside">
+                    <p class="drag-drop-info"><?php _e('Drop files here'); ?></p>
+                    <p><?php _ex('or', 'Uploader: Drop files here - or - Select Files'); ?></p>
+                    <p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e('Select Files'); ?>" class="button" /></p>
+                    </div>
+            </div>
+            <?php do_action('post-plupload-upload-ui'); // hook change, old name: 'post-flash-upload-ui' ?>
+            </div>
+
+            <div id="html-upload-ui" class="hide-if-js">
+            <?php do_action('pre-html-upload-ui'); ?>
+                    <p id="async-upload-wrap">
+                            <label class="screen-reader-text" for="async-upload"><?php _e('Upload'); ?></label>
+                            <input type="file" name="async-upload" id="async-upload" />
+                            <?php submit_button( __( 'Upload' ), 'button', 'html-upload', false ); ?>
+                            <a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php _e('Cancel'); ?></a>
+                    </p>
+                    <div class="clear"></div>
+            <?php do_action('post-html-upload-ui'); ?>
+            </div>
+
+            <span class="max-upload-size"><?php printf( __( 'Maximum upload file size: %d%s.' ), esc_html($upload_size_unit), esc_html($sizes[$u]) ); ?></span>
+            <?php
+            if ( ($is_IE || $is_opera) && $max_upload_size > 100 * 1024 * 1024 ) { ?>
+                    <span class="big-file-warning"><?php _e('Your browser has some limitations uploading large files with the multi-file uploader. Please use the browser uploader for files over 100MB.'); ?></span>
+            <?php }
+
+            ?>
+            <div id="media-items" class="hide-if-no-js"></div>
+            <?php do_action('post-upload-ui'); ?>
+        </div>
+        <?php
+    }
 
     function popup_wp_upload($errors){
         global $redir_tab,$type, $tab;
@@ -2131,119 +2399,121 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 	}
         echo $this->messages(true);
         ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+        <div class="popup_content media-wp-upload">
+            <script type="text/javascript">
+            //<![CDATA[
+            var uploaderMode = 0;
+            jQuery(document).ready(function($){
+                    uploaderMode = getUserSetting('uploader');
+                    $('.upload-html-bypass a').click(function(){deleteUserSetting('uploader');uploaderMode=0;swfuploadPreLoad();return false;});
+                    $('.upload-flash-bypass a').click(function(){setUserSetting('uploader', '1');uploaderMode=1;swfuploadPreLoad();return false;});
+            });
+            //]]>
+            </script>
 
-        <script type="text/javascript">
-        //<![CDATA[
-        var uploaderMode = 0;
-        jQuery(document).ready(function($){
-                uploaderMode = getUserSetting('uploader');
-                $('.upload-html-bypass a').click(function(){deleteUserSetting('uploader');uploaderMode=0;swfuploadPreLoad();return false;});
-                $('.upload-flash-bypass a').click(function(){setUserSetting('uploader', '1');uploaderMode=1;swfuploadPreLoad();return false;});
-        });
-        //]]>
-        </script>
+            <div id="media-upload-notice">
+            <?php if (isset($errors['upload_notice']) ) { ?>
+                    <?php echo $errors['upload_notice']; ?>
+            <?php } ?>
+            </div>
+            <div id="media-upload-error">
+            <?php if (isset($errors['upload_error']) && is_wp_error($errors['upload_error'])) { ?>
+                    <?php echo $errors['upload_error']->get_error_message(); ?>
+            <?php } ?>
+            </div>
+            <?php
+            // Check quota for this blog if multisite
+            if ( is_multisite() && !is_upload_space_available() ) {
+                echo '<p>' . sprintf( __( 'Sorry, you have filled your storage quota (%s MB).' ), get_space_allowed() ) . '</p>';
+                return;
+            }
 
-        <div id="media-upload-notice">
-        <?php if (isset($errors['upload_notice']) ) { ?>
-                <?php echo $errors['upload_notice']; ?>
-        <?php } ?>
+            do_action('pre-upload-ui');
+
+            if ( $flash ) : ?>
+            <script type="text/javascript">
+            //<![CDATA[
+            var swfu;
+            SWFUpload.onload = function() {
+                    var settings = {
+                                    button_text: '<span class="button"><?php _e('Select Files'); ?><\/span>',
+                                    button_text_style: '.button { text-align: center; font-weight: bold; font-family:"Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif; font-size: 11px; text-shadow: 0 1px 0 #FFFFFF; color:#464646; }',
+                                    button_height: "23",
+                                    button_width: "132",
+                                    button_text_top_padding: 3,
+                                    button_image_url: '<?php echo includes_url('images/upload.png?ver=20100531'); ?>',
+                                    button_placeholder_id: "flash-browse-button",
+                                    upload_url : "<?php echo esc_attr( $flash_action_url ); ?>",
+                                    flash_url : "<?php echo WYSIJA_URL.'js/jquery/swfupload.swf'; ?>",
+                                    file_post_name: "async-upload",
+                                    file_types: "<?php echo apply_filters('upload_file_glob', '*.*'); ?>",
+                                    post_params : {
+                                            "post_id" : "<?php echo $post_id; ?>",
+                                            "auth_cookie" : "<?php echo (is_ssl() ? $_COOKIE[SECURE_AUTH_COOKIE] : $_COOKIE[AUTH_COOKIE]); ?>",
+                                            "logged_in_cookie": "<?php echo $_COOKIE[LOGGED_IN_COOKIE]; ?>",
+                                            "_wpnonce" : "<?php echo wp_create_nonce('media-form'); ?>",
+                                            "type" : "<?php echo $type; ?>",
+                                            "tab" : "<?php echo $tab; ?>",
+                                            "short" : "1"
+                                    },
+                                    file_size_limit : "<?php echo $max_upload_size; ?>b",
+                                    file_dialog_start_handler : fileDialogStart,
+                                    file_queued_handler : fileQueued,
+                                    upload_start_handler : uploadStart,
+                                    upload_progress_handler : uploadProgress,
+                                    upload_error_handler : uploadError,
+                                    upload_success_handler : WYSIJAuploadSuccess,
+                                    upload_complete_handler : WYSIJAuploadComplete,
+                                    file_queue_error_handler : fileQueueError,
+                                    file_dialog_complete_handler : fileDialogComplete,
+                                    swfupload_pre_load_handler: swfuploadPreLoad,
+                                    swfupload_load_failed_handler: swfuploadLoadFailed,
+                                    custom_settings : {
+                                            degraded_element_id : "html-upload-ui", // id of the element displayed when swfupload is unavailable
+                                            swfupload_element_id : "flash-upload-ui" // id of the element displayed when swfupload is available
+                                    },
+                                    debug: false
+                            };
+                            swfu = new SWFUpload(settings);
+            };
+            //]]>
+            </script>
+
+            <div id="flash-upload-ui" class="hide-if-no-js">
+            <?php do_action('pre-flash-upload-ui'); ?>
+
+                    <div>
+                    <?php _e( 'Choose files to upload',WYSIJA ); ?>
+                    <div id="flash-browse-button"></div>
+                    <span><input id="cancel-upload" disabled="disabled" onclick="cancelUpload()" type="button" value="<?php esc_attr_e('Cancel Upload',WYSIJA); ?>" class="button" /></span>
+                    </div>
+                    <p class="media-upload-size"><?php printf( __( 'Maximum upload file size: %d%s',WYSIJA ), $upload_size_unit, $sizes[$u] ); ?></p>
+            <?php do_action('post-flash-upload-ui'); ?>
+            </div>
+            <?php endif; // $flash ?>
+
+            <div id="html-upload-ui">
+            <?php do_action('pre-html-upload-ui'); ?>
+                    <p id="async-upload-wrap">
+                    <label class="screen-reader-text" for="async-upload"><?php _e('Upload',WYSIJA); ?></label>
+                    <input type="file" name="async-upload" id="async-upload" /> <input type="submit" class="button" name="html-upload" value="<?php esc_attr_e('Upload',WYSIJA); ?>" /> <a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php _e('Cancel',WYSIJA); ?></a>
+                    </p>
+                    <div class="clear"></div>
+                    <p class="media-upload-size"><?php printf( __( 'Maximum upload file size: %d%s',WYSIJA ), $upload_size_unit, $sizes[$u] ); ?></p>
+                    <?php if ( is_lighttpd_before_150() ): ?>
+                    <p><?php _e('If you want to use all capabilities of the uploader, like uploading multiple files at once, please upgrade to lighttpd 1.5.'); ?></p>
+                    <?php endif;?>
+            <?php do_action('post-html-upload-ui', $flash); ?>
+            </div>
+            <?php do_action('post-upload-ui'); ?>
+            <div id="media-items" class="clearfix"></div>
         </div>
-        <div id="media-upload-error">
-        <?php if (isset($errors['upload_error']) && is_wp_error($errors['upload_error'])) { ?>
-                <?php echo $errors['upload_error']->get_error_message(); ?>
-        <?php } ?>
-        </div>
-        <?php
-        // Check quota for this blog if multisite
-        if ( is_multisite() && !is_upload_space_available() ) {
-            echo '<p>' . sprintf( __( 'Sorry, you have filled your storage quota (%s MB).' ), get_space_allowed() ) . '</p>';
-            return;
-        }
-
-        do_action('pre-upload-ui');
-
-        if ( $flash ) : ?>
-        <script type="text/javascript">
-        //<![CDATA[
-        var swfu;
-        SWFUpload.onload = function() {
-                var settings = {
-                                button_text: '<span class="button"><?php _e('Select Files'); ?><\/span>',
-                                button_text_style: '.button { text-align: center; font-weight: bold; font-family:"Lucida Grande",Verdana,Arial,"Bitstream Vera Sans",sans-serif; font-size: 11px; text-shadow: 0 1px 0 #FFFFFF; color:#464646; }',
-                                button_height: "23",
-                                button_width: "132",
-                                button_text_top_padding: 3,
-                                button_image_url: '<?php echo includes_url('images/upload.png?ver=20100531'); ?>',
-                                button_placeholder_id: "flash-browse-button",
-                                upload_url : "<?php echo esc_attr( $flash_action_url ); ?>",
-                                flash_url : "<?php echo WYSIJA_URL.'js/jquery/swfupload.swf'; ?>",
-                                file_post_name: "async-upload",
-                                file_types: "<?php echo apply_filters('upload_file_glob', '*.*'); ?>",
-                                post_params : {
-                                        "post_id" : "<?php echo $post_id; ?>",
-                                        "auth_cookie" : "<?php echo (is_ssl() ? $_COOKIE[SECURE_AUTH_COOKIE] : $_COOKIE[AUTH_COOKIE]); ?>",
-                                        "logged_in_cookie": "<?php echo $_COOKIE[LOGGED_IN_COOKIE]; ?>",
-                                        "_wpnonce" : "<?php echo wp_create_nonce('media-form'); ?>",
-                                        "type" : "<?php echo $type; ?>",
-                                        "tab" : "<?php echo $tab; ?>",
-                                        "short" : "1"
-                                },
-                                file_size_limit : "<?php echo $max_upload_size; ?>b",
-                                file_dialog_start_handler : fileDialogStart,
-                                file_queued_handler : fileQueued,
-                                upload_start_handler : uploadStart,
-                                upload_progress_handler : uploadProgress,
-                                upload_error_handler : uploadError,
-                                upload_success_handler : WYSIJAuploadSuccess,
-                                upload_complete_handler : WYSIJAuploadComplete,
-                                file_queue_error_handler : fileQueueError,
-                                file_dialog_complete_handler : fileDialogComplete,
-                                swfupload_pre_load_handler: swfuploadPreLoad,
-                                swfupload_load_failed_handler: swfuploadLoadFailed,
-                                custom_settings : {
-                                        degraded_element_id : "html-upload-ui", // id of the element displayed when swfupload is unavailable
-                                        swfupload_element_id : "flash-upload-ui" // id of the element displayed when swfupload is available
-                                },
-                                debug: false
-                        };
-                        swfu = new SWFUpload(settings);
-        };
-        //]]>
-        </script>
-
-        <div id="flash-upload-ui" class="hide-if-no-js">
-        <?php do_action('pre-flash-upload-ui'); ?>
-
-                <div>
-                <?php _e( 'Choose files to upload',WYSIJA ); ?>
-                <div id="flash-browse-button"></div>
-                <span><input id="cancel-upload" disabled="disabled" onclick="cancelUpload()" type="button" value="<?php esc_attr_e('Cancel Upload',WYSIJA); ?>" class="button" /></span>
-                </div>
-                <p class="media-upload-size"><?php printf( __( 'Maximum upload file size: %d%s',WYSIJA ), $upload_size_unit, $sizes[$u] ); ?></p>
-        <?php do_action('post-flash-upload-ui'); ?>
-        </div>
-        <?php endif; // $flash ?>
-
-        <div id="html-upload-ui">
-        <?php do_action('pre-html-upload-ui'); ?>
-                <p id="async-upload-wrap">
-                <label class="screen-reader-text" for="async-upload"><?php _e('Upload',WYSIJA); ?></label>
-                <input type="file" name="async-upload" id="async-upload" /> <input type="submit" class="button" name="html-upload" value="<?php esc_attr_e('Upload',WYSIJA); ?>" /> <a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php _e('Cancel',WYSIJA); ?></a>
-                </p>
-                <div class="clear"></div>
-                <p class="media-upload-size"><?php printf( __( 'Maximum upload file size: %d%s',WYSIJA ), $upload_size_unit, $sizes[$u] ); ?></p>
-                <?php if ( is_lighttpd_before_150() ): ?>
-                <p><?php _e('If you want to use all capabilities of the uploader, like uploading multiple files at once, please upgrade to lighttpd 1.5.'); ?></p>
-                <?php endif;?>
-        <?php do_action('post-html-upload-ui', $flash); ?>
-        </div>
-        <?php do_action('post-upload-ui'); ?>
-        <div id="media-items" class="clearfix"></div>
         <?php
     }
 
     function _get_media_items( $post_id, $errors, $wpimage=false ) {
             $attachments = array();
+
             if ( $post_id ) {
                     $post = get_post($post_id);
                     if ( $post && $post->post_type == 'attachment' )
@@ -2251,18 +2521,29 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     else
                             $attachments = get_children( array( 'post_parent' => $post_id, 'post_type' => 'attachment', 'orderby' => 'ID', 'order' => 'DESC') );
             } else {
-		if ( is_array($GLOBALS['wp_the_query']->posts) )
-                            foreach ( $GLOBALS['wp_the_query']->posts as $attachment )
-                                    $attachments[$attachment->ID] = $attachment;
+		if ( is_array($GLOBALS['wp_the_query']->posts) ){
+                    foreach ( $GLOBALS['wp_the_query']->posts as $attachment ){
+                         $attachments[$attachment->ID] = $attachment;
+                    }
+                }
+
+
             }
 
             $selectedImages=$this->_getSelectedImages();
 
             $output = '';
             foreach ( (array) $attachments as $id => $attachment ) {
-                if(!$post_id && $attachment->post_parent==$_REQUEST['post_id'])    continue;
-                if ( $attachment->post_status == 'trash' )
-                            continue;
+
+                 if(!$post_id && $attachment->post_parent==$_REQUEST['post_id']){
+
+                    continue;
+                }
+                if ( $attachment->post_status == 'trash' ){
+
+                    continue;
+                }
+
                     if ( ( $id = intval( $id ) ) && $thumb_details = wp_get_attachment_image_src( $id, 'thumbnail', true ) )
                             $thumb_url = $thumb_details[0];
                     else
@@ -2293,6 +2574,4 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         if(!isset($email['params']['quickselection']) or empty($email['params']['quickselection'])) return array();
         return $email['params']['quickselection'];
     }
-
-
 }
