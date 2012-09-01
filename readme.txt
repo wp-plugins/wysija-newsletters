@@ -1,5 +1,5 @@
 === Wysija Newsletters ===
-Contributors: wysija, benheu
+Contributors: wysija, benheu, jon1op
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
