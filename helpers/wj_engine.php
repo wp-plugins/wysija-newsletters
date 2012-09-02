@@ -667,7 +667,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     if(!isset($params['nopost_message']) || strlen($params['nopost_message']) === 0) {
                         $blockHTML = '';
                     } else {
-                        $data = array('text' => array('value' => $params['nopost_message']));
+                        $data = array('text' => array('value' => $params['nopost_message']), 'block_width' => $block['block_width']);
                         $blockHTML = $wjParser->render($data, 'templates/email_v2/block_content.html');
                     }
                 } else {
@@ -716,12 +716,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                         }
                         $postIterator *= -1;
 
-                        $data = array_merge($posts[$key], array('styles' => $styles));
+                        $data = array_merge($posts[$key], array('styles' => $styles, 'block_width' => $block['block_width']));
 
                         $blockHTML .= $this->applyInlineStyles('body', $wjParser->render($data, 'templates/email_v2/block_content.html'), array('background_color' => $posts[$key]['background_color']));
 
                         if($divider !== null and $key !== ($postCount - 1)) {
-                            $blockHTML .= $wjParser->render($divider, 'templates/email_v2/block_divider.html');
+                            $blockHTML .= $wjParser->render(array_merge($divider, array('block_width' => $block['block_width'])), 'templates/email_v2/block_divider.html');
                         }
                     }
                 }

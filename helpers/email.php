@@ -79,7 +79,7 @@ class WYSIJA_help_email extends WYSIJA_object{
     }
     
     function getVIB($dataEmail){
-        if(isset($dataEmail['params']['vib_id'])) return WYSIJA::get_permalink($dataEmail['params']['vib_id'],false);
+        if(false && isset($dataEmail['params']['vib_id'])) return WYSIJA::get_permalink($dataEmail['params']['vib_id'],false);
         else{
            $paramsurl=array(
                 'wysija-page'=>1,

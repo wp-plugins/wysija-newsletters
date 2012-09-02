@@ -22,7 +22,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
     const _PAIR = 'IS_PAIR';
     const _FIRST = 'IS_FIRST';
     const _LAST = 'IS_LAST';
-	const _VALUE = '_VALUE';
+    const _VALUE = '_VALUE';
     const _FIRST_COL = 'IS_FIRST_COL';
     const _LAST_COL = 'IS_LAST_COL';
     const _FIRST_ROW = 'IS_FIRST_ROW';
@@ -457,6 +457,8 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                 case 'format_text':
 
                     $value = trim($value);
+
+
 
                     $value = str_replace('<p></p>', '<br />', $value);
                 break;

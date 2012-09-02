@@ -3,7 +3,7 @@ Contributors: wysija, benheu, jon1op
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.1
+Stable tag: 2.1.1
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -145,6 +145,10 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.1.1 - 2012-09-02 =
+
+* fixed update 2.1 error : Duplicate column name "is_public" may have cause some big slow down on some servers and some autopost to facebook(deepest apologies).
+* fixed Outlook issue where text blocks would not have the proper width
 
 = 2.1 - 2012-08-31 =
 
@@ -166,6 +170,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * improved subscription widget, added security if there is no list selected.
 * improved Auto newsletter edition, warning added before pausing it.
 * improved popups for the visual editor (themes, images, add link,...)
+* updated TinyMCE to latest version, the editor now reflects the newsletter styles
 * compatibility with [Magic Action Box](http://wordpress.org/extend/plugins/magic-action-box/).
 * fixed links style in headings.
 * fixed no default value in optin form when JS disabled.
@@ -425,4 +430,4 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * minor bugfixes
 
 = 0.9 - 2011/12/23 =
-* Hello World!
+* Hello World.
