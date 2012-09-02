@@ -3,7 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
-
+        
         $this->updates=array('1.1','2.0','2.1');
     }
 
@@ -12,7 +12,7 @@ class WYSIJA_help_update extends WYSIJA_object{
 
         switch($version){
             case '1.1':
-
+                
                 $modelconfig=&WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'namekey';")){
                     $querys[]='ALTER TABLE `[wysija]list` ADD `namekey` VARCHAR( 255 ) NULL;';
@@ -33,7 +33,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                 return true;
                 break;
             case '2.0':
-
+                
                 $modelconfig=&WYSIJA::get("config","model");
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]email` LIKE 'modified_at';")){
                     $querys[]="ALTER TABLE `[wysija]email` ADD `modified_at` INT UNSIGNED NOT NULL DEFAULT '0';";
@@ -52,11 +52,11 @@ class WYSIJA_help_update extends WYSIJA_object{
                 $modelEmails=&WYSIJA::get('email','model');
                 $modelEmails->reset();
                 $emailsLoaded=$modelEmails->get(array('subject','email_id'),array('status'=>2,'type'=>1));
-
-
+                
+                
                 $wptools =& WYSIJA::get('wp_tools', 'helper');
                 $wptools->set_default_rolecaps();
-
+                 
 
                 $modelconfig=&WYSIJA::get('config','model');
                 $minimumroles=array('role_campaign'=>'wysija_newsletters','role_subscribers'=>'wysija_subscribers');
@@ -108,6 +108,10 @@ class WYSIJA_help_update extends WYSIJA_object{
                     $this->error(implode($errors,"\n"));
                     return false;
                 }
+                if($errors){
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
             }
 
 
@@ -118,7 +122,7 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
         return false;
     }
-
+    
     function checkForNewVersion($file='wysija-newsletters/index.php'){
         $current = get_site_transient( 'update_plugins' );
 	if ( !isset( $current->response[ $file ] ) )
@@ -151,7 +155,7 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
     }
     function check(){
-
+        
         $config=&WYSIJA::get('config','model');
         if(!$config->getValue('wysija_db_version') || version_compare($config->getValue('wysija_db_version'),WYSIJA::get_version()) < 0){
             $this->update(WYSIJA::get_version());
@@ -172,7 +176,7 @@ class WYSIJA_help_update extends WYSIJA_object{
             }
         }
     }
-
+    
     function runUpdateQueries($queries){
         $failed=array();
 
