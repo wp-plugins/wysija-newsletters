@@ -62,9 +62,13 @@ class WYSIJA_help_licence extends WYSIJA_help{
 
         $helperToolbox=&WYSIJA::get("toolbox","helper");
         $dkim_domain=$helperToolbox->_make_domain_name(admin_url('admin.php'));
-        while ($err = openssl_error_string());
-        $res1=openssl_pkey_new(array('private_key_bits' => 512));
-        if(function_exists('openssl_pkey_new') && $res1 && !openssl_error_string()  && function_exists('openssl_pkey_get_details')){
+        $res1=$errorssl=false;
+        if(function_exists('openssl_pkey_new')){
+            while ($err = openssl_error_string());
+            $res1=openssl_pkey_new(array('private_key_bits' => 512));
+            $errorssl=openssl_error_string();
+        }
+        if(function_exists('openssl_pkey_new') && $res1 && !$errorssl  && function_exists('openssl_pkey_get_details')){
             $rsaKey = array('private' => '', 'public' => '', 'error' => '');
             $res = openssl_pkey_new(array('private_key_bits' => 512));
             if($res && !openssl_error_string()){

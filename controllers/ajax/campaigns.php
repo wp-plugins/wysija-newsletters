@@ -365,12 +365,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
         // get back email data as it will be updated during the rendering (articles ids + articles count)
         $emailChild = $wjEngine->getEmailData();
+        $countvar=$firstsubject=$totalchild='';
+        if(isset($emailChild['params']['autonl']['articles']['count'])) $countvar=(int)$emailChild['params']['autonl']['articles']['count'];
+        if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstsubject=(int)$emailChild['params']['autonl']['articles']['first_subject'];
+        if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalchild=(int)$emailChild['params']['autonl']['articles']['total_child'];
 
         $emailObject->subject = str_replace(
                 array('[total]','[number]','[post_title]'),
-                array((int)$emailChild['params']['autonl']['articles']['count'],
-                    (int)$paramsVal['autonl']['total_child'],
-                    $emailChild['params']['autonl']['articles']['first_subject']),
+                array($countvar,
+                    $firstsubject,
+                    $totalchild),
                 $emailChild['subject']);
 
         $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);

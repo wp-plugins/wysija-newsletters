@@ -293,7 +293,11 @@ class WYSIJA extends WYSIJA_object{
                 case "get_all":
                     return $extensionloaded;
             }
-            //if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
+            /*
+             * Who commented that line ? I don't remember doing it.(Ben)
+             * Leave it be please
+             */
+            if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
             $extensionloaded[$extendedplugin] = $transstring;
             $config=&WYSIJA::get('config','model');
 
@@ -1373,10 +1377,10 @@ class WYSIJA_NL_Widget extends WP_Widget {
             $onloadattr='onload="jQuery.WYSIJA_iframeloadhandler(this);"';
         }
 
-        if(WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php')){
+        /*if(WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php')){
             global $cache_page_secret;
             $paramsurl['donotcachepage']=$cache_page_secret;
-        }
+        }*/
 
         //the final tru allow for shorter url
         $fullurl=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$paramsurl,true);
@@ -1432,12 +1436,12 @@ class WYSIJA_NL_Widget extends WP_Widget {
         /*if a cache plugin is active let's load the plugin in an iframe*/
 
         /*if(!is_admin() && !$this->iFrame && (WYSIJA::is_plugin_active('wp-super-cache/wp-cache.php') || WYSIJA::is_plugin_active('w3-total-cache/w3-total-cache.php'))){*/
-        if(!is_admin() && !$this->iFrame && WYSIJA::is_caching_active()){
+        /*if(!is_admin() && !$this->iFrame && WYSIJA::is_caching_active()){
             $view->addScripts();
             $glob.=$title.$this->genIframe($instance);
-        }else{
+        }else{*/
             $glob.=$view->display($title,$instance,false,$this->iFrame);
-        }
+        //}
         $glob.= $after_widget;
 
         if($this->iFrame){

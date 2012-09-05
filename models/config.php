@@ -11,6 +11,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'sharedata',
         'manage_subscriptions',
         'viewinbrowser',
+        'dkim_active',
     );
     var $defaults=array(
         'limit_listing'=>10,
@@ -74,7 +75,12 @@ class WYSIJA_model_config extends WYSIJA_object{
 
 
     }
-
+    /*
+     * to make sure the translation is not screwed by an empty space or so
+     */
+    function cleanTrans($string){
+        return str_replace(array('[ link]','[link ]','[ link ]','[/ link]','[/link ]','[/ link ]'), array('[link]','[link]','[link]','[/link]','[/link]','[/link]'), trim($string));
+    }
     function add_translated_default(){
         /* definition of extra translated defaults fields */
         $this->defaults['confirm_email_title']=sprintf(__('Confirm your subscription to %1$s',WYSIJA),get_option('blogname'));
@@ -85,7 +91,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         $this->defaults['unsubscribed_subtitle']=__("Great, you'll never hear from us again!",WYSIJA);
         $this->defaults['unsubscribe_linkname']=__('Unsubscribe',WYSIJA);
         $this->defaults['manage_subscriptions_linkname']=__('Edit your subscription',WYSIJA);
-        $this->defaults['viewinbrowser_linkname']=__('Display problems? [link]View this newsletter in your browser.[/link]',WYSIJA);
+        $this->defaults['viewinbrowser_linkname']=$this->cleanTrans(__('Display problems? [link]View this newsletter in your browser.[/link]',WYSIJA));
 
 
         /**

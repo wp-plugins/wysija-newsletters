@@ -63,16 +63,6 @@ function wysija_queries(){
 }
 
 if(defined('WP_ADMIN')){
-    if(defined('WYSIJA_DBG_ALL')){
-        if(version_compare(phpversion(), '5.4')>= 0){
-            error_reporting(E_ALL ^ E_STRICT);
-
-        }else{
-            error_reporting(E_ALL);
-        }
-        ini_set('display_errors', '1');
-    }
-
     add_action('admin_footer','wysija_queries');
 }else{
    add_action('get_footer','wysija_queries');

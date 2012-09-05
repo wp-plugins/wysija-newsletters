@@ -1341,15 +1341,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 WYSIJA_AJAX_POST();
             }
 
-            var konami = new Konami();
-            konami.code = function() {
-                Wysija.flyToTheMoon();
-            }
-            konami.load();
-
             // prototype on load
             document.observe('dom:loaded', function() {
                 setupStylesForm();
+                
+                var konami = new Konami();
+                konami.code = function() {
+                    Wysija.flyToTheMoon();
+                }
+                konami.load();
             });
 
             // jquery on load
@@ -2336,9 +2336,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             <?php do_action('pre-plupload-upload-ui'); // hook change, old name: 'pre-flash-upload-ui' ?>
             <div id="drag-drop-area">
                     <div class="drag-drop-inside">
-                    <p class="drag-drop-info"><?php _e('Drop files here'); ?></p>
-                    <p><?php _ex('or', 'Uploader: Drop files here - or - Select Files'); ?></p>
-                    <p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e('Select Files'); ?>" class="button" /></p>
+                        <p class="drag-drop-info"><?php _e('Drop files here'); ?></p>
+                        <p><?php _ex('or', 'Uploader: Drop files here - or - Select Files'); ?></p>
+                        <p class="drag-drop-buttons"><input id="plupload-browse-button" type="button" value="<?php esc_attr_e('Select Files'); ?>" class="button" /></p>
                     </div>
             </div>
             <?php do_action('post-plupload-upload-ui'); // hook change, old name: 'post-flash-upload-ui' ?>
@@ -2346,20 +2346,19 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
             <div id="html-upload-ui" class="hide-if-js">
             <?php do_action('pre-html-upload-ui'); ?>
-                    <p id="async-upload-wrap">
+                    <p id="async-upload-wrap" class="clearfix">
                             <label class="screen-reader-text" for="async-upload"><?php _e('Upload'); ?></label>
                             <input type="file" name="async-upload" id="async-upload" />
                             <?php submit_button( __( 'Upload' ), 'button', 'html-upload', false ); ?>
                             <a href="#" onclick="try{top.tb_remove();}catch(e){}; return false;"><?php _e('Cancel'); ?></a>
                     </p>
-                    <div class="clear"></div>
             <?php do_action('post-html-upload-ui'); ?>
             </div>
 
-            <span class="max-upload-size"><?php printf( __( 'Maximum upload file size: %d%s.' ), esc_html($upload_size_unit), esc_html($sizes[$u]) ); ?></span>
+            <p class="max-upload-size"><?php printf( __( 'Maximum upload file size: %d%s.' ), esc_html($upload_size_unit), esc_html($sizes[$u]) ); ?></p>
             <?php
             if ( ($is_IE || $is_opera) && $max_upload_size > 100 * 1024 * 1024 ) { ?>
-                    <span class="big-file-warning"><?php _e('Your browser has some limitations uploading large files with the multi-file uploader. Please use the browser uploader for files over 100MB.'); ?></span>
+                    <p class="big-file-warning"><?php _e('Your browser has some limitations uploading large files with the multi-file uploader. Please use the browser uploader for files over 100MB.'); ?></p>
             <?php }
 
             ?>

@@ -3,7 +3,7 @@ Contributors: wysija, benheu, jon1op
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -145,9 +145,26 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.1.2 - 2012-09-05 =
+
+* major speed improvement and cache plugin compatibility
+* added utf-8 encoding in iframe loaded subscription form.
+* added security check for translated links (dutch translation issue with view in browser link)
+* removed _nonce non sense in the visitors subscription forms.
+* fixed loading issue in subscription form
+* fixed styling issue in subscription form
+* fixed accents issue in subscription form
+* fixed DKIM activation settings not being saved
+* fixed non translated unsubscribe and view in browser links
+* fixed warning showing up on some servers configuration when sending a preview of the newsletter
+* fixed popups in IE8 and improved overall display
+* fixed openssl_error_string function breaking our settings screen on some configurations.
+* fixed error with dkim on server without openssl functions
+* fixed bounce error with the rule unsubscribe user
+
 = 2.1.1 - 2012-09-02 =
 
-* fixed update 2.1 error : Duplicate column name "is_public" may have cause some big slow down on some servers and some autopost to facebook(deepest apologies).
+* fixed update 2.1 error : Duplicate column name "is_public" may have caused some big slow down on some servers and some auto post to facebook (deepest apologies).
 * fixed Outlook issue where text blocks would not have the proper width
 
 = 2.1 - 2012-08-31 =

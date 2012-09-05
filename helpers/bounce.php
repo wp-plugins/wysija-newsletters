@@ -339,8 +339,15 @@ class WYSIJA_help_bounce extends WYSIJA_help{
     }
     if(!empty($this->unsubscribedUsers)){
 
-        $modeUH=&WYSIJA::get("user","helper");
-        $modeUH->unsubscribe($this->unsubscribedUsers,true);
+        $modeUH=&WYSIJA::get('user','helper');
+        if(array($this->unsubscribedUsers)){
+            foreach($this->unsubscribedUsers as $unsub_user_id){
+                $modeUH->unsubscribe($unsub_user_id,true);
+            }
+        }else{
+            $modeUH->unsubscribe($this->unsubscribedUsers,true);
+        }
+
         $this->unsubscribedUsers = array();
     }
     if(!empty($this->addtolistUsers)){
@@ -397,7 +404,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
                 }
             }
         if(empty($this->_message->subemail)) $this->_message->subemail = $this->_message->user_id;
-        
+
 
           if(isset($oneRule['action_user_stats'])){
 
@@ -418,14 +425,14 @@ class WYSIJA_help_bounce extends WYSIJA_help{
 
 
 
-        
+
         if(isset($oneRule['action_user'])){
             switch($oneRule['action_user']){
                 case 'delete'://1 -Delete user
                     $message .= ' | user '.$this->_message->subemail.' deleted';
                     $this->deletedUsers[] = intval($this->_message->user_id);
                     break;
-                case 'unsub'://2-Unsubscribe user 
+                case 'unsub'://2-Unsubscribe user
 
                     $message .= ' | user '.$this->_message->subemail.' unsubscribed';
                     $this->unsubscribedUsers[]=$this->_message->user_id;
@@ -441,7 +448,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
                     }
             }
         }
-        
+
 
         if(!empty($oneRule['action_user_min']) && $oneRule['action_user_min']>1){
 
@@ -453,7 +460,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
             return $message;
           }
         }
-       
+
 
 
         
@@ -475,7 +482,7 @@ class WYSIJA_help_bounce extends WYSIJA_help{
             $this->historyClass->insert($this->_message->user_id,'bounce',$data,@$this->_message->email_id);
             $message .= ' | message saved (user '.$this->_message->user_id.')';
         }
-		
+
         if(isset($oneRule['forward'])){
             if(isset($oneRule['action_message_forwardto']) && !empty($oneRule['action_message_forwardto']) && trim($oneRule['action_message_forwardto']) !=trim($this->config->getValue('bounce_email'))){
 

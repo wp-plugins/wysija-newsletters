@@ -86,27 +86,27 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
     }
     function define_translated_strings(){
-        $config=&WYSIJA::get("config","model");
+        $config=&WYSIJA::get('config','model');
         $linkcontent=__("It doesn't always work the way we want it to, doesn't it? We have a [link]dedicated support website[/link] with documentation and a ticketing system.",WYSIJA);
-        $finds=array("[link]",'[/link]');
+        $finds=array('[link]','[/link]');
         $replace=array('<a target="_blank" href="http://support.wysija.com" title="support.wysija.com">','</a>');
-        $truelinkhelp="<p>".str_replace($finds,$replace,$linkcontent)."</p>";
+        $truelinkhelp='<p>'.str_replace($finds,$replace,$linkcontent).'</p>';
         
-        $extra=__("[link]Request a feature for Wysija[/link] in User Voice.",WYSIJA);
-        $finds=array("[link]",'[/link]');
+        $extra=__('[link]Request a feature for Wysija[/link] in User Voice.',WYSIJA);
+        $finds=array('[link]','[/link]');
         $replace=array('<a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" title="Wysija User Voice">','</a>');
-        $truelinkhelp.="<p>".str_replace($finds,$replace,$extra)."</p>";
+        $truelinkhelp.='<p>'.str_replace($finds,$replace,$extra).'</p>';
 
-        $truelinkhelp.="<p>".__("Wysija Version: ",WYSIJA)."<strong>".WYSIJA::get_version()."</strong></p>";
+        $truelinkhelp.='<p>'.__('Wysija Version: ',WYSIJA).'<strong>'.WYSIJA::get_version().'</strong></p>';
         $this->menus=array(
-            "campaigns"=>array("title"=>__("Wysija",WYSIJA)),
-            "subscribers"=>array("title"=>__("Subscribers",WYSIJA)),
-            "config"=>array("title"=>__("Settings",WYSIJA)),
+            'campaigns'=>array('title'=>'Wysija'),
+            'subscribers'=>array('title'=>__('Subscribers',WYSIJA)),
+            'config'=>array('title'=>__('Settings',WYSIJA)),
 
         );
         $this->menuHelp=$truelinkhelp;
-        if($config->getValue("queue_sends_slow")){
-            $msg=$config->getValue("ignore_msgs");
+        if($config->getValue('queue_sends_slow')){
+            $msg=$config->getValue('ignore_msgs');
             if(!isset($msg['queuesendsslow'])){
                 $this->notice(
                         __('Tired of waiting more than 48h to send your emails?',WYSIJA).' '. str_replace(array('[link]','[/link]'), array('<a href="http://support.wysija.com/knowledgebase/how-fast-can-i-send-emails-optimal-sending-configurations-explained/?utm_source=wpadmin&utm_campaign=slowqueue" target="_blank">','</a>'), __('[link]Find out[/link] how you can improve this.',WYSIJA)).
@@ -115,7 +115,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
 
         if(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
-            $msg=$config->getValue("ignore_msgs");
+            $msg=$config->getValue('ignore_msgs');
             if(!isset($msg['crondisabled'])){
                 $this->notice(
                         __('The CRON system is disabled on your WordPress site. Wysija will not work correctly while it stays disabled.',WYSIJA).
@@ -124,17 +124,17 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         }
         
-        $importPossible=$config->getValue("pluginsImportableEgg");
+        $importPossible=$config->getValue('pluginsImportableEgg');
 
-        if(!$config->getValue("pluginsImportedEgg") && $importPossible){
+        if(!$config->getValue('pluginsImportedEgg') && $importPossible){
             foreach($importPossible as $tableName =>$pluginInfos){
-                if((isset($_REQUEST['action']) && $_REQUEST['action']!="importplugins") || !isset($_REQUEST['action'])){
-                    $msg=$config->getValue("ignore_msgs");
+                if((isset($_REQUEST['action']) && $_REQUEST['action']!='importplugins') || !isset($_REQUEST['action'])){
+                    $msg=$config->getValue('ignore_msgs');
                     if(!isset($msg['importplugins-'.$tableName])&& (int)$pluginInfos['total']>0){
                         if(!isset($pluginInfos['total_lists']) || !$pluginInfos['total_lists'] || (int)$pluginInfos['total_lists']<1) $pluginInfos['total_lists']=1;
                         $sprintfedmsg=sprintf(__('Would you like to import the %1$s lists with a total of %2$s subscribers from the plugin %3$s. [link]Yes[/link]. [link_ignore]I\'ll import them later.[/link_ignore]',WYSIJA),$pluginInfos['total_lists'],$pluginInfos['total'],'<strong>"'.$pluginInfos['name'].'"</strong>');
                         $this->notice(
-                            str_replace(array("[link_ignore]","[link]","[/link]","[/link_ignore]"),
+                            str_replace(array('[link_ignore]','[link]','[/link]','[/link_ignore]'),
                                     array('<a class="linkignore importplugins-'.$tableName.'" href="javascript:;">','<a href="admin.php?page=wysija_subscribers&action=importplugins">','</a>','</a>'),
                                     $sprintfedmsg
                                     ),true,true);
@@ -144,14 +144,14 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
         if(WYSIJA_ITF){
             global $wysija_installing;
-            if( !$config->getValue("sending_emails_ok")){
-                $msg=$config->getValue("ignore_msgs");
+            if( !$config->getValue('sending_emails_ok')){
+                $msg=$config->getValue('ignore_msgs');
                 $urlsendingmethod='admin.php?page=wysija_config#tab-sendingmethod';
                 if($_REQUEST['page'] === 'wysija_config') {
-                    $urlsendingmethod="#tab-sendingmethod";
+                    $urlsendingmethod='#tab-sendingmethod';
                 }
                 if(!isset($msg['setupmsg']) && $wysija_installing!==true){
-                    $this->notice(str_replace(array("[link_widget]","[link_ignore]","[link]","[/link]","[/link_widget]","[/link_ignore]"),
+                    $this->notice(str_replace(array('[link_widget]','[link_ignore]','[link]','[/link]','[/link_widget]','[/link_ignore]'),
                         array('<a href="widgets.php">','<a class="linkignore setupmsg" href="javascript:;">','<a id="linksendingmethod" href="'.$urlsendingmethod.'">','</a>','</a>','</a>'),
                         __('Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] and confirm your site can send emails in the [link]Settings[/link]. [link_ignore]Ignore[/link_ignore].',WYSIJA)),true,true);
                 }
@@ -161,7 +161,7 @@ class WYSIJA_help_back extends WYSIJA_help{
     }
 
     function add_menus(){
-        $modelC=&WYSIJA::get("config","model");
+        $modelC=&WYSIJA::get('config','model');
         $count=0;
         
         global $menu,$submenu;

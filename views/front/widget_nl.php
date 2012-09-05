@@ -11,11 +11,13 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head profile="http://gmpg.org/xfn/11">
 <meta name="robots" content="NOINDEX,NOFOLLOW">
+<meta charset="utf-8" />
 <title>'.__('Wysija Subscription',WYSIJA).'</title>';
         global $wp_scripts,$wp_styles;
 
         ob_start();
-        if(isset($_REQUEST['external_site'])) wp_head();
+        //if(isset($_REQUEST['external_site'])) wp_head();
+        wp_print_scripts('jquery');
         wp_print_styles('validate-engine-css');
         //add custom css for external site iframe
         if(isset($_REQUEST['external_site']) && file_exists(WYSIJA_UPLOADS_DIR.'css'.DS.'iframe.css')){
@@ -117,10 +119,10 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 '.$listfieldshidden.'
                 <input type="hidden" name="message_success" value="'.esc_attr($params["success"]).'" />
                 <input type="hidden" name="controller" value="subscribers" />';
-                $data.=$this->secure(array('action'=>'save','controller'=>'subscribers'),false,false);
+                //$data.=$this->secure(array('action'=>'save','controller'=>'subscribers'),false,false);
 
                 $data.='<input type="hidden" value="1" name="wysija-page" />';
-                $data.='<input type="hidden" value="'.wp_create_nonce("wysija_ajax").'" id="wysijax" />';
+                //$data.='<input type="hidden" value="'.wp_create_nonce("wysija_ajax").'" id="wysijax" />';
             }
 
 
