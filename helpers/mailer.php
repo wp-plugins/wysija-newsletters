@@ -72,7 +72,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->Encoding = '8bit';
 
             $this->WordWrap = 150;
-            if($this->config->getValue('premium_key') && $this->config->getValue('dkim_pubk') ){
+            if($this->config->getValue('premium_key') && $this->config->getValue('dkim_active') && $this->config->getValue('dkim_pubk') ){
                $this->DKIM_domain = $this->config->getValue('dkim_domain');
                $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
            }

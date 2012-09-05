@@ -4,7 +4,7 @@ include(dirname(dirname(__FILE__)).DS."front.php");
 class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
     var $model="user";
     var $view="";
-    
+
     function WYSIJA_control_back_subscribers(){
         parent::WYSIJA_control_front();
         $data=array();
@@ -16,12 +16,12 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
         }else{
             $this->messages['insert'][true]=__("User has been inserted.",WYSIJA);
         }
-        
+
         $this->messages['insert'][false]=__("User has not been inserted.",WYSIJA);
         $this->messages['update'][true]=__("User has been updated.",WYSIJA);
         $this->messages['update'][false]=__("User has not been updated.",WYSIJA);
     }
-    
+
     function save(){
         $datarequested=array();
         $i=0;
@@ -31,12 +31,12 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
                 $i++;
             }else   $datarequested[$vals['name']]=$vals['value'];
         }
-        
+
         $_REQUEST['_wpnonce']=$datarequested['_wpnonce'];
-        
-        
+
+
         $data=$this->convertUserData($datarequested);
-        
+
         $helperUser=&WYSIJA::get('user','helper');
         if(!$helperUser->checkData($data))return false;
 
@@ -44,10 +44,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
 
         return true;
     }
-    
+
     function convertUserData($datarequested){
         $data=array();
-        
+
         //get the lists
         if(isset($datarequested['wysija[user_list][list_ids]'])){
             $listids=explode(',',$datarequested['wysija[user_list][list_ids]']);
@@ -63,7 +63,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
             }
         }
         $data['user_list']['list_ids']=$listids;
-        
+
         //get the user info and the rest of the data posted
         foreach($datarequested as $key => $val){
             if(strpos($key, 'wysija[user]')!== false){
@@ -83,18 +83,18 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
                 if(!isset($data[$key])) $data[$key]=$val;
             }
         }
-        
+
         return $data;
     }
-    
+
     function registerToLists($data,$uid){
         $model=&WYSIJA::get('user_list',"model");
         if(isset($data['wysija[user_list][list_ids]'])){
             $listids=explode(',',$data['wysija[user_list][list_ids]']);
-            
+
             $subdate=time();
 
-            
+
         }else{
             $i=0;
             $listids=array();
@@ -102,13 +102,13 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
                 $testkey='wysija[user_list][list_id]['.$i.']';
                 if(isset($data[$testkey])) $listids[]=$data[$testkey];
             }
-            
+
             //$listids=$data['wysija[user_list][list_id]'];
         }
         foreach($listids as $listid){
             $model->replace(array("list_id"=>$listid,"user_id"=>$uid,"sub_date"=>$subdate));
             $model->reset();
         }
-        
+
     }
 }

@@ -7,9 +7,11 @@ class WYSIJA_help_front extends WYSIJA_help{
         
         
         
+        
 
         
         if(isset($_REQUEST['wysija-page']) || isset($_REQUEST['wysija-launch'])){
+
             if(defined('DOING_AJAX')){
                 add_action('wp_ajax_nopriv_wysija_ajax', array($this, 'ajax'));
             }else{
@@ -44,7 +46,7 @@ class WYSIJA_help_front extends WYSIJA_help{
             }
         }else{
            add_filter( 'the_content', array($this,'scan_content_NLform') );
-           add_filter( 'the_content', array($this,'scan_wysija_vib') );
+
         }
 
     }
@@ -70,32 +72,7 @@ class WYSIJA_help_front extends WYSIJA_help{
         return str_replace("[wysija_page]",$wysija_content,$content);
     }
     
-    function scan_wysija_vib($content){
-        preg_match('#\[wysija_view\](.*)\[\/wysija_view\]#Uis',$content,$matches);
-        $modelEmail=&WYSIJA::get('email','model');
-        $emailLoaded=$modelEmail->getOne(array('body','subject'),array('email_id'=>$matches[1]));
-        $emailviewcontent='';
-        $config=&WYSIJA::get('config','model');
-        if($config->getValue('newsletter_view_html')){
-            preg_match('#<span id="wysija_wrapper"[^>]*>(.*)</span>#Uis',$emailLoaded['body'],$extramatches);
-            $emailH=&WYSIJA::get("email","helper");
-            $emailviewcontent=$emailH->stripPersonalLinks($extramatches[0]);
-        }else{
-           $paramsurl=array(
-                'wysija-page'=>1,
-                'controller'=>'email',
-                'action'=>'view',
-               'email_id'=>$matches[1]
-                );
-
-            $fullurl=WYSIJA::get_permalink($config->getValue('confirm_email_link'),$paramsurl,true);
-            $emailviewcontent='<iframe '.$onloadattr.' width="100%" height="600px" scrolling="yes" frameborder="0" src="'.$fullurl.'" name="wysija-viewinbrowser" class="iframe-wysija-vib" id="wysija-viewinbrowser" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 330px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="'.$emailLoaded['subject'].'"></iframe>';
-        }
-        $content=str_replace($matches[0],$emailviewcontent,$content);
-
-
-        return $content;
-    }
+   
     function scan_content_NLform($content){
 
         preg_match_all('/\<div class="wysija-register">(.*?)\<\/div>/i',$content,$matches);

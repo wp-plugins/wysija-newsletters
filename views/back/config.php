@@ -68,8 +68,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
 
             $realkey=$key.'_active';
+            $checked=false;
+            if($this->model->getValue($realkey))   $checked=true;
             $field.='<p>';
-            $field.=$formsHelp->checkbox(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']','style'=>'margin-left:0px;','class'=>'activateInput'),$this->model->getValue($realkey));
+            $field.=$formsHelp->checkbox(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']','style'=>'margin-left:0px;','class'=>'activateInput'),1,$checked);
             $field.='</p>';
 
             $field.='<div id="'.$realkey.'_linkname" >';
