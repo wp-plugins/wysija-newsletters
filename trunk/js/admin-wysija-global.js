@@ -1,1 +1,0 @@
-jQuery(function(a){a(".wysija-footer pre").hide();a(".wysija-footer h2").click(function(){a(".wysija-footer pre").toggle()})});
