@@ -85,7 +85,10 @@ class WYSIJA_help_update extends WYSIJA_object{
                     if(!$keyrole){
 
                         $role = get_role($rolesetting);
-                        $role->add_cap( $capability );
+
+                        if($role){
+                            $role->add_cap( $capability );
+                        }
                     }else{
 
                         $editable_roles=$wptools->wp_get_roles();
