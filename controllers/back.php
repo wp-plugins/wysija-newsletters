@@ -12,7 +12,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
     function WYSIJA_control_back(){
         parent::WYSIJA_control();
-        global $wysija_msg,$wysija_queries;
+        global $wysija_msg,$wysija_queries,$wysija_queries_errors;
         $wysija_msgTemp=get_option("wysija_msg");
         if(is_array($wysija_msgTemp) && count($wysija_msgTemp)>0){
             $wysija_msg=$wysija_msgTemp;
@@ -21,11 +21,17 @@ class WYSIJA_control_back extends WYSIJA_control{
         $modelEmail =& WYSIJA::get('email', 'model');
         $campaign = $modelEmail->getOne('params', array('email_id' => 12));
         $wysija_qryTemp=get_option("wysija_queries");
+        $wysija_qryErrors=get_option("wysija_queries_errors");
         if(is_array($wysija_qryTemp) && count($wysija_qryTemp)>0){
             $wysija_queries=$wysija_qryTemp;
         }
 
+        if(is_array($wysija_qryErrors) && count($wysija_qryErrors)>0){
+            $wysija_queries_errors=$wysija_qryErrors;
+        }
+
         WYSIJA::update_option("wysija_queries","");
+        WYSIJA::update_option("wysija_queries_errors","");
         WYSIJA::update_option("wysija_msg","");
         $this->pref=get_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',true);
 
@@ -91,9 +97,9 @@ class WYSIJA_control_back extends WYSIJA_control{
     }
 
     function _resetGlobMsg(){
-        global $wysija_msg,$wysija_queries;
+        global $wysija_msg,$wysija_queries,$wysija_queries_errors;
 
-        $wysija_msg=$wysija_queries=array();
+        $wysija_msg=$wysija_queries=$wysija_queries_errors=array();
     }
     function defaultDisplay(){
         $this->viewShow=$this->action='main';

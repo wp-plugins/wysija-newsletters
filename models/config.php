@@ -164,6 +164,17 @@ class WYSIJA_model_config extends WYSIJA_object{
                         )
                     )
                 )
+            ),
+            'wp-polls' => array(
+                'file' => 'wp-polls/wp-polls.php',
+                'version' => '2.63',
+                'clean' => array(
+                    'wp_enqueue_scripts' => array(
+                        '10' => array(
+                            'function' => 'poll_scripts'
+                        )
+                    )
+                )
             )
         );
 
@@ -232,17 +243,20 @@ class WYSIJA_model_config extends WYSIJA_object{
 
                         $role=get_role($rolecapexp[0]);
                         $capab='wysija_'.$rolecapexp[1];
+                        //added for invalid roles ...
+                        if($role){
+                            if($this->values[$cbox]){
+                                $role->add_cap($capab);
 
-                        if($this->values[$cbox]){
-                            $role->add_cap($capab);
+                            }else{
+                                //remove cap only for roles different of admins
+                                if($role->has_cap($capab) && !in_array($rolecapexp[0], array('administrator','super_admin'))){
+                                    $role->remove_cap($capab);
+                                }
 
-                        }else{
-                            //remove cap only for roles different of admins
-                            if($role->has_cap($capab) && !in_array($rolecapexp[0], array('administrator','super_admin'))){
-                                $role->remove_cap($capab);
                             }
-
                         }
+
 
                         //no need to save those values which are already saved in wordpress
                         unset($this->values[$cbox]);

@@ -9,7 +9,7 @@ function dbg($mixed,$exit=true){
     if(is_user_logged_in() || isset($_GET['dbg'])){
         new dBug ( $mixed );
         if($exit) {
-            global $wysija_msg,$wysija_queries;
+            global $wysija_msg,$wysija_queries,$wysija_queries_errors;
             echo '<h2>WYSIJA MSG</h2>';
             echo '<pre>';
             dbg($wysija_msg,0);
@@ -18,6 +18,11 @@ function dbg($mixed,$exit=true){
             echo '<h2>WYSIJA QUERIES</h2>';
             echo '<pre>';
             dbg($wysija_queries,0);
+            echo '</pre>';
+
+            echo '<h2>WYSIJA QUERIES ERRORS</h2>';
+            echo '<pre>';
+            dbg($wysija_queries_errors,0);
             echo '</pre>';
             exit;
         }
@@ -44,11 +49,19 @@ if($debugok || WYSIJA_DBG==99){
 
 function wysija_queries(){
     if(((is_admin() && (defined('WYSIJA_ITF') && WYSIJA_ITF)) || isset($_GET['dbg'])) ){
-        global $wpdb,$wysija_queries;
-        echo '<div class="wysija-footer"><h2>WYSIJA QUERIES</h2>';
+        global $wpdb,$wysija_queries,$wysija_queries_errors;
+        echo '<div class="wysija-footer"><div class="expandquer"><h2>WYSIJA QUERIES</h2>';
         echo '<pre>';
         dbg($wysija_queries,0);
-        echo '</pre>';
+        echo '</pre></div>';
+
+        if($wysija_queries_errors){
+            echo '<div class="expandquer"><h2 class="errors">WYSIJA QUERIES ERRORS</h2>';
+            echo '<pre>';
+            dbg($wysija_queries_errors,0);
+            echo '</pre></div>';
+        }
+
 
 
         /*echo "<h2>WYSIJA QUEUE</h2>";

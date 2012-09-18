@@ -1,9 +1,9 @@
 === Wysija Newsletters ===
-Contributors: wysija, benheu, jon1op
+Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.1.2
+Stable tag: 2.1.3
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -144,6 +144,20 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.1.3 - 2012-09-18 =
+
+* added restAPI for elasticemail when detected in the smtp configuration
+* improved install making sure that no crazy plugins will harm our initial setup (symptoms: Too many redirect crash or posting to social networks)
+* fixed SQL comments inserted as tables in some weird server...
+* fixed error 500 on update procedure of 2.1 when some roles were not existing. (add_cap on none object fatal error)
+* improved install process not creating new sql connection, only using wpdb's one.
+* fixed synched plugins (Subscribe2 etc...) when there was just the main list
+* removed global css and javascript
+* fixed issue where the widget would not save
+* improved IE9 compatibility
+* fixed excerpt function to keep line breaks
+* fixed links with #parameters GA incompatibility -> Thanks Adam
 
 = 2.1.2 - 2012-09-05 =
 

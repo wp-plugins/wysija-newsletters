@@ -233,10 +233,11 @@ class WYSIJA_help_back extends WYSIJA_help{
         wp_register_script('wysija-charts', "https://www.google.com/jsapi", array( 'jquery' ), true);
         wp_register_script('wysija-admin-list', WYSIJA_URL."js/admin-listing.js", array( 'jquery' ), true, WYSIJA::get_version());
         wp_register_script('wysija-base-script-64', WYSIJA_URL."js/base-script-64.js", array( 'jquery' ), true, WYSIJA::get_version());
-        wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL."css/admin-global.css",array(),WYSIJA::get_version());
-        wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL."js/admin-wysija-global.js",array(),WYSIJA::get_version());
+
         
         if(WYSIJA_ITF){
+            wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL."css/admin-global.css",array(),WYSIJA::get_version());
+            wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL."js/admin-wysija-global.js",array(),WYSIJA::get_version());
             $pagename=str_replace("wysija_","",$_REQUEST['page']);
             $backloader=&WYSIJA::get("backloader","helper");
             $backloader->initLoad($this->controller);

@@ -3,7 +3,7 @@ Colaboradores: wysija
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requer no mínimo: 3.0
 Testado até: 3.4
-Versão estável: 2.0.3
+Versão estável: trunk
 
 Envie seus posts e newsletters do WordPress com facilidade, e beleza.
 

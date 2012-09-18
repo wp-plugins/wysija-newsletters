@@ -42,7 +42,7 @@ class WYSIJA_help_file extends WYSIJA_object{
         }
         return $dirname;
     }
-    
+
     function getUploadDir($folder=false){
         $upload_dir = wp_upload_dir();
         $dirname=$upload_dir['basedir'].DS."wysija".DS;
@@ -55,7 +55,7 @@ class WYSIJA_help_file extends WYSIJA_object{
     function temp($content,$key="temp",$format=".tmp"){
         $tempDir=$this->makeDir();
         if(!$tempDir)   return false;
-        
+
         $filename=$key."-".time().$format;
         $handle=fopen($tempDir.$filename, "w");
         fwrite($handle, $content);
@@ -90,7 +90,7 @@ class WYSIJA_help_file extends WYSIJA_object{
         foreach($foldersToclear as $folder){
             $path=$this->getUploadDir($folder);
             
-            if(!$path) continue; 
+            if(!$path) continue;
             $files = scandir($path);
             foreach($files as $filename){
                 if(!in_array($filename, array('.','..',".DS_Store","Thumbs.db"))){
@@ -121,7 +121,7 @@ class WYSIJA_help_file extends WYSIJA_object{
             chmod($dir, 0777);
             rmdir($dir);
         }
-        
+
       }
       else if (file_exists($dir)) {
           $dir=str_replace('/',DS,$dir);
@@ -129,7 +129,7 @@ class WYSIJA_help_file extends WYSIJA_object{
       }
     }
     function rcopy($src, $dst) {
-      if(strpos($src, '..')!==false || strpos($dir, '..')!==false){
+      if(strpos($src, '..')!==false || strpos($dst, '..')!==false){
           $this->error('src : '.$src);
           $this->error('dst : '.$dst);
           $this->error('Path is not safe, cannot contain ..');
@@ -176,5 +176,5 @@ class WYSIJA_help_file extends WYSIJA_object{
                 return;
             }
         }
-    } 
+    }
 }

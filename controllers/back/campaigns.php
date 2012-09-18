@@ -704,8 +704,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                             'identifier' => 'wp-301',
                             'width' => 281,
                             'height' => 190,
-                            'url' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_07.png",
-                            'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/sample-newsletter-01_07-150x150.png"
+                            'url' => WYSIJA_EDITOR_IMG."default-newsletter/newsletter/pigeon.png",
+                            'thumb_url' => WYSIJA_EDITOR_IMG."default-newsletter/newsletter/pigeon-150x150.png"
                         )
                 );
 
@@ -742,7 +742,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                                 __("The city's highrises spread below him. His shadow a simple dot on a sidewalk. For a moment he forgot the weary task at hand. A messenger pigeon he is, after all.",WYSIJA)."</p>"
                             ),
                             'image' => array(
-                                'src' => WYSIJA_EDITOR_IMG."default-newsletter/full/sample-newsletter-01_07.png",
+                                'src' => WYSIJA_EDITOR_IMG."default-newsletter/newsletter/pigeon.png",
                                 'width' => 281,
                                 'height' => 190,
                                 'alignment' => 'left',

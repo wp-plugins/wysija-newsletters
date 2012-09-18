@@ -592,6 +592,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
         $wjParser->setStripSpecialchars(true);
         $data = $this->getData('header');
+        $data['styles'] = array('header' => $this->getStyles('header'));
 
         if($data['text'] === NULL and $data['image']['static'] === TRUE) {
             return NULL;
@@ -753,6 +754,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
         $wjParser->setStripSpecialchars(true);
         $data = $this->getData('footer');
+        $data['styles'] = array('footer' => $this->getStyles('footer'));
 
         if($data['text'] === NULL and $data['image']['static'] === TRUE) {
             return NULL;

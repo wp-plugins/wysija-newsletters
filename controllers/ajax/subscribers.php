@@ -32,8 +32,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
             }else   $datarequested[$vals['name']]=$vals['value'];
         }
 
-        $_REQUEST['_wpnonce']=$datarequested['_wpnonce'];
-
+        //$_REQUEST['_wpnonce']=$datarequested['_wpnonce'];
 
         $data=$this->convertUserData($datarequested);
 
