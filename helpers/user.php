@@ -363,7 +363,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         $model=&WYSIJA::get("list","model");
         $data=$model->getOne(false,array("list_id"=>(int)$listid,"is_enabled"=>"0"));
         if($data){
-            if(strpos($data['namekey'], "-listimported-")!==false){
+            if(strpos($data['namekey'], "-listimported-")!==false){//plugins list table synch
                 $model->reset();
 
                 $listdata=explode("-listimported-",$data['namekey']);
@@ -376,7 +376,7 @@ class WYSIJA_help_user extends WYSIJA_object{
                     "plug_list_id"=>$listdata[1]
                 );
                 $importHelper->import($listdata[0],$dataPlugi,false,false,$listsids);
-            }elseif($data['namekey']=="users"){
+            }elseif($data['namekey']=="users"){//wordpress user table synch
 
                 $ismainsite=true;
                 if (is_multisite()){
@@ -395,7 +395,15 @@ class WYSIJA_help_user extends WYSIJA_object{
                 );
 
                 $importHelper->import($data['namekey'],$infosImport,false,$total,$listsids);
-            }else{
+            }else{//plugins table synch
+                $config=&WYSIJA::get('config','model');
+                $importables=$config->getValue('pluginsImportableEgg');
+                if(in_array($data['namekey'], array_keys($importables))){
+                    $importHelper=&WYSIJA::get('import','helper');
+                    $dataMainList=$model->getOne(false,array("namekey"=>$data['namekey'],"is_enabled"=>"0"));
+                    $importHelper->import($data['namekey'],$importHelper->getPluginsInfo($data['namekey']),false,false,array('wysija_list_main_id'=>$dataMainList['list_id']));
+
+                }
             }
             $this->notice(sprintf(__('List "%1$s" has been synchronised.',WYSIJA),$data['name']));
             return true;

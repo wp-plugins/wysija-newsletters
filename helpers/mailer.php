@@ -16,6 +16,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	var $forceTemplate = 0;
         var $testemail=false;
         var $isMailjet=false;
+        var $isElasticRest=false;
 
 	function WYSIJA_help_mailer($extension="",$config=false) {
             $this->subscriberClass = &WYSIJA::get("user","model");
@@ -34,20 +35,32 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             {
                 case 'gmail' :
                 case 'smtp' :
-                        $this->IsSMTP();
-                        $this->Host = $this->config->getValue('smtp_host');
-                        if(strpos($this->Host, 'mailjet.com')!==false){
-                            $this->isMailjet=true;
+
+
+                    $this->Host = $this->config->getValue('smtp_host');
+                    if(in_array(trim($this->Host), array('smtp.elasticemail.com','smtp25.elasticemail.com'))){
+
+                            include_once (WYSIJA_INC. 'phpmailer' . DS . 'class.elasticemail.php');
+                            $this->Mailer = 'elasticemail';
+                            $this->elasticEmail = new acymailingElasticemail();
+                            $this->elasticEmail->Username = trim($this->config->getValue('smtp_login'));
+                            $this->elasticEmail->Password = trim($this->config->getValue('smtp_password'));
+                            $this->isElasticRest=true;
+                        }else{
+                            $this->IsSMTP();
+                            if(strpos($this->Host, 'mailjet.com')!==false){
+                                $this->isMailjet=true;
+                            }
+                            $port = $this->config->getValue('smtp_port');
+                            if(empty($port) && $this->config->getValue('smtp_secure') == 'ssl') $port = 465;
+                            if(!empty($port)) $this->Host.= ':'.$port;
+                            $this->SMTPAuth = (bool) $this->config->getValue('smtp_auth');
+                            $this->Username = trim($this->config->getValue('smtp_login'));
+                            $this->Password = trim($this->config->getValue('smtp_password'));
+                            $this->SMTPSecure = trim((string)$this->config->getValue('smtp_secure'));
+                            if(empty($this->Sender)) $this->Sender = strpos($this->Username,'@') ? $this->Username : $this->config->getValue('from_email');
+                            
                         }
-                        $port = $this->config->getValue('smtp_port');
-                        if(empty($port) && $this->config->getValue('smtp_secure') == 'ssl') $port = 465;
-                        if(!empty($port)) $this->Host.= ':'.$port;
-                        $this->SMTPAuth = (bool) $this->config->getValue('smtp_auth');
-                        $this->Username = trim($this->config->getValue('smtp_login'));
-                        $this->Password = trim($this->config->getValue('smtp_password'));
-                        $this->SMTPSecure = trim((string)$this->config->getValue('smtp_secure'));
-                        if(empty($this->Sender)) $this->Sender = strpos($this->Username,'@') ? $this->Username : $this->config->getValue('from_email');
-                        
                         break;
                 case 'site':
                     if($this->config->getValue('sending_emails_site_method')=="phpmail"){
@@ -72,7 +85,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->Encoding = '8bit';
 
             $this->WordWrap = 150;
-            if($this->config->getValue('premium_key') && $this->config->getValue('dkim_active') && $this->config->getValue('dkim_pubk') ){
+            if($this->config->getValue('premium_key') && $this->config->getValue('dkim_active') && $this->config->getValue('dkim_pubk') && !$this->isElasticRest){
                $this->DKIM_domain = $this->config->getValue('dkim_domain');
                $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
            }
@@ -90,7 +103,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $replyToName = $this->config->getValue('reply_name');
                     $this->AddReplyTo($this->config->getValue('reply_email'),$replyToName);
             }
-            
+
+            if((bool)$this->config->getValue('embed_images',0) && !$this->isElasticRest){
+                    $this->embedImages();
+            }
             if(empty($this->Subject) OR empty($this->Body)){
                     $this->reportMessage = __("There is no subject or body in this email",WYSIJA);
                     $this->errorNumber = 8;
@@ -105,6 +121,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->Subject = $this->encodingHelper->change($this->Subject,'UTF-8',$this->CharSet);
                     if(!empty($this->AltBody)) $this->AltBody = $this->encodingHelper->change($this->AltBody,'UTF-8',$this->CharSet);
             }
+            if($this->isElasticRest){
+                $this->addCustomHeader('referral:cfb09bc8-558d-496b-83e6-b05e901a945c');
+            }
+
             $this->Subject = str_replace(array('’','“','”','–'),array("'",'"','"','-'),$this->Subject);
             $this->Body = str_replace(chr(194),chr(32),$this->Body);
             ob_start();
@@ -603,6 +623,11 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 if(isset($urls[$results[0][$i]])|| strpos($url, "wysija-key")) continue;
                 $urlreuse=$url;
                 if((strpos($urlreuse, '[view_in_browser_link]')===false || strpos($urlreuse, '[unsubscribe_link]')===false) && isset($email->params['googletrackingcode']) && trim($email->params['googletrackingcode']) ){
+                    $hashPartUrl = '';
+                    if (strpos($urlreuse, '#') !== false){
+                        $hashPartUrl = substr($urlreuse,strpos($urlreuse, '#'));
+                        $urlreuse = substr($urlreuse,0,strpos($urlreuse, '#'));
+                    }
                     if (strpos($urlreuse, '?') !== false) $charStart='&';
                     else $charStart='?';
                     $urlreuse.=$charStart;
@@ -615,6 +640,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                         $paramsinline[]=$k."=".$v;
                     }
                     $urlreuse.=implode('&',$paramsinline);
+                    $urlreuse.=$hashPartUrl;
                 }
 
 
@@ -707,7 +733,9 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $varerror='';
             if(!is_array($var)) $varerror=$var;
             elseif(isset($var['error'])) $varerror=$var['error'];
-            $errormsg=$this->language[$key];
+            if(!isset($this->language[$key])){
+                $errormsg=$key;
+            }else   $errormsg=$this->language[$key];
             if($varerror) $errormsg.='('.$varerror.')';
             $this->ErrorInfo[] = array('error'=>$errormsg);
 

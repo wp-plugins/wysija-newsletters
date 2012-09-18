@@ -5,11 +5,11 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
     var $title="Tiny";
     var $icon="icon-options-general";
     var $scripts=array();
-    
+
     function WYSIJA_view_back_tmce(){
         $this->WYSIJA_view_back();
     }
-    
+
     function getScriptsStyles(){
         ?>
         <link rel='stylesheet' href='<?php $urlblog=get_bloginfo('wpurl');echo $urlblog ?>/wp-admin/load-styles.php?c=1&amp;dir=ltr&amp;load=widgets,global,wp-admin' type='text/css' media='all' />
@@ -23,8 +23,8 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
         <script type='text/javascript' src='<?php echo $urlblog ?>/wp-content/plugins/wysija-newsletters/js/admin-tmce.js'></script>
         <?php
     }
-    
-        
+
+
     function head(){
         ?>
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -38,9 +38,9 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
 <body>
 
 <?php
-        
+
     }
-    
+
     function foot(){
         ?>
 
@@ -48,7 +48,7 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
         </html>
         <?php
     }
-   
+
 
     function registerAdd($datawidget,$edit=false){
 //dbg($datawidget,0);
@@ -57,7 +57,7 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
         ?>
 
         <form id="formTable" action="" style="display:block;width:750px;" method="post" >
-            
+
                 <div id="widget-form" class="widget">
 
                     <?php
@@ -66,8 +66,6 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
                     ?>
                     <input type="hidden" name="widget_id" value="wysija-nl-<?php echo time(); ?>" />
                     <input type="submit" class="refresh" value="<?php echo esc_attr(__('Preview',WYSIJA))?>" />
-
-
                 </div>
                 <div id="widget-prev">
                 <?php
@@ -77,8 +75,7 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
                         <div id="widget-preview" class="widget" >
                             <?php
                             echo '<div id="preview-label" class="widget">'.__("Preview",WYSIJA)."</div>";
-
-                            echo $widgetNL->widget($datawidget,$datawidget); 
+                            echo $widgetNL->widget($datawidget,$datawidget);
                             ?>
                         </div>
                         <?php
@@ -90,22 +87,22 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
                             ?><input type="submit" id="widget-insert" class="button-primary action" name="doaction" value="<?php echo esc_attr(__('Insert form', WYSIJA)); ?>"><?php
                         }
                         ?>
-                        
+
                         <input type="hidden" id="widget-data" name="widget-data" value="<?php unset($datawidget['preview']); echo base64_encode(serialize($datawidget)) ?>">
 
 
                     <?php
                 }?>
                 </div>
-                <div style="clear:both;">
-            
+                <div style="clear:both;"></div>
          </form>
+
             <?php
         $this->foot();
 
     }
-    
-  
 
-   
+
+
+
 }

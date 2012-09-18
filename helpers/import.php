@@ -189,7 +189,7 @@ class WYSIJA_help_import extends WYSIJA_object{
             $modelConfig->save(array("pluginsImportableEgg"=>$possibleImport));
         }
     }
-    
+
     function import($tablename,$plugInfo,$issyncwp=false,$ismainsite=true,$isSynch=false){
         
         global $wpdb;
@@ -207,7 +207,7 @@ class WYSIJA_help_import extends WYSIJA_object{
                 "is_enabled"=>0,
                 "namekey"=>$tablename));
         }else $defaultListId=$isSynch["wysija_list_main_id"];
-        
+
         
         $colsPlugin=array_keys($plugInfo["matches"]);
         $mktime=time();
@@ -271,10 +271,10 @@ class WYSIJA_help_import extends WYSIJA_object{
                         "name"=>$listname,
                         "description"=>$descriptionList,
                         "is_enabled"=>0,
-                        "namekey"=>$tablename."-listimported-".$listresult[$plugInfo['list']['list']['pk']])); 
+                        "namekey"=>$tablename."-listimported-".$listresult[$plugInfo['list']['list']['pk']]));
                     }else {
                         $model->reset();
-                        $datalist=$model->getOne(false,array("namekey"=>$tablename."-listimported-".$listresult[$plugInfo['list']['list']['pk']])); 
+                        $datalist=$model->getOne(false,array("namekey"=>$tablename."-listimported-".$listresult[$plugInfo['list']['list']['pk']]));
                         $listidimported=$datalist['list_id'];
                     }
 
@@ -286,7 +286,7 @@ class WYSIJA_help_import extends WYSIJA_object{
                     $query="INSERT IGNORE INTO `[wysija]user_list` (`user_id`,`list_id`,`sub_date`) ".$selectuserCreated;
                     $model->query($query);
                 }
-            } 
+            }
         }
         $helperU=&WYSIJA::get("user","helper");
         $helperU->refreshUsers();

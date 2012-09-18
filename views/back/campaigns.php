@@ -1002,12 +1002,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             $wjEngine->setStyles();
         }
 
-        //print "\n\n--------\n\n";
-        //echo '<div style="width:900px;margin:0 auto;">';
-        //echo $wjEngine->renderEmail($data['email']);
-        //echo '</div>';
-        //print "\n\n--------\n\n";
-        //exit;
+//print "\n\n--------\n\n";
+//echo '<div style="width:900px;margin:0 auto;">';
+//echo $wjEngine->renderEmail($data['email']);
+//echo '</div>';
+//print "\n\n--------\n\n";
+//exit;
         ?>
             <style type="text/css" id="wj_css">
                 <?php echo $wjEngine->renderStyles(); ?>
@@ -1046,7 +1046,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
             <!-- BEGIN: Wysija Toolbar -->
             <div id="wysija_toolbar">
-                <ul class="tabs">
+                <ul class="wysija_toolbar_tabs">
                     <li class="wjt-content">
                         <a class="selected" href="javascript:;" rel="content"><?php _e("Content",WYSIJA)?></a>
                     </li>
@@ -1344,7 +1344,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             // prototype on load
             document.observe('dom:loaded', function() {
                 setupStylesForm();
-                
+
                 var konami = new Konami();
                 konami.code = function() {
                     Wysija.flyToTheMoon();
@@ -1356,6 +1356,22 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             jQuery(function($) {
                 $(function(){
                     setupColorPickers();
+                });
+
+                $('.wysija_toolbar_tabs a').live('click', function() {
+                    // reset selected link
+                    $('.wysija_toolbar_tabs a').removeClass('selected');
+
+                    // hide tabs
+                    $('.wj_images, .wj_content, .wj_styles, .wj_themes').hide();
+
+                    // show selected tab
+                    $('.wj_'+$(this).attr('rel')).show();
+
+                    // set selected link
+                    $(this).addClass('selected');
+
+                    return false;
                 });
             });
         </script>

@@ -61,8 +61,13 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         if(!isset($params["lists"]) || !$params["lists"])   return;
 
         $data.='<div class="widget_wysija_cont">';
-        $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>
-        <form id="'.$formidreal.'" method="post" action="#wysija" class="widget_wysija form-valid-sub">';
+        $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>';
+
+        // add form unless it's a preview
+        if(!isset($params['preview']) or (isset($params['preview']) && $params['preview'] === false)) {
+            $data .= '<form id="'.$formidreal.'" method="post" action="#wysija" class="widget_wysija form-valid-sub">';
+        }
+
             if(isset($params['instruction']) && $params['instruction'])   {
                 if(strpos($params['instruction'], '[total_subscribers')!==false){
                     $modelC=&WYSIJA::get('config','model');
@@ -111,9 +116,6 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
 
 
             if(!isset($params['preview'])){
-
-
-
                 $data.='<input type="hidden" name="formid" value="'.esc_attr($formidreal).'" />
                     <input type="hidden" name="action" value="save" />
                 '.$listfieldshidden.'
@@ -125,8 +127,10 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 //$data.='<input type="hidden" value="'.wp_create_nonce("wysija_ajax").'" id="wysijax" />';
             }
 
-
-	$data.='</form>';
+        // add form unless it's a preview
+        if(!isset($params['preview']) or (isset($params['preview']) && $params['preview'] === false)) {
+            $data.='</form>';
+        }
 
         //hook to let plugins modify our html the way they want
         $data = apply_filters('wysija_subscription_form', $data);

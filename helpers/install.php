@@ -445,7 +445,6 @@ class WYSIJA_help_install extends WYSIJA_object{
         $dataEmail['replyto_name']=$dataEmail['from_name']=$valuesconfig['from_name'];
         $dataEmail['replyto_email']=$dataEmail['from_email']=$valuesconfig['from_email'];
         $data['email']['email_id']=$modelEmail->insert($dataEmail);
-        $this->notice(__("Example Campaign created.",WYSIJA));
     }
     function createTables(){
         $filename = dirname(__FILE__).DS."install.sql";
@@ -456,20 +455,16 @@ class WYSIJA_help_install extends WYSIJA_object{
         $query=str_replace("CREATE TABLE IF NOT EXISTS `","CREATE TABLE IF NOT EXISTS `".$modelObj->getPrefix(),$query);
         $queries=explode("-- QUERY ---",$query);
 
-        $con = @mysql_connect( DB_HOST, DB_USER, DB_PASSWORD, true );
-        $haserrors=false;
-        if (!$con){
-            die('Could not connect: ' . mysql_error());
-            $haserrors=true;
-        }else{
-            @mysql_select_db( DB_NAME ,$con);
-            foreach($queries as $qry){
-                if(!mysql_query($qry,$con)){
-                    $this->notice(mysql_error());
-                    $haserrors=true;
-                }
+        global $wpdb;
+        foreach($queries as $qry){
+            $wpdb->query($qry);
+            $error = mysql_error( $wpdb->dbh );
+            if($error){
+                $this->notice(mysql_error());
+                $haserrors=true;
             }
         }
+
         $arraytables=array("user_list","user","list","campaign","campaign_list","email","user_field","queue","user_history","email_user_stat","url","email_user_url","url_mail");
         $modelWysija=new WYSIJA_model();
         $missingtables=array();
@@ -478,7 +473,6 @@ class WYSIJA_help_install extends WYSIJA_object{
                 $missingtables[]=$modelWysija->getPrefix().$tablename;
             }
         }
-        mysql_close($con);
         if($missingtables) {
             $this->error(sprintf(__('These tables could not be created on installation: %1$s',WYSIJA),implode(', ',$missingtables)),1);
             $haserrors=true;
@@ -572,8 +566,23 @@ class WYSIJA_help_install extends WYSIJA_object{
         'post_content' => '[wysija_page]',
         'post_title' => __("Subscription confirmation",WYSIJA),
         'post_name' => 'subscriptions');
-        $values['confirm_email_link']=wp_insert_post( $my_post );
-        flush_rewrite_rules();
+
+        $helpersWPPOSTS=&WYSIJA::get('wp_posts','model');
+        $postss=$helpersWPPOSTS->get_posts(array('post_type'=>'wysijap'));
+        $postid=false;
+        if($postss){
+            if(isset($postss[0]['post_content']) && strpos($postss[0]['post_content'], '[wysija_page]')!==false){
+                $postid=$postss[0]['ID'];
+            }
+        }
+        if(!$postid){
+            remove_all_actions('pre_post_update');
+            remove_all_actions('save_post');
+            remove_all_actions('wp_insert_post');
+            $values['confirm_email_link']=wp_insert_post( $my_post );
+            flush_rewrite_rules();
+        }else $values['confirm_email_link']=$postid;
+
     }
 
     function testNLplugins(){

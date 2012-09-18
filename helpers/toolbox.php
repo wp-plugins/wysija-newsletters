@@ -82,7 +82,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         return $html;
     }
     function excerpt($text,$num_words=8,$more=" ..."){
-        $words_array = preg_split('/[\n\r\t ]+/', $text, $num_words + 1, PREG_SPLIT_NO_EMPTY);
+        $words_array = preg_split('/[\r\t ]+/', $text, $num_words + 1, PREG_SPLIT_NO_EMPTY);
         if(count($words_array) > $num_words) {
                 array_pop($words_array);
                 $text = implode(' ', $words_array);

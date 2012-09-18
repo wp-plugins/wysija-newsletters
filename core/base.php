@@ -319,12 +319,12 @@ class WYSIJA extends WYSIJA_object{
         if((int)$config->getValue('debug_new')>1){
             global $current_user;
 
-            if($current_user && strpos($current_user->data->user_email, '@wysija.com')!==false || strpos($current_user->data->user_email, 'bencaubere.com')!==false){
+            if(isset($current_user->data->user_email) and (strpos($current_user->data->user_email, '@wysija.com') !== false || strpos($current_user->data->user_email, 'bencaubere.com') !== false)) {
                 $loadtranslation=false;
             }
 
         }
-        if(!$loadtranslation)    return;
+        if(!$loadtranslation) return;
 
         $extensionloaded=WYSIJA::load_lang('get_all');
 
@@ -602,9 +602,10 @@ class WYSIJA extends WYSIJA_object{
 
     function redirect($redirectTo){
          /* save the messages */
-        global $wysija_msg,$wysija_queries;
+        global $wysija_msg,$wysija_queries,$wysija_queries_errors;
         WYSIJA::update_option('wysija_msg',$wysija_msg);
         WYSIJA::update_option('wysija_queries',$wysija_queries);
+        WYSIJA::update_option('wysija_queries_errors',$wysija_queries_errors);
         wp_redirect($redirectTo);
         exit;
     }
@@ -1186,7 +1187,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $checked=false;
                     if((isset($instance['autoregister']) && $instance['autoregister']=='auto_register')) $checked=true;
 
-                    $id=str_replace("_",'-',$key).'-'.$value;
+                    $id=str_replace("_",'-',$field).'-'.$value;
                     $fieldHTML.='<label for="'.$id.'">';
                     $fieldHTML.=$formObj->radio(array('id'=>$id,'name'=>$this->get_field_name('autoregister')),$value,$checked);
                     $fieldHTML.=__('Yes',WYSIJA).'</label>';
@@ -1194,7 +1195,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $value='not_auto_register';
                     $checked=false;
                     if(!isset($instance['autoregister']) || $instance['autoregister']!='auto_register') $checked=true;
-                    $id=str_replace("_",'-',$key).'-'.$value;
+                    $id=str_replace("_",'-',$field).'-'.$value;
                     $fieldHTML.='<label for="'.$id.'">';
                     $fieldHTML.=$formObj->radio(array("id"=>$id,'name'=>$this->get_field_name("autoregister")),$value,$checked);
                     $fieldHTML.=__('No',WYSIJA).'</label>';
@@ -1236,7 +1237,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $checked=true;
                     if(!isset($instance['labelswithin']) || $instance['labelswithin']!='labels_within') $checked=true;
 
-                    $id=str_replace('_','-',$key).'-'.$value;
+                    $id=str_replace('_','-',$field).'-'.$value;
                     $fieldHTML.='<p style="'.$styleDivSeparators.'"><label for="'.$id.'">';
                     $fieldHTML.=$formObj->radio(array('id'=>$id,'name'=>$this->get_field_name('labelswithin')),$value,$checked);
                     $fieldHTML.=__('Yes',WYSIJA).'</label>';
@@ -1244,7 +1245,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $value='labels_out';
                     $checked=false;
                     if((isset($instance['labelswithin']) && $instance['labelswithin']=='labels_out')) $checked=true;
-                    $id=str_replace('_','-',$key).'-'.$value;
+                    $id=str_replace('_','-',$field).'-'.$value;
                     $fieldHTML.='<label for="'.$id.'">';
                     $fieldHTML.=$formObj->radio(array('id'=>$id,'name'=>$this->get_field_name('labelswithin')),$value,$checked);
                     $fieldHTML.=__('No',WYSIJA).'</label>';
@@ -1307,6 +1308,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                         $fieldstype=array('iframe'=>__('Get iFrame version',WYSIJA),'php'=>__('Get PHP version',WYSIJA));
 
                         $i=0;
+                        $snippets = '';
                         foreach($fieldstype as $myfield=>$mytitle){
                             if($myfield=='iframe') {
                                 $scriptCloseOther='document.getElementById(\''.$this->get_field_id('php').'\').style.display=\'none\';';
@@ -1319,11 +1321,10 @@ class WYSIJA_NL_Widget extends WP_Widget {
                             $scriptlabel=' style="color:#456465;text-decoration:underline;" onClick="'.$scriptCloseOther.'document.getElementById(\''.$this->get_field_id($myfield).'\').style.display = (document.getElementById(\''.$this->get_field_id($myfield).'\').style.display != \'none\' ? \'none\' : \'block\' );" ';
                             $labels.='<label for="'.$this->get_field_id($myfield).'" '.$scriptlabel.'>'.$mytitle.'</label>';
                             if($i<=0)$labels.=' | ';
-                            $textareas.= $formObj->textarea( array('id'=>$this->get_field_id($myfield),'class'=>'disabled hidden','name'=>'dummyname','value'=>$valuefield,'readonly'=>'readonly',"cols"=>46,"rows"=>4,"style"=>'display:none;width:404px;'),$valuefield);
-                            //$fieldHTML.='<a href="javascript:;" onClick="alert(\'hello\')">'.$fieldParams['label'].'</a></div>';
+                            $snippets .= '<div id="'.$this->get_field_id($myfield).'" style="margin:5px 0 5px 0;overflow:auto;display:none;width:404px;height:120px;background-color:#fff;border:1px solid #dfdfdf;color:#333;">'.nl2br(htmlentities($valuefield)).'</div>';
                             $i++;
                         }
-                        $fieldHTML='<div>'.$labels.'</div>'.$textareas;
+                        $fieldHTML='<div>'.$labels.'</div>'.$snippets;
 
 
                     }

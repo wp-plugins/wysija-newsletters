@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model extends WYSIJA_object{
-    
+
     var $table_prefix='wysija';
     var $table_name='';
     var $pk='';
@@ -23,8 +23,9 @@ class WYSIJA_model extends WYSIJA_object{
     var $tableWP=false;
     var $columns=array();
     var $joins=array();
+    var $ignore = false;
 
-    
+
     function WYSIJA_model($extensions=''){
         if(defined('WYSIJA_DBG') || defined('WYSIJA_DBG_ALL')) $this->dbg=true;
         global $wpdb;
@@ -32,10 +33,10 @@ class WYSIJA_model extends WYSIJA_object{
         if($extensions) $this->table_prefix=$extensions;
         //fix for radiokapi
         //$this->wpprefix=$wpdb->base_prefix;
-        
+
     }
     /**
-     * since we reuse the same objects accross the whole application 
+     * since we reuse the same objects accross the whole application
      * once in a while for instance between a delete and a select we need to reset the objects to update the conditions
      */
     function reset(){
@@ -47,12 +48,12 @@ class WYSIJA_model extends WYSIJA_object{
         $this->getOne=false;
         $this->limitON=false;
     }
-    
+
     /**
      *
      * @param type $columnsOrPKval
      * @param type $conditions
-     * @return type 
+     * @return type
      */
     function get($columnsOrPKval=false,$conditions=array()){
         /*then columns becomes the pk value*/
@@ -61,7 +62,7 @@ class WYSIJA_model extends WYSIJA_object{
             $columnsOrPKval=false;
             $this->noCheck=true;
         }
-        
+
         /* if we pass just the id strong in the get conditions then it's the pk*/
         if($conditions && !is_array($conditions)){
             $conditions=array('equal'=>array($this->pk=>$conditions));
@@ -82,12 +83,12 @@ class WYSIJA_model extends WYSIJA_object{
             }
             else return $results;
         }
-        
-        
-        
+
+
+
         return false;
     }
-    
+
     function getOne($columnsOrPKval=false,$conditions=array()){
         $this->getOne=true;
         $this->limitON=true;
@@ -101,7 +102,7 @@ class WYSIJA_model extends WYSIJA_object{
      * @param type $columns
      * @param type $page
      * @param type $limit
-     * @return type 
+     * @return type
      */
     function getRows($columns=false,$page=0,$limit=false){
 
@@ -111,26 +112,26 @@ class WYSIJA_model extends WYSIJA_object{
                 $columns=implode(", ",$columns);
             }
         }else $columns="*";
-        
+
 
         $query="SELECT ".$columns." FROM `".$this->getSelectTableName()."`";
         $query.=$this->makeJoins();
         $query.=$this->makeWhere();
         $query.=$this->makeGroupBY();
         $query.=$this->makeOrderBY();
-        
+
         if($this->limitON) $query.=$this->setLimit($page,$limit);
         $results=$this->query("get_res",$query,$this->getFormat);
-        
+
         //$this->escapeQuotesFromRes($results);
-        
+
         return $results;
     }
-    
-    function escapeQuotesFromRes(&$results){     
+
+    function escapeQuotesFromRes(&$results){
         if(!$this->escapingOn) return false;
         foreach($results as $k =>$r){
-            
+
             if(in_array($this->getFormat,array(ARRAY_A,ARRAY_N))){
                 foreach($r as $k1 =>$v1){
                     if(in_array($k1,$this->escapeFields)){
@@ -140,10 +141,10 @@ class WYSIJA_model extends WYSIJA_object{
             }
         }
     }
-    
+
     function setLimit($page=0,$limit=false){
         /*set the limit of the selection*/
-        
+
         if(!$this->getOne){
             if($page==0){
                 if(isset($_REQUEST['pagi'])){
@@ -166,31 +167,31 @@ class WYSIJA_model extends WYSIJA_object{
         $this->page=$page;
         $this->limit_start=(int)($this->page*$this->limit);
         $this->limit_end=(int)($this->limit_start+$this->limit);
-        
+
         return " LIMIT $this->limit_start , $this->limit";
     }
-    
+
     /**
      * to have a custom query through the model and get the result immediately
      * @param type $query
-     * @return type 
+     * @return type
      */
     function getResults($query,$type=ARRAY_A){
         return $this->query("get_res",$query, $type);
     }
-    
-    
+
+
     function getSelectTableName(){
         if($this->joins && isset($this->joins['tablestart'])){
             if(isset($this->joins['prefstart']))   return $this->wpprefix.$this->joins['prefstart'].'_'.$this->joins['tablestart'];
             else return $this->getPrefix().$this->joins['tablestart'];
         }else return $this->getPrefix().$this->table_name;
     }
-    
+
     /**
      * simple SQL count
      * @global type $wpdb
-     * @return type 
+     * @return type
      */
     function count($query=false,$keygetcount=false){
         if(!$query){
@@ -199,15 +200,15 @@ class WYSIJA_model extends WYSIJA_object{
             if($groupBy) $columnMore=','.$this->groupby;
             $query="SELECT COUNT(".$this->getPk().") as count ".$columnMore." FROM `".$this->getSelectTableName()."`";
             $query.=$this->makeJoins();
-            
+
             $query.=$this->makeWhere();
             $query.=$groupBy;
         }
-        
+
         if($this->dbg) $this->keepQry($query,"count");
-        
+
         $results=$this->query("get_res",$query,$this->getFormat);
-        
+
         if(!$results || count($results)>1) return $results;
         else {
             if($keygetcount) return $results[0][$keygetcount];
@@ -223,17 +224,17 @@ class WYSIJA_model extends WYSIJA_object{
             $query=str_replace('[wysija]', $this->getPrefix(), $query);
             $wpdb->query($query);
             $results =$wpdb->get_var();
-            
+
             dbg($query,0);
         dbg($results,0);
         }*/
-        
+
         return $results;
     }
-    
+
     /**
      * make the SQL WHERE condition string
-     * @return string 
+     * @return string
      */
     function makeWhere(){
         $query="";
@@ -245,7 +246,7 @@ class WYSIJA_model extends WYSIJA_object{
                     $conditionsss=$this->conditions;
                     $this->conditions=array();
                     $this->conditions["equal"]=$conditionsss;
-                    
+
                     break;
                 }
             }
@@ -267,10 +268,10 @@ class WYSIJA_model extends WYSIJA_object{
                     continue;
                 }
                 foreach($values as $condK => $condVal){
-                    
+
                     /* secure from injections */
                     $this->_secureFieldVal($condK,$condVal);
-                    
+
                     switch($type){
                         case "equal":
                             if(is_array($condVal)){
@@ -287,7 +288,7 @@ class WYSIJA_model extends WYSIJA_object{
                             }
                             break;
                         case "like":
-                                $conditions[]=$condK." LIKE '%".addcslashes($condVal, '%_' )."%'";                
+                                $conditions[]=$condK." LIKE '%".addcslashes($condVal, '%_' )."%'";
                             break;
                         case "greater":
                             $conditions[]=$condK." > '".$condVal."'";
@@ -303,31 +304,31 @@ class WYSIJA_model extends WYSIJA_object{
                             break;
                     }
                 }
-                
+
             }
             $query.=" WHERE ".implode(" AND ",$conditions);
         }
         return $query;
     }
-    
+
     /**
      * make the SQL ORDER BY condition string
-     * @return string 
+     * @return string
      */
     function makeOrderBY(){
         $query=" ORDER BY ";
         if($this->orderby){
             /*set the ORDER BY clause*/
-            $query.=$this->orderby." ".$this->orderbyt; 
+            $query.=$this->orderby." ".$this->orderbyt;
         }else{
            /*by default we order by pk desc*/
             if(is_array($this->pk)) return "";
-            $query.=$this->pk." DESC"; 
+            $query.=$this->pk." DESC";
         }
         return $query;
     }
-    
-    
+
+
     function makeJoins(){
 
         if($this->joins){
@@ -340,11 +341,11 @@ class WYSIJA_model extends WYSIJA_object{
             /*set the ORDER BY clause*/
             return $join;
         }else return '';
-        
+
     }
     /**
      * make the SQL ORDER BY condition string
-     * @return string 
+     * @return string
      */
     function makeGroupBY(){
 
@@ -352,10 +353,10 @@ class WYSIJA_model extends WYSIJA_object{
             /*set the ORDER BY clause*/
             return " GROUP BY ".$this->groupby;
         }else return '';
-        
+
     }
     function groupBy($name){
-        
+
         if (!is_string($name) OR preg_match('|[^a-z0-9#_.-]|i',$name) !== 0 ){
             $this->groupby=false;
         }else $this->groupby=$name;
@@ -367,38 +368,38 @@ class WYSIJA_model extends WYSIJA_object{
         }else {
             $this->orderby=$name;
         }
-        
+
         if(!in_array($type,array('DESC','ASC'))) $type = 'DESC';
         $this->orderbyt=$type;
     }
-    
-    
-    
+
+
+
     /**
      * prepare for an insert procedure
-     * @param type $values 
+     * @param type $values
      */
-    function insert($values){
-        
+    function insert($values,$ignore=false){
+        if($ignore)$this->ignore=true;
         if($this->setValues($values)){
             return $this->save();
         }else{
             $this->error(sprintf('missing values in model insert : %1$s.', get_class($this)));
         }
-        
+
     }
-    
-    
+
+
     function replace($values=array()){
         $this->replaceQRY=true;
         $this->insert($values);
         $this->replaceQRY=false;
     }
-    
+
     /**
      * prepare for an update procedure
      * @param type $values
-     * @param type $conditions 
+     * @param type $conditions
      */
     function update($values=array(),$conditions=array()){
 
@@ -411,28 +412,28 @@ class WYSIJA_model extends WYSIJA_object{
                         $this->setConditions(array($this->pk =>$values[$this->pk]),true);
 
                         unset($values[$this->pk]);
-                        
-                       
+
+
                         return $this->save(true);
 
                     }else{
                         $this->error(sprintf('missing pk value in model update : %1$s.', get_class($this)));
-                    } 
+                    }
                 }
-                
+
             }else{
                if($this->setConditions($conditions,true)){
                     return $this->save(true);
                 }else{
                     $this->error(sprintf('missing conditions in model update : %1$s.', get_class($this)));
-                } 
+                }
             }
-            
+
         }else{
             $this->error(sprintf('missing values in model update : %1$s.', get_class($this)));
-        } 
+        }
     }
-    
+
     /**
      * UPDATE with a special where condition
      * @param type $table
@@ -440,7 +441,7 @@ class WYSIJA_model extends WYSIJA_object{
      * @param type $where
      * @param type $format
      * @param type $where_format
-     * @return type 
+     * @return type
      */
     function specialUpdate( $table, $data, $where, $format = null, $where_format = null ) {
             if ( ! is_array( $data ) || ! is_array( $where ) )
@@ -452,7 +453,7 @@ class WYSIJA_model extends WYSIJA_object{
             $i=0;
             foreach ( $data as $field => $val) {
                 $this->_secureFieldVal($field,$val);
-                
+
                 switch($format[$i]){
                     case "%d":
                         $bits[] = "`$field` = ".(int)$val;
@@ -472,8 +473,8 @@ class WYSIJA_model extends WYSIJA_object{
             $sql = "UPDATE `$table` SET " . implode( ', ', $bits ) . ' ' . $this->makeWhere();
             return $this->query( $sql );
     }
-    
-    
+
+
     function _secureFieldVal(&$field,&$val){
         if (!is_string($field) OR preg_match('|[^a-z0-9#_.-]|i',$field) !== 0 ){
             die('field "'.$field .'" not secured');
@@ -496,17 +497,17 @@ class WYSIJA_model extends WYSIJA_object{
      * save information as an update or an insert
      * @global type $wpdb
      * @param type $update
-     * @return type 
+     * @return type
      */
     function save($update=false){
-        
+
         if($update)$updateStr="Update";
         else $updateStr="Insert";
         $beforeSave='before'.$updateStr;
         $afterSave='after'.$updateStr;
-        
-        
-        
+
+
+
             if(!$update && isset($this->columns['created_at']))$this->values['created_at']=time();
             foreach($this->columns as $key => $params){
                 /*check for auto columns */
@@ -562,33 +563,41 @@ class WYSIJA_model extends WYSIJA_object{
 
                 }
             }
-            
+
         }
-        
+
         if($this->fieldValid && !$this->validateFields()) {
             $this->error(__('Error Validating the fields',WYSIJA),true);
             $this->stay=true;
             return false;
         }
-        
+
         global $wpdb;
-         
+
         if($update){
 
             if( $this->specialUpdate || isset($this->conditions['equal']) || isset($this->conditions['notequal']) || isset($this->conditions['like'])){
 
                 $resultSave=$this->specialUpdate($this->getPrefix().$this->table_name,$this->values,$this->conditions,$fieldsFormats);
+                $this->logError();
             }else{
-                
+
                 $wpdb->update($this->getPrefix().$this->table_name,$this->values,$this->conditions,$fieldsFormats);
+                $this->logError();
                 $resultSave=$wpdb->result;
             }
-            
+
         }else{
             if($this->replaceQRY){
                 $resultSave=$wpdb->replace($this->getPrefix().$this->table_name,$this->values,$fieldsFormats);
+                $this->logError();
             }else{
-                $resultSave=$wpdb->insert($this->getPrefix().$this->table_name,$this->values,$fieldsFormats); 
+
+                if($this->ignore)   $resultSave=$wpdb->insert($this->getPrefix().$this->table_name,$this->values,$fieldsFormats);
+                else $resultSave=$wpdb->insert($this->getPrefix().$this->table_name,$this->values,$fieldsFormats);
+
+                $this->logError();
+                //dbg('hello');
             }
             global $wpdb;
         }
@@ -606,14 +615,14 @@ class WYSIJA_model extends WYSIJA_object{
                 }else{
                     if(isset($this->conditions[$this->getPk(1)]))   $resultSave=$this->conditions[$this->getPk(1)];
                 }
-                
+
             }else{
                 $resultSave=$wpdb->insert_id;
             }
         }
-        
+
         $wpdb->flush();
-        
+
         if(method_exists($this,$afterSave)){
             if(!$this->$afterSave($resultSave)){
                 //$this->error(sprintf('Problem during validation "%2$s" in model : %1$s.', get_class($this), $afterSave));
@@ -622,13 +631,13 @@ class WYSIJA_model extends WYSIJA_object{
         }
         return $resultSave;
     }
-    
-    
+
+
     function insertMany($values){
         $fields=array_keys($values[0]);
-        
+
         $query="INSERT INTO `".$this->getPrefix().$this->table_name."` (`" . implode( '`,`', $fields ) . "`) VALUES ";
-        
+
         $total=count($values);
         $i=1;
         foreach($values as &$vals){
@@ -639,11 +648,12 @@ class WYSIJA_model extends WYSIJA_object{
         }
 
         $this->query($query.$myvalues);
+
     }
-    
+
     /**
      * validate the fields type(defined in each model) in the save procedure
-     * @return type 
+     * @return type
      */
     function validateFields(){
         $error=false;
@@ -660,23 +670,23 @@ class WYSIJA_model extends WYSIJA_object{
                         $this->error(sprintf(__('Field "%1$s" needs to be a valid Email.',WYSIJA), $key),true);
                         $error=true;
                     }
-                    break;     
+                    break;
             }
         }
-        
+
         if($error) return false;
         return true;
     }
-    
+
     /**
      * delete procedure
      * @global type $wpdb
      * @param type $conditions
-     * @return type 
+     * @return type
      */
     function delete($conditions){
         $query="DELETE FROM `".$this->getPrefix().$this->table_name."`";
-        
+
         if($this->setConditions($conditions)){
             $whereQuery=$this->makeWhere();
             if(!$whereQuery){
@@ -690,12 +700,12 @@ class WYSIJA_model extends WYSIJA_object{
         if($result) $result=$this->query($query.$whereQuery);
         else return false;
         $this->afterDelete();
-        
+
         return true;
     }
-    
+
     function exists($conditions){
-        
+
         $query="SELECT ".$this->getPk()." FROM `".$this->getSelectTableName()."`";
 
         $query.=$this->makeJoins();
@@ -710,42 +720,42 @@ class WYSIJA_model extends WYSIJA_object{
         }
         $res=$this->query("get_res",$query.$whereQuery, ARRAY_A);
         if($res) return $res;
-        else return false;          
+        else return false;
     }
-    
+
     function getPk($numb=0){
         $pk=$this->pk;
         if(is_array($pk)) $pk=$pk[$numb];
         return $pk;
     }
-    
+
     /**
      * set the values after verifying them
      * @param type $values
-     * @return type 
+     * @return type
      */
     function setValues($values){
         if($this->colCheck && !$this->checkAreColumns($values)) return false;
-        
+
         $this->values=array();
         $this->values=$values;
         return true;
     }
-    
+
     /**
      *
      * @param type $values
-     * @return type 
+     * @return type
      */
     function setJoin($joins){
         $this->joins=$joins;
         return true;
     }
-    
+
     /**
      * set the conditions after verifying them
      * @param type $conditions
-     * @return type 
+     * @return type
      */
     function setConditions($conditions,$update=false){
         if($conditions && is_array($conditions)){
@@ -753,21 +763,21 @@ class WYSIJA_model extends WYSIJA_object{
             if($update){
                 foreach($conditions as $key =>$cond){
                     if($this->colCheck && !$this->checkAreColumns($conditions)) return false;
-                    
+
                     if(is_array($cond)){
                         $this->specialUpdate=true;
                         $this->conditions=$conditions;
-                        
+
                         return true;
                     }else   $this->conditions[$key]=$cond;
-                    
-                } 
-                
+
+                }
+
             }else{
-                foreach($conditions as $key =>$cond){  
+                foreach($conditions as $key =>$cond){
                     if(!in_array($key, array("like","equal","notequal","greater","less","greater_eq","less_eq"))){
                         if($this->colCheck && !$this->checkAreColumns($conditions)) return false;
-                        $this->conditions["equal"][$key]=$cond; 
+                        $this->conditions["equal"][$key]=$cond;
                     }else{
                         if($this->colCheck && !$this->checkAreColumns($cond)) return false;
                         $this->conditions[$key]=$cond;
@@ -775,15 +785,15 @@ class WYSIJA_model extends WYSIJA_object{
 
                 }
             }
-            
+
             return true;
         }else return false;
     }
-    
+
     /**
      * check that the columns corresponds to the columns in the model
      * @param type $arrayColumns
-     * @return type 
+     * @return type
      */
     function checkAreColumns($arrayColumns){
         if($this->noCheck) return true;
@@ -793,48 +803,67 @@ class WYSIJA_model extends WYSIJA_object{
                 return false;
             }
         }
-        return true;           
+        return true;
     }
-    
+
     function query($query,$arg2="",$arg3=ARRAY_A){
         global $wpdb;
-        
+
        if(!$arg2) $query=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$query);
        else $arg2=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$arg2);
-        
+
         switch($query){
             case "get_row":
                 if($this->dbg) $this->keepQry($arg2,"query");
-                return $wpdb->get_row($arg2,$arg3);
+
+                $resultss=$wpdb->get_row($arg2,$arg3);
+                $this->logError();
+                return $resultss;
                 break;
             case "get_res":
                 if($this->dbg) $this->keepQry($arg2,"query");
                 $results=$wpdb->get_results($arg2,$arg3);
                 //$this->escapeQuotesFromRes($results);
+                $this->logError();
                 return $results;
                 break;
             default:
                 if($this->dbg) $this->keepQry($query,"query");
-                
+
                 $result=$wpdb->query($query);
+                $this->logError();
                 if(substr($query, 0, 6)=="INSERT") return $wpdb->insert_id;
                 else return $result;
         }
-        
+
     }
-    
+
+    function logError(){
+        if(WYSIJA_DBG>1){
+            global $wysija_queries_errors;
+            if(!$wysija_queries_errors) $wysija_queries_errors=array();
+            $mysqlerror=mysql_error();
+            if($mysqlerror) {
+                $wysija_queries_errors[]=$mysqlerror;
+                WYSIJA::log('queries_errors',$mysqlerror);
+            }
+
+        }
+
+    }
+
     function keepQry($qry=false,$from="wpdb"){
         global $wpdb,$wysija_queries;
         if($qry)    $wysija_queries[]="[FROM ".$from."]".$qry;
         else    $wysija_queries[$from][]="[FROM ".$from."]".$wpdb->last_query;
     }
-    
+
     function getAffectedRows(){
         global $wpdb;
         return $wpdb->rows_affected;
         //return mysql_affected_rows( $this->dbh );
     }
-    
+
     function getErrorMsg(){
         global $wpdb;
         return $wpdb->show_errors();
@@ -842,32 +871,32 @@ class WYSIJA_model extends WYSIJA_object{
     /**
      * get the full prefix for the table
      * @global type $wpdb
-     * @return type 
+     * @return type
      */
     function getPrefix(){
         if($this->tableWP) return $this->wpprefix.$this->table_prefix;
         else return $this->wpprefix.$this->table_prefix."_";
     }
-    
+
     function beforeInsert(){
         return true;
     }
-    
+
     function afterInsert($resultSaveID){
         return true;
     }
     function beforeDelete(){
         return true;
     }
-    
+
     function afterDelete(){
         return true;
     }
-    
+
     function beforeUpdate(){
         return true;
     }
-    
+
     function afterUpdate($resultSaveID){
         return true;
     }
