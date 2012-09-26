@@ -70,8 +70,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $values['body'] = $wjEngine->renderEmail($emailData);
         $values['email_id']=$email_id;
 
-        // update data in DB
+        // wtf is that? could it explain the Sent On being updated for no reason?
         $modelEmail->columns['modified_at']['autoup']=1;
+
+        // update data in DB
         $result = $modelEmail->update($values, array('email_id' => $email_id));
 
         if(!$result) {
