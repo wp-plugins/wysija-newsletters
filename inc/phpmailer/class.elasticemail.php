@@ -52,8 +52,9 @@ class acymailingElasticemail {
 		$data = "username=" . urlencode($this->Username);
 		$data .= "&api_key=" . urlencode($this->Password);
 		$data .= "&referral=" . urlencode('2f0447bb-173a-459d-ab1a-ab8cbebb9aab');
+
 		if (!empty ($object->From)) $data .= "&from=" . urlencode($object->From);
-		if (!empty ($object->fromName)) $data .= "&from_name=" . urlencode($object->FromName);
+		if (!empty ($object->FromName)) $data .= "&from_name=" . urlencode($object->FromName);
 
 		$to = array_merge($object->to, $object->cc, $object->bcc);
 		$data .="&to=";

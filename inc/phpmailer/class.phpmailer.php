@@ -166,7 +166,7 @@ class acymailingPHPMailer extends WYSIJA_OBJECT{
 	 * Used with DKIM DNS Resource Record
 	 * @var string
 	 */
-	var $DKIM_selector   = 'acy';
+	var $DKIM_selector   = 'wys';
 
 	/**
 	 * Used with DKIM DNS Resource Record

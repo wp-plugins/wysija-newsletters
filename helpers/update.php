@@ -105,7 +105,7 @@ class WYSIJA_help_update extends WYSIJA_object{
             $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
             $modelconfig->save(array('dkim_domain'=>$wptoolboxs->_make_domain_name()));
             if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'is_public';")){
-                $querys[]="ALTER TABLE `[wysija]list` ADD `is_public` TINYINT UNSIGNED NOT NULL DEFAULT '0';";
+                $querys[]="ALTER TABLE `[wysija]list` ADD `is_public` TINYINT UNSIGNED NOT NULL DEFAULT 0;";
                 $errors=$this->runUpdateQueries($querys);
                 if($errors){
                     $this->error(implode($errors,"\n"));

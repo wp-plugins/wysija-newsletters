@@ -17,6 +17,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
         var $testemail=false;
         var $isMailjet=false;
         var $isElasticRest=false;
+        var $DKIM_selector   = 'wys';
 
 	function WYSIJA_help_mailer($extension="",$config=false) {
             $this->subscriberClass = &WYSIJA::get("user","model");
@@ -89,7 +90,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                $this->DKIM_domain = $this->config->getValue('dkim_domain');
                $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
            }
-
+           $this->DKIM_selector   = 'wys';
 	}//endfct
 
 	function send(){
