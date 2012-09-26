@@ -495,7 +495,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field='<p class="title"><label for="'.$id.'">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='PHP Mail</label><a class="button-secondary" id="send-test-mail-phpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
-                            $field.='<p class="description">'.__('This email engine works on 95% of servers',WYSIJA).'</p>';
+                            $field.='<p class="description">'.__('This email engine works on 95&#37; of servers',WYSIJA).'</p>';
 
 
                             $value="sendmail";
@@ -507,7 +507,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='Sendmail</label>
                                 <a class="button-secondary" id="send-test-mail-sendmail">'.__('Send a test mail',WYSIJA).'</a></p>';
-                            $field.='<p class="description">'.__('This method works on 5% of servers',WYSIJA).'</p>';
+                            $field.='<p class="description">'.__('This method works on 5&#37; of servers',WYSIJA).'</p>';
 
                             $id=str_replace("_",'-',$key).'-'.$value."-path";
                             $field.='<p class="title" id="p-'.$id.'"><label for="'.$id.'">';

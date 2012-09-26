@@ -709,10 +709,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
                         $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $post_params);
 
-                        if(strlen($params['bgcolor1']) > 0 && $postIterator > 0) {
+                        $posts[$key]['background_color'] = 'transparent';
+
+                        if(isset($params['bgcolor1']) && strlen($params['bgcolor1']) > 0 && $postIterator > 0) {
                             $posts[$key]['background_color'] = $params['bgcolor1'];
                         }
-                        if(strlen($params['bgcolor2']) > 0 && $postIterator < 0) {
+                        if(isset($params['bgcolor2']) && strlen($params['bgcolor2']) > 0 && $postIterator < 0) {
                             $posts[$key]['background_color'] = $params['bgcolor2'];
                         }
                         $postIterator *= -1;

@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -144,6 +144,13 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.1.4 - 2012-09-26 =
+* fixed missing "from name" when using Elastic Email
+* fixed rare issue where Social bookmarks & Automatic latest posts were not saved
+* fixed double scrollbars appearing on article selection popup
+* fixed dkim wrong key
+* fixed filled up sent on parameter without having sent the newsletter
 
 = 2.1.3 - 2012-09-18 =
 
