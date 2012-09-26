@@ -511,7 +511,7 @@ class WYSIJA_model extends WYSIJA_object{
             if(!$update && isset($this->columns['created_at']))$this->values['created_at']=time();
             foreach($this->columns as $key => $params){
                 /*check for auto columns */
-                if((isset($params['autoup']) && $update) || !$update){
+                if((isset($params['autoup']) && $update) || (!$update && $key!='sent_at')){
                     if(isset($params['type']) && !isset($this->values[$key])){
                         switch($params['type']){
                             case 'date':
