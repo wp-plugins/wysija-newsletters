@@ -1,22 +1,22 @@
 === Wysija Newsletters ===
 Contributors: wysija, benheu
-Tags: newsletter, newsletters, manager newsletter, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, autoresponders, follow up, email marketing, email, emailing, subscription
-Requires at least: 3.0
-Tested up to: 3.4.1
-Stable tag: 2.1.4
+Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
+Requires at least: 3.1
+Tested up to: 3.4.2
+Stable tag: 2.1.5
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
 
-Drag and drop your posts, images, social icons in our visual editor. Pick one of 20 themes. Change fonts and colors on the fly. Send the latest posts when you want or as a single newsletter. Configuration is dummy proof. This baby is fully supported.
+Create newsletters, post notifications and autoresponders. Drag and drop your posts, images, social icons. Pick one of 20 themes. Change fonts and colors on the fly. Configuration is dummy proof. A complete email solution for WordPress. Finally.
 
 
-= 2 minute video demo =
+= Check out this 2 minute video. =
 
 http://vimeo.com/35054446
 
-= Wysija's post notification demo =
+= View video on post notifications. =
 
 http://vimeo.com/46247528
 
@@ -77,6 +77,7 @@ We got a dedicated website just to help you out. And we're quite quick to reply.
 Translations are included in the plugin. Join the translation teams on [our Transifex page](https://www.transifex.com/projects/p/wysija/).
 
 * Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
+* Catalan
 * Chinese
 * Czech
 * Danish
@@ -144,6 +145,19 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.1.5 - 2012-10-16 =
+* fixed Notice: Use of undefined constant WYSIJA_DBG - assumed 'WYSIJA_DBG' in [...]/wp-content/plugins/wysija-newsletters/core/model.php on line 842
+* fixed bulk add subscriber to list when unsubscribed
+* fixed private list removed on edit your subscriber profile
+* fixed shortcodes not being properly stripped from post excerpt
+* fixed line breaks being stripped from posts
+* fixed text alignment issues in Outlook
+* fixed font styling issues in email
+* fixed auto newsletter for new subscriber when single optin
+* fixed new subscriber notification when single optin
+* fixed send preview email on automatic post notification newsletter
+* fixed not sending followup when updating subscriptions
 
 = 2.1.4 - 2012-09-26 =
 * fixed missing "from name" when using Elastic Email

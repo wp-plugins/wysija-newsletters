@@ -175,6 +175,28 @@ class WYSIJA_model_config extends WYSIJA_object{
                         )
                     )
                 )
+            ),
+            'wp_rokajaxsearch' => array(
+                'file' => 'wp_rokajaxsearch/rokajaxsearch.php',
+                'version' => '',
+                'clean' => array(
+                    'init' => array(
+                        '-50' => array(
+                            'function' => 'rokajaxsearch_mootools_init'
+                        )
+                    )
+                )
+            ),
+            'wp_rokstories' => array(
+                'file' => 'wp_rokstories/rokstories.php',
+                'version' => '',
+                'clean' => array(
+                    'init' => array(
+                        '-50' => array(
+                            'function' => 'rokstories_mootools_init'
+                        )
+                    )
+                )
             )
         );
 

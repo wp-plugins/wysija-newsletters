@@ -262,7 +262,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->WYSIJA_control();
         if(!isset($_REQUEST['action']) || !$_REQUEST['action']) {
             $this->defaultDisplay();
-            $this->_checkTotalSubscribers();
+            $this->checkTotalSubscribers();
         }
         else $this->_tryAction($_REQUEST['action']);
 

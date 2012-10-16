@@ -839,7 +839,7 @@ class WYSIJA_model extends WYSIJA_object{
     }
 
     function logError(){
-        if(WYSIJA_DBG>1){
+        if(defined('WYSIJA_DBG') && WYSIJA_DBG>1){
             global $wysija_queries_errors;
             if(!$wysija_queries_errors) $wysija_queries_errors=array();
             $mysqlerror=mysql_error();

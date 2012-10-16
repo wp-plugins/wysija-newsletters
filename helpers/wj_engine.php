@@ -811,13 +811,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     'wysija-image-container align-center' => array('margin' => '0 auto 0 auto', 'text-align' => 'center', 'padding' => '0'),
                     'wysija-image-container align-right' => array('float' => 'right', 'margin' => '0', 'padding' => '0'),
                     'wysija-divider-container' => array('margin' => '0 auto 0 auto', 'padding' => '0', 'text-align' => 'center'),
+                    'h1-link' => array_merge($this->getStyles('h1'), $this->getStyles('a')),
+                    'h2-link' => array_merge($this->getStyles('h2'), $this->getStyles('a')),
+                    'h3-link' => array_merge($this->getStyles('h3'), $this->getStyles('a')),
                     'align-left' => array('text-align' => 'left'),
                     'align-center' => array('text-align' => 'center'),
                     'align-right' => array('text-align' => 'right'),
-                    'align-justify' => array('text-align' => 'justify'),
-                    'h1-link' => array_merge($this->getStyles('h1'), $this->getStyles('a')),
-                    'h2-link' => array_merge($this->getStyles('h2'), $this->getStyles('a')),
-                    'h3-link' => array_merge($this->getStyles('h3'), $this->getStyles('a'))
+                    'align-justify' => array('text-align' => 'justify')
                 );
 
                 if(array_key_exists('background_color', $extra) and $extra['background_color'] !== null) {
@@ -839,7 +839,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         if(empty($tags) === FALSE) {
             foreach($tags as $tag => $styles) {
                 $styles = $this->splitSpacing($styles);
-                $tags['#< *'.$tag.'((?:(?!style).)*)>#Ui'] = '<'.$tag.' style="'.$wjParser->render(array_merge($styles, array('tag' => $tag)), 'styles/inline.html').'"$1>';
+                $inlineStyles = $wjParser->render(array_merge($styles, array('tag' => $tag)), 'styles/inline.html');
+                $inlineStyles = preg_replace('/(\n*)/', '', $inlineStyles);
+                $tags['#< *'.$tag.'((?:(?!style).)*)>#Ui'] = '<'.$tag.' style="'.$inlineStyles.'"$1>';
                 unset($tags[$tag]);
             }
             $block = preg_replace(array_keys($tags), $tags, $block);
@@ -848,7 +850,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             foreach($classes as $class => $styles) {
 
                 $styles = $this->splitSpacing($styles);
-                $classes['#<([^ /]+) ((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)class="'.$class.'"((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)>#Ui'] = '<$1 $2$4$5$7 style="$3$6'.$wjParser->render($styles, 'styles/inline.html').'">';
+                $inlineStyles = $wjParser->render($styles, 'styles/inline.html');
+                $inlineStyles = preg_replace('/(\n*)/', '', $inlineStyles);
+                if(in_array($class, array('h1-link', 'h2-link', 'h3-link'))) {
+                    $classes['#<([^ /]+) ((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)class="[^"]*'.$class.'[^"]*"((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)>#Ui'] = '<$1 $2$4$5$7 style="'.$inlineStyles.'">';
+                } else {
+                    $classes['#<([^ /]+) ((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)class="[^"]*'.$class.'[^"]*"((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)>#Ui'] = '<$1 $2$4$5$7 style="$3$6'.$inlineStyles.'">';
+                }
                 unset($classes[$class]);
             }
             $styledBlock = preg_replace(array_keys($classes), $classes, $block);
@@ -861,30 +869,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         if($area === 'body' && strlen($block) > 0) {
 
 
-            $block = preg_replace('#<\/p>#Ui', "<!--[if gte mso 9]></p><![endif]--></p>", $block);
-            $block = preg_replace('#<p(.*)>#Ui', "\n<p$1><!--[if gte mso 9]></p><p class=\"wysija-fix-paragraph\"><![endif]-->", $block);
-
-            $block = preg_replace('#<\/h2>#Ui', "<!--[if gte mso 9]></h2><![endif]--></h2>", $block);
-            $block = preg_replace('#<h2(.*)>#Ui', "<h2$1><!--[if gte mso 9]></h2><h2 class=\"wysija-fix-h2\"><![endif]-->", $block);
-
-            $block = preg_replace('#<\/h3>#Ui', "<!--[if gte mso 9]></h3><![endif]--></h3>", $block);
-            $block = preg_replace('#<h3(.*)>#Ui', "<h3$1><!--[if gte mso 9]></h3><h3 class=\"wysija-fix-h3\"><![endif]-->", $block);
-
-            $block = preg_replace('#<ol(.*)>#Ui', "\n<ul$1>", $block);
-            $block = preg_replace('#<ul(.*)>#Ui', "\n<ul$1>", $block);
-            $block = preg_replace('#<li(.*)>#Ui', "\n<li$1>", $block);
-            $pFixStyles = $this->splitSpacing(array_merge($this->getStyles('body'), array('padding' => '3px 0 0 0', 'margin' => '0 0 1.3em 0', 'line-height' => '1em', 'vertical-align' => 'top')));
-            $h2FixStyles = $this->splitSpacing(array_merge($this->getStyles('h2'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1em')));
-            $h3FixStyles = $this->splitSpacing(array_merge($this->getStyles('h3'), array('padding' => '0', 'margin' => '0 0 10px 0', 'font-weight' => 'normal', 'line-height' => '1em')));
-
-            if(array_key_exists('background_color', $extra) and $extra['background_color'] !== null) {
-                $pFixStyles['background'] = $extra['background_color'];
-                $h2FixStyles['background'] = $extra['background_color'];
-                $h3FixStyles['background'] = $extra['background_color'];
-            }
-            $block = str_replace('class="wysija-fix-paragraph"', 'style="'.$wjParser->render($pFixStyles, 'styles/inline.html').'"', $block);
-            $block = str_replace('class="wysija-fix-h2"', 'style="'.$wjParser->render($h2FixStyles, 'styles/inline.html').'"', $block);
-            $block = str_replace('class="wysija-fix-h3"', 'style="'.$wjParser->render($h3FixStyles, 'styles/inline.html').'"', $block);
+            
         }
         return $block;
     }

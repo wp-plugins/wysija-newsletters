@@ -68,7 +68,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
                     $errorString = implode(' ',$errors);
                     $port = $bounceClass->config->getValue('bounce_port','');
                     if(preg_match('#certificate#i',$errorString) && !$bounceClass->config->getValue('bounce_selfsigned',false)){
-                            $this->notice('You may need to turn ON the option <i>Self-signed certificates</i>');
+                            $this->notice(__('You may need to turn ON the option <i>Self-signed certificates</i>', WYSIJA));
                     }elseif(!empty($port) AND !in_array($port,array('993','143','110'))){
                             $this->notice(__('Are you sure you selected the right port? You can leave it empty if you do not know what to specify',WYSIJA));
                     }

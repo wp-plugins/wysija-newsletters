@@ -12,21 +12,23 @@ class WYSIJA_object{
     }
 
 
-    function get_version() {
-        static $version=false;
-        if($version) return $version;
+    function get_version($pluginName=false) {
+        static $versions=array();
+        if(isset($versions[$pluginName])) return $versions[$pluginName];
         if ( ! function_exists( 'get_plugins' ) )   {
             if(file_exists(ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php')){
                 require_once( ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php' );
             }
         }
         if (function_exists( 'get_plugins' ) )  {
-            $plugin_data = get_plugin_data( WYSIJA_FILE );
-            $version = $plugin_data['Version'];
+            if(!$pluginName)    $pluginName='wysija-newsletters/index.php';
+            $pluginFile=WYSIJA_PLG_DIR.str_replace('/',DS,$pluginName);
+            $plugin_data = get_plugin_data( $pluginFile );
+            $versions[$pluginName] = $plugin_data['Version'];
         }else{
-            $version='undefined';
+            $versions[$pluginName]='undefined';
         }
-        return $version;
+        return $versions[$pluginName];
     }
 
     function wp_get_userdata($field=false){
@@ -279,7 +281,7 @@ class WYSIJA extends WYSIJA_object{
         }
         /*load the language file*/
         if ( !$extensionloaded || !isset($extensionloaded[$extendedplugin])) {
-
+            $transstring = null;
             switch($extendedplugin){
                 case "wysija-newsletters":
                     $transstring=WYSIJA;
@@ -290,6 +292,9 @@ class WYSIJA extends WYSIJA_object{
                 case "wysijacrons":
                     $transstring=WYSIJACRONS;
                     break;
+                case 'wysija-newsletters-premium':
+                    $transstring=WYSIJANLP;
+                    break;
                 case "get_all":
                     return $extensionloaded;
             }
@@ -297,12 +302,15 @@ class WYSIJA extends WYSIJA_object{
              * Who commented that line ? I don't remember doing it.(Ben)
              * Leave it be please
              */
-            if(!isset($extensionloaded[$extendedplugin]))    load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
-            $extensionloaded[$extendedplugin] = $transstring;
+            if($transstring !== null) {
+                if(!isset($extensionloaded[$extendedplugin])) load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
+                $extensionloaded[$extendedplugin] = $transstring;
+            }
+
             $config=&WYSIJA::get('config','model');
 
             //TODO I don't remember why do we load_lang_init twice I think it has to do with qTranslate compatibility ....
-            if(!((int)$config->getValue('debug_new')>1))    WYSIJA::load_lang_init();
+            if(!((int)$config->getValue('debug_new')>1)) WYSIJA::load_lang_init();
         }
 
     }
@@ -350,17 +358,28 @@ class WYSIJA extends WYSIJA_object{
         if(isset($arrayOfObjects[$extendedplugin][$type.$name])) {
             return $arrayOfObjects[$extendedplugin][$type.$name];
         }
-        if($forceside)  $side=$forceside;
-        else    $side=WYSIJA_SIDE;
 
-        if($extendedplugin=='wysija-newsletters'){
-            $extendeconstant=strtoupper("wysija");
-            if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
-            $extendedpluginname='wysija';
-        }else{
-           $extendeconstant=strtoupper($extendedplugin);
-            if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
-            $extendedpluginname=$extendedplugin;
+        if($forceside) {
+            $side=$forceside;
+        } else {
+            $side=WYSIJA_SIDE;
+        }
+
+        switch($extendedplugin){
+            case 'wysija-newsletters-premium':
+                $extendeconstant='WYSIJANLP';
+                if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
+                $extendedpluginname='wysijanlp';
+                break;
+            case 'wysija-newsletters':
+                $extendeconstant='WYSIJA';
+                if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
+                $extendedpluginname='wysija';
+                break;
+            default :
+                $extendeconstant=strtoupper($extendedplugin);
+                if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
+                $extendedpluginname=$extendedplugin;
         }
 
         //security to protect against ./../ includes
@@ -414,7 +433,7 @@ class WYSIJA extends WYSIJA_object{
 
     }
 
-    function log($key='default',$data='empty'){
+    function log($key='default',$data='empty',$category='default'){
         $config=&WYSIJA::get('config','model');
         if((int)$config->getValue('debug_new')>1){
             $optionlog=get_option('wysija_log');
@@ -423,7 +442,7 @@ class WYSIJA extends WYSIJA_object{
                 $optionlog=array();
             }
 
-            $optionlog[time().$key]=$data;
+            $optionlog[$category][microtime()][$key]=$data;
             update_option('wysija_log', $optionlog);
         }
         return false;
@@ -487,14 +506,29 @@ class WYSIJA extends WYSIJA_object{
 
         /* queue the scheduled newsletter also if there are any*/
         $autoNL->checkScheduled();
+        $config=&WYSIJA::get('config','model');
+        if((int)$config->getValue('total_subscribers')<2000 ){
 
-        $config=&WYSIJA::get("config","model");
-        $premium=$config->getValue('premium_key');
-        $subscribers=(int)$config->getValue('total_subscribers');
+            $helperQ=&WYSIJA::get('queue','helper');
+            $helperQ->report=false;
+            WYSIJA::log('croned_queue process',true);
+            $helperQ->process();
 
-        if($subscribers<2000 || ($premium && $subscribers>=2000) ){
+        }else{
+            /* START premium hook */
+            add_action('wysija_process_queue',array('WYSIJA','splitVersion_croned_queue_process'));
+            /* END premium hook */
+            do_action('wysija_process_queue');
+        }
 
-            $helperQ=&WYSIJA::get("queue","helper");
+
+    }
+/* START premium hook */
+    function splitVersion_croned_queue_process(){
+        $config=&WYSIJA::get('config','model');
+        if($config->getValue('premium_key')){
+
+            $helperQ=&WYSIJA::get('queue','helper');
             $helperQ->report=false;
             WYSIJA::log('croned_queue process',true);
             $helperQ->process();
@@ -508,7 +542,7 @@ class WYSIJA extends WYSIJA_object{
     function croned_bounce() {
         /*bounce handling*/
         $config = &WYSIJA::get('config','model');
-        if(!$config->getValue("bounce_process_auto")) return false;
+        if(!$config->getValue('bounce_process_auto')) return false;
 
         $bounceClass = &WYSIJA::get('bounce','helper');
         $bounceClass->report = false;
@@ -538,6 +572,19 @@ class WYSIJA extends WYSIJA_object{
         $bounceClass->close();
     }
 
+    function croned_weekly() {
+        @ini_set('max_execution_time',0);
+
+        /* send daily report about emails sent */
+        $modelC=&WYSIJA::get('config','model');
+        /* if premium let's do a licence check */
+        if($modelC->getValue('premium_key')){
+            $helperS=&WYSIJA::get('licence','helper');
+            $helperS->check();
+        }
+
+    }
+/* END premium hook */
 
     /**
      * remove temporary files
@@ -564,18 +611,7 @@ class WYSIJA extends WYSIJA_object{
         }
     }
 
-    function croned_weekly() {
-        @ini_set('max_execution_time',0);
 
-        /* send daily report about emails sent */
-        $modelC=&WYSIJA::get('config','model');
-        /* if premium let's do a licence check */
-        if($modelC->getValue('premium_key')){
-            $helperS=&WYSIJA::get('licence','helper');
-            $helperS->check();
-        }
-
-    }
 
 
     function croned_monthly() {
@@ -610,6 +646,38 @@ class WYSIJA extends WYSIJA_object{
         exit;
     }
 
+    function wp_notifications_ourway($var){
+        $modelC=&WYSIJA::get('config','model');
+
+        if(!$modelC->getValue('wp_notifications')) return false;
+
+        $modelEmail =& WYSIJA::get('email', 'model');
+        $email = $modelEmail->getOne(false, array('status'=>99,'type' => 3)); // WARNING: This id matches the confirmation email on Wysija.com
+
+        $hMailer=&WYSIJA::get('mailer','helper');
+
+        $var['message'] = nl2br(strip_tags($var['message'], '<em><span><b><strong><i><h1><h2><h3><a>'));
+
+        $hMailer= new WYSIJA_help_mailer();
+        $hMailer->Subject = str_replace('[notifications]',$var['subject'] , $email['subject']);
+        $hMailer->Body = str_replace('[content]',$var['message'] , $email['body']);
+        $hMailer->IsHTML(true);
+        $hMailer->sendHTML = true;
+
+        $hMailer->AddAddress($var['to']);
+        $result=$hMailer->send();
+
+
+    }
+
+    function wp_notifications_cancelled(&$phpmailer){
+        $modelC=&WYSIJA::get('config','model');
+        if(!$modelC->getValue('wp_notifications')) return false;
+
+        $mailobj=new WYSIJA_sendfalse();
+        $phpmailer=$mailobj;
+
+    }
     function create_post_type() {
 
         //$modelC=&WYSIJA::get('config','model');
@@ -1407,6 +1475,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
     function widget($args, $instance) {
         extract($args);
+
         $config=&WYSIJA::get("config","model");
         //if(!$config->getValue("sending_emails_ok")) return;
         foreach($this->fields as $field => $fieldParams){
@@ -1470,23 +1539,14 @@ add_action('wysijaSubscribeTo', array("WYSIJA", 'hook_subscriber_to_list'), 1);
 add_image_size( 'wysija-newsletters-max', 600, 99999 );
 
 /* some processing for cron management */
-add_filter( 'cron_schedules', array( "WYSIJA", 'filter_cron_schedules' ) );
-add_action( 'wysija_cron_queue', array( "WYSIJA", 'croned_queue' ) );
-add_action( 'wysija_cron_bounce', array( "WYSIJA", 'croned_bounce' ) );
-add_action( 'wysija_cron_daily', array( "WYSIJA", 'croned_daily' ) );
-add_action( 'wysija_cron_weekly', array( "WYSIJA", 'croned_weekly' ) );
-add_action( 'wysija_cron_monthly', array( "WYSIJA", 'croned_monthly' ) );
+add_filter( 'cron_schedules', array( 'WYSIJA', 'filter_cron_schedules' ) );
+add_action( 'wysija_cron_queue', array( 'WYSIJA', 'croned_queue' ) );
+add_action( 'wysija_cron_daily', array( 'WYSIJA', 'croned_daily' ) );
+add_action( 'wysija_cron_monthly', array( 'WYSIJA', 'croned_monthly' ) );
 
-if(!wp_next_scheduled('wysija_cron_daily')) wp_schedule_event( time() , 'daily', 'wysija_cron_daily' );
-
-
-
-if(!wp_next_scheduled('wysija_cron_queue')){
-    $modelConf=&WYSIJA::get("config","model");
-
-    wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('sending_emails_each'), 'wysija_cron_queue' );
-}
-
+/* START premium hook */
+add_action( 'wysija_cron_bounce', array( 'WYSIJA', 'croned_bounce' ) );
+add_action( 'wysija_cron_weekly', array( 'WYSIJA', 'croned_weekly' ) );
 if(!wp_next_scheduled('wysija_cron_bounce')){
     $modelConf=&WYSIJA::get("config","model");
 
@@ -1496,6 +1556,19 @@ if(!wp_next_scheduled('wysija_cron_bounce')){
 if(!wp_next_scheduled('wysija_cron_weekly')){
     $modelConf=&WYSIJA::get("config","model");
     wp_schedule_event( $modelConf->getValue('last_save') , 'eachweek', 'wysija_cron_weekly' );
+}
+/* END premium hook */
+
+add_action( 'wp_mail', array( 'WYSIJA', 'wp_notifications_ourway' ) );
+add_filter( 'phpmailer_init', array( 'WYSIJA', 'wp_notifications_cancelled' ) );
+
+
+if(!wp_next_scheduled('wysija_cron_daily')) wp_schedule_event( time() , 'daily', 'wysija_cron_daily' );
+
+
+if(!wp_next_scheduled('wysija_cron_queue')){
+    $modelConf=&WYSIJA::get("config","model");
+    wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('sending_emails_each'), 'wysija_cron_queue' );
 }
 
 if(!wp_next_scheduled('wysija_cron_monthly')){

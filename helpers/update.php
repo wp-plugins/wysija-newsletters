@@ -116,8 +116,6 @@ class WYSIJA_help_update extends WYSIJA_object{
                     return false;
                 }
             }
-
-
             return true;
             break;
             default:
@@ -148,13 +146,13 @@ class WYSIJA_help_update extends WYSIJA_object{
 	$details_url = self_admin_url('plugin-install.php?tab=plugin-information&plugin=' . $r->slug . '&section=changelog&TB_iframe=true&width=600&height=800');
         if((is_network_admin() || !is_multisite()) && current_user_can('update_plugins') && !empty($r->package) ){
             $this->notice(
-                    sprintf(
-                            __('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.')
-                            , '<strong>'.$plugin_name.'</strong>',
-                            esc_url($details_url),
-                            esc_attr($plugin_name),
-                            $r->new_version,
-                            wp_nonce_url( self_admin_url('update.php?action=upgrade-plugin&plugin=') . $file, 'upgrade-plugin_' . $file) ),true,true);
+                sprintf(
+                    __('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.')
+                    , '<strong>'.$plugin_name.'</strong>',
+                    esc_url($details_url),
+                    esc_attr($plugin_name),
+                    $r->new_version,
+                    wp_nonce_url( self_admin_url('update.php?action=upgrade-plugin&plugin=') . $file, 'upgrade-plugin_' . $file) ),true,true);
         }
     }
     function check(){
@@ -162,6 +160,15 @@ class WYSIJA_help_update extends WYSIJA_object{
         $config=&WYSIJA::get('config','model');
         if(!$config->getValue('wysija_db_version') || version_compare($config->getValue('wysija_db_version'),WYSIJA::get_version()) < 0){
             $this->update(WYSIJA::get_version());
+        }
+        
+        $noredirect=false;
+        if((!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
+            if(isset($_REQUEST['action']) && $_REQUEST['action']=='whats_new')  $noredirect=true;
+            if(!$noredirect) {
+                $config->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+                WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
+            }
         }
     }
     function update($version){
@@ -174,7 +181,6 @@ class WYSIJA_help_update extends WYSIJA_object{
                     return false;
                 }else{
                     $config->save(array('wysija_db_version'=>$version));
-
                 }
             }
         }

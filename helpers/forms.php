@@ -4,16 +4,16 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_forms{
     function WYSIJA_help_forms(){
         $this->eachValues=array(
-                            "one_min"=> __("1 minute",WYSIJA),
-                            "two_min"=> __("2 minutes",WYSIJA),
-                            "five_min"=> __("5 minutes",WYSIJA),
-                            "ten_min"=> __("10 minutes",WYSIJA),
-                            "fifteen_min"=> __("15 minutes",WYSIJA),
-                            "thirty_min"=> __("30 minutes",WYSIJA),
-                            "hourly"=> __("1 hour",WYSIJA),
-                            "two_hours"=> __("2 hours",WYSIJA),
-                            "twicedaily"=> __("Twice daily",WYSIJA),
-                            "daily"=> __("Day",WYSIJA));
+                            "one_min"=> __("every minute",WYSIJA),
+                            "two_min"=> __("every 2 minutes",WYSIJA),
+                            "five_min"=> __("every 5 minutes",WYSIJA),
+                            "ten_min"=> __("every 10 minutes",WYSIJA),
+                            "fifteen_min"=> __("every 15 minutes",WYSIJA),
+                            "thirty_min"=> __("every 30 minutes",WYSIJA),
+                            "hourly"=> __("every hour",WYSIJA),
+                            "two_hours"=> __("every 2 hours",WYSIJA),
+                            "twicedaily"=> __("twice daily",WYSIJA),
+                            "daily"=> __("everyday",WYSIJA));
         $this->eachValuesSec=array(
                             "one_min"=> '60',
                             "two_min"=> '120',
@@ -52,7 +52,7 @@ class WYSIJA_help_forms{
             return "<textarea ".$this->setAttrib($data, $defaults).$extra.">".$val."</textarea>";
     }
 
-    function tinymce($idName = '', $content = '') {   
+    function tinymce($idName = '', $content = '') {
         $this->the_editor(stripslashes($content), $idName,'title',false);
     }
     function checkbox($data = '', $value = '', $checked = FALSE, $extra = '') {
@@ -187,7 +187,7 @@ class WYSIJA_help_forms{
             }
             if(isset($attributes["default"])){
                 $attributes["onBlur"]="if(this.value=='') {this.value='".$attributes["default"]."';this.style.color='#ccc';this.style.fontStyle='italic';}";
-                $attributes["onFocus"]="if(this.value=='".$attributes["default"]."') {this.value='';this.style.color='#000';this.style.fontStyle='normal';}";   
+                $attributes["onFocus"]="if(this.value=='".$attributes["default"]."') {this.value='';this.style.color='#000';this.style.fontStyle='normal';}";
                 if((!isset($default['value']) || !$default['value'])){
                     $default['value']=$attributes["default"];
                     $attributes["style"]="color:#ccc;font-style:italic;";

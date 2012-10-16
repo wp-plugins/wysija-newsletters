@@ -121,10 +121,11 @@ class WYSIJA_help_user extends WYSIJA_object{
         $dataInsert=$data['user'];
         $dataInsert['ip']=$this->getIP();
         if(!$dbloptin){
-            $dataInsert['status']=1;
+
         }
         $modelUser->reset();
         $user_id=$modelUser->insert($dataInsert);
+
         if($user_id ){
             if(isset($data['message_success'])) $this->notice($data['message_success']);
         }else{
@@ -141,9 +142,12 @@ class WYSIJA_help_user extends WYSIJA_object{
             $receiver=$modelUser->getOne(false,array('email'=>trim($data['user']['email'])));
             $emailsent=$this->sendConfirmationEmail($receiver,true);
         }else{
+
             if($config->getValue('emails_notified') && $config->getValue('emails_notified_when_sub')){
+                $lists=$this->getUserLists($user_id);
+                $this->sendAutoNl($user_id,$lists);
                 $this->uid=$uid;
-                $this->_notify($data['user']['email']);
+                $this->_notify($data['user']['email'],true,$data['user_list']['list_ids']);
             }
         }
     }
@@ -292,7 +296,7 @@ class WYSIJA_help_user extends WYSIJA_object{
 
     function addToList($listid,$userids){
         $modelUser=&WYSIJA::get("user","model");
-        $query="INSERT IGNORE INTO `[wysija]user_list` (`list_id`,`user_id`)";
+        $query="REPLACE INTO `[wysija]user_list` (`list_id`,`user_id`)";
         $query.=" VALUES ";
         $total=count($userids);
         foreach($userids as $key=> $uid){

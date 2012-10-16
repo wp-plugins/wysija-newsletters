@@ -465,57 +465,64 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
         <?php
     }
 
-    function edit($data){
-        $formid='wysija-'.$_REQUEST['action'];
+    /* START premium hook */
+    function splitVersion_subscribers_stats($htmlContent,$data){
         $modelC=&WYSIJA::get("config","model");
         if($modelC->getValue("premium_key")){
             if(count($data['charts']['stats'])>0 ):
-            ?>
-            <div id="wysistats">
+            $htmlContent='<div id="wysistats">
                 <div id="wysistats1" class="left">
-                    <div id="statscontainer"></div>
-                    <h3><?php sprintf(__('%1$s emails received.',WYSIJA),$data['user']['emails']) ?></h3>
+                    <div id="statscontainer"></div><h3>'.sprintf(__('%1$s emails received.',WYSIJA),$data['user']['emails']).'</h3>
                 </div>
                 <div id="wysistats2" class="left">
-                    <ul>
-                        <?php
+                    <ul>';
 
                         foreach($data['charts']['stats'] as $stats){
-                            echo "<li>".$stats['name'].": ".$stats['number']."</li>";
+                            $htmlContent.="<li>".$stats['name'].": ".$stats['number']."</li>";
                         }
-                            echo "<li>".__('Added',WYSIJA).": ".$this->fieldListHTML_created_at($data['user']['details']["created_at"])."</li>";
-                        ?>
-
+                            $htmlContent.="<li>".__('Added',WYSIJA).": ".$this->fieldListHTML_created_at($data['user']['details']["created_at"])."</li>";
+                    $htmlContent.='
                     </ul>
                 </div>
                 <div id="wysistats3" class="left">
-                    <p class="title"><?php echo sprintf(__('Total of %1$s clicks:',WYSIJA),count($data['clicks']));?></p>
-                    <ol>
-                        <?php
+                    <p class="title">'. sprintf(__('Total of %1$s clicks:',WYSIJA),count($data['clicks'])).'</p>
+                    <ol>';
                         foreach($data['clicks'] as $click){
-                            echo "<li><em>".$click['name']."</em> : <strong >".sprintf(_n('%1$s hit', '%1$s hits', $click['number_clicked'],WYSIJA), $click['number_clicked'])."</strong> - ".$click['url']."</li>";
+                            $htmlContent.="<li><em>".$click['name']."</em> : <strong >".sprintf(_n('%1$s hit', '%1$s hits', $click['number_clicked'],WYSIJA), $click['number_clicked'])."</strong> - ".$click['url']."</li>";
                         }
-
-                        ?>
-
+                        $htmlContent.='
                     </ol>
                 </div>
                 <div class="clear"></div>
-            </div>
+            </div>';
 
-            <?php
             endif;
-        }else{
-            if(count($data['charts']['stats'])>0 ){
-                echo '<p>';
-                echo str_replace(
-                        array("[link]","[/link]"),
-                        array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
-                        __("Note: Find out what this subscribers opens and clicks with our [link]Premium version.[/link]",WYSIJA));
-                echo '</p>';
-            }
-
         }
+        return $htmlContent;
+    }
+    /* END premium hook */
+
+    function subscribers_stats($htmlContent,$data){
+        $htmlContent='';
+
+        if(count($data['charts']['stats'])>0 ){
+            $htmlContent.= '<p>';
+            $htmlContent.= str_replace(
+                    array("[link]","[/link]"),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
+                    __("Note: Find out what this subscribers opens and clicks with our [link]Premium version.[/link]",WYSIJA));
+            $htmlContent.= '</p>';
+        }
+        return $htmlContent;
+    }
+
+    function edit($data){
+        $formid='wysija-'.$_REQUEST['action'];
+        add_filter('wysija_subscribers_stats',array($this,'subscribers_stats'),1,2);
+        /* START premium hook */
+        add_filter('wysija_subscribers_stats',array($this,'splitVersion_subscribers_stats'),1,2);
+        /* END premium hook */
+        echo apply_filters('wysija_subscribers_stats', '',$data);
 
         $this->buttonsave=__('Save',WYSIJA);
         $this->add($data);

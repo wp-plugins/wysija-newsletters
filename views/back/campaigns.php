@@ -543,11 +543,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                                                         if($timeleft<(3600*24)) {
                                                             $timeleft=$toolboxH->duration($timeleft,true,2);
-                                                            $durationsent=sprintf(__('Next send out in %1$s'),$timeleft);
+                                                            $durationsent=sprintf(__('Next send out in %1$s',WYSIJA),$timeleft);
                                                         }
                                                         else {
                                                             $timeleft=date_i18n(get_option('date_format').' '.get_option('time_format'),$nextSend);
-                                                            $durationsent=sprintf(__('Next send out on %1$s'),$timeleft);
+                                                            $durationsent=sprintf(__('Next send out on %1$s',WYSIJA),$timeleft);
                                                         }
 
 
@@ -677,6 +677,20 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         return $statustext;
     }
 
+    function sending_process(){
+        $config=&WYSIJA::get("config","model");
+        if((int)$config->getValue('total_subscribers')<2000) return true;
+        return false;
+    }
+    /* START premium hook */
+    function splitVersion_sending_process_premium($filter){
+       if(!$filter){
+            $config=&WYSIJA::get("config","model");
+            if($config->getValue('premium_key')) return true;
+       }
+       return $filter;
+    }
+    /* END premium hook */
     function dataBatches($data,$row,$pause,$statuses,$pending=false){
         $sentto=$senttotal=$sentleft=0;
         $return='<div>';
@@ -691,10 +705,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         if($sentleft>0){
 
             $config=&WYSIJA::get("config","model");
-            $premium=$config->getValue('premium_key');
-            $subscribers=(int)$config->getValue('total_subscribers');
+            add_filter('wysija_send_ok',array($this,'sending_process'));
+            /* START premium hook */
+            add_filter('wysija_send_ok',array($this,'splitVersion_sending_process_premium'));
+            /* END premium hook */
+            $letsgo=apply_filters('wysija_send_ok', false);
 
-            if($subscribers<2000 || ($premium && $subscribers>=2000) ){
+
+            if($letsgo){
                /*$schedules=wp_get_schedules();
                $nextbatch=(int)wp_next_scheduled( 'wysija_cron_queue')-time();
                $totalestimate=$data['sent'][$row["campaign_id"]]['remaining_time']-($schedules[wp_get_schedule('wysija_cron_queue')]['interval'])+$nextbatch;
@@ -734,6 +752,33 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         return $return;
     }
 
+    function linkStats($result,$data){
+        $result='<ol>';
+        $countloop=0;
+        foreach($data['clicks'] as $click){
+            if($countloop==0)   $label=str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;">','</a>'),__('see links with a [link]Premium licence[/link].',WYSIJA));
+            else $label='...';
+            $result.='<li>'.$click['name'].' : '.$label.'</li>';
+            $countloop++;
+        }
+        $result.='</ol>';
+        return $result;
+    }
+    /* START premium hook */
+    function splitVersion_linkStats($result,$data){
+        $modelC=&WYSIJA::get('config','model');
+        if($modelC->getValue("premium_key")){
+            $result='<ol>';
+
+            foreach($data['clicks'] as $click){
+                    $result.='<li>'.$click['name'].' : '.$click['url'].'</li>';
+            }
+            $result.='</ol>';
+        }
+
+        return $result;
+    }
+    /* END premium hook */
     /*
      * main view
      */
@@ -769,18 +814,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <?php
                 $modelC=&WYSIJA::get("config","model");
                 if(count($data['clicks'])>0){
-                    echo  "<ol>";
-                    $countloop=0;
-                    foreach($data['clicks'] as $click){
-                        if($modelC->getValue("premium_key"))    echo "<li>".$click['name']." : ".$click['url']."</li>";
-                        else{
-                            if($countloop==0)   $label=str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;">','</a>'),__('see links with a [link]Premium licence[/link].',WYSIJA));
-                            else $label='...';
-                            echo "<li>".$click['name']." : ".$label."</li>";
-                        }
-                        $countloop++;
-                    }
-                    echo  "</ol>";
+
+                    add_filter('wysija_links_stats',array($this,'linkStats'),1,2);
+                    /* START premium hook */
+                    add_filter('wysija_links_stats',array($this,'splitVersion_linkStats'),1,2);
+                    /* END premium hook */
+                    $linkshtml=apply_filters('wysija_links_stats', '',$data);
+                    echo $linkshtml;
                 }else  echo __('Nothing yet!',WYSIJA);
 
                 /*if(count($data['clicks'])>0){
@@ -1134,39 +1174,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                 ?>
         <p><input type="text" name="receiver-preview" id="preview-receiver" value="<?php echo $emailuser ?>" /> <a href="javascript:;" id="wj-send-preview" class="button wysija"><?php _e("Send preview",WYSIJA) ?></a></p>
-        <p>
-            <?php
-            $config=&WYSIJA::get("config","model");
-            $classspammy=$triesleftstring='';
-            $changedid='';
-            if(!$config->getValue('premium_key')){
-                $tries=(int)$config->getValue('spamtest_tries');
-                //change that value to allow more tries
-                $numberoftriesallowed=0;
-                $triesleft=$numberoftriesallowed-$tries;
-                if($triesleft<=0){
-                    $classspammy=' disabled';
-                    $changedid='s';
-                }
-
-                $triesleftstring=str_replace(
-                    array('[link]','[/link]'),
-                    array('<a class="premium-tab" href="javascript:;">','</a>'),
-                    sprintf(__('%1$s tries left. Get [link]Premium[/link] for unlimited use.',WYSIJA),'<span id="counttriesleft">'.$triesleft.'</span>'));
-
-
-            }
-            ?>
-            <a href="javascript:;" id="wysija-send-spamtest<?php echo $changedid ?>" class="button wysija<?php echo $classspammy ?>">
-        <?php _e("How spammy is this newsletter?",WYSIJA) ?>
-            </a>
-            <span class="marginl">
         <?php
+        /* START premium hook */
+        add_filter('wysija_howspammy',array($this,'splitVersion_how_spammy'));
+        /* END premium hook */
+        echo apply_filters('wysija_howspammy');
 
-        echo $triesleftstring;
         ?>
-            </span>
-        </p>
+
 
         <p class="submit">
                 <?php $this->secure(array('action'=>"saveemail",'id'=>$data['email']['email_id'])); ?>
@@ -1357,22 +1372,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 $(function(){
                     setupColorPickers();
                 });
-
-                $('.wysija_toolbar_tabs a').live('click', function() {
-                    // reset selected link
-                    $('.wysija_toolbar_tabs a').removeClass('selected');
-
-                    // hide tabs
-                    $('.wj_images, .wj_content, .wj_styles, .wj_themes').hide();
-
-                    // show selected tab
-                    $('.wj_'+$(this).attr('rel')).show();
-
-                    // set selected link
-                    $(this).addClass('selected');
-
-                    return false;
-                });
             });
         </script>
         <!-- END: Wysija Toolbar -->
@@ -1387,6 +1386,58 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         </div>
         <?php
     }
+    /* START premium hook */
+    function splitVersion_how_spammy(){
+        $config=&WYSIJA::get('config','model');
+        if(!$config->getValue('premium_key')) return;
+
+        $contentHTML='<p>';
+
+        $classspammy=$triesleftstring='';
+        $changedid='';
+
+        /*$tries=(int)$config->getValue('spamtest_tries');
+        //change that value to allow more tries
+        $numberoftriesallowed=0;
+        $triesleft=$numberoftriesallowed-$tries;
+        if($triesleft<=0){
+            $classspammy=' disabled';
+            $changedid='s';
+        }
+
+        $triesleftstring=str_replace(
+        array('[link]','[/link]'),
+        array('<a class="premium-tab" href="javascript:;">','</a>'),
+        sprintf(__('%1$s tries left. Get [link]Premium[/link] for unlimited use.',WYSIJA),'<span id="counttriesleft">'.$triesleft.'</span>'));*/
+
+
+
+        $contentHTML.='<a href="javascript:;" id="wysija-send-spamtest'.$changedid.'" class="button wysija'. $classspammy.'">'.__("How spammy is this newsletter?",WYSIJA).'</a>
+        <span class="marginl">'.$triesleftstring.'</span></p>';
+        return $contentHTML;
+    }
+
+
+
+    function splitVersion_extend_step3($step){
+        $config=&WYSIJA::get('config','model');
+        if($config->getValue('premium_key')){
+            $step['googletrackingcode']=array(
+                'type'=>'input',
+                'isparams' => "params",
+                'class'=>'',
+                'label'=>__('Google Analytics Campaign',WYSIJA),
+                'desc'=>__('For example, "Spring email". [link]Read the guide.[/link]',WYSIJA),
+                'link'=>'<a href="http://support.wysija.com/knowledgebase/track-your-newsletters-visitors-in-google-analytics/?utm_source=wpadmin&utm_campaign=step3" target="_blank"> ');
+
+            if(isset($_REQUEST['wysija']['email']["params"]['googletrackingcode'])) {
+                $data['email']['params']['googletrackingcode']=$step['googletrackingcode']['default']=$_REQUEST['wysija']['email']["params"]['googletrackingcode'];
+            }
+        }
+        return $step;
+    }
+    /* END premium hook */
+
     /* when newsletter has been sent let's see the feedback */
     function editDetails($data=false){
 
@@ -1444,23 +1495,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'desc'=>__('When the subscribers hit "reply", this is to who they will send their email ',WYSIJA));
 
 
-        $config=&WYSIJA::get("config","model");
-        if($config->getValue('premium_key')){
-            $step['googletrackingcode']=array(
-                'type'=>'input',
-                'isparams' => "params",
-                'class'=>'',
-                'label'=>__('Google Analytics Campaign',WYSIJA),
-                'desc'=>__('For example, "Spring email". [link]Read the guide.[/link]',WYSIJA),
-                'link'=>'<a href="http://support.wysija.com/knowledgebase/track-your-newsletters-visitors-in-google-analytics/?utm_source=wpadmin&utm_campaign=step3" target="_blank"> ');
 
-            if(isset($_REQUEST['wysija']['email']["params"]['googletrackingcode'])) {
-                $data['email']['params']['googletrackingcode']=$step['googletrackingcode']['default']=$_REQUEST['wysija']['email']["params"]['googletrackingcode'];
-            }
+        /* START premium hook */
+        add_filter('wysija_extend_step3',array($this,'splitVersion_extend_step3'));
+        /* END premium hook */
+        $step=apply_filters('wysija_extend_step3', $step);
 
 
-
-        }
 
         //we schedule only the type 1 newsletter
         if($data['email']['type']==1){
@@ -2588,5 +2629,62 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
         if(!isset($email['params']['quickselection']) or empty($email['params']['quickselection'])) return array();
         return $email['params']['quickselection'];
+    }
+    function whats_new($data){
+        ?>
+        <div class="wrap about-wrap">
+
+            <h1><?php echo sprintf(__('Welcome to Wysija %1$s',WYSIJA),WYSIJA::get_version()); ?></h1>
+
+            <div class="about-text"><?php echo $data['abouttext'] ?></div>
+
+            <?php
+                foreach($data['sections'] as $section){
+                    ?>
+                     <div class="changelog">
+                            <h3><?php echo $section['title'] ?></h3>
+
+                            <div class="feature-section <?php echo $section['format'] ?>">
+                                <?php switch($section['format']){
+                                    case 'three-col':
+                                        foreach($section['cols'] as $col){
+                                            ?>
+                                            <div>
+                                                    <h4><?php echo $col['title'] ?></h4>
+                                                    <p><?php echo $col['content'] ?></p>
+                                            </div>
+                                            <?php
+                                        }
+                                        break;
+                                    case 'bullets':
+                                        echo '<ul>';
+                                        foreach($section['paragraphs'] as $line){
+                                            ?>
+                                            <li><?php echo $line ?></li>
+                                            <?php
+                                        }
+                                        echo '</ul>';
+                                        break;
+                                    default :
+                                        foreach($section['paragraphs'] as $line){
+                                            ?>
+                                            <p><?php echo $line ?></p>
+                                            <?php
+                                        }
+
+                                } ?>
+
+                            </div>
+                    </div>
+                    <?php
+                }
+            ?>
+
+            <a class="wysija-premium-btns wysija-premium" href="admin.php?page=wysija_campaigns"><?php _e('Thanks! Now bring me to Wysija.',WYSIJA); ?></a>
+
+        </div>
+
+
+        <?php
     }
 }

@@ -94,7 +94,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
     }
     function _make_domain_name($url=false){
         if(!$url) $url=admin_url('admin.php');
-        $domain_name=str_replace(array("https://","http://","www."),"",$url);
+        $domain_name=str_replace(array("https://","http://","www."),"",strtolower($url));
 
         $domain_name=explode('/',$domain_name);
         return $domain_name[0];

@@ -23,6 +23,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         if(!function_exists('dbg')) {
             function dbg($mixed,$exit=true){}
         }
+
         
         if(defined('DOING_AJAX')){
 
@@ -52,6 +53,36 @@ class WYSIJA_help_back extends WYSIJA_help{
              $wptools->set_default_rolecaps();
         }
 
+        
+        if($config->getValue('premium_key') && !WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php')){
+            add_filter( 'pre_set_site_transient_update_plugins', array($this,'prevent_update_wysija'));
+            add_filter( 'http_request_args', array($this,'disable_wysija_version_requests'), 5, 2 );
+            if(file_exists(WYSIJA_PLG_DIR.'wysija-newsletters-premium'.DS.'index.php')){
+
+                $this->notice('<h1>'.__('You need to activate the wysija premium plugin.',WYSIJA).' <a id="install-wjp" class="wysija-premium-btns wysija-premium"  href="admin.php?page=wysija_campaigns&action=install_wjp">'.__('Activate now.',WYSIJA).'</a></h1>');
+            }else{
+
+                $readmoreaboutchange=str_replace(
+                                array('[link]','[/link]'),
+                                array('<a  href="http://support.wysija.com/knowledgebase/premium-users-get-their-own-extra-plugin/" target="_blank">','</a>'), __('Premium users [link]need to install[/link] an additional plugin.',WYSIJA));
+                $this->notice('<h1>'.$readmoreaboutchange.' <a id="install-wjp" class="wysija-premium-btns wysija-premium"  href="admin.php?page=wysija_campaigns&action=install_wjp">'.__('Install now in one click.',WYSIJA).'</a></h1>');
+            }
+            $this->controller->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
+        }
+    }
+    function disable_wysija_version_requests( $r, $url ) {
+        if ( 0 !== strpos( $url, 'http://api.wordpress.org/plugins/update-check' ) )
+            return $r; // Not a plugin update request. Bail immediately.
+        $plugins = unserialize( $r['body']['plugins'] );
+        unset( $plugins->plugins['wysija-newsletters/index.php'] );
+        unset( $plugins->active[ array_search('wysija-newsletters/index.php', $plugins->active ) ] );
+        $r['body']['plugins'] = serialize( $plugins );
+        return $r;
+    }
+
+    function prevent_update_wysija($value){
+        if(isset($value->response['wysija-newsletters/index.php'])) unset($value->response['wysija-newsletters/index.php']);
+        return $value;
     }
 
     function resolveConflicts(){
@@ -60,7 +91,7 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
         $conflictingTheme = null;
-        $currentTheme = strtolower(get_current_theme());
+        $currentTheme = strtolower(function_exists( 'wp_get_theme' ) ? wp_get_theme() : get_current_theme());
         foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
             if($keyTheme === $currentTheme) {
                 $conflictingTheme = $keyTheme;
@@ -118,8 +149,11 @@ class WYSIJA_help_back extends WYSIJA_help{
             $msg=$config->getValue('ignore_msgs');
             if(!isset($msg['crondisabled'])){
                 $this->notice(
-                        __('The CRON system is disabled on your WordPress site. Wysija will not work correctly while it stays disabled.',WYSIJA).
-                        ' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
+                        __("Oops! Looks like your site's event scheduler (wp-cron) is turned off.",WYSIJA).' '.
+                        str_replace(
+                            array('[link]','[/link]'),
+                            array('<a href="http://support.wysija.com/knowledgebase/your-cron-is-disabled/" target="_blank">','</a>'), __('[link]Read more.[/link]',WYSIJA)
+                        ).' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
             }
 
         }

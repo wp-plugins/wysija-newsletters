@@ -61,7 +61,20 @@ class WYSIJA_control_back extends WYSIJA_control{
             add_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',base64_encode(serialize($this->pref)));
         }
 
-        /* check the licence if we have a premium user once in a while like every 24hrs*/
+
+        /* START premium hook */
+        /* check the licence if we have a premium user once in a while like every week*/
+        add_action('wysija_various_check',array($this,'splitVersion_variousCheck'));
+        /* END premium hook */
+        do_action('wysija_various_check');
+
+        /*check if the plugin has an update available */
+        $updateH=&WYSIJA::get('update','helper');
+        $updateH->checkForNewVersion();
+
+    }
+
+    function splitVersion_variousCheck(){
         $modelC=&WYSIJA::get('config','model');
         if(get_option('wysicheck') || (( (isset($_REQUEST['action']) && $_REQUEST['action']!='licok')) && $modelC->getValue('premium_key'))){
             //$this->notice('licence check');
@@ -82,14 +95,11 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(get_option('dkim_autosetup') ){
             $helpLic=&WYSIJA::get('licence','helper');
             $data=$helpLic->getDomainInfo();
-            wp_enqueue_script('wysija-setup-dkim', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkim&js=1&data='.$data, array( 'jquery' ), time());
+            wp_enqueue_script('wysija-setup-dkim', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&js=1&data='.$data, array( 'jquery' ), time());
         }
-
-        /*check if the plugin has an update available */
-        $updateH=&WYSIJA::get('update','helper');
-        $updateH->checkForNewVersion();
-
     }
+
+    
 
 
     function errorInstall(){
@@ -255,8 +265,14 @@ class WYSIJA_control_back extends WYSIJA_control{
         }
 
         if(defined('WYSIJA_REDIRECT'))  $this->redirectProcess();
-        $this->_checkTotalSubscribers();
 
+        $this->checkTotalSubscribers();
+    }
+
+    function checkTotalSubscribers(){
+        add_action('wysija_check_total_subscribers',array($this,'_checkTotalSubscribers'));
+        do_action('wysija_remove_action_check_total_subscribers');
+        do_action('wysija_check_total_subscribers');
     }
 
 
@@ -266,7 +282,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         $config=&WYSIJA::get("config","model");
         $totalSubscribers=$config->getValue('total_subscribers');
 
-        if((int)$totalSubscribers>1900 && !$config->getValue('premium_key')){
+        if((int)$totalSubscribers>1900){
             if((int)$totalSubscribers>2000){
                 $this->error(str_replace(array('[link]','[/link]'),
                     array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
