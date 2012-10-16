@@ -1,6 +1,6 @@
-{if #family}font-family:{#family};{/if}
+{if #family}font-family:'{#family}';{/if}
 {if #size}font-size:{#size}px;{/if}
-{if #color}color:{#color|color}{if #tag == 'h2' || #tag == 'h3'}!important{/if};{/if}
+{if #color}color:{#color|color} !important;{/if}
 {if #background}background-color:{#background|color};{/if}
 {if #underline == '1'}text-decoration:underline;{/if}{if #underline == '-1'}text-decoration:none;{/if}
 {if #text-decoration}text-decoration:{#text-decoration};{/if}
@@ -28,4 +28,4 @@
 {if #clear}clear:{#clear};{/if}
 {if #float}float:{#float};{/if}
 {if #vertical-align}vertical-align:{#vertical-align};{/if}
-{if #word-wrap}word-wrap: break-word;{/if}
+{if #word-wrap}word-wrap:break-word;{/if}

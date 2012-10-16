@@ -35,9 +35,12 @@ class WYSIJA_view_back extends WYSIJA_view{
     function menuTop($actionmenu=false){
 
         $menu="";
-        foreach($this->arrayMenus as $action =>$actiontrans){
-            $menu.= '<a href="admin.php?page='.$_REQUEST['page'].'&action='.$action.'" class="button-secondary2">'.$actiontrans.'</a>';
+        if(!empty($this->arrayMenus)){
+           foreach($this->arrayMenus as $action =>$actiontrans){
+                $menu.= '<a href="admin.php?page='.$_REQUEST['page'].'&action='.$action.'" class="button-secondary2">'.$actiontrans.'</a>';
+            }
         }
+
         return $menu;
     }
 
@@ -66,6 +69,7 @@ class WYSIJA_view_back extends WYSIJA_view{
         }
         echo '<h2>'.$mytitle.$subtitle.$this->menuTop($this->action,$data).'</h2>';
         echo $this->messages();
+
     }
 
 

@@ -335,23 +335,30 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             );
         }
 
-        $receivers=explode(',',$_REQUEST['receiver']);
-        foreach($receivers as &$receiver){
-            $dummyreceiver=new stdClass();
-            $dummyreceiver->user_id=0;
-            $dummyreceiver->email=$receiver;
-            $dummyreceiver->status=1;
-            $dummyreceiver->lastname=$dummyreceiver->firstname =$langextra='';
-            if($spamtest){
-                $dummyreceiver->firstname ='Mail-Tester.com';
-                if(WPLANG) $langextra='&lang='.WPLANG;
-                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($receiver).$langextra;
-            }
-
-            $receiver=$dummyreceiver;
-
+        if(strpos($_REQUEST['receiver'], ',')) {
+            $receivers = explode(',',$_REQUEST['receiver']);
+        } else if(strpos($_REQUEST['receiver'], ';')) {
+            $receivers = explode(';',$_REQUEST['receiver']);
+        } else {
+            $receivers = array($_REQUEST['receiver']);
         }
 
+        foreach($receivers as $key => $receiver){
+            $receivers[$key] = trim($receiver);
+            $dummyReceiver = new stdClass();
+            $dummyReceiver->user_id = 0;
+            $dummyReceiver->email = $receiver;
+            $dummyReceiver->status = 1;
+            $dummyReceiver->lastname = $dummyReceiver->firstname =$langextra='';
+            if($spamtest){
+                $dummyReceiver->firstname ='Mail-Tester.com';
+                if(WPLANG) $langextra='&lang='.WPLANG;
+                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($receivers[$key]).$langextra;
+            }
+
+            $receivers[$key] = $dummyReceiver;
+
+        }
 
         $emailClone=array();
         foreach($emailObject as $kk=>$vv)  $emailClone[$kk]=$vv;
@@ -369,14 +376,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $emailChild = $wjEngine->getEmailData();
         $countvar=$firstsubject=$totalchild='';
         if(isset($emailChild['params']['autonl']['articles']['count'])) $countvar=(int)$emailChild['params']['autonl']['articles']['count'];
-        if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstsubject=(int)$emailChild['params']['autonl']['articles']['first_subject'];
+        if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstsubject=$emailChild['params']['autonl']['articles']['first_subject'];
         if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalchild=(int)$emailChild['params']['autonl']['articles']['total_child'];
 
         $emailObject->subject = str_replace(
                 array('[total]','[number]','[post_title]'),
-                array($countvar,
-                    $firstsubject,
-                    $totalchild),
+                array($totalchild,$countvar,$firstsubject),
                 $emailChild['subject']);
 
         $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
@@ -400,16 +405,30 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         $params['email_id']=$emailObject->email_id;
+        $receiversList = array();
+        $res = false;
         foreach($receivers as $receiver){
-            $res=$mailer->sendSimple($receiver,$emailObject->subject,$emailObject->body,$params);
-            if($res)    $this->notice(sprintf($successmsg,$_REQUEST['receiver']));
+            if($mailer->sendSimple($receiver,$emailObject->subject,$emailObject->body,$params)) {
+                $res = true;
+                $receiversList[] = $receiver->email;
+            }
         }
-        $resultarray['result']=$res;
+
+        if($res === true) {
+            $this->notice(sprintf($successmsg, implode(', ', $receiversList)));
+        }
+
+        $resultarray['result'] = $res;
         return $resultarray;
     }
 
-
+    /* START premium hook */
     function send_spamtest(){
+        add_filter('wysija_send_spam_test',array($this,'splitVersion_send_spamtest'));
+        return apply_filters('wysija_send_spam_test');
+    }
+
+    function splitVersion_send_spamtest(){
         $config=&WYSIJA::get("config","model");
         $spamtesttries=$config->getValue('spamtest_tries');
 
@@ -427,6 +446,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
         return $results;
     }
+    /* END premium hook */
 
     function set_divider()
     {
@@ -560,6 +580,21 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $helper_engine=&WYSIJA::get("wj_engine","helper");
         return base64_encode($helper_engine->renderEditorBlock($block));
     }
+    /* START premium hook */
+    function splitVersion_install_theme_premium($getpremiumtheme){
+        $modelC=&WYSIJA::get("config","model");
+
+        if(!$modelC->getValue("premium_key")){
+
+            $errormsg=str_replace(array('[link]','[/link]'),
+            array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab ispopup" href="javascript:;" >','</a>'),
+                    __("Theme is available in premium version only. [link]11 good reasons to upgrade.[/link]",WYSIJA));
+            $this->error($errormsg,1);
+            return false;
+        }else  return true;
+
+    }
+    /* END premium hook */
 
     function install_theme() {
         if( isset($_REQUEST['theme_id'])){
@@ -567,31 +602,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
             //check if theme is premium if you have the premium licence
             if(isset($_REQUEST['premium']) && $_REQUEST['premium']){
-                $modelC=&WYSIJA::get("config","model");
+                add_filter('wysija_install_theme_premium',array($this,'splitVersion_install_theme_premium'));
+                $getpremiumtheme=apply_filters('wysija_install_theme_premium', false);
 
-                if(!$modelC->getValue("premium_key")){
+                if(!$getpremiumtheme){
                     $wjEngine =& WYSIJA::get('wj_engine', 'helper');
                     $themes = $wjEngine->renderThemes();
-
-                    $helperLicence=&WYSIJA::get("licence","helper");
-                    //$urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&testprod=1&controller=orders&action=checkout&popformat=1&wysijadomain=".$helperLicence->getDomainInfo();
-
-                    $errormsg=str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab ispopup" href="javascript:;" >','</a>'),
-                            __("Theme is available in premium version only. [link]11 good reasons to upgrade.[/link]",WYSIJA));
-                    $this->error($errormsg,1);
-
                     return array("result"=>false, 'themes' => $themes);
                 }
             }
 
-            //check if theme already exists on this server
-            /* $helperF=&WYSIJA::get('file',"helper");
-             * $filename=$helperF->exists("templates".DS.$_REQUEST['theme_key']);
-            if($filename['result']){
-                $this->error(sprintf(__('Theme already exists on the server.(%1$s)',WYSIJA),$filename['file']),1);
-                return array('result'=>false);
-            }*/
 
             $httpHelp=&WYSIJA::get("http","helper");
             $url=admin_url('admin.php');

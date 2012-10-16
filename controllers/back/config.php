@@ -74,10 +74,11 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
 
     function dkimcheck(){
 
-        if(isset($_REQUEST['xtz'])){
-            $dataconf=json_decode(base64_decode($_REQUEST['xtz']));
+        if(isset($_POST['xtz'])){
+            
+            $dataconf=json_decode(base64_decode($_POST['xtz']));
 
-            if(isset($dataconf->dkim_pubk) && isset($dataconf->dkim_privk)){
+            if(isset($dataconf->dkim_pubk->key) && isset($dataconf->dkim_privk)){
 
                 $modelConf=&WYSIJA::get('config','model');
                 $dataconfsave=array('dkim_pubk'=>$dataconf->dkim_pubk->key, 'dkim_privk'=>$dataconf->dkim_privk);
@@ -125,7 +126,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function render(){
-        $this->_checkTotalSubscribers();
+        $this->checkTotalSubscribers();
         $this->viewObj->render($this->action,$this->data);
     }
 

@@ -128,13 +128,15 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             }
 
             //check whether the email address has changed if so then we should make sure that the new address doesnt exists already
-            $_REQUEST['wysija']['user']['email']=trim($_REQUEST['wysija']['user']['email']);
-            if($this->userData['details']['email']!=$_REQUEST['wysija']['user']['email']){
-                $this->modelObj->reset();
-                $result=$this->modelObj->getOne(false,array('email'=>$_REQUEST['wysija']['user']['email']));
-                if($result){
-                    $this->error(sprintf(__('Email %1$s already exists.',WYSIJA),$_REQUEST['wysija']['user']['email']),1);
-                    unset($_REQUEST['wysija']['user']['email']);
+            if(isset($_REQUEST['wysija']['user']['email'])){
+                $_REQUEST['wysija']['user']['email']=trim($_REQUEST['wysija']['user']['email']);
+                if($this->userData['details']['email']!=$_REQUEST['wysija']['user']['email']){
+                    $this->modelObj->reset();
+                    $result=$this->modelObj->getOne(false,array('email'=>$_REQUEST['wysija']['user']['email']));
+                    if($result){
+                        $this->error(sprintf(__('Email %1$s already exists.',WYSIJA),$_REQUEST['wysija']['user']['email']),1);
+                        unset($_REQUEST['wysija']['user']['email']);
+                    }
                 }
             }
 
@@ -145,33 +147,55 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             $modelUL=&WYSIJA::get('user_list','model');
             /* list of core list */
             $modelLIST=&WYSIJA::get('list','model');
-            $results=$modelLIST->get(array('list_id'),array('is_enabled'=>'0'));
+            $results=$modelLIST->get(array('list_id'),array('is_enabled'=>1,'is_public'=>1));
             $core_listids=array();
             foreach($results as $res){
                 $core_listids[]=$res['list_id'];
             }
 
-            if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
-                foreach($_POST['wysija']['user_list']['list_id'] as $listid)
-                    $core_listids[]=$listid;
+            $user_lists=$modelUL->get(array('list_id'),array('user_id'=>$userid));
 
-                /* what we subscribe to*/
-                foreach($_POST['wysija']['user_list']['list_id'] as $listid)
-                    $modelUL->replace(array("user_id"=>$userid,"list_id"=>$listid,"unsub_date"=>0));
+            $postedlistids=$differenceForPostNotif=$removedFromList=array();
+            if(!empty($_POST['wysija']['user_list']['list_id']))    $postedlistids=$_POST['wysija']['user_list']['list_id'];
+
+            foreach($core_listids as $listidunik){
+                if(!in_array($listidunik, $postedlistids)){
+                    $removedFromList[]=$listidunik;
+                }
+
+            }
+            $modelUL->delete(array('user_id'=>$userid,'list_id'=>$removedFromList));
+
+
+            if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
+
+                $alreadyindblistids=array();
+                if($user_lists){
+                    foreach($user_lists as $ulist){
+                        $alreadyindblistids[]=$ulist['list_id'];
+                    }
+                }
+                if(!empty($alreadyindblistids)){
+                    foreach($postedlistids as $listidunik){
+                        if(!in_array($listidunik, $alreadyindblistids)){
+                            $differenceForPostNotif[]=$listidunik;
+                        }
+                    }
+                }else{
+                    $differenceForPostNotif=$postedlistids;
+                }
+
+
+                foreach($differenceForPostNotif as $listid)
+                    $modelUL->insert(array("user_id"=>$userid,"list_id"=>$listid,"unsub_date"=>0));
+
             }
 
-            //unsubscribe
-            $condiFirst=array("notequal"=>array("list_id"=>$core_listids),"equal"=>array("user_id"=>$userid,'unsub_date'=>0));
-            $modelUL->reset();
-            $modelUL->specialUpdate=true;
-            $modelUL->noCheck=true;
-            $modelUL->update(array('unsub_date'=>time()),$condiFirst);
             $modelUL->reset();
 
             $this->notice(__('Newsletter profile has been updated.',WYSIJA));
 
             $this->subscriptions();
-
 
             //reset post otherwise wordpress will not recognise the post !!!
             $_POST=array();

@@ -65,6 +65,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
                 $content = $post['post_excerpt'];
             } else {
 
+                $post['post_content'] = preg_replace('/\[.*\]/', '', $post['post_content']);
+
                 $excerpts = explode('<!--more-->', $post['post_content']);
                 if(count($excerpts) > 1){
                     $content = $excerpts[0];
@@ -78,7 +80,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
             $content = preg_replace('/<([\/])?h[123456](.*?)>/', '<$1p$2>', $content);
         }
 
-        $content = wpautop($content, false);
+        $content = wpautop($content);
 
         $content = preg_replace('/<img[^>]+./','', $content);
 
@@ -92,15 +94,13 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
         $content = preg_replace('/<([\/])?ol(.*?)>/', '<$1ul$2>', $content);
 
-        $content = str_replace(array('$'), array('&#36;'), $content);
+        $content = str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), $content);
 
-        $content = strip_tags($content, '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li>');
-
-        $content = str_replace(array('$'), array('&#36;'), $content);
+        $content = strip_tags($content, '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li><br>');
 
         if(strlen(trim($post['post_title'])) > 0) {
 
-            $post['post_title'] = trim(str_replace(array('$'), array('&#36;'), strip_tags($post['post_title'])));
+            $post['post_title'] = trim(str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), strip_tags($post['post_title'])));
 
             $content = '<'.$params['title_tag'].' class="align-'.$params['title_alignment'].'">'.  $post['post_title'].'</'.$params['title_tag'].'>'.$content;
         }

@@ -12,18 +12,93 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function WYSIJA_control_back_campaigns(){
 
     }
+
+    function whats_new(){
+        $this->title=__('What\'s new?',WYSIJA);
+        $this->viewObj->title=__('What\'s new?',WYSIJA);
+        $this->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
+        $hReadme=&WYSIJA::get('readme','helper');
+        $hReadme->scan();
+        $this->data=array();
+        $this->data['abouttext']='This is a minor release with important stuff. Read up!';
+
+        $mConfig=&WYSIJA::get('config','model');
+        if($mConfig->getValue('premium_key')){
+            $this->data['sections'][]=array(
+                'title'=>'Premium Users Get Their Own Plugin',
+                'format'=>'normal',
+                'paragraphs'=>array(
+                    'Starting today, Premium users need to download and install an additional plugin.',
+                    'We were asked by the friendly guys over at wordpress.org to move our premium (and disabled) features out of the free version.',
+                    'We are happy to make this modification since we believe the plugin repository should not include trialware.',
+                    'Premium features will still work in this version. But starting in our next version, later this month, the premium features will not work, unless the new plugin is installed. Free users can totally ignore this.',
+                    '<a id="install-wjp" class="wysija-premium-btns wysija-premium" href="admin.php?page=wysija_campaigns&action=install_wjp">Install now</a>',
+                    )
+                );
+        }
+
+
+        $this->data['sections'][]=array(
+            'title'=>'Say <em>Bonjour</em> to Welcome Screen',
+            'format'=>'normal',
+            'paragraphs'=>array(
+                    "After each update we'll show you a welcome screen, like this one. <br>This will be the fastest and easiest way to know what's new. We promise to keep them short."
+                )
+            );
+
+
+        $this->data['sections'][]=array(
+            'title'=>'3 Cool Things',
+            'cols'=>array(
+                array(
+                    'title'=>'Get Subscribers Before You Launch',
+                    'content'=>"There's a countdown theme that now support Wysija. Perfect for the sites you're about to release. Check out ".'<a href="http://www.seedprod.com/?utm_source=wpadmin&utm_campaign=wysija" target="_blank" title="Seedprod\'s site">Coming Soon Pro.</a>'
+            ),
+                array(
+                    'title'=>'You Need Your Form in a Popup?',
+                    'content'=>"Magic Action Box now supports Wysija. Perfect for placing your forms in a popup, at the top of your post in at the bottom. There's plenty of ways to configure it too.".'<a href="http://www.magicactionbox.com/?utm_source=wpadmin&amp;utm_campaign=wysija" target="_blank" title="Magic Action Box\'s site">Find out more on this plugin.</a>'
+            ),
+                array(
+                    'title'=>'Help Us Spread the Word',
+                    'content'=>"We've launched than 10 months ago and we're near 150 000 downloads. But we're still unknown to most people. So help us get known.".'<a href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&amp;utm_campaign=welcomepage" target="_blank" title="On our blog!">Here\'s how you can help us.</a>'
+            )
+            ),
+            'format'=>'three-col',
+            );
+
+        $this->data['sections'][]=array(
+            'title'=>'Keep your Wysija Updated. Always',
+            'format'=>'normal',
+            'paragraphs'=>array(
+                    "We noticed a few users are not updating their plugins. Bad, bad, we say. Make sure your plugins are always up to date. We do plenty of bug fixes and improvements regularly, so don't be left behind."
+                )
+            );
+
+        $this->data['sections'][]=array(
+            'title'=>'What Bugs Did We Fix?',
+            'format'=>'bullets',
+            'paragraphs'=>$hReadme->changelog[WYSIJA::get_version()]
+            );
+
+
+        $this->viewObj->skip_header=true;
+        return true;
+    }
+
+    /* START premium hook */
+    /*when curl or any php remote function not available wysija.com returns lcheck to that function*/
     function licok(){
         parent::WYSIJA_control_back();
         $dt=get_option("wysijey");
 
         if(isset($_REQUEST['xtz']) && $dt==$_REQUEST['xtz']){
-        $dataconf=array('premium_key'=>base64_encode(get_option('home').time()),'premium_val'=>time());
-        $this->notice(__("Premium version is valid for your site.",WYSIJA));
+            $dataconf=array('premium_key'=>base64_encode(get_option('home').time()),'premium_val'=>time());
+            $this->notice(__("Premium version is valid for your site.",WYSIJA));
         }else{
-        $dataconf=array('premium_key'=>"",'premium_val'=>"");
-        //$datadomain=unserialize(base64_decode($dt));
-        $this->error(str_replace(array("[link]","[/link]"),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$dt.'" target="_blank">','</a>'),
-        __("Premium licence does not exist for your site. Purchase it [link]here[/link].",WYSIJA)),1);
+            $dataconf=array('premium_key'=>"",'premium_val'=>"");
+            //$datadomain=unserialize(base64_decode($dt));
+            $this->error(str_replace(array("[link]","[/link]"),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$dt.'" target="_blank">','</a>'),
+            __("Premium licence does not exist for your site. Purchase it [link]here[/link].",WYSIJA)),1);
         }
         WYSIJA::update_option("wysicheck",false);
         $modelConf=&WYSIJA::get("config","model");
@@ -31,6 +106,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->redirect('admin.php?page=wysija_config#tab-premium');
     }
+    /* END premium hook */
 
     function validateLic(){
         $helpLic=&WYSIJA::get("licence","helper");
@@ -38,16 +114,14 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->redirect();
     }
-    function send_test_editor($dataPost=false){
-        $modelQ=&WYSIJA::get("queue","model");
-        $config=&WYSIJA::get("config","model");
-        $premium=$config->getValue('premium_key');
-        $subscribers=(int)$config->getValue('total_subscribers');
 
-        if($subscribers<2000 || ($premium && $subscribers>=2000) ){
+    function send_test_editor($dataPost=false){
+        $modelQ=&WYSIJA::get('queue','model');
+        $config=&WYSIJA::get('config','model');
+        if((int)$config->getValue('total_subscribers')<2000  ){
 
             if($modelQ->count()>0){
-                $helperQ=&WYSIJA::get("queue","helper");
+                $helperQ=&WYSIJA::get('queue','helper');
                 $emailid=false;
                 if($_REQUEST['emailid']){
                     $emailid=$_REQUEST['emailid'];
@@ -55,12 +129,43 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 WYSIJA::log('Don\'t wait and send now queue process',array('email_id'=>$emailid));
                 $helperQ->process($emailid);
             }else{
-                echo "<strong>".__("Queue is empty!",WYSIJA)."</strong>";
+                echo '<strong>'.__('Queue is empty!',WYSIJA).'</strong>';
             }
-        }else echo "<strong>".__("Go premium, you cannot send anymore!",WYSIJA)."</strong>";
+            exit;
+        }else {
+            add_action('wysija_send_test_editor',array($this,'splitVersion_sendtest'));
+            do_action('wysija_send_test_editor');
+
+        }
 
         exit;
     }
+
+    /* START premium hook */
+
+
+    function splitVersion_sendtest(){
+        $modelQ=&WYSIJA::get('queue','model');
+        $config=&WYSIJA::get('config','model');
+        $premium=$config->getValue('premium_key');
+        if($premium){
+
+            if($modelQ->count()>0){
+                $helperQ=&WYSIJA::get('queue','helper');
+                $emailid=false;
+                if($_REQUEST['emailid']){
+                    $emailid=$_REQUEST['emailid'];
+                }
+                WYSIJA::log('Don\'t wait and send now queue process',array('email_id'=>$emailid));
+                $helperQ->process($emailid);
+            }else{
+                echo '<strong>'.__('Queue is empty!',WYSIJA).'</strong>';
+            }
+        }else{
+            echo '<strong>'.__('Go premium, you cannot send anymore!',WYSIJA).'</strong>';
+        }
+    }
+    /* END premium hook */
 
     function test(){
         @ini_set('max_execution_time',0);
@@ -110,8 +215,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->viewShow='add';
         $this->data=array();
         $this->data['campaign']=array("name"=>"","description"=>"");
-        $modelConfig=&WYSIJA::get("config","model");
-        $this->data['email']=array("subject"=>"","from_email"=>$modelConfig->getValue("from_email"),"from_name"=>$modelConfig->getValue("from_name"));
+        $modelConfig=&WYSIJA::get('config','model');
+        $this->data['email']=array('subject'=>'','from_email'=>$modelConfig->getValue('from_email'),'from_name'=>$modelConfig->getValue('from_name'));
         $this->data['lists']=$this->__getLists(false,true,true);
 
         $this->dataAutoNl();
@@ -245,7 +350,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function __getLists($enabled=true,$count=false,$notgetalllistid=false){
-        $modelList=&WYSIJA::get("list","model");
+        $modelList=&WYSIJA::get('list','model');
         /* get lists which have users  and are enabled */
         if($enabled) $enabledstrg=' is_enabled>0 and';
         else $enabledstrg='';
@@ -253,12 +358,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $extrasql='';
         if(!$notgetalllistid) $extrasql='WHERE  list_id in (SELECT distinct(list_id) from wp_wysija_user_list )';
         $query='SELECT * FROM [wysija]list '.$extrasql;
-        $listres=$modelList->query("get_res",$query);
+        $listres=$modelList->query('get_res',$query);
 
         if($count){
-          $configM=&WYSIJA::get("config","model");
+          $configM=&WYSIJA::get('config','model');
           $condit='>=';
-          if($configM->getValue("confirm_dbleoptin")) $condit='>';
+          if($configM->getValue('confirm_dbleoptin')) $condit='>';
           $qry1="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `[wysija]user_list` as A LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id WHERE B.status $condit 0 GROUP BY list_id";
 
           $total=$modelList->getResults($qry1);
@@ -279,18 +384,18 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         if(!$this->_checkEmailExists($_REQUEST['id'])) return;
         $this->add();
 
-        $modelEmail=&WYSIJA::get("email","model");
+        $modelEmail=&WYSIJA::get('email','model');
 
-        $this->data['email']=$modelEmail->getOne(false,array("email_id"=>$_REQUEST['id']));
+        $this->data['email']=$modelEmail->getOne(false,array('email_id'=>$_REQUEST['id']));
 
         if($this->data['email']['status']>0){
             $this->redirect();
         }
         $this->title=sprintf(__('Step %1$s',WYSIJA),1)." | ".$this->data['email']['subject'];
-        $modelCamp=&WYSIJA::get("campaign","model");
+        $modelCamp=&WYSIJA::get('campaign','model');
         $this->data['campaign']=$modelCamp->getOne(false,array("campaign_id"=>$this->data['email']['campaign_id']));
 
-        $modelCL=&WYSIJA::get("campaign_list","model");
+        $modelCL=&WYSIJA::get('campaign_list','model');
         $this->data['campaign_list']=$modelCL->get(false,array("campaign_id"=>$this->data['email']['campaign_id']));
 
 
@@ -946,8 +1051,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function defaultDisplay(){
-        $helperU=&WYSIJA::get('update','helper');
-        //$helperU->runUpdate('2.1');
+
         $this->title=__('Newsletters',WYSIJA);
         $this->viewShow=$this->action='main';
         $this->js[]='wysija-admin-list';
@@ -958,21 +1062,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['confirmpauseedit']=__('The newsletter will be deactivated, you will need to reactivate it once you\'re over editing it. Do you want to proceed?',WYSIJA);
 
 
-       /* $mailClass = &WYSIJA::get('email','model');
-            $mailClass->getFormat=OBJECT;
-            $objectemail = $mailClass->getOne(12);
-        $objectemail->status=1;
-        $mailer=&WYSIJA::get('mailer','helper');
-        $mailer->sendOne($objectemail,'benbuddypress@bencaubere.com');*/
-
         $config=&WYSIJA::get("config","model");
-        /*if(!$config->getValue("premium_key") && !defined('DOING_AJAX')){
-            $msg=__("Support us with a [link][paypal][/link] donation or get the [link_full]full version.[/link_full]",WYSIJA);
-            $find=array('[link]','[/link]','[link_full]','[/link_full]','[paypal]');
-            $replace=array('<a href="#" title="'.__("Donate now",WYSIJA).'">','</a>','<a href="#" title="'.__("Buy now",WYSIJA).'">','</a>','<img  src="https://www.paypal.com/fr_XC/i/logo/PayPal_mark_37x23.gif" border="0" alt="Paypal">');
-            $this->notice(str_replace($find,$replace,$msg));
-        }*/
-
 
 
         /*get the filters*/
@@ -1734,6 +1824,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
        $this->jsTrans['premiumonly']=__("Premium Only",WYSIJA);
 
        $configM=&WYSIJA::get("config","model");
+       //change the translation of the button when it's premium
        if($configM->getValue("premium_key"))$this->jsTrans['ispremium']=1;
        else $this->jsTrans['ispremium']=0;
 
@@ -2083,4 +2174,65 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }else return true;
     }
 
+
+    function install_wjp(){
+        $premiumpluginname='wysija-newsletters-premium/index.php';
+        echo '<html><head></head><body style="font-family: sans-serif;font-size: 12px;line-height: 1.4em;">';
+        if(WYSIJA::is_plugin_active($premiumpluginname)){
+            echo '<p>'.__('Plugin is already installed and activated.',WYSIJA).'</p>';
+            exit;
+        }
+
+        //test if plugin is installed but not activated
+        $pluginslist=get_plugins();
+
+        if(isset($pluginslist[$premiumpluginname])){
+            //try to activate it simply
+            error_reporting(E_ALL);
+            ini_set('display_errors', '1');
+            activate_plugin($premiumpluginname);
+            echo '<p>'.__('Your Premium features are now activated. Happy emailing!',WYSIJA).'</p>';
+
+        }else{
+            //we need to download it
+            include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+            include_once WYSIJA_INC . 'wp-special'.DS.'wp-upgrader-skin.php';
+
+            $upgrader = new Plugin_Upgrader( new WysijaPlugin_Upgrader_Skin( compact('title', 'url', 'nonce', 'plugin', 'api') ));
+            $response=$upgrader->install('http://packager.wysija.com/download/zip?key=wysija-newsletters-premium');
+        }
+        echo '</body></html>';
+        exit;
+    }
+
+    /*function update_wjp(){
+        $current=get_site_transient( 'update_plugins' );
+
+        $objectwjp=null;
+        $objectwjp->id=9999999;
+        $objectwjp->slug='wysija-newsletters-premium';
+        $objectwjp->new_version='2.1.5';
+        $objectwjp->url='http://www.wysija.com/wordpress-newsletter-plugin-premium/';
+        $objectwjp->package='http://packager.wysija.com/download/zip?key=wysija-newsletters-premium';
+        $current->response['wysija-newsletters-premium/index.php']=$objectwjp;
+
+        $to_send = (object) compact('plugins', 'active');
+
+        $options = array(
+            'timeout' => ( ( defined('DOING_CRON') && DOING_CRON ) ? 30 : 3),
+            'body' => array( 'plugins' => serialize( $to_send ) ),
+            'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' )
+        );
+
+        $raw_response = wp_remote_post('http://packager.wysija.com/release/check/?key=wysija-newsletters-premium',$options);
+
+        set_site_transient( 'update_plugins',$current );
+
+        include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+        $upgrader = new Plugin_Upgrader( new Plugin_Installer_Skin( compact('title', 'url', 'nonce', 'plugin', 'api') ) );
+        $response=$upgrader->upgrade('wysija-newsletters-premium/index.php');
+    }*/
+
 }
+
+
