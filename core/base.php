@@ -649,7 +649,7 @@ class WYSIJA extends WYSIJA_object{
     function wp_notifications_ourway($var){
         $modelC=&WYSIJA::get('config','model');
 
-        if(!$modelC->getValue('wp_notifications')) return false;
+        if(!$modelC->getValue('wp_notifications')) return $var;
 
         $modelEmail =& WYSIJA::get('email', 'model');
         $email = $modelEmail->getOne(false, array('status'=>99,'type' => 3)); // WARNING: This id matches the confirmation email on Wysija.com
@@ -672,11 +672,11 @@ class WYSIJA extends WYSIJA_object{
 
     function wp_notifications_cancelled(&$phpmailer){
         $modelC=&WYSIJA::get('config','model');
-        if(!$modelC->getValue('wp_notifications')) return false;
+        if(!$modelC->getValue('wp_notifications')) return $phpmailer;
 
         $mailobj=new WYSIJA_sendfalse();
         $phpmailer=$mailobj;
-
+        return $phpmailer;
     }
     function create_post_type() {
 
@@ -1559,7 +1559,7 @@ if(!wp_next_scheduled('wysija_cron_weekly')){
 }
 /* END premium hook */
 
-add_action( 'wp_mail', array( 'WYSIJA', 'wp_notifications_ourway' ) );
+add_filter( 'wp_mail', array( 'WYSIJA', 'wp_notifications_ourway' ),10,1 );
 add_filter( 'phpmailer_init', array( 'WYSIJA', 'wp_notifications_cancelled' ) );
 
 
