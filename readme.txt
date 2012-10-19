@@ -1,6 +1,6 @@
 === Wysija Newsletters ===
 Contributors: wysija, benheu
-Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
+Tags: newsletter, newsletters, newsletter signup, newsletter widget, automatic newsletter, auto newsletter, subscribers, post notification, email subscription, email alerts, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.1
 Tested up to: 3.4.2
 Stable tag: 2.1.5
@@ -9,8 +9,9 @@ Send your post notifications or newsletters from WordPress easily, and beautiful
 
 == Description ==
 
-Create newsletters, post notifications and autoresponders. Drag and drop your posts, images, social icons. Pick one of 20 themes. Change fonts and colors on the fly. Configuration is dummy proof. A complete email solution for WordPress. Finally.
+Create newsletters, post notifications and autoresponders. Drop your posts, images, social icons in your newsletter. Pick one of 20 themes. Change fonts and colors on the fly. A new and simple newsletter solution for WordPress. Finally!
 
+We built it with the idea that newsletters in WordPress should be easy. Not hard. Forget MailChimp, Aweber, etc. We're the good guys inside your WordPress.
 
 = Check out this 2 minute video. =
 
