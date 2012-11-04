@@ -32,13 +32,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
             }else   $datarequested[$vals['name']]=$vals['value'];
         }
 
-        //$_REQUEST['_wpnonce']=$datarequested['_wpnonce'];
-
         $data=$this->convertUserData($datarequested);
 
         $helperUser=&WYSIJA::get('user','helper');
         if(!$helperUser->checkData($data))return false;
-
         $helperUser->addSubscriber($data);
 
         return true;

@@ -9,8 +9,10 @@ class WYSIJA_help_back extends WYSIJA_help{
         $config=&WYSIJA::get('config','model');
         define('WYSIJA_DBG',(int)$config->getValue('debug_new'));
 
-        error_reporting(0);
-        ini_set('display_errors', '0');
+        if(!defined('WP_DEBUG') || !WP_DEBUG){
+            error_reporting(0);
+            ini_set('display_errors', '0');
+        }
 
         
         if(isset($_GET['page']) && substr($_GET['page'],0,7)=='wysija_'){
@@ -257,38 +259,38 @@ class WYSIJA_help_back extends WYSIJA_help{
             'title'	=> __('Get Help!',WYSIJA),
             'content'=> $this->menuHelp));
             $tabfunc=true;
-
         }
     }
 
     function add_js($hook) {
         
         $jstrans=array();
-        wp_register_script('wysija-charts', "https://www.google.com/jsapi", array( 'jquery' ), true);
-        wp_register_script('wysija-admin-list', WYSIJA_URL."js/admin-listing.js", array( 'jquery' ), true, WYSIJA::get_version());
-        wp_register_script('wysija-base-script-64', WYSIJA_URL."js/base-script-64.js", array( 'jquery' ), true, WYSIJA::get_version());
+        wp_register_script('wysija-charts', 'https://www.google.com/jsapi', array( 'jquery' ), true);
+        wp_register_script('wysija-admin-list', WYSIJA_URL.'js/admin-listing.js', array( 'jquery' ), true, WYSIJA::get_version());
+        wp_register_script('wysija-base-script-64', WYSIJA_URL.'js/base-script-64.js', array( 'jquery' ), true, WYSIJA::get_version());
 
+        wp_enqueue_style('wysija-admin-css-widget', WYSIJA_URL.'css/admin-widget.css',array(),WYSIJA::get_version());
         
         if(WYSIJA_ITF){
-            wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL."css/admin-global.css",array(),WYSIJA::get_version());
-            wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL."js/admin-wysija-global.js",array(),WYSIJA::get_version());
-            $pagename=str_replace("wysija_","",$_REQUEST['page']);
-            $backloader=&WYSIJA::get("backloader","helper");
+            wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL.'css/admin-global.css',array(),WYSIJA::get_version());
+            wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL.'js/admin-wysija-global.js',array(),WYSIJA::get_version());
+            $pagename=str_replace('wysija_','',$_REQUEST['page']);
+            $backloader=&WYSIJA::get('backloader','helper');
             $backloader->initLoad($this->controller);
 
             $jstrans=$this->controller->jsTrans;
 
-            $jstrans['gopremium']=__("Go Premium!",WYSIJA);
+            $jstrans['gopremium']=__('Go Premium!',WYSIJA);
             
             $backloader->jsParse($this->controller,$pagename,WYSIJA_URL);
 
             $backloader->loadScriptsStyles($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
             $backloader->localize($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
         }
-            $jstrans["newsletters"]=__('Newsletters',WYSIJA);
-            $jstrans["urlpremium"]='admin.php?page=wysija_config#tab-premium';
+            $jstrans['newsletters']=__('Newsletters',WYSIJA);
+            $jstrans['urlpremium']='admin.php?page=wysija_config#tab-premium';
             if(isset($_REQUEST['page']) && $_REQUEST['page']=='wysija_config'){
-                $jstrans["urlpremium"]="#tab-premium";
+                $jstrans['urlpremium']='#tab-premium';
             }
             wp_localize_script('wysija-admin', 'wysijatrans', $jstrans);
     }
@@ -325,7 +327,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $msg=$config->getValue("ignore_msgs");
         $wysijaversion.='<div class="social-foot">';
         $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Spread da word.',WYSIJA).'</a> </div>';
-        $wysijaversion.= '<div class="version">'.__("Wysija Version: ",WYSIJA)."<strong>".WYSIJA::get_version()."</strong></div></div>";
+        $wysijaversion.= '<div class="version">'.__("Wysija Version: ",WYSIJA).'<a href="admin.php?page=wysija_campaigns&action=whats_new">'.WYSIJA::get_version().'</a></div></div>';
         if(!isset($msg['socialfoot'])){
             $wysijaversion.='<div class="socials removeme">
 <div class="fb" >

@@ -76,6 +76,7 @@ class WYSIJA_help_front extends WYSIJA_help{
     function scan_content_NLform($content){
 
         preg_match_all('/\<div class="wysija-register">(.*?)\<\/div>/i',$content,$matches);
+        if(!empty($matches[1]) && count($matches[1])>0)   require_once(WYSIJA_WIDGETS.'wysija_nl.php');
         foreach($matches[1] as $key => $mymatch){
             if($mymatch){
                 $widgetdata=unserialize(base64_decode($mymatch));

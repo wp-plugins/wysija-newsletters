@@ -138,7 +138,10 @@ class WYSIJA_help_import extends WYSIJA_object{
                     )
             )
         );
-        if($table) return $pluginsTest[$table];
+        if($table){
+            if(!isset($pluginsTest[$table])) return false;
+            return $pluginsTest[$table];
+        }
         return $pluginsTest;
     }
     function reverseMatches($matches){
@@ -208,50 +211,59 @@ class WYSIJA_help_import extends WYSIJA_object{
                 "namekey"=>$tablename));
         }else $defaultListId=$isSynch["wysija_list_main_id"];
 
-        
-        $colsPlugin=array_keys($plugInfo["matches"]);
         $mktime=time();
-        $extracols=$extravals="";
-        if(isset($plugInfo["matchesvar"])){
-            $extracols=",`".implode("`,`",array_keys($plugInfo["matchesvar"]))."`";
-            $extravals=",".implode(",",$plugInfo["matchesvar"]);
-        }
-
-        
-        if(isset($plugInfo["whereunconfirmed"])){
-            $fields="(`".implode("`,`",$plugInfo["matches"])."`,`created_at` ".$extracols." )";
-            $values="`".implode("`,`",$colsPlugin)."`,".$mktime.$extravals;
-            
-            $where=$this->generateWhere($plugInfo['whereunconfirmed']);
-            $query="INSERT IGNORE INTO `[wysija]user` $fields SELECT $values FROM ".$model->wpprefix.$tablename.$where;
-            $model->query($query);
-        }
         $mktimeConfirmed=$mktime+1;
-        $fields="(`".implode("`,`",$plugInfo["matches"])."`,`created_at` ".$extracols." )";
-        $values="`".implode("`,`",$colsPlugin)."`,".$mktimeConfirmed.$extravals;
-        
-        if($tablename=='users') {
+        if(strpos($tablename, 'query-')!==false){
+            $lowertbname=str_replace('-', '_', $tablename);
+            $matches=apply_filters('wysija_fields_'.$lowertbname);
+            $querySelect=apply_filters('wysija_select_'.$lowertbname);
+            $querySelect=str_replace('[created_at]', $mktime, $querySelect);
+            $fields="(`".implode("`,`",$matches)."`,`created_at` )";
+            $query="INSERT IGNORE INTO `[wysija]user` $fields $querySelect";
+        }else{
             
-            $innerjoin='';
-            if(!$ismainsite){
-                $innerjoin=' INNER JOIN '.$wpdb->base_prefix.'usermeta ON ( '.$wpdb->base_prefix.$tablename.'.ID = '.$wpdb->base_prefix.'usermeta.user_id )';
-                $innerjoin.=" WHERE ".$wpdb->base_prefix."usermeta.meta_key = '".$model->wpprefix."capabilities'";
+            
+            $colsPlugin=array_keys($plugInfo["matches"]);
+            $extracols=$extravals="";
+            if(isset($plugInfo["matchesvar"])){
+                $extracols=",`".implode("`,`",array_keys($plugInfo["matchesvar"]))."`";
+                $extravals=",".implode(",",$plugInfo["matchesvar"]);
             }
-            $query="INSERT IGNORE INTO `[wysija]user` $fields SELECT $values FROM ".$wpdb->base_prefix.$tablename.$innerjoin;
-        }else    {
             
-            $where=$this->generateWhere($plugInfo['where']);
-            $query="INSERT IGNORE INTO `[wysija]user` $fields SELECT $values FROM ".$model->wpprefix.$tablename.$where;
+            if(isset($plugInfo["whereunconfirmed"])){
+                $fields="(`".implode("`,`",$plugInfo["matches"])."`,`created_at` ".$extracols." )";
+                $values="`".implode("`,`",$colsPlugin)."`,".$mktime.$extravals;
+                
+                $where=$this->generateWhere($plugInfo['whereunconfirmed']);
+                $query="INSERT IGNORE INTO `[wysija]user` $fields SELECT $values FROM ".$model->wpprefix.$tablename.$where;
+                $model->query($query);
+            }
+
+            $fields="(`".implode("`,`",$plugInfo["matches"])."`,`created_at` ".$extracols." )";
+            $values="`".implode("`,`",$colsPlugin)."`,".$mktimeConfirmed.$extravals;
+            
+            if($tablename=='users') {
+                
+                $innerjoin='';
+                if(!$ismainsite){
+                    $innerjoin=' INNER JOIN '.$wpdb->base_prefix.'usermeta ON ( '.$wpdb->base_prefix.$tablename.'.ID = '.$wpdb->base_prefix.'usermeta.user_id )';
+                    $innerjoin.=" WHERE ".$wpdb->base_prefix."usermeta.meta_key = '".$model->wpprefix."capabilities'";
+                }
+                $query="INSERT IGNORE INTO `[wysija]user` $fields SELECT $values FROM ".$wpdb->base_prefix.$tablename.$innerjoin;
+            }else    {
+                
+                $where=$this->generateWhere($plugInfo['where']);
+                $query="INSERT IGNORE INTO `[wysija]user` $fields SELECT $values FROM ".$model->wpprefix.$tablename.$where;
+            }
         }
+
         $model->query($query);
 
-        $modelU=&WYSIJA::get("user","model");
-        $modelU->update(array("status"=>1),array("created_at"=>$mktimeConfirmed));
+        $modelU=&WYSIJA::get('user','model');
+        $modelU->update(array('status'=>1),array('created_at'=>$mktimeConfirmed));
 
         
-        $selectuserCreated="SELECT `user_id`, ".$defaultListId.", ".time()." FROM [wysija]user WHERE created_at IN ('".$mktime."','".$mktimeConfirmed."')";
-        $query="INSERT IGNORE INTO `[wysija]user_list` (`user_id`,`list_id`,`sub_date`) ".$selectuserCreated;
-        $model->query($query);
+        $this->insertUserList($defaultListId,$mktime,$mktimeConfirmed);
         $query="SELECT COUNT(user_id) as total FROM ".$model->getPrefix()."user WHERE created_at IN ('".$mktime."','".$mktimeConfirmed."')";
         $result=$wpdb->get_row($query, ARRAY_A);
         
@@ -277,7 +289,6 @@ class WYSIJA_help_import extends WYSIJA_object{
                         $datalist=$model->getOne(false,array("namekey"=>$tablename."-listimported-".$listresult[$plugInfo['list']['list']['pk']]));
                         $listidimported=$datalist['list_id'];
                     }
-
                     
                     $innerjoin=' INNER JOIN '.$model->wpprefix.$tablename.' ON ( [wysija]user.email = '.$model->wpprefix.$tablename.'.'.$plugInfo['matches']['email'].' )';
                     if($plugInfo['list']['user_list']['table']!=$tablename) $innerjoin.=' INNER JOIN '.$model->wpprefix.$plugInfo['list']['user_list']['table'].' ON ( '.$model->wpprefix.$plugInfo['list']['user_list']['table'].'.'.$userlistmatchesrev['user_id'].' = '.$model->wpprefix.$tablename.'.'.$plugInfo['pk'].' )';
@@ -288,7 +299,7 @@ class WYSIJA_help_import extends WYSIJA_object{
                 }
             }
         }
-        $helperU=&WYSIJA::get("user","helper");
+        $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
         if(!$isSynch){
             $this->wp_notice(sprintf(__('%1$s users from %2$s have been imported into the new list %3$s',WYSIJA),"<strong>".$result['total']."</strong>","<strong>".$plugInfo['name']."</strong>","<strong>".$listname."</strong>"));
@@ -296,6 +307,12 @@ class WYSIJA_help_import extends WYSIJA_object{
 
         }
         return $defaultListId;
+    }
+    function insertUserList($defaultListId,$mktime,$mktimeConfirmed,$querySelect=false){
+        $model=&WYSIJA::get('list','model');
+        if(!$querySelect)   $querySelect='SELECT `user_id`, '.$defaultListId.', '.time()." FROM [wysija]user WHERE created_at IN ('".$mktime."','".$mktimeConfirmed."')";
+        $query='INSERT IGNORE INTO `[wysija]user_list` (`user_id`,`list_id`,`sub_date`) '.$querySelect;
+        return $model->query($query);
     }
     function generateWhere($plugInfoWhere){
         $where=" as B WHERE";

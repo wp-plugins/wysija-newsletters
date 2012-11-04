@@ -217,17 +217,6 @@ class WYSIJA_model extends WYSIJA_object{
             }
         }
 
-        /*
-        if($this->groupby)  return $this->query("get_res",$query,$this->getFormat);
-        else {
-            global $wpdb;
-            $query=str_replace('[wysija]', $this->getPrefix(), $query);
-            $wpdb->query($query);
-            $results =$wpdb->get_var();
-
-            dbg($query,0);
-        dbg($results,0);
-        }*/
 
         return $results;
     }
@@ -599,7 +588,7 @@ class WYSIJA_model extends WYSIJA_object{
                 $this->logError();
                 //dbg('hello');
             }
-            global $wpdb;
+
         }
         if($this->dbg){
             $this->keepQry();
@@ -840,9 +829,11 @@ class WYSIJA_model extends WYSIJA_object{
 
     function logError(){
         if(defined('WYSIJA_DBG') && WYSIJA_DBG>1){
-            global $wysija_queries_errors;
+            global $wysija_queries_errors, $wpdb;
             if(!$wysija_queries_errors) $wysija_queries_errors=array();
-            $mysqlerror=mysql_error();
+            $mysqlerror=mysql_error($wpdb->dbh);
+           /* dbg($wpdb->last_query,0);
+            dbg($wpdb,0);*/
             if($mysqlerror) {
                 $wysija_queries_errors[]=$mysqlerror;
                 WYSIJA::log('queries_errors',$mysqlerror);

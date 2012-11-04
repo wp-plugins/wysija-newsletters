@@ -46,9 +46,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         if(!$iframe)    $this->addScripts();
         $data=$labelemail="";
         $formidreal="form-".$params['id_form'];
-        if(isset($_POST['wysija']['user']['email']) && isset($_POST['formid'])){
-            if($formidreal==$_POST['formid'])    $data.= $this->messages();
-        }
+
         $data.= $title;
         $listfieldshidden=$listfields='';
         $disabledSubmit=$msgsuccesspreview='';
@@ -61,7 +59,11 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         if(!isset($params["lists"]) || !$params["lists"])   return;
 
         $data.='<div class="widget_wysija_cont">';
-        $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>';
+        if(isset($_POST['wysija']['user']['email']) && isset($_POST['formid']) && $formidreal==$_POST['formid']){
+            $data.= str_replace ('class="wysija-msg', 'id="msg-'.$formidreal.'" class="wysija-msg', $this->messages());
+        }else{
+            $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>';
+        }
 
         // add form unless it's a preview
         if(!isset($params['preview']) or (isset($params['preview']) && $params['preview'] === false)) {
@@ -141,6 +143,8 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
 
     function customFields($params,$formidreal,$submitbutton){
         $html="";
+        $mConfig=&WYSIJA::get('config','model');
+        $nojsval=$mConfig->getValue('no_js_val');
         $validationsCF=array(
             'email' => array("req"=>true,"type"=>"email","defaultLabel"=>__("Email",WYSIJA)),
             'firstname' => array("req"=>true,"defaultLabel"=>__("First name",WYSIJA)),
@@ -154,11 +158,15 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 if(!isset($field['label']) || !$field['label']) $field['label']=$validationsCF[$fieldKey]['defaultLabel'];
                 if($fieldKey=="email") $fieldid=$formidreal."-wysija-to";
                 else $fieldid=$formidreal.'-'.$fieldKey;
-
+                if($nojsval){
+                    $titleplaceholder='placeholder="'.$field['label'].'" title="'.$field['label'].'"';
+                }else{
+                    $titleplaceholder='title="'.$field['label'].'"';
+                }
                 if(count($params['customfields'])>1){
                     if(isset($params['labelswithin'])){
                          if($params['labelswithin']=='labels_within'){
-                            $fieldstring='<input type="text" id="'.$fieldid.'" title="'.$field['label'].'" class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                            $fieldstring='<input type="text" id="'.$fieldid.'" '.$titleplaceholder.' class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                         }else{
                             $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                         }
@@ -168,7 +176,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 }else{
                     if(isset($params['labelswithin'])){
                          if($params['labelswithin']=='labels_within'){
-                            $fieldstring='<input type="text" id="'.$fieldid.'" title="'.$field['label'].'" class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                            $fieldstring='<input type="text" id="'.$fieldid.'" '.$titleplaceholder.' class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                         }else{
                             $fieldstring='<input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                         }

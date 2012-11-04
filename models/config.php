@@ -64,10 +64,10 @@ class WYSIJA_model_config extends WYSIJA_object{
 
             if($installApp && $wysija_installing!==true){
                 $wysija_installing=true;
-                $installer=&WYSIJA::get('install','helper');
+                $installer=&WYSIJA::get('install','helper',false,'wysija-newsletters',false);
                 add_action('admin_menu', array($installer,'install'),97);
             }else{
-                $updater=&WYSIJA::get('update','helper');
+                $updater=&WYSIJA::get('update','helper',false,'wysija-newsletters',false);
                 add_action('admin_menu', array($updater,'check'),103);
 
             }
@@ -84,8 +84,8 @@ class WYSIJA_model_config extends WYSIJA_object{
     function add_translated_default(){
         /* definition of extra translated defaults fields */
         $this->defaults['confirm_email_title']=sprintf(__('Confirm your subscription to %1$s',WYSIJA),get_option('blogname'));
-        $this->defaults['confirm_email_body']=__("Hello!\n\nHurray! You've subscribed to our site.\nWe need you to activate your subscription by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\n The team!\n",WYSIJA);
-        $this->defaults['subscribed_title']=__("You've subscribed!",WYSIJA);
+        $this->defaults['confirm_email_body']=__("Hello!\n\nHurray! You've subscribed to our site.\nWe need you to activate your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\n The team!\n",WYSIJA);
+        $this->defaults['subscribed_title']=__('You\'ve subscribed to: %1$s',WYSIJA);
         $this->defaults['subscribed_subtitle']=__("Yup, we've added you to our list. You'll hear from us shortly.",WYSIJA);
         $this->defaults['unsubscribed_title']=__("You've unsubscribed!",WYSIJA);
         $this->defaults['unsubscribed_subtitle']=__("Great, you'll never hear from us again!",WYSIJA);
@@ -197,6 +197,17 @@ class WYSIJA_model_config extends WYSIJA_object{
                         )
                     )
                 )
+            ),
+            'simple-links' => array(
+                'file' => 'simple-links/simple-links.php',
+                'version' => '1.5',
+                'clean' => array(
+                    'admin_print_scripts' => array(
+                        '10' => array(
+                            'objects' => array('simple_links_admin')
+                        )
+                    )
+                )
             )
         );
 
@@ -206,6 +217,20 @@ class WYSIJA_model_config extends WYSIJA_object{
                     'admin_head' => array(
                         '10' => array(
                             'function' => 'smallbiz_on_admin_head'
+                        )
+                    )
+                )
+            ),
+            'balance' => array(
+                'clean' => array(
+                    'admin_enqueue_scripts' => array(
+                        '10' => array(
+                            'functions' => array('al_admin_scripts', 'al_adminpanel_scripts', 'al_pricing_tables_scripts')
+                        )
+                    ),
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'al_admin_head'
                         )
                     )
                 )
@@ -231,10 +256,9 @@ class WYSIJA_model_config extends WYSIJA_object{
     function save($data=false,$savedThroughInterface=false) {
 
         if($data){
-
             /* when saving configuration from the settings page we need to make sure that if checkboxes have been unticked we remove the corresponding option */
             if($savedThroughInterface){
-                $wptools=&WYSIJA::get('wp_tools','helper');
+                $wptools=&WYSIJA::get('wp_tools','helper',false,'wysija-newsletters',false);
                 $editable_roles=$wptools->wp_get_roles();
                 foreach($this->capabilities as $keycap=>$capability){
                     foreach($editable_roles as $role){
@@ -243,14 +267,6 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
 
                 foreach($this->cboxes as $cbox){
-                    /*dbg($cbox,0);
-                    dbg($this->values,0);*/
-
-                    /*if(!in_array($cbox,$data) ){
-                        $this->values[$cbox]=false;
-                    }*/
-
-
                     if(!isset($data[$cbox])){
                         $this->values[$cbox]=false;
                     }else $this->values[$cbox]=1;
@@ -261,32 +277,26 @@ class WYSIJA_model_config extends WYSIJA_object{
                         $rolecap=str_replace('rolescap---','',$cbox);
                         //this is a rolecap let's add or remove the cap to the role
                         $rolecapexp=explode('---', $rolecap);
-
-
                         $role=get_role($rolecapexp[0]);
                         $capab='wysija_'.$rolecapexp[1];
                         //added for invalid roles ...
                         if($role){
                             if($this->values[$cbox]){
                                 $role->add_cap($capab);
-
                             }else{
                                 //remove cap only for roles different of admins
                                 if($role->has_cap($capab) && !in_array($rolecapexp[0], array('administrator','super_admin'))){
                                     $role->remove_cap($capab);
                                 }
-
                             }
                         }
-
-
                         //no need to save those values which are already saved in wordpress
                         unset($this->values[$cbox]);
                     }
                 }
 
 
-                 $userHelper = &WYSIJA::get("user","helper");
+                 $userHelper = &WYSIJA::get('user','helper',false,'wysija-newsletters',false);
 
                 if(isset($data['from_email']) && !$userHelper->validEmail($data['from_email'])){
                     if(!$data['from_email']) $data['from_email']=__('empty',WYSIJA);
@@ -312,7 +322,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
 
                 /* if saved with gmail then we set up the smtp settings */
-                if($data['sending_method']=="gmail") {
+                if($data['sending_method']=='gmail') {
                     $data['smtp_host']='smtp.gmail.com';
                     $data['smtp_port']='465';
                     $data['smtp_secure']='ssl';
@@ -322,23 +332,20 @@ class WYSIJA_model_config extends WYSIJA_object{
 
                 /* specific case to identify common action to different rules there some that doesnt show in the interface, yet we use them.*/
                 foreach($data as $key => $value){
-                    $fs="bounce_rule_";
+                    $fs='bounce_rule_';
                     if(strpos($key,$fs)!== false){
-                        if(strpos($key,"_forwardto")===false){
-                            $indexrule=str_replace($fs, "", $key);
-                            $helpRules=&WYSIJA::get("rules","helper");
+                        if(strpos($key,'_forwardto')===false){
+                            $indexrule=str_replace($fs, '', $key);
+                            $helpRules=&WYSIJA::get('rules','helper',false,'wysija-newsletters',false);
                             $rules=$helpRules->getRules();
                             foreach($rules as $keyy => $vals){
                                 if(isset($vals['behave'])){
                                     $ruleMain=$helpRules->getRules($vals['behave']);
-
                                     $data[$fs.$vals['key']]=$value;
                                 }
                             }
                         }
-
                     }
-
                 }
 
                 if(!isset($data['emails_notified_when_unsub'])){
@@ -360,29 +367,27 @@ class WYSIJA_model_config extends WYSIJA_object{
                 if(is_string($value)) $value=$value;
                 /* we save it only if it is different than the default no need to overload the db*/
                 if(!isset($this->defaults[$key]) || (isset($this->defaults[$key]) && $value!=$this->defaults[$key])){
-
                     $this->values[$key]=  $value;
                 }else{
                     unset($this->values[$key]);
                 }
-
             }
 
 
             /* save the confirmation email in the email table */
-            if(isset($data["confirm_email_title"]) && isset($data["confirm_email_body"])){
-                $mailModel=&WYSIJA::get("email","model");
-                $mailModel->update(array("from_name"=>$data["from_name"],"from_email"=>$data["from_email"],
-                    "replyto_name"=>$data["replyto_name"],"replyto_email"=>$data["replyto_email"],
-                    "subject"=>$data["confirm_email_title"],"body"=>$data["confirm_email_body"]),array("email_id"=>$this->values["confirm_email_id"]));
+            if(isset($data["confirm_email_title"]) && isset($data['confirm_email_body'])){
+                $mailModel=&WYSIJA::get('email','model',false,'wysija-newsletters',false);
+                $mailModel->update(array('from_name'=>$data['from_name'],'from_email'=>$data['from_email'],
+                    'replyto_name'=>$data['replyto_name'],"replyto_email"=>$data["replyto_email"],
+                    'subject'=>$data['confirm_email_title'],'body'=>$data['confirm_email_body']),array('email_id'=>$this->values['confirm_email_id']));
             }
-            unset($this->values["confirm_email_title"]);
-            unset($this->values["confirm_email_body"]);
+            unset($this->values['confirm_email_title']);
+            unset($this->values['confirm_email_body']);
         }
 
 
         update_option($this->name_option,base64_encode(serialize($this->values)));
-        if($savedThroughInterface)  $this->notice(__("Your Wysija settings have been updated!",WYSIJA));
+        if($savedThroughInterface)  $this->notice(__('Your Wysija settings have been updated!',WYSIJA));
     }
 
 
@@ -392,26 +397,27 @@ class WYSIJA_model_config extends WYSIJA_object{
      * @param type $type
      * @return type
      */
-    function getValue($key,$default=false,$type="normal") {
+    function getValue($key,$default=false,$type='normal') {
         if(isset($this->values[$key])) {
             /*if($type=="trans")  return stripslashes($this->values[$key]);
             else return $this->values[$key]; */
-            if($key=="pluginsImportableEgg"){
-                $helperImport=&WYSIJA::get("import","helper");
+            if($key=='pluginsImportableEgg'){
+                $helperImport=&WYSIJA::get('import','helper',false,'wysija-newsletters',false);
                 foreach($this->values[$key] as $tablename =>$plugInfosExtras){
-                    $this->values[$key][$tablename]=array_merge($helperImport->getPluginsInfo($tablename),$this->values[$key][$tablename]);
+                    $extraData=$helperImport->getPluginsInfo($tablename);
+                    if($extraData)  $this->values[$key][$tablename]=array_merge($extraData,$this->values[$key][$tablename]);
                 }
             }
 
             return $this->values[$key];
         }else{
             /* special case for the confirmation email */
-            if(in_array($key, array("confirm_email_title","confirm_email_body"))){
-                $mailModel=&WYSIJA::get("email","model");
-                $mailObj=$mailModel->getOne($this->getValue("confirm_email_id"));
+            if(in_array($key, array('confirm_email_title','confirm_email_body'))){
+                $mailModel=&WYSIJA::get('email','model',false,'wysija-newsletters',false);
+                $mailObj=$mailModel->getOne($this->getValue('confirm_email_id'));
                 if($mailObj){
-                   $this->values["confirm_email_title"]=$mailObj["subject"];
-                   $this->values["confirm_email_body"]=$mailObj["body"];
+                   $this->values['confirm_email_title']=$mailObj['subject'];
+                   $this->values['confirm_email_body']=$mailObj['body'];
                    return $this->values[$key];
                 }else{
                     if($default===false && isset($this->defaults[$key])) return $this->defaults[$key];
@@ -451,12 +457,12 @@ class WYSIJA_model_config extends WYSIJA_object{
         }
 
         if($editor){
-            $modelU=&WYSIJA::get("user","model");
+            $modelU=&WYSIJA::get('user','model',false,'wysija-newsletters',false);
             $modelU->getFormat=OBJECT;
             $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
 
-            $unsubscribe[0]['link'] = $modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1';
-            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink($objUser,"subscriptions",false,true);
+            $unsubscribe[0]['link'] = $modelU->getConfirmLink($objUser,'unsubscribe',false,true).'&demo=1';
+            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink($objUser,'subscriptions',false,true);
         }
 
         return $unsubscribe;
@@ -487,7 +493,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'user_id'=>0
                 );
             if($email_id==0) $paramsurl['email_id']=$_REQUEST['id'];
-            $data['link']=WYSIJA::get_permalink($this->getValue("confirm_email_link"),$paramsurl);
+            $data['link']=WYSIJA::get_permalink($this->getValue('confirm_email_link'),$paramsurl);
         }
 
         return $data;

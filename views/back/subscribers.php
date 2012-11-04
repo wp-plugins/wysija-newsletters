@@ -442,7 +442,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
 
                                 $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">';
-                                $fieldHTML.=$formObj->checkbox( array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][list_id][]"),$list['list_id'],$checked,$extraCheckbox).$list['name'];
+                                $fieldHTML.=$formObj->checkbox( array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][list_id][]", 'class'=>'validate[minCheckbox[1]]'),$list['list_id'],$checked,$extraCheckbox).$list['name'];
                                 $fieldHTML.='</label></p>';
 
                             }
@@ -465,43 +465,6 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
         <?php
     }
 
-    /* START premium hook */
-    function splitVersion_subscribers_stats($htmlContent,$data){
-        $modelC=&WYSIJA::get("config","model");
-        if($modelC->getValue("premium_key")){
-            if(count($data['charts']['stats'])>0 ):
-            $htmlContent='<div id="wysistats">
-                <div id="wysistats1" class="left">
-                    <div id="statscontainer"></div><h3>'.sprintf(__('%1$s emails received.',WYSIJA),$data['user']['emails']).'</h3>
-                </div>
-                <div id="wysistats2" class="left">
-                    <ul>';
-
-                        foreach($data['charts']['stats'] as $stats){
-                            $htmlContent.="<li>".$stats['name'].": ".$stats['number']."</li>";
-                        }
-                            $htmlContent.="<li>".__('Added',WYSIJA).": ".$this->fieldListHTML_created_at($data['user']['details']["created_at"])."</li>";
-                    $htmlContent.='
-                    </ul>
-                </div>
-                <div id="wysistats3" class="left">
-                    <p class="title">'. sprintf(__('Total of %1$s clicks:',WYSIJA),count($data['clicks'])).'</p>
-                    <ol>';
-                        foreach($data['clicks'] as $click){
-                            $htmlContent.="<li><em>".$click['name']."</em> : <strong >".sprintf(_n('%1$s hit', '%1$s hits', $click['number_clicked'],WYSIJA), $click['number_clicked'])."</strong> - ".$click['url']."</li>";
-                        }
-                        $htmlContent.='
-                    </ol>
-                </div>
-                <div class="clear"></div>
-            </div>';
-
-            endif;
-        }
-        return $htmlContent;
-    }
-    /* END premium hook */
-
     function subscribers_stats($htmlContent,$data){
         $htmlContent='';
 
@@ -519,9 +482,6 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
     function edit($data){
         $formid='wysija-'.$_REQUEST['action'];
         add_filter('wysija_subscribers_stats',array($this,'subscribers_stats'),1,2);
-        /* START premium hook */
-        add_filter('wysija_subscribers_stats',array($this,'splitVersion_subscribers_stats'),1,2);
-        /* END premium hook */
         echo apply_filters('wysija_subscribers_stats', '',$data);
 
         $this->buttonsave=__('Save',WYSIJA);
@@ -665,11 +625,14 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             $checked='';
                             if($data['form']['is_public'])  $checked=' checked="checked" ';
                             $modelU=&WYSIJA::get('user','model');
+                            $modelU->getFormat=OBJECT;
+
+                            $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
                             ?>
                             <tr>
                                 <th scope="row">
                                     <label for="list-desc"><?php _e('Show in subscriber profile page?',WYSIJA); ?> </label>
-                                    <p class="description"><?php echo str_replace(array('[link]','[/link]'), array('<a href="'.$modelU->getConfirmLink($objUser,"subscriptions",false,true).'" target="_blank" title="'.__('See your own subscriber profile page.',WYSIJA).'">','</a>'), __('Display this list to all subscribers in their [link]subscriber profile page[/link]?',WYSIJA)) ?></p>
+                                    <p class="description"><?php echo str_replace(array('[link]','[/link]'), array('<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('See your own subscriber profile page.',WYSIJA).'">','</a>'), __('Display this list to all subscribers in their [link]subscriber profile page[/link]?',WYSIJA)) ?></p>
                                 </th>
                                 <td>
                                     <input type="checkbox" id="list-public" <?php echo $checked ?> name="wysija[list][is_public]" />
