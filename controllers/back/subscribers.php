@@ -12,18 +12,72 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
     function save(){
         $this->redirectAfterSave=false;
+        $helperUser=&WYSIJA::get('user','helper');
         if(isset($_REQUEST['id'])){
             $id=$_REQUEST['id'];
             parent::save();
 
             //run the unsubscribe process if needed
             if((int)$_REQUEST['wysija']['user']['status']==-1){
-                $helperUser=&WYSIJA::get("user","helper");
                 $helperUser->unsubscribe($id);
             }
+
+            /* update subscriptions */
+            $modelUL=&WYSIJA::get('user_list','model');
+            $modelUL->backSave=true;
+            /* list of core list */
+            $modelLIST=&WYSIJA::get('list','model');
+            $results=$modelLIST->get(array('list_id'),array('is_enabled'=>'0'));
+            $core_listids=array();
+            foreach($results as $res){
+                $core_listids[]=$res['list_id'];
+            }
+
+            //0 - get current lists of the user
+            $userlists=$modelUL->get(array('list_id'),array('user_id'=>$id));
+
+            $oldlistids=$newlistids=array();
+            foreach($userlists as $listdata)    $oldlistids[]=$listdata['list_id'];
+
+            $config=&WYSIJA::get('config','model');
+            $dbloptin=$config->getValue('confirm_dbleoptin');
+            //1 - insert new user_list
+            if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
+                foreach($_POST['wysija']['user_list']['list_id'] as $list_id){
+                    if(!in_array($list_id, $oldlistids)){
+                        $modelUL->reset();
+                        $newlistids[]=$list_id;
+                        $dataul=array('user_id'=>$id,'list_id'=>$list_id,'sub_date'=>time());
+                        if($dbloptin && (int)$_POST['wysija']['user']['status']<1)  unset($dataul['sub_date']);
+                        $modelUL->insert($dataul);
+
+                    }else{
+                        $alreadysubscribelistids[]=$list_id;
+                    }
+                }
+            }
+
+            //if a confirmation email needs to be sent then we send it
+            if($dbloptin && (int)$_POST['wysija']['user']['status']==0 && !empty($newlistids)){
+                $hUser=&WYSIJA::get('user','helper');
+                $hUser->sendConfirmationEmail($id,true,$newlistids);
+            }
+
+            $notEqual=array_merge($core_listids, $_POST['wysija']['user_list']['list_id']);
+
+            //delete the lists to which you've unsubscribed
+            $condiFirst=array('notequal'=>array('list_id'=> $notEqual ),'equal'=>array('user_id'=>$id,'unsub_date'=>0));
+            $modelUL=&WYSIJA::get('user_list','model');
+            $modelUL->delete($condiFirst);
+            $modelUL->reset();
         }else{
-            //$this->msgOnSave=false;
-            $id= parent::save();
+            //instead of going through a classic save we should save through the helper
+            $data=$_REQUEST['wysija'];
+            $data['user_list']['list_ids']=$data['user_list']['list_id'];
+            unset($data['user_list']['list_id']);
+            $data['message_success']=__('Subscriber has been saved.',WYSIJA);
+            $id=$helperUser->addSubscriber($data,true);
+            //$id= parent::save();
             if(!$id) {
                 $this->viewShow=$this->action='add';
                 $data=array('details'=>$_REQUEST['wysija']['user']);
@@ -31,30 +85,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             }
         }
 
-        /* update subscriptions */
-        $modelUL=&WYSIJA::get("user_list","model");
-        /* list of core list */
-        $modelLIST=&WYSIJA::get("list","model");
-        $results=$modelLIST->get(array("list_id"),array("is_enabled"=>"0"));
-        $core_listids=array();
-        foreach($results as $res){
-            $core_listids[]=$res['list_id'];
-        }
 
-        if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
-            foreach($_POST['wysija']['user_list']['list_id'] as $listid)
-                $core_listids[]=$listid;
-
-            /* what we unsubscribe from*/
-            foreach($_POST['wysija']['user_list']['list_id'] as $listid)
-                $modelUL->replace(array("user_id"=>$id,"list_id"=>$listid,"unsub_date"=>0));
-
-        }
-
-        $condiFirst=array("notequal"=>array("list_id"=>$core_listids),"equal"=>array("user_id"=>$id,'unsub_date'=>0));
-        $modelUL=&WYSIJA::get("user_list","model");
-        $modelUL->delete($condiFirst);
-        $modelUL->reset();
         //$this->notice(__("Subscriber's details saved.",WYSIJA));
         $this->redirect();
         return true;
@@ -79,7 +110,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $this->filters["equal"]=array('list_id'=>$_REQUEST['filter-list']);
             $filterJoin=true;
         }
-        $config=&WYSIJA::get("config","model");
+        $config=&WYSIJA::get('config','model');
         if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']){
             switch($_REQUEST['link_filter']){
                 case "unconfirmed":
@@ -456,18 +487,18 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
          * 2 delete the list campaigns references
          * 4 delete the list
          */
-        $model=&WYSIJA::get("list","model");
-        $data=$model->getOne(array("name","welcome_mail_id"),array("list_id"=>(int)$_REQUEST['id']));
+        $model=&WYSIJA::get('list','model');
+        $data=$model->getOne(array('name','welcome_mail_id'),array('list_id'=>(int)$_REQUEST['id']));
 
-        if($data && ($data['namekey']!="users")){
-            $modelRECYCLE=&WYSIJA::get("email","model");
-            $modelRECYCLE->delete(array("email_id"=>$data['welcome_mail_id']));
+        if($data && ($data['namekey']!='users')){
+            $modelRECYCLE=&WYSIJA::get('email','model');
+            $modelRECYCLE->delete(array('email_id'=>$data['welcome_mail_id']));
 
-            $modelRECYCLE=&WYSIJA::get("user_list","model");
-            $modelRECYCLE->delete(array("list_id"=>$_REQUEST['id']));
+            $modelRECYCLE=&WYSIJA::get('user_list','model');
+            $modelRECYCLE->delete(array('list_id'=>$_REQUEST['id']));
 
-            $modelRECYCLE=&WYSIJA::get("campaign_list","model");
-            $modelRECYCLE->delete(array("list_id"=>$_REQUEST['id']));
+            $modelRECYCLE=&WYSIJA::get('campaign_list','model');
+            $modelRECYCLE->delete(array('list_id'=>$_REQUEST['id']));
 
             $model->reset();
             $model->delete(array("list_id"=>$_REQUEST['id']));
@@ -487,7 +518,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     function synchlist(){
         $this->requireSecurity();
 
-        $helperU=&WYSIJA::get("user","helper");
+        $helperU=&WYSIJA::get('user','helper');
         $helperU->synchList($_REQUEST['id']);
 
         $this->redirect('admin.php?page=wysija_subscribers&action=lists');
@@ -499,7 +530,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         global $current_user;
 
         if(is_multisite() && is_super_admin( $current_user->ID )){
-            $helperU=&WYSIJA::get("user","helper");
+            $helperU=&WYSIJA::get('user','helper');
             $helperU->synchList($_REQUEST['id'],true);
         }
 
@@ -542,15 +573,16 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     function importpluginsave($id=false){
         $this->requireSecurity();
         $this->_resetGlobMsg();
-        $modelConfig=WYSIJA::get("config","model");
-        $importHelper=&WYSIJA::get("import","helper");
-        $pluginsImportable=$modelConfig->getValue("pluginsImportableEgg");
+        $modelConfig=WYSIJA::get('config','model');
+        $importHelper=&WYSIJA::get('import','helper');
+        $pluginsImportable=$modelConfig->getValue('pluginsImportableEgg');
         $pluginsImported=array();
         foreach($_REQUEST['wysija']['import'] as $tablename =>$result){
             $plugInfo=$importHelper->getPluginsInfo($tablename);
 
             if($result){
                 $pluginsImported[]=$tablename;
+                if(!$plugInfo) $plugInfo=$pluginsImportable[$tablename];
                 $importHelper->import($tablename,$plugInfo);
                 sleep(2);
                 $this->notice(sprintf(__('Import from plugin %1$s has been completed.',WYSIJA),"<strong>'".$plugInfo['name']."'</strong>"));
@@ -560,9 +592,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         }
 
-        $modelConfig->save(array("pluginsImportedEgg"=>$pluginsImported));
+        $modelConfig->save(array('pluginsImportedEgg'=>$pluginsImported));
 
-        $this->redirect("admin.php?page=wysija_subscribers&action=lists");
+        $this->redirect('admin.php?page=wysija_subscribers&action=lists');
     }
 
     function importplugins($id=false){
@@ -570,11 +602,11 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         $this->viewObj->title=__('Import subscribers from plugins',WYSIJA);
 
-        $modelConfig=WYSIJA::get("config","model");
+        $modelConfig=WYSIJA::get('config','model');
 
         $this->data=array();
-        $this->data['plugins']=$modelConfig->getValue("pluginsImportableEgg");
-        $importedOnes=$modelConfig->getValue("pluginsImportedEgg");
+        $this->data['plugins']=$modelConfig->getValue('pluginsImportableEgg');
+        $importedOnes=$modelConfig->getValue('pluginsImportedEgg');
 
         if($importedOnes){
             foreach($importedOnes as $tablename){
@@ -584,7 +616,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
 
         if(!$this->data['plugins']){
-            $this->notice(__("There is no plugin to import from.",WYSIJA));
+            $this->notice(__('There is no plugin to import from.',WYSIJA));
             return $this->redirect();
         }
         $this->viewShow='importplugins';
@@ -797,7 +829,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         /* we need to save a new list in that situation*/
         if(isset($_REQUEST['wysija']['list'])){
-            $model=&WYSIJA::get("list","model");
+            $model=&WYSIJA::get('list','model');
             $data=array();
             $data['is_enabled']=1;
             $data['name']=$_REQUEST['wysija']['list']['newlistname'];
@@ -903,13 +935,13 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         }
 
                 /* get a list of list name */
-        $model=&WYSIJA::get("list","model");
+        $model=&WYSIJA::get('list','model');
         $results=$model->get(array('name'),array('list_id'=>$_REQUEST['wysija']['user_list']['list']));
 
         $listnames=array();
         foreach($results as $k =>$v) $listnames[]=$v['name'];
 
-        $helperU=&WYSIJA::get("user","helper");
+        $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
 
 
@@ -1022,10 +1054,11 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $user_ids=$this->modelObj->get(array('user_id'),array('email'=>$allEmails));
         $wpdb->rows_affected=0;
         $modelUL=&WYSIJA::get('user_list','model');
-        $query="INSERT IGNORE INTO [wysija]user_list (`list_id` ,`user_id`) VALUES ";
+        $query="INSERT IGNORE INTO [wysija]user_list (`list_id` ,`user_id`,`sub_date`) VALUES ";
+        $timenow=time();
         foreach($_REQUEST['wysija']['user_list']['list'] as $keyl=> $listid){
             foreach($user_ids as $key=> $userid){
-                $query.="($listid,".$userid['user_id'].")";
+                $query.="($listid,".$userid['user_id'].", ".$timenow.")";
                 if(count($user_ids)>($key+1)) $query.=",";
             }
             if(count($_REQUEST['wysija']['user_list']['list'])>($keyl+1)) $query.=",";
@@ -1037,7 +1070,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
 
         if($resultqry2===false) {
-            $this->error(__("Error when inserting list.",WYSIJA),true);
+            $this->error(__('Error when inserting list.',WYSIJA),true);
             return false;
         }
         if($resultqry==0) return "0";

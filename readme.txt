@@ -1,9 +1,9 @@
 === Wysija Newsletters ===
 Contributors: wysija, benheu
-Tags: newsletter, newsletters, newsletter signup, newsletter widget, automatic newsletter, auto newsletter, subscribers, post notification, email subscription, email alerts, autoresponder, follow up, email marketing, email, emailing, subscription
+Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.1
 Tested up to: 3.4.2
-Stable tag: 2.1.5
+Stable tag: 2.1.6
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -17,7 +17,7 @@ We built it with the idea that newsletters in WordPress should be easy. Not hard
 
 http://vimeo.com/35054446
 
-= View video on post notifications. =
+= Post notifications video. =
 
 http://vimeo.com/46247528
 
@@ -146,6 +146,19 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.1.6 - 2012-11-04 =
+* added basic Custom Post Type support
+* added one Activation Email per List
+* added posts autoload on scroll when adding single post in newsletter visual editor
+* fixed PHP Notice: step2 of newsletter creation
+* fixed PHP Notice: on debug class
+* fixed our debug hijacking WP_DEBUG in the backend (thanks Ryann)
+* fixed deprecated in bounce handling
+* fixed scrollbar issue in WordPress Post popup on Chrome & Safari
+* fixed conflict with Simple Links plugin
+* fixed toolbar tabs disappearing in some languages (will be improved)
+* fixed bounce error not properly displayed prevented saving settings
 
 = 2.1.5 - 2012-10-16 =
 * fixed Notice: Use of undefined constant WYSIJA_DBG - assumed 'WYSIJA_DBG' in [...]/wp-content/plugins/wysija-newsletters/core/model.php on line 842

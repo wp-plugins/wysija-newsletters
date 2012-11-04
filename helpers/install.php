@@ -24,17 +24,17 @@ class WYSIJA_help_install extends WYSIJA_object{
         
         $this->defaultCampaign($values);
         
-        $helpImport=&WYSIJA::get("import","helper");
+        $helpImport=&WYSIJA::get('import','helper');
         $values['importwp_list_id']=$helpImport->importWP();
         
         $this->createPage($values);
         
         $this->createWYSIJAdir($values);
         
-        $modelConf=&WYSIJA::get("config","model");
-        $mailModel=&WYSIJA::get("email","model");
+        $modelConf=&WYSIJA::get('config','model');
+        $mailModel=&WYSIJA::get('email','model');
         $mailModel->blockMe=true;
-        $values["confirm_email_id"]=$mailModel->insert(
+        $values['confirm_email_id']=$mailModel->insert(
                 array("type"=>"0",
                     "from_email"=>$values["from_email"],
                     "from_name"=>$values["from_name"],
@@ -45,6 +45,7 @@ class WYSIJA_help_install extends WYSIJA_object{
                     "status"=>99));
         
         $values['installed']=true;
+        $values['manage_subscriptions']=true;
         $values['installed_time']=time();
         $values['wysija_db_version']=WYSIJA::get_version();
         $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
@@ -52,8 +53,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         $modelConf->save($values);
         
         $this->testNLplugins();
-        $this->wp_notice(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_config">','</a>'),__("Wysija has been installed successfully. Go to the [link]settings page[/link] now, and start blasting emails.",WYSIJA)));
-
+        $this->wp_notice(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_config">','</a>'),__('Wysija has been installed successfully. Go to the [link]settings page[/link] now, and start blasting emails.',WYSIJA)));
         
         $wptools =& WYSIJA::get('wp_tools', 'helper');
         $wptools->set_default_rolecaps();
@@ -64,16 +64,16 @@ class WYSIJA_help_install extends WYSIJA_object{
 
     
     function testSystem(){
-        $haserrors=false;
+
         
-        $modelObj=&WYSIJA::get("user","model");
-        $query="CREATE TABLE IF NOT EXISTS `".$modelObj->getPrefix()."user_list` (
+        $modelObj=&WYSIJA::get('user','model');
+        $query='CREATE TABLE IF NOT EXISTS `'.$modelObj->getPrefix().'user_list` (
   `list_id` INT unsigned NOT NULL,
   `user_id` INT unsigned NOT NULL,
   `sub_date` INT unsigned DEFAULT 0,
   `unsub_date` INT unsigned DEFAULT 0,
   PRIMARY KEY (`list_id`,`user_id`)
-) ENGINE=MyISAM";
+) ENGINE=MyISAM';
         global $wpdb;
 
         
@@ -81,6 +81,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         $wpdb->query($query);
         $query="SHOW TABLES like '".$modelObj->getPrefix()."user_list';";
         $res=$wpdb->get_var($query);
+        $haserrors=false;
         if(!$res){
             $this->wp_error(sprintf(
                     __('The MySQL user you have setup on your Wordpress site (wp-config.php) doesn\'t have enough privileges to CREATE MySQL tables. Please change this user yourself or contact the administrator of your site in order to complete Wysija\'s installation. mysql errors:(%1$s)',WYSIJA),  mysql_error()));
@@ -89,10 +90,10 @@ class WYSIJA_help_install extends WYSIJA_object{
         
 
         
-        $helperF=&WYSIJA::get('file',"helper");
+        $helperF=&WYSIJA::get('file','helper');
         if(!$helperF->makeDir()){
             $upload_dir = wp_upload_dir();
-            $this->wp_error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir'])."<a target='_blank' href='http://codex.wordpress.org/Changing_File_Permissions'>".__('Read documentation',WYSIJA)."</a>");
+            $this->wp_error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir']).'<a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions">'.__('Read documentation',WYSIJA).'</a>');
             $haserrors=true;
         }
 
@@ -100,26 +101,27 @@ class WYSIJA_help_install extends WYSIJA_object{
         return true;
     }
     function defaultList(&$values){
-        $model=&WYSIJA::get("list","model");
-        $listname=__("My first list",WYSIJA);
+        $model=&WYSIJA::get('list','model');
+        $listname=__('My first list',WYSIJA);
         $defaultListId=$model->insert(array(
-            "name"=>$listname,
-            "description"=>__('The list created automatically on install of the Wysija.',WYSIJA),
-            "is_enabled"=>1));
+            'name'=>$listname,
+            'description'=>__('The list created automatically on install of the Wysija.',WYSIJA),
+            'is_public'=>1,
+            'is_enabled'=>1));
         $values['default_list_id']=$defaultListId;
     }
     function defaultCampaign($valuesconfig){
-        $modelCampaign=&WYSIJA::get("campaign","model");
+        $modelCampaign=&WYSIJA::get('campaign','model');
         $campaign_id=$modelCampaign->insert(
                 array(
                     "name"=>__('Example Newsletter',WYSIJA),
                     "description"=>__('Default newsletter created automatically during installation.',WYSIJA),
                     ));
-        $modelEmail=&WYSIJA::get("email","model");
+        $modelEmail=&WYSIJA::get('email','model');
         $modelEmail->fieldValid=false;
         $dataEmail=array(
-            "campaign_id"=>$campaign_id,
-            "subject"=>__('Example Newsletter',WYSIJA));
+            'campaign_id'=>$campaign_id,
+            'subject'=>__('Example Newsletter',WYSIJA));
 
 
         $wjEngine =& WYSIJA::get('wj_engine', 'helper');
@@ -153,16 +155,16 @@ class WYSIJA_help_install extends WYSIJA_object{
               'text' =>
               array (
                 'value' => '<h1 class="align-center">'.
-                  __("Example & Guide",WYSIJA).'</h2><p>'.
+                  __('Example & Guide',WYSIJA).'</h2><p>'.
                   __("This example newsletter is for you to <span style='color: #008000;'>experiment</span> with. It takes about 15 minutes to read through this guide. Its pretty intuitive altogether.",WYSIJA).'</p><p>'.
-                  __("Things you can do right in this newsletter :",WYSIJA).'</p><ul><li>'.
-                  __("Drop a WordPress post",WYSIJA).'</li><li>'.
-                  __("<strong>Insert</strong> images",WYSIJA).'</li><li>'.
-                  __("Change your <strong>divider style</strong>",WYSIJA).'</li><li>'.
-                  __("Click on this text to <strong>edit</strong> it",WYSIJA).'</li><li>'.
-                  __("<strong>Reorder</strong> items around",WYSIJA).'</li><li>'.
-                  __("Install a <strong>new theme</strong> and apply it",WYSIJA).'</li><li>'.
-                  __("Change the styles in the Style tab",WYSIJA).'</li></ul>'
+                  __('Things you can do right in this newsletter :',WYSIJA).'</p><ul><li>'.
+                  __('Drop a WordPress post',WYSIJA).'</li><li>'.
+                  __('<strong>Insert</strong> images',WYSIJA).'</li><li>'.
+                  __('Change your <strong>divider style</strong>',WYSIJA).'</li><li>'.
+                  __('Click on this text to <strong>edit</strong> it',WYSIJA).'</li><li>'.
+                  __('<strong>Reorder</strong> items around',WYSIJA).'</li><li>'.
+                  __('Install a <strong>new theme</strong> and apply it',WYSIJA).'</li><li>'.
+                  __('Change the styles in the Style tab',WYSIJA).'</li></ul>'
               ),
               'image' => NULL,
               'alignment' => 'center',
@@ -447,6 +449,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         $data['email']['email_id']=$modelEmail->insert($dataEmail);
     }
     function createTables(){
+        $haserrors=false;
         $filename = dirname(__FILE__).DS."install.sql";
         $handle = fopen($filename, "r");
         $query = fread($handle, filesize($filename));

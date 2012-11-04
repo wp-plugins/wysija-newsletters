@@ -14,8 +14,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function whats_new(){
-        $this->title=__('What\'s new?',WYSIJA);
-        $this->viewObj->title=__('What\'s new?',WYSIJA);
+
+        $this->title=$this->viewObj->title=__('What\'s new?',WYSIJA);
         $this->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
         $hReadme=&WYSIJA::get('readme','helper');
         $hReadme->scan();
@@ -23,7 +23,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->data['abouttext']='This is a minor release with important stuff. Read up!';
 
         $mConfig=&WYSIJA::get('config','model');
-        if($mConfig->getValue('premium_key')){
+        $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+        if(!WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php') && $mConfig->getValue('premium_key')){
             $this->data['sections'][]=array(
                 'title'=>'Premium Users Get Their Own Plugin',
                 'format'=>'normal',
@@ -38,29 +39,29 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }
 
 
-        $this->data['sections'][]=array(
+        /*$this->data['sections'][]=array(
             'title'=>'Say <em>Bonjour</em> to Welcome Screen',
             'format'=>'normal',
             'paragraphs'=>array(
                     "After each update we'll show you a welcome screen, like this one. <br>This will be the fastest and easiest way to know what's new. We promise to keep them short."
                 )
-            );
+            );*/
 
 
         $this->data['sections'][]=array(
-            'title'=>'3 Cool Things',
+                'title'=>'Added and Improved',
             'cols'=>array(
                 array(
-                    'title'=>'Get Subscribers Before You Launch',
-                    'content'=>"There's a countdown theme that now support Wysija. Perfect for the sites you're about to release. Check out ".'<a href="http://www.seedprod.com/?utm_source=wpadmin&utm_campaign=wysija" target="_blank" title="Seedprod\'s site">Coming Soon Pro.</a>'
+                    'title'=>'Basic Support for Custom Post Types',
+                    'content'=>"A lot of users have been asking about this feature. We finally did it. We hope you'll like it, if you have any feedbacks, please share them with us on our <a href=\"http://support.wysija.com/\" target=\"_blank\" title=\"Support Site\">Support site</a> "
             ),
                 array(
-                    'title'=>'You Need Your Form in a Popup?',
-                    'content'=>"Magic Action Box now supports Wysija. Perfect for placing your forms in a popup, at the top of your post in at the bottom. There's plenty of ways to configure it too.".'<a href="http://www.magicactionbox.com/?utm_source=wpadmin&amp;utm_campaign=wysija" target="_blank" title="Magic Action Box\'s site">Find out more on this plugin.</a>'
+                    'title'=>'One Activation Email per List',
+                    'content'=>'We use to have one single confirmation email for all the lists, now each subscription needs to be confrmed when the activation email option is on.'
             ),
                 array(
                     'title'=>'Help Us Spread the Word',
-                    'content'=>"We've launched than 10 months ago and we're near 150 000 downloads. But we're still unknown to most people. So help us get known.".'<a href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&amp;utm_campaign=welcomepage" target="_blank" title="On our blog!">Here\'s how you can help us.</a>'
+                    'content'=>"We've launched less than 10 months ago and we're over 150 000 downloads. But we're still unknown to most people. So help us get known.".'<a href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&amp;utm_campaign=welcomepage" target="_blank" title="On our blog!">Here\'s how you can help us.</a>'
             )
             ),
             'format'=>'three-col',
@@ -85,7 +86,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         return true;
     }
 
-    /* START premium hook */
+    /* START prem check hook */
     /*when curl or any php remote function not available wysija.com returns lcheck to that function*/
     function licok(){
         parent::WYSIJA_control_back();
@@ -106,7 +107,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->redirect('admin.php?page=wysija_config#tab-premium');
     }
-    /* END premium hook */
+    /* END prem check hook */
 
     function validateLic(){
         $helpLic=&WYSIJA::get("licence","helper");
@@ -133,39 +134,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             }
             exit;
         }else {
-            add_action('wysija_send_test_editor',array($this,'splitVersion_sendtest'));
             do_action('wysija_send_test_editor');
-
         }
 
         exit;
     }
-
-    /* START premium hook */
-
-
-    function splitVersion_sendtest(){
-        $modelQ=&WYSIJA::get('queue','model');
-        $config=&WYSIJA::get('config','model');
-        $premium=$config->getValue('premium_key');
-        if($premium){
-
-            if($modelQ->count()>0){
-                $helperQ=&WYSIJA::get('queue','helper');
-                $emailid=false;
-                if($_REQUEST['emailid']){
-                    $emailid=$_REQUEST['emailid'];
-                }
-                WYSIJA::log('Don\'t wait and send now queue process',array('email_id'=>$emailid));
-                $helperQ->process($emailid);
-            }else{
-                echo '<strong>'.__('Queue is empty!',WYSIJA).'</strong>';
-            }
-        }else{
-            echo '<strong>'.__('Go premium, you cannot send anymore!',WYSIJA).'</strong>';
-        }
-    }
-    /* END premium hook */
 
     function test(){
         @ini_set('max_execution_time',0);
@@ -560,7 +533,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['sendlater']=__('Send later',WYSIJA);
 
         $this->jsTrans['schedule']=__('Schedule',WYSIJA);
-        $this->jsTrans['send']=__('Send',WYSIJA);
+
 
         $this->js[]='jquery-ui-datepicker';
 
@@ -576,9 +549,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $this->js['wysija-edit-autonl']='wysija-edit-autonl';
             $this->jsTrans['autonl']=true;
             $this->immediateWarning();
+            $this->jsTrans['send']=__('Activate now',WYSIJA);
         }else{
             $this->jsTrans['autonl']=true;
             $this->viewObj->immediatewarning='';
+            $this->jsTrans['send']=__('Send',WYSIJA);
         }
 
         if((int)$this->data['email']['type']==1){
@@ -716,6 +691,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         array('key' => 'post_content', 'value' => 'excerpt'),
                         array('key' => 'readmore', 'value' => base64_encode(__('Read online.',WYSIJA))),
                         array('key' => 'show_divider', 'value' => 'yes'),
+                        array('key' => 'cpt', 'value' => 'post'),
                         array('key' => 'post_limit', 'value' => 1)
                     );
                 } else {
@@ -728,6 +704,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         array('key' => 'post_content', 'value' => 'excerpt'),
                         array('key' => 'readmore', 'value' => base64_encode(__('Read online.',WYSIJA))),
                         array('key' => 'show_divider', 'value' => 'yes'),
+                        array('key' => 'cpt', 'value' => 'post'),
                         array('key' => 'post_limit', 'value' => 2)
                     );
                 }
@@ -990,7 +967,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelCamp->reset();
         $updatecampaign=array("campaign_id"=>$_REQUEST['id'],"name"=>$_POST['wysija']['email']['subject']);
         $modelCamp->update($updatecampaign);
-
+        //exit;
         return $this->redirect();
     }
 
@@ -998,9 +975,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function _saveLists($campaignId,$flagup=false){
         /* record the list that we have in that campaign */
         $modelCampL=&WYSIJA::get("campaign_list","model");
-        if($flagup || (isset($_POST['submit-draft']) || isset($_POST['submit-send'])|| isset($_POST['submit-resume']))){
-
-            $modelCampL->delete(array("equal"=>array("campaign_id"=>$campaignId)));
+        if($flagup || (int)$campaignId>0){
+            $modelCampL->delete(array('equal'=>array('campaign_id'=>$campaignId)));
             $modelCampL->reset();
         }
 
@@ -1974,6 +1950,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'readmore' => __('Read more.', WYSIJA),
             'show_divider' => 'yes',
             'post_limit' => 5,
+            'cpt' => 'post',
             'nopost_message' => __('No new posts.', WYSIJA),
             'bgcolor1' => null,
             'bgcolor2' => null

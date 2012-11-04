@@ -682,15 +682,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         if((int)$config->getValue('total_subscribers')<2000) return true;
         return false;
     }
-    /* START premium hook */
-    function splitVersion_sending_process_premium($filter){
-       if(!$filter){
-            $config=&WYSIJA::get("config","model");
-            if($config->getValue('premium_key')) return true;
-       }
-       return $filter;
-    }
-    /* END premium hook */
+
     function dataBatches($data,$row,$pause,$statuses,$pending=false){
         $sentto=$senttotal=$sentleft=0;
         $return='<div>';
@@ -706,11 +698,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
             $config=&WYSIJA::get("config","model");
             add_filter('wysija_send_ok',array($this,'sending_process'));
-            /* START premium hook */
-            add_filter('wysija_send_ok',array($this,'splitVersion_sending_process_premium'));
-            /* END premium hook */
             $letsgo=apply_filters('wysija_send_ok', false);
-
 
             if($letsgo){
                /*$schedules=wp_get_schedules();
@@ -764,21 +752,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $result.='</ol>';
         return $result;
     }
-    /* START premium hook */
-    function splitVersion_linkStats($result,$data){
-        $modelC=&WYSIJA::get('config','model');
-        if($modelC->getValue("premium_key")){
-            $result='<ol>';
 
-            foreach($data['clicks'] as $click){
-                    $result.='<li>'.$click['name'].' : '.$click['url'].'</li>';
-            }
-            $result.='</ol>';
-        }
-
-        return $result;
-    }
-    /* END premium hook */
     /*
      * main view
      */
@@ -814,11 +788,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <?php
                 $modelC=&WYSIJA::get("config","model");
                 if(count($data['clicks'])>0){
-
                     add_filter('wysija_links_stats',array($this,'linkStats'),1,2);
-                    /* START premium hook */
-                    add_filter('wysija_links_stats',array($this,'splitVersion_linkStats'),1,2);
-                    /* END premium hook */
                     $linkshtml=apply_filters('wysija_links_stats', '',$data);
                     echo $linkshtml;
                 }else  echo __('Nothing yet!',WYSIJA);
@@ -1175,10 +1145,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 ?>
         <p><input type="text" name="receiver-preview" id="preview-receiver" value="<?php echo $emailuser ?>" /> <a href="javascript:;" id="wj-send-preview" class="button wysija"><?php _e("Send preview",WYSIJA) ?></a></p>
         <?php
-        /* START premium hook */
-        add_filter('wysija_howspammy',array($this,'splitVersion_how_spammy'));
-        /* END premium hook */
-        echo apply_filters('wysija_howspammy');
+
+        echo apply_filters('wysija_howspammy','');
 
         ?>
 
@@ -1386,58 +1354,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         </div>
         <?php
     }
-    /* START premium hook */
-    function splitVersion_how_spammy(){
-        $config=&WYSIJA::get('config','model');
-        if(!$config->getValue('premium_key')) return;
-
-        $contentHTML='<p>';
-
-        $classspammy=$triesleftstring='';
-        $changedid='';
-
-        /*$tries=(int)$config->getValue('spamtest_tries');
-        //change that value to allow more tries
-        $numberoftriesallowed=0;
-        $triesleft=$numberoftriesallowed-$tries;
-        if($triesleft<=0){
-            $classspammy=' disabled';
-            $changedid='s';
-        }
-
-        $triesleftstring=str_replace(
-        array('[link]','[/link]'),
-        array('<a class="premium-tab" href="javascript:;">','</a>'),
-        sprintf(__('%1$s tries left. Get [link]Premium[/link] for unlimited use.',WYSIJA),'<span id="counttriesleft">'.$triesleft.'</span>'));*/
-
-
-
-        $contentHTML.='<a href="javascript:;" id="wysija-send-spamtest'.$changedid.'" class="button wysija'. $classspammy.'">'.__("How spammy is this newsletter?",WYSIJA).'</a>
-        <span class="marginl">'.$triesleftstring.'</span></p>';
-        return $contentHTML;
-    }
-
-
-
-    function splitVersion_extend_step3($step){
-        $config=&WYSIJA::get('config','model');
-        if($config->getValue('premium_key')){
-            $step['googletrackingcode']=array(
-                'type'=>'input',
-                'isparams' => "params",
-                'class'=>'',
-                'label'=>__('Google Analytics Campaign',WYSIJA),
-                'desc'=>__('For example, "Spring email". [link]Read the guide.[/link]',WYSIJA),
-                'link'=>'<a href="http://support.wysija.com/knowledgebase/track-your-newsletters-visitors-in-google-analytics/?utm_source=wpadmin&utm_campaign=step3" target="_blank"> ');
-
-            if(isset($_REQUEST['wysija']['email']["params"]['googletrackingcode'])) {
-                $data['email']['params']['googletrackingcode']=$step['googletrackingcode']['default']=$_REQUEST['wysija']['email']["params"]['googletrackingcode'];
-            }
-        }
-        return $step;
-    }
-    /* END premium hook */
-
     /* when newsletter has been sent let's see the feedback */
     function editDetails($data=false){
 
@@ -1495,10 +1411,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'desc'=>__('When the subscribers hit "reply", this is to who they will send their email ',WYSIJA));
 
 
-
-        /* START premium hook */
-        add_filter('wysija_extend_step3',array($this,'splitVersion_extend_step3'));
-        /* END premium hook */
         $step=apply_filters('wysija_extend_step3', $step);
 
 
@@ -1547,13 +1459,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $buttonsave=esc_attr(__('Save & close',WYSIJA));
                     $buttonsendlater=$buttonsave;
                 }else{
-                    $sendNow=esc_attr(__("Send",WYSIJA));
-                    $saveresumesend=esc_attr(__("Send",WYSIJA));
+                    $sendNow=esc_attr(__('Send',WYSIJA));
+                    $saveresumesend=esc_attr(__('Send',WYSIJA));
                     $buttonsave=esc_attr(__('Save & close',WYSIJA));
                     $buttonsendlater=esc_attr(__('Save & close',WYSIJA));
                 }
 
-                if($this->data['email']['status']==0){
+                if((int)$this->data['email']['status']==0){
 
                     if($this->data['lists']){
                         ?>
@@ -1914,25 +1826,57 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->popup_themes(false);
     }
 
+    function selectCPT($value = null, $showall = true) {
+        // make sure value is null if it's an empty string
+        if($value !== null and strlen(trim($value)) === 0) $value = null;
+
+        ?>
+        <p class="clearfix">
+            <?php
+                $wptools=&WYSIJA::get('wp_tools','helper');
+                $post_types=$wptools->get_post_types();
+            ?>
+            <label for="cpt"><?php _e('Select the post type', WYSIJA) ?></label>
+            <select name="cpt" id="cpt">
+            <?php
+                if($showall === true) {
+                    echo '<option value="all"'.(($value === 'all') ? ' selected="selected"' : '').'>'.__('All',WYSIJA).'</option>';
+                }
+                echo '<option value="post"'.(($value === 'post' or $value === null) ? ' selected="selected"' : '').'>'.__('Posts',WYSIJA).'</option>';
+                echo '<option value="page"'.(($value === 'page') ? ' selected="selected"' : '').'>'.__('Pages',WYSIJA).'</option>';
+
+                foreach($post_types as $key=> $post_type_obj) {
+                    $selected = ($value === $key) ? ' selected="selected"' : '';
+                    echo '<option value="'.$key.'"'.$selected.'>'.$post_type_obj->labels->name.'</option>';
+                }
+            ?>
+            </select>
+        </p>
+        <?php
+    }
+
     function popup_articles($errors){
         echo $this->messages(true);
         ?>
         <div class="popup_content articles">
             <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
                 <div class="ml-submit">
-                    <input type="text" id="search-box" name="search" autocomplete="off" />
-                    <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
-                    <label id="labelfullarticlesget" for="fullarticlesget">
-                        <?php
-                        $modelConfig=&WYSIJA::get("config","model");
-                        $checked="";
-                        if($modelConfig->getValue("editor_fullarticle")) $checked=' checked="checked" ';
-                        ?>
-                        <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
-                        <?php
-                        echo __("Insert entire post, not just excerpt",WYSIJA);
-                        ?>
-                    </label>
+                    <?php $this->selectCPT(); ?>
+                    <div class="searchwrap">
+                        <input type="text" id="search-box" name="search" autocomplete="off" />
+                        <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
+                        <label id="labelfullarticlesget" for="fullarticlesget">
+                            <?php
+                            $modelConfig=&WYSIJA::get('config','model');
+                            $checked='';
+                            if($modelConfig->getValue('editor_fullarticle')) $checked=' checked="checked" ';
+                            ?>
+                            <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
+                            <?php
+                            echo __('Insert entire post, not just excerpt',WYSIJA);
+                            ?>
+                        </label>
+                    </div>
                 </div>
                 <div id="search-results"></div>
 
@@ -1996,6 +1940,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input type="hidden" name="category_ids" id="category_ids" value="<?php echo $category_ids ?>" />
 
                 <!-- max number of articles -->
+                <?php $this->selectCPT($data['params']['cpt'], false); ?>
                 <?php
                     if($data['autopost_type'] === 'single') {
                 ?>
@@ -2016,43 +1961,45 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 ?>
 
                 <!-- category -->
-                <p class="clearfix">
-                    <label for="category"><?php _e('Filter by category', WYSIJA) ?></label>
-                    <select name="category" class="categories">
-                        <option value="" selected="selected"><?php _e("All categories", WYSIJA) ?></option>
-                        <?php foreach($data['categories'] as $category) {
-                            $is_selected = '';
-                            if(empty($selected_categories) === FALSE and isset($selected_categories[0])) {
-                                $is_selected = ((int)$category['id'] === (int)$selected_categories[0]) ? 'selected="selected"' : '';
+                <div class="category-selection">
+                    <p class="clearfix">
+                        <label for="category"><?php _e('Filter by category', WYSIJA) ?></label>
+                        <select name="category" class="categories">
+                            <option value="" selected="selected"><?php _e("All categories", WYSIJA) ?></option>
+                            <?php foreach($data['categories'] as $category) {
+                                $is_selected = '';
+                                if(empty($selected_categories) === FALSE and isset($selected_categories[0])) {
+                                    $is_selected = ((int)$category['id'] === (int)$selected_categories[0]) ? 'selected="selected"' : '';
+                                }
+                            ?>
+                                <option value="<?php echo $category['id'] ?>" <?php echo $is_selected ?>><?php echo $category['name'] ?></option>
+                            <?php } ?>
+                        </select>
+                        <span class="inline"><a href="javascript:;" class="icon-plus" id="add-category"><span></span></a></span>
+                    </p>
+
+                    <ul id="category_selection">
+                        <?php
+                            if(empty($selected_categories) === FALSE and count($selected_categories) > 1) {
+                                for($i = 1; $i < count($selected_categories); $i++) { ?>
+                                    <li id="category-<?php echo ($i+1) ?>" class="clearfix">
+                                        <span>
+                                            <select name="category" class="categories">
+                                            <?php foreach($data['categories'] as $category) {
+                                                $is_selected = ((int)$category['id'] === (int)$selected_categories[$i]) ? 'selected="selected"' : '';
+                                            ?>
+                                                <option value="<?php echo $category['id'] ?>" <?php echo $is_selected ?>><?php echo $category['name'] ?></option>
+                                            <?php } ?>
+                                            </select>
+                                        </span>
+                                        <a class="icon-minus remove-category" rel="<?php echo ($i+1) ?>" href="javascript:;"><span></span></a>
+                                    </li>
+                        <?php
+                                }
                             }
                         ?>
-                            <option value="<?php echo $category['id'] ?>" <?php echo $is_selected ?>><?php echo $category['name'] ?></option>
-                        <?php } ?>
-                    </select>
-                    <span class="inline"><a href="javascript:;" class="icon-plus" id="add-category"><span></span></a></span>
-                </p>
-
-                <ul id="category_selection">
-                    <?php
-                        if(empty($selected_categories) === FALSE and count($selected_categories) > 1) {
-                            for($i = 1; $i < count($selected_categories); $i++) { ?>
-                                <li id="category-<?php echo ($i+1) ?>" class="clearfix">
-                                    <span>
-                                        <select name="category" class="categories">
-                                        <?php foreach($data['categories'] as $category) {
-                                            $is_selected = ((int)$category['id'] === (int)$selected_categories[$i]) ? 'selected="selected"' : '';
-                                        ?>
-                                            <option value="<?php echo $category['id'] ?>" <?php echo $is_selected ?>><?php echo $category['name'] ?></option>
-                                        <?php } ?>
-                                        </select>
-                                    </span>
-                                    <a class="icon-minus remove-category" rel="<?php echo ($i+1) ?>" href="javascript:;"><span></span></a>
-                                </li>
-                    <?php
-                            }
-                        }
-                    ?>
-                </ul>
+                    </ul>
+                </div>
 
                 <!-- title -->
                 <p class="clearfix">

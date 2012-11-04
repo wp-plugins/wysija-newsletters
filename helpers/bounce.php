@@ -18,16 +18,16 @@ class WYSIJA_help_bounce extends WYSIJA_help{
   var $detectEmail = '/[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+\/=?^_`{|}~-]+)*@([a-z0-9\-]+\.)+[a-z0-9]{2,8}/i';
   var $messages = array();
   function WYSIJA_help_bounce(){
-    $this->config = &WYSIJA::get("config","model");
-    $this->mailer = &WYSIJA::get('mailer',"helper");
-    $this->rulesClass = &WYSIJA::get('rules',"helper");
+    $this->config = &WYSIJA::get('config','model');
+    $this->mailer = &WYSIJA::get('mailer','helper');
+    $this->rulesClass = &WYSIJA::get('rules','helper');
     $this->mailer->report = false;
-    $this->subClass = &WYSIJA::get("user","model");//acymailing_get('class.subscriber');
-    $this->listsubClass = &WYSIJA::get("user_list","model");//acymailing_get('class.listsub');
+    $this->subClass = &WYSIJA::get('user','model');//acymailing_get('class.subscriber');
+    $this->listsubClass = &WYSIJA::get('user_list','model');//acymailing_get('class.listsub');
     $this->listsubClass->checkAccess = false;
     $this->listsubClass->sendNotif = false;
     $this->listsubClass->sendConf = false;
-    $this->historyClass = &WYSIJA::get("user_history","model");
+    $this->historyClass = &WYSIJA::get('user_history','model');
   }
   function init($config=false){
   if($config){
@@ -482,7 +482,6 @@ class WYSIJA_help_bounce extends WYSIJA_help{
             $this->historyClass->insert($this->_message->user_id,'bounce',$data,@$this->_message->email_id);
             $message .= ' | message saved (user '.$this->_message->user_id.')';
         }
-
         if(isset($oneRule['forward'])){
             if(isset($oneRule['action_message_forwardto']) && !empty($oneRule['action_message_forwardto']) && trim($oneRule['action_message_forwardto']) !=trim($this->config->getValue('bounce_email'))){
 

@@ -20,6 +20,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
         } else {
             $categories = explode(',', $params['category_ids']);
         }
+        if(!isset($params['cpt'])) $params['cpt']='post';
         $args = array(
             'numberposts'     => (int)$params['post_limit'],
             'offset'          => 0,
@@ -30,7 +31,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
             'exclude'         => $exclude,
             'meta_key'        => NULL,
             'meta_value'      => NULL,
-            'post_type'       => 'post',
+            'post_type'       => $params['cpt'],
             'post_mime_type'  => NULL,
             'post_parent'     => NULL,
             'post_status'     => 'publish'
@@ -126,7 +127,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                         break;
                     case 'center':
 
-                        $post_image['width'] = min($post_image['width'], 554);
+                        $post_image['width'] = min($post_image['width'], 564);
                         break;
                 }
                 if($ratio > 0) {

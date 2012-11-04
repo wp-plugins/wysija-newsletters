@@ -224,45 +224,79 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         // fixes issue with pcre functions
         @ini_set('pcre.backtrack_limit', 1000000);
 
-        $model=&WYSIJA::get("user","model");
+        $model=&WYSIJA::get('user','model');
 
         /*Carefull WordPress global*/
         global $wpdb;
-        $modelConfig=&WYSIJA::get("config","model");
-        $fullarticlepref=$modelConfig->getValue("editor_fullarticle");
+        $mConfig=&WYSIJA::get('config','model');
+        $isFullArticle=$mConfig->getValue('editor_fullarticle');
+
         /* test to set the default value*/
-        if(!$fullarticlepref && isset($_REQUEST['fullarticle'])){
-
-            $modelConfig->save(array("editor_fullarticle"=>true));
+        if(!$isFullArticle && isset($_REQUEST['fullarticle'])){
+            $mConfig->save(array('editor_fullarticle'=>true));
         }
 
-        if($fullarticlepref && !isset($_REQUEST['fullarticle'])){
+        if($isFullArticle && !isset($_REQUEST['fullarticle'])){
+            $mConfig->save(array('editor_fullarticle'=>false));
+        }
+        $cpt = array('post');
+        if(isset($_REQUEST['cpt'])){
+            $cpt = array();
+            if($_REQUEST['cpt'] === 'all') {
+                $hWPTools =& WYSIJA::get('wp_tools','helper');
+                $post_types = $hWPTools->get_post_types();
+                $cpt = array_keys($post_types);
+                $cpt[] = 'post';
+                $cpt[] = 'page';
+            } else {
+                $cpt = $_REQUEST['cpt'];
+            }
 
-            $modelConfig->save(array("editor_fullarticle"=>false));
+            $querycpt = '';
+            if(is_array($cpt)) {
+                $querycpt = ' AND '.$wpdb->posts.'.post_type IN ("'.  implode('", "', $cpt).'")';
+            } else {
+                $querycpt = ' AND '.$wpdb->posts.'.post_type="'.$cpt.'"';
+            }
+        }
+        $limitquery='';
+        $res=array();
+        $res['append']=false;
+
+        if(isset($_REQUEST['query_offset']) && (int)$_REQUEST['query_offset']){
+            $res['append']=true;
+            $limitquery = ' LIMIT '.(int)($_REQUEST['query_offset']).',10';
+        } else {
+            $limitquery = ' LIMIT 0,10';
         }
 
-
-        if(isset($_REQUEST['search'])){
-            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
+        if(isset($_REQUEST['search']) && strlen(trim($_REQUEST['search'])) > 0) {
+            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
             FROM $wpdb->posts
             WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%'
-            AND $wpdb->posts.post_status = 'publish'
-            AND $wpdb->posts.post_type = 'post'
-            ORDER BY $wpdb->posts.post_date DESC
-            LIMIT 0,30";
+            AND $wpdb->posts.post_status = 'publish'";
+            $querystr.= $querycpt;
+            $querystr.=" ORDER BY $wpdb->posts.post_date DESC";
+            $querystr.=$limitquery;
+            // query to count total rows
+            $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%' AND $wpdb->posts.post_status = 'publish'".$querycpt;
         }else{
-            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
+            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
             FROM $wpdb->posts
-            WHERE $wpdb->posts.post_status = 'publish'
-            AND $wpdb->posts.post_type = 'post'
-            ORDER BY $wpdb->posts.post_date DESC
-            LIMIT 0,10";
+            WHERE $wpdb->posts.post_status = 'publish'";
+            $querystr.= $querycpt;
+            $querystr.= " ORDER BY $wpdb->posts.post_date DESC";
+            $querystr.=$limitquery;
+
+            // query to count total rows
+            $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE $wpdb->posts.post_status = 'publish'".$querycpt;
         }
 
-        $res=array();
-        $res['posts']=$model->query("get_res",$querystr);
+        $res['posts']=$model->query('get_res',$querystr);
+        $count = $model->query('get_row', $queryCount);
+        $res['total'] = (int)$count['total'];
 
-        $helper_engine=&WYSIJA::get("wj_engine","helper");
+        $helper_engine=&WYSIJA::get('wj_engine','helper');
         $helper_articles =& WYSIJA::get('articles', 'helper');
 
         // set params for post format
@@ -285,10 +319,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 // make editor block from post data
                 $res['posts'][$k]['html'] = base64_encode($helper_engine->renderEditorBlock($block));
             }
-
         }else {
-
-            $res['msg'] = __("There are no posts corresponding to that search.",WYSIJA);
+            $res['msg'] = __('There are no posts corresponding to that search.',WYSIJA);
             $res['result'] = false;
         }
 
@@ -297,7 +329,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
     }
 
     function send_preview($spamtest=false){
-        $mailer=&WYSIJA::get("mailer","helper");
+        $mailer=&WYSIJA::get('mailer','helper');
         $email_id = $_REQUEST['id'];
         $resultarray=array();
 
@@ -311,10 +343,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         if(isset($_REQUEST['data'])){
            $dataTemp=$_REQUEST['data'];
             $_REQUEST['data']=array();
-            foreach($dataTemp as $val) $_REQUEST['data'][$val["name"]]=$val["value"];
+            foreach($dataTemp as $val) $_REQUEST['data'][$val['name']]=$val['value'];
             $dataTemp=null;
             foreach($_REQUEST['data'] as $k =>$v){
-                $newkey=str_replace(array("wysija[email][","]"),"",$k);
+                $newkey=str_replace(array('wysija[email][',']'),'',$k);
                 $configVal[$newkey]=$v;
             }
             if(isset($configVal['from_name'])){
@@ -352,7 +384,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $dummyReceiver->lastname = $dummyReceiver->firstname =$langextra='';
             if($spamtest){
                 $dummyReceiver->firstname ='Mail-Tester.com';
-                if(WPLANG) $langextra='&lang='.WPLANG;
+                if(defined('WPLANG') && WPLANG) $langextra='&lang='.WPLANG;
                 $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($receivers[$key]).$langextra;
             }
 
@@ -374,15 +406,22 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
         // get back email data as it will be updated during the rendering (articles ids + articles count)
         $emailChild = $wjEngine->getEmailData();
-        $countvar=$firstsubject=$totalchild='';
-        if(isset($emailChild['params']['autonl']['articles']['count'])) $countvar=(int)$emailChild['params']['autonl']['articles']['count'];
-        if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstsubject=$emailChild['params']['autonl']['articles']['first_subject'];
-        if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalchild=(int)$emailChild['params']['autonl']['articles']['total_child'];
 
-        $emailObject->subject = str_replace(
-                array('[total]','[number]','[post_title]'),
-                array($totalchild,$countvar,$firstsubject),
-                $emailChild['subject']);
+        if($emailChild['type']==2 && isset($emailChild['params']['autonl']['articles'])){
+            $countvar=$firstsubject=$totalchild='';
+            if(isset($emailChild['params']['autonl']['articles']['count'])) $countvar=(int)$emailChild['params']['autonl']['articles']['count'];
+            if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstsubject=$emailChild['params']['autonl']['articles']['first_subject'];
+            if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalchild=(int)$emailChild['params']['autonl']['articles']['total_child'];
+            if(empty($firstsubject)){
+                $this->error(__('There are no articles to be sent in this email.',WYSIJA),1);
+                return array('result'=>false);
+            }
+            $emailObject->subject = str_replace(
+                    array('[total]','[number]','[post_title]'),
+                    array($totalchild,$countvar,$firstsubject),
+                    $emailChild['subject']);
+        }
+
 
         $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
 
@@ -422,31 +461,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         return $resultarray;
     }
 
-    /* START premium hook */
     function send_spamtest(){
-        add_filter('wysija_send_spam_test',array($this,'splitVersion_send_spamtest'));
-        return apply_filters('wysija_send_spam_test');
+        return apply_filters('wysija_send_spam_test','',$this);
     }
-
-    function splitVersion_send_spamtest(){
-        $config=&WYSIJA::get("config","model");
-        $spamtesttries=$config->getValue('spamtest_tries');
-
-        if(!$config->getValue('premium_key') && $spamtesttries>1) {
-            return array('result'=>false,'notriesleft'=>__('You don\'t have any tries left.',WYSIJA));
-        }
-        //send a message to wysija-WEBSITE-email_id@mail-tester.com
-        $_REQUEST['receiver']= 'wysija-'.base64_encode(get_site_url()).'-'.$_REQUEST['id'].'@mail-tester.com';
-
-        $results=$this->send_preview(true);
-
-        if($results['result']){
-            $config->save(array('spamtest_tries'=>((int)$spamtesttries+1)));
-        }
-
-        return $results;
-    }
-    /* END premium hook */
 
     function set_divider()
     {
@@ -580,29 +597,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $helper_engine=&WYSIJA::get("wj_engine","helper");
         return base64_encode($helper_engine->renderEditorBlock($block));
     }
-    /* START premium hook */
-    function splitVersion_install_theme_premium($getpremiumtheme){
-        $modelC=&WYSIJA::get("config","model");
-
-        if(!$modelC->getValue("premium_key")){
-
-            $errormsg=str_replace(array('[link]','[/link]'),
-            array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab ispopup" href="javascript:;" >','</a>'),
-                    __("Theme is available in premium version only. [link]11 good reasons to upgrade.[/link]",WYSIJA));
-            $this->error($errormsg,1);
-            return false;
-        }else  return true;
-
-    }
-    /* END premium hook */
 
     function install_theme() {
         if( isset($_REQUEST['theme_id'])){
 
-
             //check if theme is premium if you have the premium licence
             if(isset($_REQUEST['premium']) && $_REQUEST['premium']){
-                add_filter('wysija_install_theme_premium',array($this,'splitVersion_install_theme_premium'));
                 $getpremiumtheme=apply_filters('wysija_install_theme_premium', false);
 
                 if(!$getpremiumtheme){

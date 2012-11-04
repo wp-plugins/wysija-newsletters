@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_user_history extends WYSIJA_model{
-    
+
     var $pk="history_id";
     var $table_name="user_history";
     var $columns=array(
@@ -14,18 +14,18 @@ class WYSIJA_model_user_history extends WYSIJA_model{
         'details' => array(),
         'source' => array()
     );
-    
-    
-    
+
+
+
     function WYSIJA_model_user_history(){
         $this->WYSIJA_model();
     }
-    
+
     function insert($subid,$action,$data = array(),$mailid = 0){
             $current_user=WYSIJA::wp_get_userdata();
             /*dbg($current_user,0);
             $current_user=wp_get_current_user();*/
-            if(!empty($current_user->id)){
+            if(!empty($current_user->ID)){
                 $data[] = 'EXECUTED_BY::'.$current_user->ID.' ( '.$current_user->user_login.' )';
             }
             $history = null;

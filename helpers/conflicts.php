@@ -17,13 +17,16 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
         foreach($this->cleanHooks as $hookToclean => $info){
             switch($hookToclean){
                case 'admin_head':
-                   add_action('admin_init', array($this, 'remove_admin_head'), 999);
+                   add_action('init', array($this, 'remove_admin_head'), 999);
                    break;
                case 'admin_print_scripts':
                    add_action('admin_menu', array($this, 'remove_admin_print_scripts'), 999);
                    break;
                case 'wp_enqueue_scripts':
-                   add_action('admin_menu', array($this, 'remove_enqueue_scripts'), 999);
+                   add_action('admin_menu', array($this, 'remove_wp_enqueue_scripts'), 999);
+                   break;
+               case 'admin_enqueue_scripts':
+                   add_action('admin_menu', array($this, 'remove_admin_enqueue_scripts'), 999);
                    break;
                case 'init':
                    add_action('after_setup_theme', array($this, 'remove_init'), 999);
@@ -46,8 +49,11 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
     function remove_admin_print_scripts(){
         $this->remove_actions('admin_print_scripts');
     }
-    function remove_enqueue_scripts() {
+    function remove_wp_enqueue_scripts() {
         $this->remove_actions('wp_enqueue_scripts');
+    }
+    function remove_admin_enqueue_scripts() {
+        $this->remove_actions('admin_enqueue_scripts');
     }
     function remove_actions($actionsToClear){
         
@@ -56,9 +62,9 @@ class WYSIJA_help_conflicts extends WYSIJA_object{
             if(!isset($this->cleanHooks[$actionsToClear][$priority])) continue;
             foreach($callbacks as $identifier => $arrayInfo){
                 if(is_array($arrayInfo['function'])){
-                    foreach($arrayInfo['function'] as $id =>$myobject){
-                        foreach($this->cleanHooks[$actionsToClear][$priority] as $infoClear){
-                            if(isset($infoClear["objects"]) && is_object($myobject) && in_array(get_class($myobject),$infoClear["objects"])){
+                    foreach($arrayInfo['function'] as $id => $myobject){
+                        foreach($this->cleanHooks[$actionsToClear][$priority] as $infoClear) {
+                            if(isset($infoClear['objects']) && is_object($myobject) && in_array(get_class($myobject),$infoClear['objects'])){
                                 unset($wp_filter[$actionsToClear][$priority][$identifier]);
                             }
                         }

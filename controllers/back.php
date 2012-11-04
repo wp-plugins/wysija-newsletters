@@ -61,11 +61,6 @@ class WYSIJA_control_back extends WYSIJA_control{
             add_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',base64_encode(serialize($this->pref)));
         }
 
-
-        /* START premium hook */
-        /* check the licence if we have a premium user once in a while like every week*/
-        add_action('wysija_various_check',array($this,'splitVersion_variousCheck'));
-        /* END premium hook */
         do_action('wysija_various_check');
 
         /*check if the plugin has an update available */
@@ -73,33 +68,6 @@ class WYSIJA_control_back extends WYSIJA_control{
         $updateH->checkForNewVersion();
 
     }
-
-    function splitVersion_variousCheck(){
-        $modelC=&WYSIJA::get('config','model');
-        if(get_option('wysicheck') || (( (isset($_REQUEST['action']) && $_REQUEST['action']!='licok')) && $modelC->getValue('premium_key'))){
-            //$this->notice('licence check');
-            $onedaysec=7*24*3600;
-            if(get_option('wysicheck') || (!$modelC->getValue('premium_val') || time() >((int)$modelC->getValue('premium_val')+$onedaysec))){
-                $helpLic=&WYSIJA::get('licence','helper');
-                $res=$helpLic->check(true);
-                if($res['nocontact']){
-                    /* redirect instantly to a page with a javascript file  where we check the domain is ok */
-                    $data=get_option('wysijey');
-                    /* remotely connect to host */
-                    wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
-
-                }
-            }
-        }
-
-        if(get_option('dkim_autosetup') ){
-            $helpLic=&WYSIJA::get('licence','helper');
-            $data=$helpLic->getDomainInfo();
-            wp_enqueue_script('wysija-setup-dkim', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&js=1&data='.$data, array( 'jquery' ), time());
-        }
-    }
-
-    
 
 
     function errorInstall(){
@@ -497,7 +465,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
             foreach($this->iframeTabs as $actionKey =>$actionTitle)
                 add_action("media_upload_".$actionKey, array($this,$actionKey));
-        }else   add_action("media_upload_standard", array($this,"popupReturn"));
+        }else   add_action("media_upload_standard", array($this,'popupReturn'));
 
         // upload type: image, video, file, ..?
         if ( isset($_GET['type']) )
@@ -518,13 +486,10 @@ class WYSIJA_control_back extends WYSIJA_control{
             do_action("media_upload_$type");
         else{
             if(strpos($tab, "special_")!==false){
-
                 do_action("media_upload_$tab");
             }else{
-                do_action("media_upload_standard",$tab);
+                do_action('media_upload_standard',$tab);
             }
-
-            //do_action("media_upload_$tab");
         }
 
         exit;

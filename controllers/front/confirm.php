@@ -26,28 +26,50 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
 
 
     function subscribe(){
-        if(isset($_REQUEST['demo'])){
-            $modelConf=&WYSIJA::get("config","model");
-            $this->title=$modelConf->getValue("subscribed_title");
-            $this->subtitle=$modelConf->getValue("subscribed_subtitle");
+        $listids=array();
+        if(isset($_REQUEST['wysiconf'])) $listids= unserialize(base64_decode($_REQUEST['wysiconf']));
+        $mList=&WYSIJA::get('list','model');
+        $namesRes=$mList->get(array('name'),array('list_id'=>$listids));
+        $names=array();
+        foreach($namesRes as $nameob) $names[]=$nameob['name'];
 
+        if(isset($_REQUEST['demo'])){
+            $modelConf=&WYSIJA::get('config','model');
+            $this->title=sprintf($modelConf->getValue('subscribed_title'),  implode(', ', $names));
+            $this->subtitle=$modelConf->getValue('subscribed_subtitle');
         }else{
-           if($this->_testKeyuser()){
-               $modelConf=&WYSIJA::get("config","model");
-               if((int)$this->userData["details"]['status']<1){
-                    $this->helperUser->subscribe($this->userData["details"]["user_id"]);
-                    $modelConf=&WYSIJA::get("config","model");
-                    $this->title=$modelConf->getValue("subscribed_title");
-                    $this->subtitle=$modelConf->getValue("subscribed_subtitle");
-                    $this->helperUser->uid=$this->userData["details"]["user_id"];
-                    if($modelConf->getValue("emails_notified") && $modelConf->getValue("emails_notified_when_sub"))    $this->helperUser->_notify($this->userData["details"]["email"]);
+           $modelConf=&WYSIJA::get('config','model');
+            if($this->_testKeyuser()){
+
+               //user is not confirmed yet
+               if((int)$this->userData['details']['status']<1){
+                    $this->helperUser->subscribe($this->userData['details']['user_id'],true, false,$listids);
+                    $this->title=sprintf($modelConf->getValue('subscribed_title'),  implode(', ', $names));
+                    $this->subtitle=$modelConf->getValue('subscribed_subtitle');
+                    $this->helperUser->uid=$this->userData['details']['user_id'];
+                    if($modelConf->getValue('emails_notified') && $modelConf->getValue('emails_notified_when_sub'))    $this->helperUser->_notify($this->userData['details']['email']);
                     return true;
                 }else{
-                    $this->title=__("You are already subscribed.",WYSIJA);
-
+                    if(isset($_REQUEST['wysiconf'])){
+                        $modelUserList=&WYSIJA::get('user_list','model');
+                        $needssubscription=false;
+                        foreach($this->userData['lists'] as $list){
+                            if(in_array($list['list_id'],$listids) && (int)$list['sub_date']<1){
+                                $needssubscription=true;
+                            }
+                        }
+                        if($needssubscription){
+                            $this->helperUser->subscribe($this->userData['details']['user_id'],true,false,$listids);
+                            $this->title=sprintf($modelConf->getValue('subscribed_title'),  implode(', ', $names));
+                            $this->subtitle=$modelConf->getValue('subscribed_subtitle');
+                        }else{
+                            $this->title=sprintf(__('You are already subscribed to : %1$s',WYSIJA),  implode(', ', $names));
+                        }
+                    }else{
+                        $this->title=__('You are already subscribed.',WYSIJA);
+                    }
                     return false;
                 }
-
             }
         }
 
@@ -113,7 +135,6 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
         /* get the user_id out of the params passed */
         if($this->_testKeyuser()){
             /* update the general details */
-
             $userid=$_REQUEST['wysija']['user']['user_id'];
             unset($_REQUEST['wysija']['user']['user_id']);
             $modelConf=&WYSIJA::get('config','model');
@@ -141,69 +162,74 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             }
 
             $this->modelObj->update($_REQUEST['wysija']['user'],array('user_id'=>$userid));
+            $id=$userid;
 
+            $hUser=&WYSIJA::get('user','helper');
             /* update the list subscriptions */
-           /* update subscriptions */
+           //run the unsubscribe process if needed
+            if((int)$_REQUEST['wysija']['user']['status']==-1){
+                $hUser->unsubscribe($id);
+            }
+
+            /* update subscriptions */
             $modelUL=&WYSIJA::get('user_list','model');
+            $modelUL->backSave=true;
             /* list of core list */
             $modelLIST=&WYSIJA::get('list','model');
-            $results=$modelLIST->get(array('list_id'),array('is_enabled'=>1,'is_public'=>1));
+            $results=$modelLIST->get(array('list_id'),array('is_enabled'=>'0'));
             $core_listids=array();
             foreach($results as $res){
                 $core_listids[]=$res['list_id'];
             }
 
-            $user_lists=$modelUL->get(array('list_id'),array('user_id'=>$userid));
+            //0 - get current lists of the user
+            $userlists=$modelUL->get(array('list_id'),array('user_id'=>$id));
 
-            $postedlistids=$differenceForPostNotif=$removedFromList=array();
-            if(!empty($_POST['wysija']['user_list']['list_id']))    $postedlistids=$_POST['wysija']['user_list']['list_id'];
+            $oldlistids=$newlistids=array();
+            foreach($userlists as $listdata)    $oldlistids[]=$listdata['list_id'];
 
-            foreach($core_listids as $listidunik){
-                if(!in_array($listidunik, $postedlistids)){
-                    $removedFromList[]=$listidunik;
-                }
-
-            }
-            $modelUL->delete(array('user_id'=>$userid,'list_id'=>$removedFromList));
-
-
+            $config=&WYSIJA::get('config','model');
+            $dbloptin=$config->getValue('confirm_dbleoptin');
+            //1 - insert new user_list
             if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
-
-                $alreadyindblistids=array();
-                if($user_lists){
-                    foreach($user_lists as $ulist){
-                        $alreadyindblistids[]=$ulist['list_id'];
-                    }
-                }
-                if(!empty($alreadyindblistids)){
-                    foreach($postedlistids as $listidunik){
-                        if(!in_array($listidunik, $alreadyindblistids)){
-                            $differenceForPostNotif[]=$listidunik;
+                foreach($_POST['wysija']['user_list']['list_id'] as $list_id){
+                    if(!in_array($list_id, $oldlistids)){
+                        $modelUL->reset();
+                        $newlistids[]=$list_id;
+                        $dataul=array('user_id'=>$id,'list_id'=>$list_id,'sub_date'=>time());
+                        if($dbloptin){
+                            unset($dataul['sub_date']);
+                            $modelUL->nohook=true;
                         }
+                        $modelUL->insert($dataul);
+                    }else{
+                        $alreadysubscribelistids[]=$list_id;
                     }
-                }else{
-                    $differenceForPostNotif=$postedlistids;
                 }
-
-
-                foreach($differenceForPostNotif as $listid)
-                    $modelUL->insert(array("user_id"=>$userid,"list_id"=>$listid,"unsub_date"=>0));
-
             }
 
+            //if a confirmation email needs to be sent then we send it
+            if($dbloptin && !empty($newlistids)){
+                $hUser->sendConfirmationEmail($id,true,$newlistids);
+            }
+
+            // list ids
+            $list_ids = $_POST['wysija']['user_list']['list_id'];
+            if(is_array($list_ids) === false) $list_ids = array();
+
+            $notEqual = array_merge($core_listids, $list_ids);
+
+            //delete the lists to which you've unsubscribed
+            $condiFirst = array('notequal'=>array('list_id'=> $notEqual), 'equal' => array('user_id' => $id, 'unsub_date' => 0));
+            $modelUL=&WYSIJA::get('user_list','model');
+            $modelUL->delete($condiFirst);
             $modelUL->reset();
-
             $this->notice(__('Newsletter profile has been updated.',WYSIJA));
-
             $this->subscriptions();
 
             //reset post otherwise wordpress will not recognise the post !!!
             $_POST=array();
         }
-
         return true;
     }
-
-
-
 }

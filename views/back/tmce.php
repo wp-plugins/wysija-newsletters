@@ -61,6 +61,7 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
                 <div id="widget-form" class="widget">
 
                     <?php
+                    require_once(WYSIJA_WIDGETS.'wysija_nl.php');
                     $widgetNL=new WYSIJA_NL_Widget(1);
                     $widgetNL->form($datawidget);
                     ?>

@@ -293,6 +293,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
         $wjParser =& WYSIJA::get('wj_parser', 'helper');
         $wjParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
         $wjParser->setStripSpecialchars(true);
+        if(isset($params['bgcolor1']) && strlen($params['bgcolor1']) === 0) {
+            $params['bgcolor1'] = 'transparent';
+        }
+        if(isset($params['bgcolor2']) && strlen($params['bgcolor2']) === 0) {
+            $params['bgcolor2'] = 'transparent';
+        }
         $data = array(
             'posts' => $posts,
             'params' => $params
@@ -633,6 +639,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     $params[$pairs['key']] = $pairs['value'];
                 }
 
+                if(isset($params['bgcolor1']) && strlen($params['bgcolor1']) === 0) {
+                    $params['bgcolor1'] = 'transparent';
+                }
+                if(isset($params['bgcolor2']) && strlen($params['bgcolor2']) === 0) {
+                    $params['bgcolor2'] = 'transparent';
+                }
+
                 if(!empty($email['params']['autonl']['articles']['ids'])) {
                     $params['exclude'] = $email['params']['autonl']['articles']['ids'];
                 } else {
@@ -711,10 +724,10 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
                         $posts[$key]['background_color'] = 'transparent';
 
-                        if(isset($params['bgcolor1']) && strlen($params['bgcolor1']) > 0 && $postIterator > 0) {
+                        if(isset($params['bgcolor1']) && $postIterator > 0) {
                             $posts[$key]['background_color'] = $params['bgcolor1'];
                         }
-                        if(isset($params['bgcolor2']) && strlen($params['bgcolor2']) > 0 && $postIterator < 0) {
+                        if(isset($params['bgcolor2']) && $postIterator < 0) {
                             $posts[$key]['background_color'] = $params['bgcolor2'];
                         }
                         $postIterator *= -1;
@@ -731,6 +744,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
                 $email['params']['autonl']['articles']['ids'] = array_unique(array_merge($email['params']['autonl']['articles']['ids'], $postIds));
 
+                if(!isset($email['params']['autonl']['articles']['count'])) $email['params']['autonl']['articles']['count']=0;
                 $email['params']['autonl']['articles']['count'] = (int)$email['params']['autonl']['articles']['count'] + $postCount;
                 $this->setEmailData($email);
             } else {
@@ -823,6 +837,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 if(array_key_exists('background_color', $extra) and $extra['background_color'] !== null) {
                     $tags['p']['background'] = $extra['background_color'];
                     $tags['a']['background'] = $extra['background_color'];
+                    $tags['ul']['background'] = $extra['background_color'];
+                    $tags['li']['background'] = $extra['background_color'];
                 }
             break;
             case 'unsubscribe':

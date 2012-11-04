@@ -18,6 +18,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
         var $isMailjet=false;
         var $isElasticRest=false;
         var $DKIM_selector   = 'wys';
+        var $listids=false;
+        var $listnames=false;
 
 	function WYSIJA_help_mailer($extension="",$config=false) {
             $this->subscriberClass = &WYSIJA::get("user","model");
@@ -594,16 +596,23 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             }
 
 
-            $arrayfind[]="[subscriptions_links]";
-            $subscriptions_links='
-                <div>'.$this->subscriberClass->getUnsubLink($receiver).'</div>';
+            $arrayfind[]='[subscriptions_links]';
+            $subscriptions_links='<div>'.$this->subscriberClass->getUnsubLink($receiver).'</div>';
             $arrayreplace[]=$subscriptions_links;
             if($email->email_id == $this->config->getValue('confirm_email_id')){
                 $this->subscriberClass->reset();
-                $activation_link=$this->subscriberClass->getConfirmLink($receiver,"subscribe",false,true);
-                $arrayfind[]="[activation_link]";
-                $arrayreplace[]='<a href="'.$activation_link.'" target="_blank">';
-                $arrayfind[]="[/activation_link]";
+                $activation_link=$this->subscriberClass->getConfirmLink($receiver,'subscribe',false,true);
+                $listids='';
+                if($this->listids){
+                    $listids='&wysiconf='.base64_encode(serialize($this->listids));
+                    $arrayfind[]='[lists_to_confirm]';
+                    if(!$this->listnames) $arrayreplace[]='';
+                    else $arrayreplace[]='<strong>'.implode(', ', $this->listnames).'</strong>';
+                }
+                $activation_link.='';
+                $arrayfind[]='[activation_link]';
+                $arrayreplace[]='<a href="'.$activation_link.$listids.'" target="_blank">';
+                $arrayfind[]='[/activation_link]';
                 $arrayreplace[]='</a>';
             }
             $email->body=str_replace($arrayfind,$arrayreplace,$email->body);

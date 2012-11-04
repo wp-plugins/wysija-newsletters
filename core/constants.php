@@ -23,7 +23,7 @@ define('WYSIJA_URL',plugins_url().'/'.strtolower('wysija-newsletters').'/');
 
 $upload_dir = wp_upload_dir();
 
-define('WYSIJA_UPLOADS_DIR',str_replace("/",DS,$upload_dir['basedir']).DS.'wysija'.DS);
+define('WYSIJA_UPLOADS_DIR',str_replace('/',DS,$upload_dir['basedir']).DS.'wysija'.DS);
 define('WYSIJA_UPLOADS_URL',$upload_dir['baseurl'].'/wysija/');
 define('WYSIJA_INC',WYSIJA_DIR.'inc'.DS);
 define('WYSIJA_CORE',WYSIJA_DIR.'core'.DS);
@@ -31,6 +31,7 @@ define('WYSIJA_VIEWS',WYSIJA_DIR.'views'.DS);
 define('WYSIJA_MODELS',WYSIJA_DIR.'models'.DS);
 define('WYSIJA_HELPERS',WYSIJA_DIR.'helpers'.DS);
 define('WYSIJA_CTRL',WYSIJA_DIR.'controllers'.DS);
+define('WYSIJA_WIDGETS',WYSIJA_DIR.'widgets'.DS);
 
 define('WYSIJA_DIR_IMG',WYSIJA_DIR.'img'.DS);
 define('WYSIJA_EDITOR_IMG',WYSIJA_URL.'img/');

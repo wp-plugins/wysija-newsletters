@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
         
-        $this->updates=array('1.1','2.0','2.1');
+        $this->updates=array('1.1','2.0','2.1','2.1.6');
     }
 
     function runUpdate($version){
@@ -118,6 +118,15 @@ class WYSIJA_help_update extends WYSIJA_object{
             }
             return true;
             break;
+            case '2.1.6':
+                $querys[]="UPDATE `[wysija]user_list` as A inner join `[wysija]user` as B on (A.user_id= B.user_id) set A.sub_date= B.created_at where A.sub_date=0;";
+                $errors=$this->runUpdateQueries($querys);
+                if($errors){
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
+                return true;
+                break;
             default:
                 return false;
         }
@@ -163,11 +172,17 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
         
         $noredirect=false;
-        if((!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
-            if(isset($_REQUEST['action']) && $_REQUEST['action']=='whats_new')  $noredirect=true;
-            if(!$noredirect) {
-                $config->save(array('wysija_whats_new'=>WYSIJA::get_version()));
-                WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
+        $timeInstalled=time()+3600;
+
+        if(current_user_can('switch_themes')){
+            if($config->getValue('installed_time')>$timeInstalled && (!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
+                if(isset($_REQUEST['action']) && $_REQUEST['action']=='whats_new')  $noredirect=true;
+                if(!$noredirect) {
+                    WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
+
+                    $mConfig=&WYSIJA::get('config','model');
+                    $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+                }
             }
         }
     }
