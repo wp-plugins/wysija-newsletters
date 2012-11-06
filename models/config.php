@@ -329,6 +329,8 @@ class WYSIJA_model_config extends WYSIJA_object{
                     $data['smtp_auth']=true;
                 }
 
+                $data['smtp_host']=trim($data['smtp_host']);
+
 
                 /* specific case to identify common action to different rules there some that doesnt show in the interface, yet we use them.*/
                 foreach($data as $key => $value){
@@ -444,15 +446,24 @@ class WYSIJA_model_config extends WYSIJA_object{
      */
     function emailFooterLinks($editor=false){
         $unsubscribe=array();
+        $unsubscribetxt=$editsubscriptiontxt='';
+
+        if(!isset($this->values['unsubscribe_linkname'])) $unsubscribetxt=__('Unsubscribe',WYSIJA);
+        else $unsubscribetxt=$this->getValue('unsubscribe_linkname');
+
+        if(!isset($this->values['manage_subscriptions_linkname'])) $editsubscriptiontxt=__('Edit your subscription',WYSIJA);
+        else $editsubscriptiontxt=$this->getValue('manage_subscriptions_linkname');
+
+
         $unsubscribe[0] = array(
                 'link' => '[unsubscribe_link]',
-                'label' => $this->getValue('unsubscribe_linkname')
+                'label' => $unsubscribetxt
             );
 
         if($this->getValue('manage_subscriptions')){
              $unsubscribe[1] =array(
                 'link' => '[subscriptions_link]',
-                'label' => $this->getValue('manage_subscriptions_linkname')
+                'label' => $editsubscriptiontxt
             );
         }
 
@@ -472,7 +483,9 @@ class WYSIJA_model_config extends WYSIJA_object{
         $data=array();
 
         if($this->getValue('viewinbrowser')){
-           $linkname=$this->getValue('viewinbrowser_linkname');
+           $linkname='';
+           if(!isset($this->values['viewinbrowser_linkname'])) $linkname=$this->cleanTrans(__('Display problems? [link]View this newsletter in your browser.[/link]',WYSIJA));
+           else $linkname=$this->getValue('viewinbrowser_linkname');
 
             if(strpos($linkname, '[link]')!==false){
                 $linkpre=explode('[link]', $linkname);
