@@ -33,14 +33,16 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
         $names=array();
         foreach($namesRes as $nameob) $names[]=$nameob['name'];
 
-        if(isset($_REQUEST['demo'])){
-            $modelConf=&WYSIJA::get('config','model');
-            $this->title=sprintf($modelConf->getValue('subscribed_title'),  implode(', ', $names));
-            $this->subtitle=$modelConf->getValue('subscribed_subtitle');
-        }else{
-           $modelConf=&WYSIJA::get('config','model');
-            if($this->_testKeyuser()){
+        $modelConf=&WYSIJA::get('config','model');
+        $this->title=$modelConf->getValue('subscribed_title');
+        if(!isset($modelConf->values['subscribed_title'])) $this->title=__('You\'ve subscribed to: %1$s',WYSIJA);
+        $this->title=sprintf($this->title,  implode(', ', $names));
 
+        $this->subtitle=$modelConf->getValue('subscribed_subtitle');
+        if(!isset($modelConf->values['subscribed_subtitle'])) $this->subtitle=__("Yup, we've added you to our list. You'll hear from us shortly.",WYSIJA);
+
+        if(!isset($_REQUEST['demo'])){
+            if($this->_testKeyuser()){
                //user is not confirmed yet
                if((int)$this->userData['details']['status']<1){
                     $this->helperUser->subscribe($this->userData['details']['user_id'],true, false,$listids);
@@ -77,24 +79,22 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
     }
 
     function unsubscribe(){
-        if(isset($_REQUEST['demo'])){
-            $modelConf=&WYSIJA::get("config","model");
-            $this->title=$modelConf->getValue("unsubscribed_title");
-            $this->subtitle=$modelConf->getValue("unsubscribed_subtitle");
-        }else{
+        $modelConf=&WYSIJA::get('config','model');
+        $this->title=$modelConf->getValue('unsubscribed_title');
+        if(!isset($modelConf->values['unsubscribed_title'])) $this->title=__("You've unsubscribed!",WYSIJA);
+
+        $this->subtitle=$modelConf->getValue('unsubscribed_subtitle');
+        if(!isset($modelConf->values['unsubscribed_subtitle'])) $this->subtitle=__("Great, you'll never hear from us again!",WYSIJA);
+
+        if(!isset($_REQUEST['demo'])){
             if($this->_testKeyuser()){
-                $modelConf=&WYSIJA::get("config","model");
-                $statusint=(int)$this->userData["details"]['status'];
-                if( ($modelConf->getValue("confirm_dbleoptin") && $statusint>0) || (!$modelConf->getValue("confirm_dbleoptin") && $statusint>=0)){
-                    $listids=$this->helperUser->unsubscribe($this->userData["details"]["user_id"]);
-
-
-                    $this->title=$modelConf->getValue("unsubscribed_title");
-                    $this->subtitle=$modelConf->getValue("unsubscribed_subtitle");
-                    $this->helperUser->uid=$this->userData["details"]["user_id"];
-                    if($modelConf->getValue("emails_notified") && $modelConf->getValue("emails_notified_when_unsub"))    $this->helperUser->_notify($this->userData["details"]["email"],false,$listids);
+                $statusint=(int)$this->userData['details']['status'];
+                if( ($modelConf->getValue('confirm_dbleoptin') && $statusint>0) || (!$modelConf->getValue('confirm_dbleoptin') && $statusint>=0)){
+                    $listids=$this->helperUser->unsubscribe($this->userData['details']['user_id']);
+                    $this->helperUser->uid=$this->userData['details']['user_id'];
+                    if($modelConf->getValue('emails_notified') && $modelConf->getValue('emails_notified_when_unsub'))    $this->helperUser->_notify($this->userData['details']['email'],false,$listids);
                 }else{
-                    $this->title=__("You are already unsubscribed.",WYSIJA);
+                    $this->title=__('You are already unsubscribed.',WYSIJA);
 
                     return false;
                 }
