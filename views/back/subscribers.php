@@ -111,7 +111,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                         <?php
                     }*/
                     ?>
-                    <option value="deleteusers"><?php _e('Delete users', WYSIJA); ?></option>
+                    <option value="deleteusers"><?php _e('Delete subscribers', WYSIJA); ?></option>
                 </select>
                 <input type="submit" class="bulksubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Apply', WYSIJA)); ?>">
                 <?php $this->secure('delete'); ?>
@@ -685,7 +685,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
                             <tr>
                                 <th scope="row">
-                                    <label for="redirect"><?php _e('How do you want to import ?',WYSIJA); ?> </label>
+                                    <label for="redirect"><?php _e('How do you want to import?',WYSIJA); ?> </label>
                                 </th>
                                 <td>
                                     <p>

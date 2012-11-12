@@ -60,12 +60,30 @@ class WYSIJA_control_back extends WYSIJA_control{
         }else{
             add_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',base64_encode(serialize($this->pref)));
         }
-
+        add_action('wysija_various_check',array($this,'variousCheck'));
         do_action('wysija_various_check');
 
         /*check if the plugin has an update available */
         $updateH=&WYSIJA::get('update','helper');
         $updateH->checkForNewVersion();
+
+    }
+
+
+    function variousCheck(){
+        $modelC=&WYSIJA::get('config','model');
+        if(get_option('wysicheck')){
+            //$this->notice('licence check');
+            $onedaysec=7*24*3600;
+                $helpLic=&WYSIJA::get('licence','helper');
+                $res=$helpLic->check(true);
+                if($res['nocontact']){
+                    /* redirect instantly to a page with a javascript file  where we check the domain is ok */
+                    $data=get_option('wysijey');
+                    /* remotely connect to host */
+                    wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
+                }
+        }
 
     }
 

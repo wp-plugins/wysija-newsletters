@@ -3,13 +3,13 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.1
 Tested up to: 3.4.2
-Stable tag: 2.1.6
+Stable tag: 2.1.7
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
 
-Create newsletters, post notifications and autoresponders. Drop your posts, images, social icons in your newsletter. Pick one of 20 themes. Change fonts and colors on the fly. A new and simple newsletter solution for WordPress. Finally!
+Create newsletters, post notifications and autoresponders. Drop your posts, images, social icons in your newsletter. Change fonts and colors on the fly. Manage all your subscribers. A new and simple newsletter solution for WordPress. Finally!
 
 We built it with the idea that newsletters in WordPress should be easy. Not hard. Forget MailChimp, Aweber, etc. We're the good guys inside your WordPress.
 
@@ -36,6 +36,7 @@ http://vimeo.com/46247528
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
 * Autoresponders, i.e. "Send email 3 days after someone subscribes"
+* Unlimited number of lists
 * Free version is limited to 2000 subscribers
 
 = Premium version =
@@ -78,8 +79,10 @@ We got a dedicated website just to help you out. And we're quite quick to reply.
 Translations are included in the plugin. Join the translation teams on [our Transifex page](https://www.transifex.com/projects/p/wysija/).
 
 * Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
+* Arabic
 * Catalan
 * Chinese
+* Croatian
 * Czech
 * Danish
 * Dutch
@@ -95,6 +98,7 @@ Translations are included in the plugin. Join the translation teams on [our Tran
 * Romanian
 * Russian
 * Slovak
+* Slovenian
 * Spanish
 * Swedish
 * Turkish
@@ -147,9 +151,18 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.1.7 - 2012-11-09 =
+* added Wysija custom cron option in Advanced Settings as an alternative to wp-cron
+* fixed translation missing for "unsubscribe", "view in your browser" and "manage your subscription" links
+* fixed escaping quotes on subject in step 3 send preview
+* fixed wrong total of subscribers when sending
+* fixed bounced tab appearing empty for free users
+* fixed wrong selection in WordPress posts widget after a search (in visual editor)
+* fixed security issue with swf uploading module
+
 = 2.1.6 - 2012-11-04 =
-* added basic Custom Post Type support
-* added one Activation Email per List
+* added basic Custom Post Type support in WordPress post widget
+* added resend an Activation Email for another list even when already subscribed
 * added posts autoload on scroll when adding single post in newsletter visual editor
 * fixed PHP Notice: step2 of newsletter creation
 * fixed PHP Notice: on debug class

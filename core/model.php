@@ -350,9 +350,31 @@ class WYSIJA_model extends WYSIJA_object{
             $this->groupby=false;
         }else $this->groupby=$name;
     }
-    function orderBy($name,$type){
+    function orderBy($name,$type = 'ASC'){
 
-        if (!is_string($name) OR preg_match('|[^a-z0-9#_.-]|i',$name) !== 0 ){
+        if(is_array($name) and count($name) > 0) {
+            // set order by to empty string
+            $this->orderby = '';
+            $this->ordert = '';
+
+            // count number of arguments
+            $count = count($name);
+
+            // build order by query
+            for($i = 0; $i < $count; $i++) {
+
+                $value = current($name);
+
+                if($i === ($count - 1)) {
+                    $this->orderby .= key($name);
+                    $this->ordert = $value;
+                } else {
+                    $this->orderby .= key($name).' '.$value;
+                    $this->orderby .= ', ';
+                    next($name);
+                }
+            }
+        } else if(!is_string($name) OR preg_match('|[^a-z0-9#_.-]|i',$name) !== 0 ){
             $this->orderby="";
         }else {
             $this->orderby=$name;

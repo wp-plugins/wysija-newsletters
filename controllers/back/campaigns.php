@@ -20,20 +20,19 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $hReadme=&WYSIJA::get('readme','helper');
         $hReadme->scan();
         $this->data=array();
-        $this->data['abouttext']='This is a minor release with important stuff. Read up!';
+        $this->data['abouttext']='Thanks for updating. We\'ve cleaned a few things.';
 
         $mConfig=&WYSIJA::get('config','model');
         $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
         if(!WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php') && $mConfig->getValue('premium_key')){
             $this->data['sections'][]=array(
-                'title'=>'Premium Users Get Their Own Plugin',
+                'title'=>'Premium Users Need Plugin',
                 'format'=>'normal',
                 'paragraphs'=>array(
-                    'Starting today, Premium users need to download and install an additional plugin.',
+                    'As many of you already know, Premium users now need to download and install an additional plugin.',
+                     'A big download button will apear on your Wysija pages if you don\'t already have it.',
                     'We were asked by the friendly guys over at wordpress.org to move our premium (and disabled) features out of the free version.',
-                    'We are happy to make this modification since we believe the plugin repository should not include trialware.',
-                    'Premium features will still work in this version. But starting in our next version, later this month, the premium features will not work, unless the new plugin is installed. Free users can totally ignore this.',
-                    '<a id="install-wjp" class="wysija-premium-btns wysija-premium" href="admin.php?page=wysija_campaigns&action=install_wjp">Install now</a>',
+                    'If you\'re having issues, simply get in touch and we\'ll be happy to help.',
                     )
                 );
         }
@@ -49,26 +48,26 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
         $this->data['sections'][]=array(
-                'title'=>'Added and Improved',
+                'title'=>'Added and Fixed',
             'cols'=>array(
                 array(
-                    'title'=>'Basic Support for Custom Post Types',
-                    'content'=>"A lot of users have been asking about this feature. We finally did it. We hope you'll like it, if you have any feedbacks, please share them with us on our <a href=\"http://support.wysija.com/\" target=\"_blank\" title=\"Support Site\">Support site</a> "
+                    'title'=>"Wysija's Own Cron",
+                    'content'=>"A few users have problems with emails not being sent out, so we decided to offer an alternative scheduler to WP's own. It can be activated from Wysija's Advanced tab in Settings' page. Get in touch for help or questions."
             ),
                 array(
-                    'title'=>'One Activation Email per List',
-                    'content'=>'We use to have one single confirmation email for all the lists, now each subscription needs to be confrmed when the activation email option is on.'
+                    'title'=>'Translation Correction',
+                    'content'=>'The "unsubscribe" link, "view in your browser" link and confirmation page link are now translated again. Translators, let us know when some strings aren\'t translatable.'
             ),
                 array(
-                    'title'=>'Help Us Spread the Word',
-                    'content'=>"We've launched less than 10 months ago and we're over 150 000 downloads. But we're still unknown to most people. So help us get known.".'<a href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&amp;utm_campaign=welcomepage" target="_blank" title="On our blog!">Here\'s how you can help us.</a>'
+                    'title'=>'Write a Review on WordPress',
+                    'content'=>"Users can now leave a review on the WordPress Plugins' repository. This is new and it's pretty cool. ".'<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On our blog!">Add your own!</a>'
             )
             ),
             'format'=>'three-col',
             );
 
         $this->data['sections'][]=array(
-            'title'=>'Keep your Wysija Updated. Always',
+            'title'=>'Keep your Wysija Updated',
             'format'=>'normal',
             'paragraphs'=>array(
                     "We noticed a few users are not updating their plugins. Bad, bad, we say. Make sure your plugins are always up to date. We do plenty of bug fixes and improvements regularly, so don't be left behind."
@@ -76,7 +75,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             );
 
         $this->data['sections'][]=array(
-            'title'=>'What Bugs Did We Fix?',
+            'title'=>'Our Full Change Log',
             'format'=>'bullets',
             'paragraphs'=>$hReadme->changelog[WYSIJA::get_version()]
             );
@@ -1201,12 +1200,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }
 
         /*make the data object for the listing view*/
-        $modelList=&WYSIJA::get("list","model");
+        $modelList=&WYSIJA::get('list','model');
 
         /* 2 - list request */
-        $query="SELECT A.list_id, A.name,A.is_enabled, count( B.campaign_id ) AS users FROM `[wysija]".$modelList->table_name."` as A";
-        $query.=" LEFT JOIN `[wysija]campaign_list` as B on A.list_id = B.list_id";
-        $query.=" GROUP BY A.list_id";
+        $query='SELECT A.list_id, A.name,A.is_enabled, count( B.campaign_id ) AS users FROM `[wysija]'.$modelList->table_name.'` as A';
+        $query.=' LEFT JOIN `[wysija]campaign_list` as B on A.list_id = B.list_id';
+        $query.=' GROUP BY A.list_id';
         $listsDB=$modelList->getResults($query);
 
         $lists=array();
@@ -1219,15 +1218,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $campaign_ids_sent=$campaign_ids=array();
         foreach($this->data['campaigns'] as &$campaign){
             $campaign_ids[]=$campaign['campaign_id'];
-            $modelEmail=&WYSIJA::get("email","model");
+            $modelEmail=&WYSIJA::get('email','model');
             $modelEmail->getParams($campaign);
             if(in_array((int)$campaign['status'],array(-1,1,2,3,99)))  $campaign_ids_sent[]=$campaign['campaign_id'];
         }
 
         /* 3 - campaign_list request & count request for queue */
         if($campaign_ids){
-            $modeluList=&WYSIJA::get("campaign_list","model");
-            $userlists=$modeluList->get(array("list_id","campaign_id"),array("campaign_id"=>$campaign_ids));
+            $modeluList=&WYSIJA::get('campaign_list','model');
+            $userlists=$modeluList->get(array('list_id','campaign_id'),array('campaign_id'=>$campaign_ids));
 
             if($campaign_ids_sent){
                 $modeluList=&WYSIJA::get("email_user_stat","model");
@@ -1252,7 +1251,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     }
                 }
 
-                $modelEmail=&WYSIJA::get("email","model");
+                $modelEmail=&WYSIJA::get('email','model');
 
                 foreach($updateEmail as $emailid=>$update){
 
@@ -1260,16 +1259,37 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         if(!isset($update[$v])) $update[$v]=0;
                     }
 
-
-                    $modelEmail->update($update,array("email_id"=>$emailid));
+                    $modelEmail->update($update,array('email_id'=>$emailid));
                     $modelEmail->reset();
                 }
 
 
+                /**/
+                $modelC=&WYSIJA::get('config','model');
+                $running=false;
+                if($modelC->getValue('cron_manual')){
+                    $formsHelp=&WYSIJA::get('forms','helper');
+                    $queue_frequency=$formsHelp->eachValuesSec[$modelC->getValue('sending_emails_each')];
+                    $queue_scheduled=WYSIJA::get_cron_schedule('queue');
 
-                $modelC=&WYSIJA::get("config","model");
-                $schedules=wp_get_schedules();
+                    $next_scheduled_queue=$queue_scheduled['next_schedule'];
+                    $running=$queue_scheduled['running'];
 
+                    if($running){
+                        $helperToolbox=&WYSIJA::get('toolbox','helper');
+                        $running=time()-$running;
+                        $running=$helperToolbox->duration($running,true,4);
+
+                    }
+                }else{
+                    $schedules=wp_get_schedules();
+                    $queue_frequency=$schedules[wp_get_schedule('wysija_cron_queue')]['interval'];
+                    $next_scheduled_queue=wp_next_scheduled('wysija_cron_queue');
+                }
+
+
+
+                $status_sent_complete=array();
                 if(isset($senttotal) && $senttotal){
                     foreach($senttotal as $sentot){
                         if($sentot){
@@ -1281,7 +1301,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         $this->data['sent'][$sentot['email_id']]['status']=$sentot['status'];
                         $this->data['sent'][$sentot['email_id']]['type']=$sentot['type'];
                         $this->data['sent'][$sentot['email_id']]['left']= (int)$this->data['sent'][$sentot['email_id']]['total'] - (int)$this->data['sent'][$sentot['email_id']]['to'];
-
                     }
                 }
 
@@ -1290,50 +1309,36 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         $this->data['sent'][$sentot['email_id']]['total']=0;
                         $this->data['sent'][$sentot['email_id']]['to']=0;
                     }
-
                     $this->data['sent'][$sentot['email_id']]['total']=$this->data['sent'][$sentot['email_id']]['total']+$sentot['count'];
                     $this->data['sent'][$sentot['email_id']]['left']= (int)$this->data['sent'][$sentot['email_id']]['total'] - (int)$this->data['sent'][$sentot['email_id']]['to'];
-
                 }
 
-                $timesec=$schedules[wp_get_schedule('wysija_cron_queue')]['interval'];
-                $status_sent_complete=array();
-               //dbg($this->data['sent']);
                if(isset($this->data['sent'])){
                    foreach($this->data['sent'] as $key => $camp){
-
                         if($this->data['sent'][$key]['left']>0){
                             $cronsneeded=ceil($this->data['sent'][$key]['left']/$modelC->getValue('sending_emails_number'));
-                            $this->data['sent'][$key]['remaining_time']=$cronsneeded *$timesec;
-
-                            //$schedules=wp_get_schedules();
-
-                            $this->data['sent'][$key]['next_batch']=(int)wp_next_scheduled( 'wysija_cron_queue')-time();
-                            $this->data['sent'][$key]['remaining_time']=$this->data['sent'][$key]['remaining_time']-($timesec)+$this->data['sent'][$key]['next_batch'];
+                            $this->data['sent'][$key]['remaining_time']=$cronsneeded *$queue_frequency;
+                            $this->data['sent'][$key]['running_for']=$running;
+                            $this->data['sent'][$key]['next_batch']=$next_scheduled_queue-time();
+                            $this->data['sent'][$key]['remaining_time']=$this->data['sent'][$key]['remaining_time']-($queue_frequency)+$this->data['sent'][$key]['next_batch'];
                         }else{
-
                             if( (in_array($this->data['sent'][$key]['status'], array(1,3,99))) && $this->data['sent'][$key]['type']==1) $status_sent_complete[]=$key;
                         }
                     }
-
                }
 
 
                 /* status update to sent for the one that are sent*/
                 if(count($status_sent_complete)>0){
-                    $modelEmail=&WYSIJA::get("email","model");
+                    $modelEmail=&WYSIJA::get('email','model');
                     $modelEmail->noCheck=true;
                     $modelEmail->reset();
-
-                    $modelEmail->update(array("status"=>2),array("equal"=>array("email_id"=>$status_sent_complete)));
+                    $modelEmail->update(array('status'=>2),array('equal'=>array('email_id'=>$status_sent_complete)));
                 }
-
             }
-
         }
 
         $this->data['lists']=$lists;
-
         $this->data['counts']=array_reverse($counts);
 
         /* regrouping all the data in the same array */
@@ -1662,7 +1667,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $listid=$modelL->insert(array("is_enabled"=>1,"name"=>$listname,"description"=>__("List created based on a newsletter segment.",WYSIJA)));
 
         /* get list of subscribers filtered or not */
-        $query=$this->getListSubscriberQry($listid.", A.user_id, 0, 0");
+        $query=$this->getListSubscriberQry($listid.", A.user_id, ".time().", 0");
 
         $query2="INSERT INTO `[wysija]user_list` (`list_id`,`user_id`,`sub_date`,`unsub_date`)
             ".$query;

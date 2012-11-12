@@ -16,37 +16,45 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 if(!isset($_REQUEST['controller']) || (isset($_REQUEST['controller']) && $_REQUEST['controller']=='confirm' && isset($_REQUEST['wysija-key']))){
                     $controller='subscribers';
                 }else $controller=$_REQUEST['controller'];
-                $siteurl=get_site_url();
 
-                /*try to find the domain part in the site url*/
-                if(strpos($siteurl, $_SERVER['HTTP_HOST'])===false){
-                    //if we don't find it then we need to create a new siteadminurl
-                    //by replacing the part between http// and the first slash with the one from request uri
 
-                    $siteurlarray=explode('/',
-                            str_replace(array('http://'),'',$siteurl)
-                            );
+                if(!empty($_SERVER['HTTP_HOST'])){
+                    $siteurl=get_site_url();
+                    /*try to find the domain part in the site url*/
+                    if(strpos($siteurl, $_SERVER['HTTP_HOST'])===false){
+                        //if we don't find it then we need to create a new siteadminurl
+                        //by replacing the part between http// and the first slash with the one from request uri
 
-                    $ajaxurl=str_replace($siteurlarray[0], $_SERVER['HTTP_HOST'], $siteurl);
+                        $siteurlarray=explode('/',
+                                str_replace(array('http://'),'',$siteurl)
+                                );
 
-                }else{
-                    $ajaxurl=$siteurl;
-                }
+                        $ajaxurl=str_replace($siteurlarray[0], $_SERVER['HTTP_HOST'], $siteurl);
 
-                //let's check if the current ajaxurl is https if so we need to make sure that also the url we're calling from is https
-                if(strpos($ajaxurl, 'https://')!==false){
-                    if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on'){
-                        //ok
                     }else{
-                        $ajaxurl=str_replace('https://','http://',$ajaxurl);
+                        $ajaxurl=$siteurl;
                     }
 
+                    //let's check if the current ajaxurl is https if so we need to make sure that also the url we're calling from is https
+                    if(strpos($ajaxurl, 'https://')!==false){
+                        if(isset($_SERVER['HTTPS']) && $_SERVER['HTTPS']=='on'){
+                            //ok
+                        }else{
+                            $ajaxurl=str_replace('https://','http://',$ajaxurl);
+                        }
+
+                    }
+
+                    $lastchar=substr($ajaxurl, -1);
+
+                    if($lastchar!='/')$ajaxurl.='/';
+                    $ajaxurl.='wp-admin/admin-ajax.php';
+                }else{
+                    $ajaxurl=admin_url( 'admin-ajax.php', 'relative' );
                 }
 
-                $lastchar=substr($ajaxurl, -1);
 
-                if($lastchar!='/')$ajaxurl.='/';
-                $ajaxurl.='wp-admin/admin-ajax.php';
+
                 $this->paramsajax=array(
                     'action' => 'wysija_ajax',
                     'controller' => $controller,

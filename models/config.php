@@ -12,6 +12,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'manage_subscriptions',
         'viewinbrowser',
         'dkim_active',
+        'cron_manual',
     );
     var $defaults=array(
         'limit_listing'=>10,
@@ -258,6 +259,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         if($data){
             /* when saving configuration from the settings page we need to make sure that if checkboxes have been unticked we remove the corresponding option */
             if($savedThroughInterface){
+                $bouncing_freq_has_changed=$sending_freq_has_changed=false;
                 $wptools=&WYSIJA::get('wp_tools','helper',false,'wysija-newsletters',false);
                 $editable_roles=$wptools->wp_get_roles();
                 foreach($this->capabilities as $keycap=>$capability){
@@ -296,8 +298,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
 
 
-                 $userHelper = &WYSIJA::get('user','helper',false,'wysija-newsletters',false);
-
+                $userHelper = &WYSIJA::get('user','helper',false,'wysija-newsletters',false);
                 if(isset($data['from_email']) && !$userHelper->validEmail($data['from_email'])){
                     if(!$data['from_email']) $data['from_email']=__('empty',WYSIJA);
                     $this->error(sprintf(__('The <strong>from email</strong> value you have entered (%1$s) is not a valid email address.',WYSIJA),$data['from_email']),true);
@@ -311,13 +312,13 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
 
                 /* in that case the admin changed the frequency of the wysija cron meaning that we need to clear it */
-                if($data['sending_emails_each']!=$this->getValue("sending_emails_each")){
-                    wp_clear_scheduled_hook('wysija_cron_queue');
+                if($data['sending_emails_each']!=$this->getValue('sending_emails_each')){
+                    $sending_freq_has_changed=true;
                     $data['last_save']=time();
                 }
 
-                if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each']!=$this->getValue("bouncing_emails_each")){
-                    wp_clear_scheduled_hook('wysija_cron_bounce');
+                if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each']!=$this->getValue('bouncing_emails_each')){
+                    $bouncing_freq_has_changed=true;
                     $data['last_save']=time();
                 }
 
@@ -377,10 +378,10 @@ class WYSIJA_model_config extends WYSIJA_object{
 
 
             /* save the confirmation email in the email table */
-            if(isset($data["confirm_email_title"]) && isset($data['confirm_email_body'])){
+            if(isset($data['confirm_email_title']) && isset($data['confirm_email_body'])){
                 $mailModel=&WYSIJA::get('email','model',false,'wysija-newsletters',false);
                 $mailModel->update(array('from_name'=>$data['from_name'],'from_email'=>$data['from_email'],
-                    'replyto_name'=>$data['replyto_name'],"replyto_email"=>$data["replyto_email"],
+                    'replyto_name'=>$data['replyto_name'],'replyto_email'=>$data['replyto_email'],
                     'subject'=>$data['confirm_email_title'],'body'=>$data['confirm_email_body']),array('email_id'=>$this->values['confirm_email_id']));
             }
             unset($this->values['confirm_email_title']);
@@ -389,7 +390,18 @@ class WYSIJA_model_config extends WYSIJA_object{
 
 
         update_option($this->name_option,base64_encode(serialize($this->values)));
-        if($savedThroughInterface)  $this->notice(__('Your Wysija settings have been updated!',WYSIJA));
+        if($savedThroughInterface){
+            if($bouncing_freq_has_changed){
+                wp_clear_scheduled_hook('wysija_cron_bounce');
+                WYSIJA::set_cron_schedule('bounce');
+            }
+            if($sending_freq_has_changed){
+                wp_clear_scheduled_hook('wysija_cron_queue');
+
+                WYSIJA::set_cron_schedule('queue');
+            }
+            $this->notice(__('Your Wysija settings have been updated!',WYSIJA));
+        }
     }
 
 

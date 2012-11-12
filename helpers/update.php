@@ -3,8 +3,8 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
-
-        $this->updates=array('1.1','2.0','2.1','2.1.6');
+        
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7');
     }
 
     function runUpdate($version){
@@ -12,14 +12,14 @@ class WYSIJA_help_update extends WYSIJA_object{
 
         switch($version){
             case '1.1':
-
+                
                 $modelconfig=&WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'namekey';")){
                     $querys[]='ALTER TABLE `[wysija]list` ADD `namekey` VARCHAR( 255 ) NULL;';
                 }
                 $querys[]="UPDATE `[wysija]list` SET `namekey` = 'users' WHERE `list_id` =".$modelconfig->getValue('importwp_list_id').";";
                 $errors=$this->runUpdateQueries($querys);
-                $importHelp=&WYSIJA::get("import","helper");
+                $importHelp=&WYSIJA::get('import','helper');
                 $importHelp->testPlugins();
 
                 $installHelper =& WYSIJA::get('install', 'helper');
@@ -33,14 +33,94 @@ class WYSIJA_help_update extends WYSIJA_object{
                 return true;
                 break;
             case '2.0':
-
-                $modelconfig=&WYSIJA::get("config","model");
+                
+                $modelconfig=&WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]email` LIKE 'modified_at';")){
                     $querys[]="ALTER TABLE `[wysija]email` ADD `modified_at` INT UNSIGNED NOT NULL DEFAULT '0';";
                 }
-                $querys[]="UPDATE `[wysija]email` SET `modified_at` = `sent_at`  WHERE `sent_at`>=0;";
-                $querys[]="UPDATE `[wysija]email` SET `modified_at` = `created_at` WHERE `modified_at`='0';";
-                $querys[]="UPDATE `[wysija]email` SET `status` = '99' WHERE `status` ='1';";//change sending status from 1 to 99
+                if(!$modelconfig->getValue('update_error_20')){
+                    $querys[]="UPDATE `[wysija]email` SET `modified_at` = `sent_at`  WHERE `sent_at`>=0;";
+                    $querys[]="UPDATE `[wysija]email` SET `modified_at` = `created_at` WHERE `modified_at`='0';";
+                    $querys[]="UPDATE `[wysija]email` SET `status` = '99' WHERE `status` ='1';";//change sending status from 1 to 99
+                }
+
+                $errors=$this->runUpdateQueries($querys);
+                if($errors){
+                    $modelconfig->save(array('update_error_20'=>true));
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
+                return true;
+                break;
+            case '2.1':
+                $modelconfig=&WYSIJA::get('config','model');
+                if(!$modelconfig->getValue('update_error_21')){
+                    $modelEmails=&WYSIJA::get('email','model');
+                    $modelEmails->reset();
+                    $emailsLoaded=$modelEmails->get(array('subject','email_id'),array('status'=>2,'type'=>1));
+                    
+                    $wptools =& WYSIJA::get('wp_tools', 'helper');
+                    $wptools->set_default_rolecaps();
+                     
+
+                    $minimumroles=array('role_campaign'=>'wysija_newsletters','role_subscribers'=>'wysija_subscribers');
+                    foreach($minimumroles as $rolename=>$capability){
+                        $rolesetting=$modelconfig->getValue($rolename);
+                        switch($rolesetting){
+                            case 'switch_themes':
+                                $keyrole=1;
+                                break;
+                            case 'moderate_comments':
+                                $keyrole=3;
+                                break;
+                            case 'upload_files':
+                                $keyrole=4;
+                                break;
+                            case 'edit_posts':
+                                $keyrole=5;
+                                break;
+                            case 'read':
+                                $keyrole=6;
+                                break;
+                            default:
+                                $keyrole=false;
+                        }
+                        if(!$keyrole){
+
+                            $role = get_role($rolesetting);
+
+                            if($role){
+                                $role->add_cap( $capability );
+                            }
+                        }else{
+
+                            $editable_roles=$wptools->wp_get_roles();
+                            $startcount=1;
+                            if(!isset($editable_roles[$startcount])) $startcount++;
+                            for($i = $startcount; $i <= $keyrole; $i++) {
+                                $rolename=$editable_roles[$i];
+
+                                $role = get_role($rolename['key']);
+                                $role->add_cap( $capability );
+                            }
+                        }
+                    }
+                    $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
+                    $modelconfig->save(array('dkim_domain'=>$wptoolboxs->_make_domain_name()));
+                }
+                if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'is_public';")){
+                    $querys[]="ALTER TABLE `[wysija]list` ADD `is_public` TINYINT UNSIGNED NOT NULL DEFAULT 0;";
+                    $errors=$this->runUpdateQueries($querys);
+                    if($errors){
+                        $modelconfig->save(array('update_error_21'=>true));
+                        $this->error(implode($errors,"\n"));
+                        return false;
+                    }
+                }
+                return true;
+            break;
+            case '2.1.6':
+                $querys[]="UPDATE `[wysija]user_list` as A inner join `[wysija]user` as B on (A.user_id= B.user_id) set A.sub_date= B.created_at where A.sub_date=0 and A.unsub_date=0 and B.status>-1;";
                 $errors=$this->runUpdateQueries($querys);
                 if($errors){
                     $this->error(implode($errors,"\n"));
@@ -48,78 +128,8 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
                 break;
-            case '2.1':
-                $modelEmails=&WYSIJA::get('email','model');
-                $modelEmails->reset();
-                $emailsLoaded=$modelEmails->get(array('subject','email_id'),array('status'=>2,'type'=>1));
-
-
-                $wptools =& WYSIJA::get('wp_tools', 'helper');
-                $wptools->set_default_rolecaps();
-
-
-                $modelconfig=&WYSIJA::get('config','model');
-                $minimumroles=array('role_campaign'=>'wysija_newsletters','role_subscribers'=>'wysija_subscribers');
-
-                foreach($minimumroles as $rolename=>$capability){
-                    $rolesetting=$modelconfig->getValue($rolename);
-                    switch($rolesetting){
-                        case 'switch_themes':
-                            $keyrole=1;
-                            break;
-                        case 'moderate_comments':
-                            $keyrole=3;
-                            break;
-                        case 'upload_files':
-                            $keyrole=4;
-                            break;
-                        case 'edit_posts':
-                            $keyrole=5;
-                            break;
-                        case 'read':
-                            $keyrole=6;
-                            break;
-                        default:
-                            $keyrole=false;
-                    }
-                    if(!$keyrole){
-
-                        $role = get_role($rolesetting);
-
-                        if($role){
-                            $role->add_cap( $capability );
-                        }
-                    }else{
-
-                        $editable_roles=$wptools->wp_get_roles();
-                        $startcount=1;
-                        if(!isset($editable_roles[$startcount])) $startcount++;
-                        for($i = $startcount; $i <= $keyrole; $i++) {
-                            $rolename=$editable_roles[$i];
-
-                            $role = get_role($rolename['key']);
-                            $role->add_cap( $capability );
-                        }
-                    }
-                }
-            $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
-            $modelconfig->save(array('dkim_domain'=>$wptoolboxs->_make_domain_name()));
-            if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'is_public';")){
-                $querys[]="ALTER TABLE `[wysija]list` ADD `is_public` TINYINT UNSIGNED NOT NULL DEFAULT 0;";
-                $errors=$this->runUpdateQueries($querys);
-                if($errors){
-                    $this->error(implode($errors,"\n"));
-                    return false;
-                }
-                if($errors){
-                    $this->error(implode($errors,"\n"));
-                    return false;
-                }
-            }
-            return true;
-            break;
-            case '2.1.6':
-                $querys[]="UPDATE `[wysija]user_list` as A inner join `[wysija]user` as B on (A.user_id= B.user_id) set A.sub_date= B.created_at where A.sub_date=0 and A.unsub_date=0 and B.status>-1;";
+            case '2.1.7':
+                $querys[]='UPDATE `[wysija]user_list` as A inner join `[wysija]user` as B on (A.user_id= B.user_id) set A.sub_date= '.time().' where A.sub_date=0 and B.status>-1;';
                 $errors=$this->runUpdateQueries($querys);
                 if($errors){
                     $this->error(implode($errors,"\n"));
@@ -132,7 +142,7 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
         return false;
     }
-
+    
     function checkForNewVersion($file='wysija-newsletters/index.php'){
         $current = get_site_transient( 'update_plugins' );
 	if ( !isset( $current->response[ $file ] ) )
@@ -165,12 +175,12 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
     }
     function check(){
-
+        
         $config=&WYSIJA::get('config','model');
         if(!$config->getValue('wysija_db_version') || version_compare($config->getValue('wysija_db_version'),WYSIJA::get_version()) < 0){
             $this->update(WYSIJA::get_version());
         }
-
+        
         $noredirect=false;
         $timeInstalled=time()+3600;
 
@@ -200,7 +210,7 @@ class WYSIJA_help_update extends WYSIJA_object{
             }
         }
     }
-
+    
     function runUpdateQueries($queries){
         $failed=array();
 

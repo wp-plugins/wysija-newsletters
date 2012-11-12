@@ -5,12 +5,6 @@ function WYSIJAprepareMediaItem(fileObj, serverData) {
 	// Move the progress bar to 100%
 	jQuery('.bar', item).remove();
 	jQuery('.progress', item).hide();
-        
-        
-	try {
-		if ( typeof topWin.tb_remove != 'undefined' )
-			topWin.jQuery('#TB_overlay').click(topWin.tb_remove);
-	} catch(e){}
 
 	// Old style: Append the HTML returned by the server -- thumbnail and form inputs
 	if ( isNaN(serverData) || !serverData ) {
@@ -27,12 +21,12 @@ function WYSIJAprepareMediaItemInit(fileObj) {
 	var item = jQuery('#media-item-' + fileObj.id);
 	// Clone the thumbnail as a "pinkynail" -- a tiny image to the left of the filename
 	jQuery('.thumbnail', item).clone().attr('className', 'pinkynail toggle').prependTo(item);
-        
+
         jQuery('.pinkynail', item).addClass('thumbnail');
         jQuery('.pinkynail', item).removeClass('pinkynail');
         jQuery('.thumbnail', item).css('margin-top','0px');
-        
-        
+
+
         jQuery('.filename.new', item).remove();
 
 
@@ -53,7 +47,7 @@ function WYSIJAuploadSuccess(fileObj, serverData) {
 		jQuery('#media-item-' + fileObj.id).html(serverData);
 		return;
 	}
-        
+
 	WYSIJAprepareMediaItem(fileObj, serverData);
 	updateMediaForm();
 
@@ -62,13 +56,13 @@ function WYSIJAuploadSuccess(fileObj, serverData) {
         jQuery('.media-item').removeClass('media-item');
         jQuery('.wysija-thumb').css('border-color','transparent');
         jQuery('#media-item-'+fileObj.id).attr('alt', serverData);
-        
-        
+
+
 
 	// Increment the counter.
 	if ( jQuery('#media-item-' + fileObj.id).hasClass('child-of-' + post_id) )
 		jQuery('#attachments-count').text(1 * jQuery('#attachments-count').text() + 1);
-            
+
 
 }
 
@@ -79,9 +73,9 @@ function WYSIJAuploadComplete(fileObj) {
 		jQuery('#cancel-upload').attr('disabled', 'disabled');
 		jQuery('#insert-gallery').attr('disabled', '');
 	}
-        
-        
-        
+
+
+
         return true;
 }
 
@@ -118,7 +112,7 @@ function WYSIJAsetParams(result,fileObj){
         };
     /*}*/
     var elementUrl=jQuery('#media-item-'+fileObj.id+' tbody button.urlfile');
-    
+
     if(elementUrl.attr('title')=== undefined)   insertArray.url=elementUrl.attr('data-link-url');
     else insertArray.url=elementUrl.attr('title');
 

@@ -27,11 +27,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function fieldFormHTML_viewinbrowser($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
         $checked=false;
         if($this->model->getValue($key))   $checked=true;
         $field='<p><label for="'.$key.'">';
-        $field.=$formsHelp->checkbox(array("id"=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
+        $field.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
         $field.='</label>';
         $value=$this->model->getValue($key.'_linkname');
 
@@ -40,9 +40,27 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         return $field;
     }
 
+    function fieldFormHTML_cron($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get('forms','helper');
+        $checked=false;
+        if($this->model->getValue($key))   $checked=true;
+        $field='<div><div class="cronleft"><label for="'.$key.'">';
+        $field.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
+        $field.='</label></div>';
+
+        $urlcron=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all';
+        $field.='<div class="cronright" id="'.$key.'_linkname">';
+        $field.='<p>'.'Almost done! Setup this cron job on your server or ask your host:'.'</p>';
+        $field.='<p>Cron URL : <strong><a href="'.$urlcron.'" target="_blank">'.$urlcron.'</a></strong></p>';
+        $field.='</div></div>';
+
+        return $field;
+    }
+
     function fieldFormHTML_debugnew($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
         $selected=$this->model->getValue($key);
         if(!$selected)   $selected=0;
         $field='<p><label for="'.$key.'">';
@@ -64,7 +82,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             $helpersLi->dkim_config();
         }else{
             WYSIJA::update_option('dkim_autosetup',false);
-            $formsHelp=&WYSIJA::get("forms","helper");
+            $formsHelp=&WYSIJA::get('forms','helper');
 
 
             $realkey=$key.'_active';
@@ -95,11 +113,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function fieldFormHTML_debug($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
         $checked=false;
         if($this->model->getValue($key))   $checked=true;
         $field='<p><label for="'.$key.'">';
-        $field.=$formsHelp->checkbox(array("id"=>$key,'name'=>'wysija['.$model.']['.$key.']'),1,$checked);
+        $field.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'),1,$checked);
         $field.='</label></p>';
 
         return $field;
@@ -107,7 +125,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function fieldFormHTML_capabilities($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
 
         $field='<table width="400" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" border="0" style="background-color:#FFFFFF" class="fixed">
     <thead>
@@ -135,7 +153,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         $keycheck='rolescap---'.$role['key'].'---'.$keycap;
 
                         //if($this->model->getValue($keycheck))   $checked=true;
-                        $checkboxparams=array("id"=>$keycheck,'name'=>'wysija['.$model.']['.$keycheck.']');
+                        $checkboxparams=array('id'=>$keycheck,'name'=>'wysija['.$model.']['.$keycheck.']');
                         if(in_array($role['key'], array('administrator','super_admin'))){
                             $checkboxparams['disabled']='disabled';
                         }
@@ -164,17 +182,17 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     function fieldFormHTML_email_notifications($key,$value,$model,$paramsex){
         /* first part concerning the field itself */
         $params=array();
-        $params['type']="default";
+        $params['type']='default';
         $field=$this->fieldHTML($key,$value,$model,$params);
 
         /*second part concerning the checkbox*/
         $threecheck=array(
-            "_when_sub" =>__('When someone subscribes',WYSIJA)
-            ,"_when_unsub"=>__('When someone unsubscribes',WYSIJA),
-            "_when_dailysummary"=>__('Daily summary of emails sent',WYSIJA)
+            '_when_sub' =>__('When someone subscribes',WYSIJA)
+            ,'_when_unsub'=>__('When someone unsubscribes',WYSIJA),
+            '_when_dailysummary'=>__('Daily summary of emails sent',WYSIJA)
             //,"_when_bounce"=>__('When an email bounces',WYSIJA)
             );
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
         foreach($threecheck as $keycheck => $checkobj){
             $checked=false;
             if($this->model->getValue($key.$keycheck))$checked=true;
@@ -189,14 +207,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function fieldFormHTML_selfsigned($key,$value,$model,$params){
 
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
 
         $realvalue=$this->model->getValue($key);
 
         $value=0;
         $checked=false;
         if($value ==$realvalue) $checked=true;
-        $id=str_replace("_",'-',$key).'-'.$value;
+        $id=str_replace('_','-',$key).'-'.$value;
         $field='<label for="'.$id.'">';
         $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija['.$model.']['.$key.']'),$value,$checked);
         $field.=__('No',WYSIJA).'</label>';
@@ -204,7 +222,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $value=1;
         $checked=false;
         if($value ==$realvalue) $checked=true;
-        $id=str_replace("_",'-',$key).'-'.$value;
+        $id=str_replace('_','-',$key).'-'.$value;
         $field.='<label for="'.$id.'">';
         $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija['.$model.']['.$key.']'),$value,$checked);
         $field.=__('Yes',WYSIJA).'</label>';
@@ -219,7 +237,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'sendingmethod' => __('Sending Method', WYSIJA),
             'advanced' => __('Advanced', WYSIJA),
             'premium' => __('Premium Upgrade', WYSIJA),
-            'bounce' => __('Bounce Handling', WYSIJA),
         );
 
         $tabs=apply_filters('wysija_extend_settings', $tabs);
@@ -320,9 +337,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         $modelC=&WYSIJA::get('config','model');
 
-
-
-
         ?>
         <table class="form-table">
             <tbody>
@@ -339,22 +353,22 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step=array();
         $step['confirm_dbleoptin']=array(
             'type'=>'radio',
-            'values'=>array(true=>__("Yes",WYSIJA),false=>__("No",WYSIJA)),
+            'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
             'label'=>__('Send Activation Email',WYSIJA),
             'desc'=>__('Subscribers will not receive any emails until they activate their subscriptions. Keep this activated to stop fake subscriptions by humans and robots.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/why-you-should-enforce-email-activation/?utm_source=wpadmin&utm_campaign=activation email" target="_blank">'.__("Read more on support.wysija.com",WYSIJA)."</a>");
 
         $step['confirm_email_title']=array(
             'type'=>'input',
             'label'=>__('Email subject',WYSIJA),
-            'rowclass'=>"confirmemail");
+            'rowclass'=>'confirmemail');
 
         $step['confirm_email_body']=array(
             'type'=>'textarea',
             'label'=>__('Email content',WYSIJA),
-            'rowclass'=>"confirmemail");
+            'rowclass'=>'confirmemail');
 
 
-        $modelU=&WYSIJA::get("user","model");
+        $modelU=&WYSIJA::get('user','model');
         $modelU->getFormat=OBJECT;
 
         $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
@@ -363,18 +377,18 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Confirmation page title',WYSIJA),
             'desc'=>__('When subscribers click on the activation link, they are redirected to this [link]confirmation page[/link]',WYSIJA),
             'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"subscribe",false,true).'&demo=1" target="_blank" title="'.__("Preview page",WYSIJA).'">',
-            'rowclass'=>"confirmemail");
+            'rowclass'=>'confirmemail');
         $step['subscribed_subtitle']=array(
             'type'=>'input',
             'label'=>__('Confirmation page content',WYSIJA),
-            'rowclass'=>"confirmemail");
+            'rowclass'=>'confirmemail');
 
         ?>
 
         <table class="form-table">
             <tbody>
                 <?php
-                echo $this->buildMyForm($step,"","config");
+                echo $this->buildMyForm($step,'','config');
 
                 ?>
             </tbody>
@@ -383,9 +397,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function sendingmethod(){
-        $key="sending_method";
+        $key='sending_method';
         $realvalue=$this->model->getValue($key);
-        $formsHelp=&WYSIJA::get("forms","helper");
+        $formsHelp=&WYSIJA::get('forms','helper');
         ?>
         <table class="form-table">
             <tbody>
@@ -394,7 +408,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <th scope="row">
                         <?php
                             $checked=false;
-                            $value="site";
+                            $value='site';
                             $id=str_replace("_",'-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
                             $field='<label for="'.$id.'" class="clearfix">';
@@ -407,7 +421,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <th scope="row">
                         <?php
                             $checked=false;
-                            $value="gmail";
+                            $value='gmail';
                             $id=str_replace("_",'-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
                             $field='<label for="'.$id.'" class="clearfix">';
@@ -715,7 +729,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'input',
             'label'=>__('Unsubscribe page title',WYSIJA),
             'desc'=>__('This is the [link]unsubscription confirmation[/link] page a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter.',WYSIJA),
-            'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1" target="_blank" title="'.__("Preview page",WYSIJA).'">');
+            'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1" target="_blank" title="'.__('Preview page',WYSIJA).'">');
 
 
         $step['unsubscribed_subtitle']=array(
@@ -727,7 +741,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         'type'=>'viewinbrowser',
         'label'=>__('Subscribers can edit their profile',WYSIJA),
         'desc'=>__('Add a link in the footer of all your newsletters so subscribers can edit their profile and lists. [link]See your own subscriber profile page.[/link]',WYSIJA),
-        'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"subscriptions",false,true).'" target="_blank" title="'.__("Preview page",WYSIJA).'">',);
+        'link'=>'<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('Preview page',WYSIJA).'">',);
 
 
         $step['advanced_charset']=array(
@@ -741,10 +755,17 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         $step=apply_filters('wysija_settings_advancednext', $step);
 
+        $step['cron_manual']=array(
+            'type'=>'cron',
+            'label'=>'Enable Wysija Cron\'s',
+            'desc'=>'Delayed or inconsistent sending? Replace wp-cron with ours.');
+
         $step['debug_new']=array(
             'type'=>'debugnew',
             'label'=>__('Debug mode',WYSIJA),
-            'desc'=>__("Enable this to show Wysija's errors. Our support might ask you to enable this if you seek their help.",WYSIJA));
+            'desc'=>__('Enable this to show Wysija\'s errors. Our support might ask you to enable this if you seek their help.',WYSIJA));
+
+
         ?>
         <table class="form-table">
             <tbody>
@@ -753,8 +774,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                     ?>
                     <tr><th scope="row">
-                        <div class="label"><?php _e("Reinstall from scratch",WYSIJA)?>
-                        <p class="description"><?php _e("Want to start all over again? This will wipe out Wysija and reinstall anew.",WYSIJA)?></p>
+                        <div class="label"><?php _e('Reinstall from scratch',WYSIJA)?>
+                        <p class="description"><?php _e('Want to start all over again? This will wipe out Wysija and reinstall anew.',WYSIJA)?></p>
                         </div>
                     </th><td><p><a class="button" href="admin.php?page=wysija_config&action=reinstall"><?php _e('Reinstall now...',WYSIJA); ?></a></p></td></tr>
 
@@ -765,8 +786,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function premium(){
-       $helperLicence=&WYSIJA::get("licence","helper");
-       $urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain=".$helperLicence->getDomainInfo()."&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton";
+       $helperLicence=&WYSIJA::get('licence','helper');
+       $urlpremium='http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$helperLicence->getDomainInfo().'&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton';
 
        $arrayPremiumBullets=array(
            'more2000'=>array(

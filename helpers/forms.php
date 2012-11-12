@@ -4,27 +4,27 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_forms{
     function WYSIJA_help_forms(){
         $this->eachValues=array(
-                            "one_min"=> __("every minute",WYSIJA),
-                            "two_min"=> __("every 2 minutes",WYSIJA),
-                            "five_min"=> __("every 5 minutes",WYSIJA),
-                            "ten_min"=> __("every 10 minutes",WYSIJA),
-                            "fifteen_min"=> __("every 15 minutes",WYSIJA),
-                            "thirty_min"=> __("every 30 minutes",WYSIJA),
-                            "hourly"=> __("every hour",WYSIJA),
-                            "two_hours"=> __("every 2 hours",WYSIJA),
-                            "twicedaily"=> __("twice daily",WYSIJA),
-                            "daily"=> __("everyday",WYSIJA));
+                            'one_min'=> __('every minute',WYSIJA),
+                            'two_min'=> __('every 2 minutes',WYSIJA),
+                            'five_min'=> __('every 5 minutes',WYSIJA),
+                            'ten_min'=> __('every 10 minutes',WYSIJA),
+                            'fifteen_min'=> __('every 15 minutes',WYSIJA),
+                            'thirty_min'=> __('every 30 minutes',WYSIJA),
+                            'hourly'=> __('every hour',WYSIJA),
+                            'two_hours'=> __('every 2 hours',WYSIJA),
+                            'twicedaily'=> __('twice daily',WYSIJA),
+                            'daily'=> __('everyday',WYSIJA));
         $this->eachValuesSec=array(
-                            "one_min"=> '60',
-                            "two_min"=> '120',
-                            "five_min"=> '300',
-                            "ten_min"=> '600',
-                            "fifteen_min"=> '900',
-                            "thirty_min"=> '1800',
-                            "hourly"=> '3600',
-                            "two_hours"=>'7200',
-                            "twicedaily"=> '43200',
-                            "daily"=> '86400');
+                            'one_min'=> '60',
+                            'two_min'=> '120',
+                            'five_min'=> '300',
+                            'ten_min'=> '600',
+                            'fifteen_min'=> '900',
+                            'thirty_min'=> '1800',
+                            'hourly'=> '3600',
+                            'two_hours'=>'7200',
+                            'twicedaily'=> '43200',
+                            'daily'=> '86400');
     }
     function input($data = '', $value = '', $extra = '') {
             $defaults = array('type' => 'text', 'name' => (( ! is_array($data)) ? $data : ''), 'value' => $value);
