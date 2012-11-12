@@ -157,7 +157,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed escaping quotes on subject in step 3 send preview
 * fixed wrong total of subscribers when sending
 * fixed bounced tab appearing empty for free users
-* fixed wrong selection in WordPress posts widget after a search (in visual editor)
+* fixed wrong selection in WordPress posts widget after a search(in visual editor)
 * fixed security issue with swf uploading module
 
 = 2.1.6 - 2012-11-04 =
