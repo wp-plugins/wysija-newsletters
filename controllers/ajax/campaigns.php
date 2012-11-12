@@ -429,7 +429,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $params['params']=$emailObject->params;
 
             if(isset($configVal['params[googletrackingcode'])){
-
+                $paramsemail=array();
                 if(!is_array($emailObject->params)) $paramsemail=unserialize(base64_decode($emailObject->params));
 
                 if(trim($configVal['params[googletrackingcode'])) {
@@ -447,7 +447,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $receiversList = array();
         $res = false;
         foreach($receivers as $receiver){
-            if($mailer->sendSimple($receiver,$emailObject->subject,$emailObject->body,$params)) {
+            if($mailer->sendSimple($receiver,  stripslashes($emailObject->subject),$emailObject->body,$params)) {
                 $res = true;
                 $receiversList[] = $receiver->email;
             }

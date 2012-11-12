@@ -305,7 +305,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
      * @param type $data
      */
     function copytolist($data){
-        $helpU=&WYSIJA::get("user","helper");
+        $helpU=&WYSIJA::get('user','helper');
         $helpU->addToList($data['listid'],$_POST['wysija']['user']['user_id']);
 
         $modelL=&WYSIJA::get('list','model');
@@ -323,7 +323,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
      * @param type $data
      */
     function unsubscribemany(){
-        $helperUser=&WYSIJA::get("user","helper");
+        $helperUser=&WYSIJA::get('user','helper');
         foreach($_POST['wysija']['user']['user_id'] as $uid)    $helperUser->unsubscribe($uid,true);
         $count=count($_POST['wysija']['user']['user_id']);
         $this->notice(sprintf(__('%1$d Subscribers have been unsubscribed.',WYSIJA),$count));
@@ -333,7 +333,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     function lists(){
         $this->js[]='wysija-admin-list';
         $this->_commonlists();
-        $this->modelObj=&WYSIJA::get("list","model");
+        $this->modelObj=&WYSIJA::get('list','model');
         $this->viewObj->title=__('Edit lists',WYSIJA);
         $this->modelObj->countRows=$this->modelObj->count();
 

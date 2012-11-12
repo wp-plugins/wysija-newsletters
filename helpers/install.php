@@ -8,7 +8,6 @@ class WYSIJA_help_install extends WYSIJA_object{
         $values=array();
         
         if(!$this->testSystem()) return false;
-
         
         if(!$this->createTables()) return false;
         

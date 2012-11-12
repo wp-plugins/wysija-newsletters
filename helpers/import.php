@@ -341,7 +341,7 @@ class WYSIJA_help_import extends WYSIJA_object{
         }
         $infosImport=array("name"=>"WordPress",
             "pk"=>"ID",
-            "matches"=>array("ID"=>"wpuser_id","user_email"=>"email","display_name"=>"firstname"),
+            "matches"=>array("ID"=>"wpuser_id","user_email"=>"email"),
             "matchesvar"=>array("status"=>1));
         $tablename='users';
         return $this->import($tablename,$infosImport,true,$ismainsite);

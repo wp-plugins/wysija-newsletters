@@ -390,13 +390,15 @@ class WYSIJA_help_user extends WYSIJA_object{
         return true;
     }
 
-    function addToList($listid,$userids){
+    function addToList($listid,$userids,$sub_date=0){
         $modelUser=&WYSIJA::get('user','model');
-        $query='REPLACE INTO `[wysija]user_list` (`list_id`,`user_id`)';
+        $mConfig=&WYSIJA::get('config','model');
+        $query='REPLACE INTO `[wysija]user_list` (`list_id`,`user_id`,`sub_date`)';
         $query.=' VALUES ';
+        $sub_date=time();
         $total=count($userids);
         foreach($userids as $key=> $uid){
-            $query.='('.(int)$listid.','.(int)$uid.")\n";
+            $query.='('.(int)$listid.','.(int)$uid.','.$sub_date.")\n";
             if($total>($key+1)) $query.=',';
         }
         return $modelUser->query($query);
@@ -433,10 +435,10 @@ class WYSIJA_help_user extends WYSIJA_object{
         }
         if($subscribed){
             $title=sprintf(__('New subscriber to %1$s',WYSIJA),implode(',',$listnames));
-            $body=sprintf(__('Howdy,'."\n\n".'The subscriber %1$s has just subscribed himself to your list "%2$s".'."\n\n".'Cheers,'."\n\n".'The Wysija Plugin',WYSIJA),"<strong>".$email."</strong>","<strong>".implode(',',$listnames)."</strong>");
+            $body=sprintf(__('Howdy,'."\n\n".'The subscriber %1$s has just subscribed to your list "%2$s".'."\n\n".'Cheers,'."\n\n".'The Wysija Plugin',WYSIJA),"<strong>".$email."</strong>","<strong>".implode(',',$listnames)."</strong>");
         }else{
             $title=sprintf(__('One less subscriber to %1$s',WYSIJA),implode(',',$listnames));
-            $body=sprintf(__('Howdy,'."\n\n".'The subscriber : %1$s has just unsubscribed himself to your list "%2$s".'."\n\n".'Cheers,'."\n\n".'The Wysija Plugin',WYSIJA),"<strong>".$email."</strong>","<strong>".implode(',',$listnames)."</strong>");
+            $body=sprintf(__('Howdy,'."\n\n".'The subscriber : %1$s has just unsubscribed to your list "%2$s".'."\n\n".'Cheers,'."\n\n".'The Wysija Plugin',WYSIJA),"<strong>".$email."</strong>","<strong>".implode(',',$listnames)."</strong>");
         }
         $modelConf=&WYSIJA::get('config','model');
         $mailer=&WYSIJA::get('mailer','helper');

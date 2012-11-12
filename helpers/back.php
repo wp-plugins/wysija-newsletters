@@ -261,7 +261,6 @@ class WYSIJA_help_back extends WYSIJA_help{
             $tabfunc=true;
         }
     }
-
     function add_js($hook) {
         
         $jstrans=array();

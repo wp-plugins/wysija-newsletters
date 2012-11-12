@@ -94,7 +94,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
     }
     function _make_domain_name($url=false){
         if(!$url) $url=admin_url('admin.php');
-        $domain_name=str_replace(array("https://","http://","www."),"",strtolower($url));
+        $domain_name=str_replace(array('https://','http://','www.'),'',strtolower($url));
 
         $domain_name=explode('/',$domain_name);
         return $domain_name[0];
@@ -109,7 +109,6 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         }else{
             $timestamp = $t - $s;
         }
-
         
         $years=floor($timestamp/(60*60*24*365));$timestamp%=60*60*24*365;
         $weeks=floor($timestamp/(60*60*24*7));$timestamp%=60*60*24*7;
@@ -120,7 +119,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         else $secs=$timestamp;
 
         
-        $str="";
+        $str='';
         $mylevel=0;
         if ($mylevel<$level && $years >= 1) { $str.= sprintf(_n( '%1$s year', '%1$s years', $years, WYSIJA ),$years)." ";$mylevel++; }
         if ($mylevel<$level && $weeks >= 1) { $str.= sprintf(_n( '%1$s week', '%1$s weeks', $weeks, WYSIJA ),$weeks)." ";$mylevel++; }

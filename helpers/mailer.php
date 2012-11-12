@@ -566,8 +566,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $find=array();
             $replace=array();
             $find[]='[unsubscribe_linklabel]';
-            $replace[]=$this->config->getValue('unsubscribe_linkname');
-
+            if(!isset($this->config->values['unsubscribe_linkname'])) $replace[]=__('Unsubscribe',WYSIJA);
+            else $replace[]=$this->config->getValue('unsubscribe_linkname');
             $this->defaultMail[$email_id]->body=str_replace($find,$replace,$this->defaultMail[$email_id]->body);
         }
         function replaceusertags($email,$receiver){
@@ -625,12 +625,12 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             $urls = array();
             if(!preg_match_all('#href[ ]*=[ ]*"(?!mailto:|\#|ymsgr:|callto:|file:|ftp:|webcal:|skype:)([^"]+)"#Ui',$email->body,$results)) return;
-            $modelConf=&WYSIJA::get("config","model");
+            $modelConf=&WYSIJA::get('config','model');
 
 
             foreach($results[1] as $i => $url){
                 $coreUrl=false;
-                if(isset($urls[$results[0][$i]])|| strpos($url, "wysija-key")) continue;
+                if(isset($urls[$results[0][$i]])|| strpos($url, 'wysija-key')) continue;
                 $urlreuse=$url;
                 if((strpos($urlreuse, '[view_in_browser_link]')===false || strpos($urlreuse, '[unsubscribe_link]')===false) && isset($email->params['googletrackingcode']) && trim($email->params['googletrackingcode']) ){
                     $hashPartUrl = '';
@@ -655,11 +655,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
 
                 $Wysijaurls=array();
-                $Wysijaurls["action=unsubscribe"]="[unsubscribe_link]";
-                $Wysijaurls["action=subscriptions"]="[subscriptions_link]";
-                $Wysijaurls["action=viewinbrowser"]="[view_in_browser_link]";
+                $Wysijaurls['action=unsubscribe']='[unsubscribe_link]';
+                $Wysijaurls['action=subscriptions']='[subscriptions_link]';
+                $Wysijaurls['action=viewinbrowser']='[view_in_browser_link]';
                 $urlsportions=array_keys($Wysijaurls);
-
                 if(preg_match('#'.implode('|',$urlsportions).'|\{|%7B#i',$urlreuse)){
                     foreach($Wysijaurls as $k =>$v){
                         if(strpos($urlreuse, $k)!==false){
@@ -693,8 +692,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 if(!$modelConf->getValue('urlstats_base64')){
                     $args['no64'] = 1;
                 }
-
-                $mytracker=WYSIJA::get_permalink($modelConf->getValue("confirm_email_link"),$args);
+                $mytracker=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$args);
                 $urls[$results[0][$i]] = str_replace($url,$mytracker,$results[0][$i]);
             }
             $email->body = str_replace(array_keys($urls),$urls,$email->body);

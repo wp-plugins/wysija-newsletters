@@ -439,7 +439,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                 $fullurl=$emailH->getVIB($row);
 
                                                 ?><span class="viewnl">
-                                                    <a href="<?php echo $fullurl ?>" target="_blank" class="viewnews"><?php _e('View',WYSIJA)?></a>
+                                                    <a href="<?php echo $fullurl ?>" target="_blank" class="viewnews" title="<?php _e('Preview in new tab',WYSIJA)?>"><?php _e('Preview',WYSIJA)?></a>
                                                 </span><?php
                                                 $deleteAction='';
                                                 $dupid=$deleteId=$row["campaign_id"];
@@ -696,19 +696,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
         if($sentleft>0){
 
-            $config=&WYSIJA::get("config","model");
+            $config=&WYSIJA::get('config','model');
             add_filter('wysija_send_ok',array($this,'sending_process'));
             $letsgo=apply_filters('wysija_send_ok', false);
 
             if($letsgo){
-               /*$schedules=wp_get_schedules();
-               $nextbatch=(int)wp_next_scheduled( 'wysija_cron_queue')-time();
-               $totalestimate=$data['sent'][$row["campaign_id"]]['remaining_time']-($schedules[wp_get_schedule('wysija_cron_queue')]['interval'])+$nextbatch;
-               */
-                $helperToolbox=&WYSIJA::get("toolbox","helper");
+                $helperToolbox=&WYSIJA::get('toolbox','helper');
                if($row['type']!=2){
-                   $return.= "<p><strong>".sprintf(__('Time remaining: %1$s',WYSIJA),$helperToolbox->duration($data['sent'][$row["email_id"]]['remaining_time'],true,4))."</strong><br/>".$statusdata.$pause."</p>";
-                   $return.= "<div class='info-stats'>";
+                   $return.= '<p><strong>'.sprintf(__('Time remaining: %1$s',WYSIJA),$helperToolbox->duration($data['sent'][$row['email_id']]['remaining_time'],true,4)).'</strong><br/>'.$statusdata.$pause.'</p>';
+                   $return.= '<div class="info-stats">';
                }
 
 
@@ -718,20 +714,24 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                //Next batch of xx emails will be sent in xx minutes. Don't wait & send right now.
                if($pending){
-                   $return.= "<span style='color:#555'>".sprintf(__('%1$s email(s) pending.',WYSIJA),$nextBatchnumber);
-                   $return.= "</span>";
+                   $return.= '<span style="color:#555">'.sprintf(__('%1$s email(s) pending.',WYSIJA),$nextBatchnumber);
+                   $return.= '</span>';
                }else{
-              $return.= "".sprintf(__('Next batch of %1$s emails will be sent in %2$s. ',WYSIJA),$nextBatchnumber,trim($helperToolbox->duration($data['sent'][$row["email_id"]]['next_batch'],true,4)));
-               $return.= "<a href='admin.php?page=wysija_campaigns&action=send_test_editor&emailid=".$row["email_id"]."' class='action-send-test-editor' >".__('Don\'t wait & send right now.',WYSIJA)."</a>";
-               $return.= "";
+                   if($data['sent'][$row['email_id']]['running_for']){
+                       $return.= sprintf(__('Current batch has been sent for %1$s',WYSIJA),$data['sent'][$row['email_id']]['running_for']);
+                   }else{
+                      $return.= sprintf(__('Next batch of %1$s emails will be sent in %2$s. ',WYSIJA),$nextBatchnumber,trim($helperToolbox->duration($data['sent'][$row['email_id']]['next_batch'],true,4)));
+                      $return.= '<a href="admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$row['email_id'].'" class="action-send-test-editor" >'.__('Don\'t wait & send right now.',WYSIJA).'</a>';
+                   }
+
                }
 
             }else{
                 $return.= $statusdata;
                 $link= str_replace(
-                    array("[link]","[/link]"),
+                    array('[link]','[/link]'),
                     array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
-                    __("To resume send [link]Go premium now![/link]",WYSIJA));
+                    __('To resume send [link]Go premium now![/link]',WYSIJA));
                  $return.= '<p>'.$link.'</p>';
             }
 
@@ -758,13 +758,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
      */
     function viewstats($data){
 
-        $this->search['title']=__("Search recipients",WYSIJA);
+        $this->search['title']=__('Search recipients',WYSIJA);
         ?>
         <div id="wysistats">
             <div id="wysistats1" class="left">
                 <div id="statscontainer"></div>
                 <h3><?php
-                $helperToolbox=&WYSIJA::get("toolbox","helper");
+                $helperToolbox=&WYSIJA::get('toolbox','helper');
                 $sentwhen=$data['email']['sent_at'];
                 if(!$sentwhen)$sentwhen=$data['email']['created_at'];
                 if(isset($data['counts']['all']))  echo sprintf(__('%1$s emails sent %2$s ago',WYSIJA),$data['counts']['all'],$helperToolbox->duration($sentwhen));
@@ -775,7 +775,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <ul>
                     <?php
                     foreach($data['charts']['stats'] as $stats){
-                        echo "<li>".$stats['name'].": ".$stats['number']."</li>";
+                        echo '<li>'.$stats['name'].': '.$stats['number'].'</li>';
                     }
                     ?>
 
@@ -786,7 +786,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <p class="title"><?php echo __('What got clicked?',WYSIJA);?></p>
 
                 <?php
-                $modelC=&WYSIJA::get("config","model");
+                $modelC=&WYSIJA::get('config','model');
                 if(count($data['clicks'])>0){
                     add_filter('wysija_links_stats',array($this,'linkStats'),1,2);
                     $linkshtml=apply_filters('wysija_links_stats', '',$data);
@@ -803,9 +803,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 }*/
 
                  ?>
-
-
-
             </div>
             <div class="clear"></div>
         </div>
@@ -1123,7 +1120,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <!-- THEMES BAR -->
                 <div class="wj_themes" style="display:none;">
                     <div class="wj_button">
-                        <a id="wysija-themes-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=themes"><?php _e('Install themes',WYSIJA) ?></a>
+                        <a id="wysija-themes-browse" class="button" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=themes"><?php _e('Add more themes',WYSIJA) ?></a>
                     </div>
                     <ul id="wj_themes_list" class="clearfix">
                         <?php
@@ -1788,7 +1785,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
                     * <?php */ ?>
                     <div class="clearfix">
-                        <input type="button" id="sub-theme-box" name="submit" value="<?php echo esc_attr(__('Upload Theme',WYSIJA));?>" class="button-secondary"/>
+                        <input type="button" id="sub-theme-box" name="submit" value="<?php echo esc_attr(__('Upload Theme (.zip)',WYSIJA));?>" class="button-secondary"/>
                         <span id="filter-selection"></span>
                         <div id="wj_paginator"></div>
                     </div>
@@ -2401,7 +2398,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 		$upload_size_unit = (int) $upload_size_unit;
 	}
         echo $this->messages(true);
-        ?><div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+        ?>
+        <div class="updated"><ul><li><?php _e('Please update your WordPress to the latest version, in order to get the latest uploading system.',WYSIJA)?></li></ul></div>
+        <div id="overlay"><img id="loader" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
         <div class="popup_content media-wp-upload">
             <script type="text/javascript">
             //<![CDATA[
@@ -2447,7 +2446,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                     button_image_url: '<?php echo includes_url('images/upload.png?ver=20100531'); ?>',
                                     button_placeholder_id: "flash-browse-button",
                                     upload_url : "<?php echo esc_attr( $flash_action_url ); ?>",
-                                    flash_url : "<?php echo WYSIJA_URL.'js/jquery/swfupload.swf'; ?>",
+                                    flash_url : "<?php echo includes_url().'js/swfupload/swfupload.swf'; ?>",
                                     file_post_name: "async-upload",
                                     file_types: "<?php echo apply_filters('upload_file_glob', '*.*'); ?>",
                                     post_params : {

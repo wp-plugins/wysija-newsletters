@@ -121,7 +121,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     function linkshareme(){
         $this->_displayErrors();
 
-        $modelConf=&WYSIJA::get("config","model");
+        $modelConf=&WYSIJA::get('config','model');
         $modelConf->save(array('sharedata'=>true));
 
         $res['result']=true;
@@ -132,7 +132,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     function linkignore(){
         $this->_displayErrors();
 
-        $modelConf=&WYSIJA::get("config","model");
+        $modelConf=&WYSIJA::get('config','model');
 
         $ignore_msgs=$modelConf->getValue('ignore_msgs');
         if(!$ignore_msgs) $ignore_msgs=array();
@@ -148,7 +148,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
 
     function validate(){
 
-        $helpLic=&WYSIJA::get("licence","helper");
+        $helpLic=&WYSIJA::get('licence','helper');
         $res=$helpLic->check();
 
         if(!isset($res['result']))  $res['result']=false;
@@ -170,10 +170,10 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         $_POST   = stripslashes_deep($_POST);
         $dataTemp=$_POST['data'];
         $_POST['data']=array();
-        foreach($dataTemp as $val) $_POST['data'][$val["name"]]=$val["value"];
+        foreach($dataTemp as $val) $_POST['data'][$val['name']]=$val['value'];
         $dataTemp=null;
         foreach($_POST['data'] as $k =>$v){
-            $newkey=str_replace(array("wysija[config][","]"),"",$k);
+            $newkey=str_replace(array('wysija[config][',']'),'',$k);
             $configVal[$newkey]=$v;
         }
         return $configVal;

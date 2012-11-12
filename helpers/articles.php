@@ -106,7 +106,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
             $content = '<'.$params['title_tag'].' class="align-'.$params['title_alignment'].'">'.  $post['post_title'].'</'.$params['title_tag'].'>'.$content;
         }
 
-        $content .= '<p><a href="'.get_permalink($post['ID']).'">'.esc_attr($params['readmore']).'</a></p>';
+        $content .= '<p><a href="'.get_permalink($post['ID']).'" target="_blank">'.esc_attr($params['readmore']).'</a></p>';
 
         $post_image = null;
         if(isset($post['post_image'])) {

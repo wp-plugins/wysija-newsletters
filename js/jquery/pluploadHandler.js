@@ -111,7 +111,6 @@ function WYSIJAprepareMediaItem(fileObj, serverData) {
 	jQuery('.bar', item).remove();
 	jQuery('.progress', item).hide();
 
-
 	// Old style: Append the HTML returned by the server -- thumbnail and form inputs
 	if ( isNaN(serverData) || !serverData ) {
 		item.append(serverData);
@@ -122,7 +121,8 @@ function WYSIJAprepareMediaItem(fileObj, serverData) {
 		item.load('async-upload.php', {attachment_id:serverData, fetch:f}, function(result){
                     WYSIJAsetParams(result,fileObj);
                     WYSIJAprepareMediaItemInit(fileObj);
-                    updateMediaForm();});
+                    updateMediaForm();
+                });
 	}
 }
 

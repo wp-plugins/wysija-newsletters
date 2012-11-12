@@ -142,25 +142,25 @@ class WYSIJA_help extends WYSIJA_object{
 
     function register_scripts(){
         if(defined('WPLANG') && WPLANG!=''){
-            $locale=explode("_",WPLANG);
+            $locale=explode('_',WPLANG);
             $wplang=$locale[0];
         }else{
             $wplang='en';
         }
 
-        if(file_exists(WYSIJA_DIR."js".DS."validate".DS."languages".DS."jquery.validationEngine-".$wplang.".js")){
-            wp_register_script('wysija-validator-lang',WYSIJA_URL."js/validate/languages/jquery.validationEngine-".$wplang.".js", array( 'jquery' ),WYSIJA::get_version(),true );
+        if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wplang.'.js')){
+            wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wplang.'.js', array( 'jquery' ),WYSIJA::get_version(),true );
         }else{
-            wp_register_script('wysija-validator-lang',WYSIJA_URL."js/validate/languages/jquery.validationEngine-en.js", array( 'jquery' ),WYSIJA::get_version(),true );
+            wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-en.js', array( 'jquery' ),WYSIJA::get_version(),true );
         }
-        wp_register_script('wysija-validator',WYSIJA_URL."js/validate/jquery.validationEngine.js", array( 'jquery' ),WYSIJA::get_version(),true );
-        wp_register_script('wysija-front-subscribers', WYSIJA_URL."js/front-subscribers.js", array( 'jquery' ),WYSIJA::get_version(),true);
+        wp_register_script('wysija-validator',WYSIJA_URL.'js/validate/jquery.validationEngine.js', array( 'jquery' ),WYSIJA::get_version(),true );
+        wp_register_script('wysija-front-subscribers', WYSIJA_URL.'js/front-subscribers.js', array( 'jquery' ),WYSIJA::get_version(),true);
 
 
-        wp_register_script('wysija-form', WYSIJA_URL."js/forms.js", array( 'jquery' ),WYSIJA::get_version());
-        wp_register_style('validate-engine-css',WYSIJA_URL."css/validationEngine.jquery.css",array(),WYSIJA::get_version());
-        wp_register_script('wysija-admin-ajax', WYSIJA_URL."js/admin-ajax.js",array(),WYSIJA::get_version());
-        wp_register_script('wysija-admin-ajax-proto', WYSIJA_URL."js/admin-ajax-proto.js",array(),WYSIJA::get_version());
+        wp_register_script('wysija-form', WYSIJA_URL.'js/forms.js', array( 'jquery' ),WYSIJA::get_version());
+        wp_register_style('validate-engine-css',WYSIJA_URL.'css/validationEngine.jquery.css',array(),WYSIJA::get_version());
+        wp_register_script('wysija-admin-ajax', WYSIJA_URL.'js/admin-ajax.js',array(),WYSIJA::get_version());
+        wp_register_script('wysija-admin-ajax-proto', WYSIJA_URL.'js/admin-ajax-proto.js',array(),WYSIJA::get_version());
 
         if(defined('WYSIJA_SIDE') && WYSIJA_SIDE=='front')  wp_enqueue_style('validate-engine-css');
 
@@ -174,12 +174,12 @@ class WYSIJA_help extends WYSIJA_object{
 
         $resultArray=array();
         if(!$_REQUEST || !isset($_REQUEST['controller']) || !isset($_REQUEST['task'])){
-            $resultArray=array("result"=>false);
+            $resultArray=array('result'=>false);
         }else{
-            $wysijapp="wysija-newsletters";
+            $wysijapp='wysija-newsletters';
             if(isset($_REQUEST['wysijaplugin'])) $wysijapp=$_REQUEST['wysijaplugin'];
 
-            $this->controller=&WYSIJA::get($_REQUEST['controller'],"controller", false, $wysijapp);
+            $this->controller=&WYSIJA::get($_REQUEST['controller'],'controller', false, $wysijapp);
 
             if(method_exists($this->controller, $_REQUEST['task'])){
                 $resultArray["result"]=$this->controller->$_REQUEST['task']();
@@ -465,17 +465,11 @@ class WYSIJA extends WYSIJA_object{
         $autoNL->checkScheduled();
         $config=&WYSIJA::get('config','model');
         if((int)$config->getValue('total_subscribers')<2000 ){
-
             $helperQ=&WYSIJA::get('queue','helper');
             $helperQ->report=false;
             WYSIJA::log('croned_queue process',true);
             $helperQ->process();
-
-        }else{
-            do_action('wysija_process_queue');
         }
-
-
     }
 
 
@@ -513,7 +507,6 @@ class WYSIJA extends WYSIJA_object{
             $helperS=&WYSIJA::get('stats','helper');
             $helperS->share();
         }
-
     }
 
     public static function deactivate() {
@@ -547,8 +540,8 @@ class WYSIJA extends WYSIJA_object{
         register_post_type( 'wysijap',
             array(
                     'labels' => array(
-                            'name' => __( 'Wysija page' ),
-                            'singular_name' => __( 'Wysija page' )
+                            'name' => __('Wysija page'),
+                            'singular_name' => __('Wysija page')
                     ),
             'public' => true,
             'has_archive' => false,
@@ -584,11 +577,11 @@ class WYSIJA extends WYSIJA_object{
     }
 
 
-    public static function update_option($option_name,$newvalue){
+    public static function update_option($option_name,$newvalue,$defaultload='no'){
         if ( get_option( $option_name ) != $newvalue ) {
             update_option( $option_name, $newvalue );
         } else {
-            add_option( $option_name, $newvalue, '', 'no' );
+            add_option( $option_name, $newvalue, '', $defaultload );
         }
     }
 
@@ -661,24 +654,19 @@ class WYSIJA extends WYSIJA_object{
             }else{
                 $modelUser->noCheck=true;
                 $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>1));
-
                 $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
             }
-
         }
-
         return true;
     }
 
-
     public static function hook_del_WP_subscriber($user_id) {
-
-        $modelConf=&WYSIJA::get("config","model");
-        $modelUser=&WYSIJA::get("user","model");
-        $data=$modelUser->getOne(array("email",'user_id'),array("wpuser_id"=>$user_id));
-        $modelUser->delete(array("email"=>$data['email']));
-        $modelUser=&WYSIJA::get("user_list","model");
-        $modelUser->delete(array("user_id"=>$data['user_id'],"list_id"=>$modelConf->getValue("importwp_list_id")));
+        $modelConf=&WYSIJA::get('config','model');
+        $modelUser=&WYSIJA::get('user','model');
+        $data=$modelUser->getOne(array('email','user_id'),array('wpuser_id'=>$user_id));
+        $modelUser->delete(array('email'=>$data['email']));
+        $modelUser=&WYSIJA::get('user_list','model');
+        $modelUser->delete(array('user_id'=>$data['user_id'],'list_id'=>$modelConf->getValue('importwp_list_id')));
     }
 
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
@@ -701,14 +689,13 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
-
     public static function uninstall(){
-        $helperUS=&WYSIJA::get("uninstall","helper");
+        $helperUS=&WYSIJA::get('uninstall','helper');
         $helperUS->uninstall();
     }
 
     public static function activate(){
-        $encoded_option=get_option("wysija");
+        $encoded_option=get_option('wysija');
         $installApp=false;
         if($encoded_option){
             $values=unserialize(base64_decode($encoded_option));
@@ -717,15 +704,13 @@ class WYSIJA extends WYSIJA_object{
 
         /*test again for plugins on reactivation*/
         if($installApp){
-            $importHelp=&WYSIJA::get("import","helper");
+            $importHelp=&WYSIJA::get('import','helper');
             $importHelp->testPlugins();
 
             /*resynch wordpress list*/
-            $helperU=&WYSIJA::get("user","helper");
+            $helperU=&WYSIJA::get('user','helper');
             $helperU->synchList($values['importwp_list_id']);
-
         }
-
     }
 
     public static function is_plugin_active($pluginName){
@@ -755,13 +740,132 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
+    public static function get_cron_schedule($schedule='queue'){
+        static $cron_schedules;
 
+        if(!empty($cron_schedules)){
+            if($schedule=='all') return $cron_schedules;
+            if(isset($cron_schedules[$schedule])) {
+                return $cron_schedules[$schedule];
+            }else{
+                WYSIJA::set_cron_schedule($schedule);
+                return false;
+            }
+        }else{
+            $cron_schedules=get_option('wysija_schedules',array());
+            if(!empty($cron_schedules)){
+                if(isset($cron_schedules[$schedule]))   return $cron_schedules[$schedule];
+                else    return false;
+            }else{
+                WYSIJA::set_cron_schedule();
+                return false;
+            }
+        }
+        return false;
+    }
+    public static function get_cron_frequencies(){
+        $mConfig=&WYSIJA::get('config','model');
+        $fHelper=&WYSIJA::get('forms','helper');
+        $queue_frequency=$fHelper->eachValuesSec[$mConfig->getValue('sending_emails_each')];
+        $bounce_frequency=$fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')];
+        return array('queue'=>$queue_frequency,'bounce'=>$bounce_frequency,'daily'=>86400,'weekly'=>2419200,'monthly'=>604800);
+    }
+    public static function set_cron_schedule($schedule=false,$lastsaved=0,$set_running=false){
+        $cron_schedules=array();
 
+        $start_time=$lastsaved;
+        if(!$start_time)    $start_time=time();
+        $processes=WYSIJA::get_cron_frequencies();
+        if(!$schedule){
+            foreach($processes as $process => $frequency){
+                $next_schedule=$start_time+$frequency;
+                $prev_schedule=0;
+                if(isset($cron_schedules[$process]['running']) && $cron_schedules[$process]['running']) $prev_schedule=$cron_schedules[$process]['running'];
+                $cron_schedules[$process]=array(
+                    'next_schedule'=>$next_schedule,
+                    'prev_schedule'=>$prev_schedule,
+                    'running'=>false);
+            }
+        }else{
+            $cron_schedules=WYSIJA::get_cron_schedule('all');
+            if($set_running){
+                 $cron_schedules[$schedule]['running']=$set_running;
+            }else{
+                 $running=0;
+                if(isset($cron_schedules[$schedule]['running'])) $running=$cron_schedules[$schedule]['running'];
+                //if the process is not running or has been running for more than 15 minutes then we set the next_schedule date
+                if(!$running || time()>$running+900){
+                    $next_schedule=$start_time+$processes[$schedule];
+                    $cron_schedules[$schedule]=array(
+                            'next_schedule'=>$next_schedule,
+                            'prev_schedule'=>$running,
+                            'running'=>false);
+                }
+            }
+        }
+        WYSIJA::update_option('wysija_schedules',$cron_schedules,'yes');
+        return true;
+    }
 
+    /*check that there is no due cron*/
+    public static function cron_check() {
+
+        $cron_schedules=WYSIJA::get_cron_schedule('all');
+        if(empty($cron_schedules)) return;
+        else{
+            $processes=WYSIJA::get_cron_frequencies();
+            $updatedsched=false;
+            foreach($cron_schedules as $proc => &$params){
+                    $running=0;
+                    if(isset($params['running'])) $running=$params['running'];
+                    //if the process has timedout we reschedule the next execution
+                    if($running && time()>$running+900){
+                        //WYSIJA::setInfo('error','modifying next schedule for '.$proc);
+                        $next_schedule=time()+$processes[$proc];
+                        $params=array(
+                                'next_schedule'=>$next_schedule,
+                                'prev_schedule'=>$running,
+                                'running'=>false);
+                        $updatedsched=true;
+                    }
+            }
+            if($updatedsched){
+                //WYSIJA::setInfo('error','updating scheds');
+                WYSIJA::update_option('wysija_schedules',$cron_schedules,'yes');
+            }
+
+        }
+
+        $timenow=time();
+        $processesToRun=array();
+        foreach($cron_schedules as $process =>$scheduled_times){
+            if((!$scheduled_times['running'] || (int)$scheduled_times['running']+900<$timenow) && $scheduled_times['next_schedule']<$timenow){
+                $processesToRun[]=$process;
+            }
+        }
+
+        if(!empty($processesToRun)){
+            //call the cron url
+
+            $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun);
+
+            //TODO we should use the http class there
+            $hHTTP=&WYSIJA::get('http','helper');
+            $hHTTP->request_timeout($cron_url);
+
+        }
+    }
+}
+
+if(isset($_REQUEST['action']) && $_REQUEST['action']=='wysija_cron'){
+    $hCron=WYSIJA::get('cron','helper');
+    $hCron->run();
+    exit;
 }
 
 /*user synch moved*/
 add_action('user_register', array('WYSIJA', 'hook_add_WP_subscriber'), 1);
+add_action('added_existing_user', array('WYSIJA', 'hook_add_WP_subscriber'), 1);
 add_action('profile_update', array('WYSIJA', 'hook_edit_WP_subscriber'), 1);
 add_action('delete_user', array('WYSIJA', 'hook_del_WP_subscriber'), 1);
 
@@ -771,38 +875,50 @@ add_action('transition_post_status', array('WYSIJA', 'hook_postNotification_tran
 /*add image size for emails*/
 add_image_size( 'wysija-newsletters-max', 600, 99999 );
 
-/* some processing for cron management */
-add_filter( 'cron_schedules', array( 'WYSIJA', 'filter_cron_schedules' ) );
-add_action( 'wysija_cron_queue', array( 'WYSIJA', 'croned_queue' ) );
-add_action( 'wysija_cron_daily', array( 'WYSIJA', 'croned_daily' ) );
-add_action( 'wysija_cron_monthly', array( 'WYSIJA', 'croned_monthly' ) );
-
 $modelConf=&WYSIJA::get('config','model');
-if(!wp_next_scheduled('wysija_cron_bounce')){
-    wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('bouncing_emails_each'), 'wysija_cron_bounce' );
+if($modelConf->getValue('installed_time')){
+    if($modelConf->getValue('cron_manual')){
+        //if cron queue is still set then unset it
+        if(wp_get_schedule('wysija_cron_queue'))    WYSIJA::deactivate();
+
+        //set the crons schedule for each process
+        WYSIJA::get_cron_schedule();
+
+    }else{
+        /* some processing for cron management */
+        add_filter( 'cron_schedules', array( 'WYSIJA', 'filter_cron_schedules' ) );
+        add_action( 'wysija_cron_queue', array( 'WYSIJA', 'croned_queue' ) );
+        add_action( 'wysija_cron_daily', array( 'WYSIJA', 'croned_daily' ) );
+        add_action( 'wysija_cron_monthly', array( 'WYSIJA', 'croned_monthly' ) );
+
+        if(!wp_next_scheduled('wysija_cron_bounce')){
+            wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('bouncing_emails_each'), 'wysija_cron_bounce' );
+        }
+        if(!wp_next_scheduled('wysija_cron_weekly')){
+            wp_schedule_event( $modelConf->getValue('last_save') , 'eachweek', 'wysija_cron_weekly' );
+        }
+        if(!wp_next_scheduled('wysija_cron_queue')){
+            wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('sending_emails_each'), 'wysija_cron_queue' );
+        }
+        if(!wp_next_scheduled('wysija_cron_monthly')){
+            wp_schedule_event( $modelConf->getValue('last_save') , 'each28days', 'wysija_cron_monthly' );
+        }
+        if(!wp_next_scheduled('wysija_cron_daily')){
+            wp_schedule_event( time() , 'daily', 'wysija_cron_daily' );
+        }
+    }
 }
-if(!wp_next_scheduled('wysija_cron_weekly')){
-    wp_schedule_event( $modelConf->getValue('last_save') , 'eachweek', 'wysija_cron_weekly' );
-}
+
+
 if($modelConf->getValue('wp_notifications')){
     $hWPnotif=&WYSIJA::get('wp_notifications','helper');
 }
-
-
-if(!wp_next_scheduled('wysija_cron_daily')) wp_schedule_event( time() , 'daily', 'wysija_cron_daily' );
-
-
-if(!wp_next_scheduled('wysija_cron_queue')){
-    $modelConf=&WYSIJA::get("config","model");
-    wp_schedule_event( $modelConf->getValue('last_save') , $modelConf->getValue('sending_emails_each'), 'wysija_cron_queue' );
+//check that there is no late cron schedules
+if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process'])){
+    WYSIJA::cron_check();
 }
 
-if(!wp_next_scheduled('wysija_cron_monthly')){
-    $modelConf=&WYSIJA::get("config","model");
-    wp_schedule_event( $modelConf->getValue('last_save') , 'each28days', 'wysija_cron_monthly' );
-}
-
-register_deactivation_hook(WYSIJA_FILE, array( "WYSIJA", 'deactivate' ));
-register_activation_hook(WYSIJA_FILE, array( "WYSIJA", 'activate' ));
+register_deactivation_hook(WYSIJA_FILE, array( 'WYSIJA', 'deactivate' ));
+register_activation_hook(WYSIJA_FILE, array( 'WYSIJA', 'activate' ));
 add_action( 'init', array('WYSIJA','create_post_type') );
-$helper=&WYSIJA::get(WYSIJA_SIDE,"helper");
+$helper=&WYSIJA::get(WYSIJA_SIDE,'helper');
