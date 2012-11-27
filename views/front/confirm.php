@@ -47,7 +47,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                             <label for="fname">'.__('First name',WYSIJA).'</label>
                         </th>
                         <td>
-                            <input type="text" size="40" class="validate[required]" id="fname" value="'.esc_attr($data['user']['details']['firstname']).'" name="wysija[user][firstname]" />
+                            <input type="text" size="40" id="fname" value="'.esc_attr($data['user']['details']['firstname']).'" name="wysija[user][firstname]" />
                         </td>
                     </tr>';
 
@@ -56,7 +56,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                             <label for="lname">'.__('Last name',WYSIJA).'</label>
                         </th>
                         <td>
-                            <input type="text" size="40" class="validate[required]" id="lname" value="'.esc_attr($data['user']['details']['lastname']).'" name="wysija[user][lastname]" />
+                            <input type="text" size="40" id="lname" value="'.esc_attr($data['user']['details']['lastname']).'" name="wysija[user][lastname]" />
                         </td>
                     </tr>';
 

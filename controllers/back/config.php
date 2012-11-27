@@ -16,6 +16,9 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->js[]='thickbox';
         wp_enqueue_style( 'thickbox' );
 
+        wp_enqueue_style('wysija-admin-edit-tb', WYSIJA_URL.'css/admin-editor-forms.css',array(),WYSIJA::get_version());
+        wp_enqueue_script('wysija-admin-edit-forms', WYSIJA_URL.'js/admin-editor-forms.js', array('jquery'), WYSIJA::get_version());
+
         if(!isset($_REQUEST['action'])) $this->action='main';
         else $this->action=$_REQUEST['action'];
         $localaction=$this->action;
@@ -41,7 +44,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
                 $this->doreinstall();
                 if(defined('WYSIJA_REDIRECT')){
                      global $wysi_location;
-                     $wysi_location="admin.php?page=wysija_campaigns";
+                     $wysi_location='admin.php?page=wysija_campaigns';
                     $this->redirectProcess();
                 }
                 return;
@@ -75,7 +78,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     function dkimcheck(){
 
         if(isset($_POST['xtz'])){
-            
+
             $dataconf=json_decode(base64_decode($_POST['xtz']));
 
             if(isset($dataconf->dkim_pubk->key) && isset($dataconf->dkim_privk)){
@@ -141,4 +144,6 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->redirect('admin.php?page=wysija_config&action=log');
         return true;
     }
+
+
 }

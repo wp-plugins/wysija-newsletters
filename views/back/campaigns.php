@@ -569,7 +569,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                                                         echo '<p>'.$statussent.'</p>';
 
-                                                        echo '<p>'.$durationsent.' ('.__('if there are new posts',WYSIJA).')</p>';
+                                                        echo '<p>'.$durationsent.' ('.__('if there\'s new content',WYSIJA).')</p>';
 
                                                         echo $pause;
                                                     }else{
@@ -618,6 +618,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                     ?></td>
                                     <td><?php
 
+                                    if(($row['type']==2 && isset($row['params']['autonl']['event']) && $row['params']['autonl']['event']=='subs-2-nl')){
+                                        $row['lists']=$data['lists'][$row['params']['autonl']['subscribetolist']]['name'];
+                                    }
+
                                         if(isset($row['lists'])) echo $row['lists'];
                                         else    echo $messageListEdit;
 
@@ -638,6 +642,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             </div>
 
             <?php
+
             echo $hiddenOrder;
     }
 
@@ -649,7 +654,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             switch($row["params"]['autonl']['event']){
                 case 'new-articles':
 
-                    $statustext=__('Send immediately when a post is published.',WYSIJA);
+                    $statustext=__('Send immediately.',WYSIJA);
                     break;
                 case 'subs-2-nl':
                     $list='';
@@ -1946,7 +1951,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     } else {
                 ?>
                     <p class="clearfix">
-                        <label for="post_limit"><?php _e('Number of latest posts to show', WYSIJA) ?></label>
+                        <label for="post_limit"><?php _e('Maximum of posts to show', WYSIJA) ?></label>
                         <select name="post_limit" id="post_limit">
                             <?php foreach($data['post_limits'] as $limit) { ?>
                                 <option value="<?php echo $limit ?>"<?php if($limit === (int)$data['params']['post_limit']) echo 'selected="selected"' ?>><?php echo $limit ?></option>
@@ -2071,7 +2076,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 ?>
                 <p class="clearfix">
                     <label for="nopost_message">
-                        <?php _e('If there are no new posts, display:', WYSIJA) ?>
+                        <?php _e('If there is no new content, display:', WYSIJA) ?>
                          <span class="label"><?php _e('You can also leave it empty', WYSIJA) ?></span>
                     </label>
                     <input type="text" name="nopost_message" value="<?php echo esc_attr($data['params']['nopost_message']); ?>" id="nopost_message" />

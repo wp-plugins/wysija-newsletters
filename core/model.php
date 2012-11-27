@@ -24,7 +24,7 @@ class WYSIJA_model extends WYSIJA_object{
     var $columns=array();
     var $joins=array();
     var $ignore = false;
-
+    var $comparisonKeys = array('equal', 'notequal', 'like', 'greater', 'less', 'greater_eq', 'less_eq');
 
     function WYSIJA_model($extensions=''){
         if(defined('WYSIJA_DBG') || defined('WYSIJA_DBG_ALL')) $this->dbg=true;
@@ -33,7 +33,6 @@ class WYSIJA_model extends WYSIJA_object{
         if($extensions) $this->table_prefix=$extensions;
         //fix for radiokapi
         //$this->wpprefix=$wpdb->base_prefix;
-
     }
     /**
      * since we reuse the same objects accross the whole application
@@ -68,6 +67,7 @@ class WYSIJA_model extends WYSIJA_object{
             $conditions=array('equal'=>array($this->pk=>$conditions));
         }
         if($this->setConditions($conditions)){
+
             if($this->getOne)   $results=$this->getRows($columnsOrPKval,0,1);
             else $results=$this->getRows($columnsOrPKval);
             //$this->escapeQuotesFromRes($results);
@@ -121,6 +121,7 @@ class WYSIJA_model extends WYSIJA_object{
         $query.=$this->makeOrderBY();
 
         if($this->limitON) $query.=$this->setLimit($page,$limit);
+
         $results=$this->query("get_res",$query,$this->getFormat);
 
         //$this->escapeQuotesFromRes($results);
@@ -231,7 +232,7 @@ class WYSIJA_model extends WYSIJA_object{
             /*set the WHERE clause*/
             $conditions=array();
             foreach($this->conditions as $type=>$values){
-                if(!in_array($type,array("equal","notequal","like","greater","less","greater_eq","less_eq"))){
+                if(!in_array($type, $this->comparisonKeys)){
                     $conditionsss=$this->conditions;
                     $this->conditions=array();
                     $this->conditions["equal"]=$conditionsss;
@@ -264,32 +265,38 @@ class WYSIJA_model extends WYSIJA_object{
                     switch($type){
                         case "equal":
                             if(is_array($condVal)){
-                                $conditions[]=$condK." IN ('".implode("','",$condVal)."')";
+                                $conditions[]=$condK.' IN ("'.implode('","', $condVal).'")';
                             }else{
-                                $conditions[]=$condK." = '".$condVal."'";
+                                if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                                $conditions[]=$condK.'='.$condVal;
                             }
                             break;
                         case "notequal":
                             if(is_array($condVal)){
-                                $conditions[]=$condK." NOT IN ('".implode("','",$condVal)."')";
+                                $conditions[]=$condK.' NOT IN ("'.implode('","', $condVal).'")';
                             }else{
-                                $conditions[]=$condK." != '".$condVal."'";
+                                if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                                $conditions[]=$condK.' != '.$condVal;
                             }
                             break;
                         case "like":
                                 $conditions[]=$condK." LIKE '%".addcslashes($condVal, '%_' )."%'";
                             break;
                         case "greater":
-                            $conditions[]=$condK." > '".$condVal."'";
+                            if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                            $conditions[]=$condK.' > '.$condVal;
                             break;
                         case "less":
-                            $conditions[]=$condK." < '".$condVal."'";
+                            if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                            $conditions[]=$condK.' < '.$condVal;
                             break;
                         case "greater_eq":
-                            $conditions[]=$condK." >= '".$condVal."'";
+                            if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                            $conditions[]=$condK.' >= '.$condVal;
                             break;
                         case "less_eq":
-                            $conditions[]=$condK." <= '".$condVal."'";
+                            if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                            $conditions[]=$condK.' <= '.$condVal;
                             break;
                     }
                 }
@@ -297,6 +304,7 @@ class WYSIJA_model extends WYSIJA_object{
             }
             $query.=" WHERE ".implode(" AND ",$conditions);
         }
+
         return $query;
     }
 
@@ -770,6 +778,7 @@ class WYSIJA_model extends WYSIJA_object{
      */
     function setConditions($conditions,$update=false){
         if($conditions && is_array($conditions)){
+
             $this->conditions=array();
             if($update){
                 foreach($conditions as $key =>$cond){
@@ -783,12 +792,12 @@ class WYSIJA_model extends WYSIJA_object{
                     }else   $this->conditions[$key]=$cond;
 
                 }
-
-            }else{
-                foreach($conditions as $key =>$cond){
-                    if(!in_array($key, array("like","equal","notequal","greater","less","greater_eq","less_eq"))){
+            } else {
+                foreach($conditions as $key => $cond) {
+                    if(!in_array($key, array('like','equal','notequal','greater','less','greater_eq','less_eq'))){
                         if($this->colCheck && !$this->checkAreColumns($conditions)) return false;
-                        $this->conditions["equal"][$key]=$cond;
+                        if(array_key_exists('equal', $this->conditions) === false) $this->conditions['equal'] = array();
+                        $this->conditions['equal'][$key] = $cond;
                     }else{
                         if($this->colCheck && !$this->checkAreColumns($cond)) return false;
                         $this->conditions[$key]=$cond;
@@ -806,11 +815,15 @@ class WYSIJA_model extends WYSIJA_object{
      * @param type $arrayColumns
      * @return type
      */
-    function checkAreColumns($arrayColumns){
+    function checkAreColumns($columns){
         if($this->noCheck) return true;
-        foreach($arrayColumns as $columnkey =>$columnValues) {
-            if(!isset($this->columns[$columnkey])){
-                $this->error(sprintf('Column %1$s does not exists in model : %2$s', $columnkey, get_class($this)));
+        foreach($columns as $column => $values) {
+            // skip when column is a comparison key
+            if(in_array($column, $this->comparisonKeys)) continue;
+
+            $columnName = $column;
+            if(!isset($this->columns[$columnName])){
+                $this->error(sprintf('Column %1$s does not exists in model : %2$s', $columnName, get_class($this)));
                 return false;
             }
         }

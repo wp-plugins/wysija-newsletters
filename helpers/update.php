@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
         
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8');
     }
 
     function runUpdate($version){
@@ -137,6 +137,16 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
                 break;
+           case '2.1.8':
+               $mConfig=&WYSIJA::get('config','model');
+               $querys[]='UPDATE `[wysija]user_list` as A set A.sub_date= '.time().' where A.list_id='.$mConfig->getValue('importwp_list_id').';';
+                $errors=$this->runUpdateQueries($querys);
+                if($errors){
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
+                return true;
+                break;
             default:
                 return false;
         }
@@ -182,10 +192,10 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
         
         $noredirect=false;
-        $timeInstalled=time()+3600;
+        $timeInstalled=$config->getValue('installed_time')+3600;
 
         if(current_user_can('switch_themes')){
-            if($config->getValue('installed_time')>$timeInstalled && (!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
+            if(time()>$timeInstalled && (!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
                 if(isset($_REQUEST['action']) && $_REQUEST['action']=='whats_new')  $noredirect=true;
                 if(!$noredirect) {
                     WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');

@@ -310,6 +310,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         if($res['posts']){
             $res['result'] = true;
             foreach($res['posts'] as $k =>$v){
+                if($mConfig->getValue('interp_shortcode'))    $res['posts'][$k]['post_content']=apply_filters('the_content',$res['posts'][$k]['post_content']);
+
                 // get thumbnail
                 $res['posts'][$k]['post_image'] = $helper_articles->getImage($v);
 

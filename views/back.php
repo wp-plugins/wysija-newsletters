@@ -10,6 +10,8 @@ class WYSIJA_view_back extends WYSIJA_view{
     var $action='';
     var $statuses=array();
     var $skip_header = false; // simply returns the wrapper if true
+    var $listingHeader = '';
+    var $hiddenFields = '';
 
     function WYSIJA_view_back(){
         /* the default actions to be linked in a listing */

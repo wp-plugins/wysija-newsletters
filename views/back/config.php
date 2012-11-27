@@ -233,11 +233,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     function tabs($current = 'basics') {
         $tabs = array(
             'basics' => __('Basics', WYSIJA),
+            'subforms' => __('Subscription Form', WYSIJA),
             'emailactiv' => __('Activation Email', WYSIJA),
             'sendingmethod' => __('Sending Method', WYSIJA),
             'advanced' => __('Advanced', WYSIJA),
             'premium' => __('Premium Upgrade', WYSIJA),
         );
+
+        if(!WYSIJA::is_wysija_admin()) unset($tabs['subforms']);
 
         $tabs=apply_filters('wysija_extend_settings', $tabs);
 
@@ -266,6 +269,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
+                <div id="subforms" class="wysija-panel">
+                    <?php if(WYSIJA::is_wysija_admin()) $this->subforms(); ?>
+                </div>
                 <div id="emailactiv" class="wysija-panel">
                     <?php $this->emailactiv(); ?>
                     <p class="submit">
@@ -291,8 +297,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                 echo apply_filters('wysija_extend_settings_content','',array('viewObj'=>&$this));
                 ?>
-
-
 
                 <p class="submitee">
                     <?php $this->secure(array('action'=>"save")); ?>
@@ -341,13 +345,137 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         <table class="form-table">
             <tbody>
                 <?php
-                echo $this->buildMyForm($step,$modelC->values,"config");
+                echo $this->buildMyForm($step,$modelC->values,'config');
                 ?>
             </tbody>
         </table>
         <?php
     }
 
+    function subforms(){
+        $mUserField=&WYSIJA::get('user_field','model');
+        $mUserField->orderBy('field_id');
+        $customFields=$mUserField->getRows(false);
+        ?>
+        <a id="wj-create-new-form" class="button-secondary"><?php echo __('New form',WYSIJA);?></a>
+        <?php
+        $wysija_forms=json_decode(get_option('wysija_forms'),true);
+
+        if(empty($wysija_forms)){
+            $wysija_forms=array();
+            $defaultForm=array(
+                'id'=>'default-form',
+                'name'=>__('Default form',WYSIJA),
+                'blocks'=>array(
+                    0=>array('fields'=> array(
+                                0=>array('type'=>'email', 'params'=>array('label'=>__('Email',WYSIJA)))
+                            )
+                        ),
+                    1=>array('fields'=> array(
+                                0=>array('type'=>'submit', 'params'=>array('label'=>__('Subscribe!',WYSIJA)))
+                            )
+                        ),
+                    )
+                );
+            $wysija_forms['default-form']=$defaultForm;
+            WYSIJA::update_option('wysija_forms',json_encode($wysija_forms));
+        }
+
+        ?>
+        <script type="text/javascript">var wysijaForms=<?php echo json_encode($wysija_forms); ?>;</script>
+            <select id="list-forms" name="wysija[profiles][forms]">
+                <option value=""><?php echo __('Edit a form...',WYSIJA) ?></option>
+                <?php
+                foreach($wysija_forms as $wj_form){
+                    echo '<option value="'.$wj_form['id'].'">'.$wj_form['name'].'</option>';
+                }
+                ?>
+            </select>
+
+        <hr/>
+        <div id="wj-forms-editor" class="clearfix">
+            <div id="wj-form-edit-drag">
+                <div id="wj-form-name">Edit <span id="wj-edit-form-name">
+                        <span id="wj-form-name-label"></span>
+                        <input type="text" id="wj-form-name-value" name="wysija[profiles][form][name]" value=""/>
+                        <input type="hidden" id="wj-form-id-value" name="wysija[profiles][form][id]" value=""/>
+                    </span>
+                </div>
+                <div id="wj-currentform"></div>
+                <div id="general-part">
+                    <div class="list-selection"><p><?php _e('Add subscribers to these lists:',WYSIJA) ?></p><?php
+                    $fieldHTML= '';
+
+                    $modelList=&WYSIJA::get('list','model');
+                    $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
+                    foreach($lists as $list){
+                        $checked=false;
+                        //if(in_array($list['list_id'], $valuefield)) $checked=true;
+                        $formObj=&WYSIJA::get('forms','helper');
+                        $fieldHTML.= '<p class="labelcheck listcheck"><label for="listid-'.$list['list_id'].'">'.$formObj->checkbox( array('id'=>'listid-'.$list['list_id'],
+                                    'name'=>'wysija[profiles][form][lists][]', 'class'=>''),
+                                        $list['list_id'],$checked).$list['name'].'</label></p>';
+                        $fieldHTML.='<input type="hidden" name="wysija[profiles][form][list_name]['.$list['list_id'].']'.'" value="'.$list['name'].'" />';
+                    }
+                    echo $fieldHTML;
+
+                    ?></div>
+                    <p class="submit">
+                    <a href="javascript:;" id="forms-save" class="button-primary wysija" ><?php echo esc_attr(__('Save',WYSIJA)); ?></a>
+                    <a href="javascript:;" id="form-delete"><?php echo esc_attr(__('Delete',WYSIJA)); ?></a>
+                    </p>
+                </div>
+            </div>
+            <div id="wysija_toolbar">
+                <ul class="wysija_toolbar_tabs">
+                    <li class="wjt-content">
+                        <a class="selected" href="javascript:;" rel="#wj_content"><?php _e('Content',WYSIJA)?></a>
+                    </li>
+                </ul>
+
+                <!-- CONTENT BAR -->
+                <ul id="wj_content" class="wj-tab-inner" >
+                    <?php
+
+                    foreach($customFields as $cfield){
+                        echo '<li class="wj_element"><a class="wysija_item" id="'.$cfield['column_name'].'" wysija_type="text">'.$cfield['name'].'</a></li>';
+                    }
+                    $extraTypes=array(
+                        'list-selection'=>array('label'=>__('List selection',WYSIJA),'type'=>'lists'),
+                        'text-instructions'=>array('label'=>__('Random text or instructions',WYSIJA),'type'=>'instructions'),
+                        'divider'=>array('label'=>__('Divider',WYSIJA),'type'=>'divider'));
+                    foreach($extraTypes as $key=>$data){
+                        echo '<li class="wj_element"><a class="wysija_item" id="'.$key.'" wysija_type="'.$data['label'].'">'.$data['label'].'</a></li>';
+                    }
+
+                    add_filter('wysija_premium_fields_soon',array($this,'premiumSoonFields'),1);
+                    echo apply_filters('wysija_premium_fields_soon', '');
+                    ?>
+                </ul>
+
+                <div id="wysija_notices" style="display:none;"><span id="wysija_notice_msg"></span><img alt="loader" style="display:none;" id="ajax-loading" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+            </div>
+        </div>
+        <?php
+    }
+    function premiumSoonFields(){
+        $html='';
+        $html.='<li class="wj_element notice">'.str_replace(array('[link]','[/link]'), array('<a href="javascript:;" class="premium-tab">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJA)).'</li>';
+        $extraTypes=array(
+                        'new-text'=>array('label'=>__('Text or number',WYSIJA),'type'=>'text'),
+                        'new-textarea'=>array('label'=>__('Paragraph text',WYSIJA),'type'=>'textarea'),
+                        'new-date'=>array('label'=>__('Date or birthday',WYSIJA),'type'=>'date'),
+                        'new-radio'=>array('label'=>__('Radio buttons',WYSIJA),'type'=>'radio'),
+                        'new-checkbox'=>array('label'=>__('Checkboxes',WYSIJA),'type'=>'checkbox'),
+                        'new-dropdown'=>array('label'=>__('Dropdown list',WYSIJA),'type'=>'dropdown'),
+                        'new-image'=>array('label'=>__('Image',WYSIJA),'type'=>'image'),
+                        'new-file'=>array('label'=>__('File',WYSIJA),'type'=>'file'),
+                        'new-country'=>array('label'=>__('Country, State or Province',WYSIJA),'type'=>'country'));
+        foreach($extraTypes as $key=>$data){
+            $html.='<li class="wj_element"><a class="wysija_item disabled" id="'.$key.'" wysija_type="'.$data['label'].'">'.$data['label'].'</a></li>';
+        }
+        return $html;
+    }
 
     function emailactiv(){
         $step=array();
@@ -650,7 +778,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         <?php
                             $field=__('Send...',WYSIJA);
 
-                            echo $field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">','</a>'),__('Your web host\'s has limits. We suggest 70 emails per 15 minutes to be safe. [link]Find out more[/link] on support.wysija.com',WYSIJA)).'</p>';
+                            echo $field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">','</a>'),__('Your web host\'s has limits. We suggest 70 emails per hour to be safe. [link]Find out more[/link] on support.wysija.com',WYSIJA)).'</p>';
                         ?>
                     </th>
                     <td colspan="2">
@@ -708,6 +836,11 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Reply-to name & email',WYSIJA),
             'desc'=>__('You can change the default reply-to name and email for your newsletters. This option is also used for the activation emails and Admin notifications (in Basics).',WYSIJA));
 
+        $step['bounce_email']=array(
+            'type'=>'input',
+            'label'=>__('Bounce Email',WYSIJA),
+            "desc"=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
+            'link'=>'<a class="premium-tab" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
 
         $step=apply_filters('wysija_settings_advanced', $step);
 
@@ -816,7 +949,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                ),
            'themes'=>array(
                'title'=>__('Download more beautiful themes.',WYSIJA),
-               'desc'=>__('We work with top notch designers. The latest and prettiest are exclusive.',WYSIJA)
+               'desc'=>__('We work with top notch designers. The latest and prettiest are exclusive. [link]View them on our site.[/link]',WYSIJA),
+               'link'=>'http://www.wysija.com/newsletter-templates-wordpress/?utm_source=wpadmin&utm_campaign=premiumtab'
                ),
            'support'=>array(
                'title'=>__('Fast and efficient support.',WYSIJA),

@@ -9,10 +9,11 @@ class WYSIJA_control_front extends WYSIJA_control{
         parent::WYSIJA_control();
         $_REQUEST   = stripslashes_deep($_REQUEST);
         $_POST   = stripslashes_deep($_POST);
+        $this->action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : 'index';
     }
 
     function save(){
-        
+
         $this->requireSecurity();
         /* see if it's an update or an insert */
         /*get the pk and its value as a conditions where pk = pkval*/
