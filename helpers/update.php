@@ -194,7 +194,8 @@ class WYSIJA_help_update extends WYSIJA_object{
         $noredirect=false;
         $timeInstalled=$config->getValue('installed_time')+3600;
 
-        if(current_user_can('switch_themes')){
+        if(current_user_can('switch_themes') ){
+            if(isset($_REQUEST['action']) && $_REQUEST['action']=='activate-plugin') return;
             if(time()>$timeInstalled && (!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
                 if(isset($_REQUEST['action']) && $_REQUEST['action']=='whats_new')  $noredirect=true;
                 if(!$noredirect) {
