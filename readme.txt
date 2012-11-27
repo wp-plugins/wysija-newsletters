@@ -362,7 +362,167 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 = 2.0 - 2012-06-15 =
 
-* A whole lot of things happened since we launched.
+* Added post notifications
+* Added auto responders
+* Added scheduling (send in future)
+* allow subscribers to select lists
+* embed subscription form outside your WordPress site (find code in the widget)
+* Subscription forms compatibility with W3 Total Cache and WP Supercache
+* Load social bookmarks from theme automatically
+* Several bug fixes and micro improvements
+* Ability to send snail mail
 
-= 0.9 - 2011/11/23 =
+= 1.1.5 - 2012-05-21 =
+
+* improved report after importing csv
+* fixed Warning: sprintf() /helpers/back.php on some environnements
+* fixed roles for creating newsletters or managing subscribers "parent roles can edit as well as child roles if a child role is selected"
+* fixed cron wysija's frequencies added in a cleaner way to avoid conflict with other plugins
+* fixed w3c validation on confirmation and unsubscription page
+* improved avoiding duplicates on environment with high sending frequencies
+* removed php show errors lost in resolveConflicts
+
+= 1.1.4 - 2012-05-14 =
+
+* added last name to recipient name in header
+* fixed automatic redirection for https links in newsletter
+* fixed conflict with Advanced Custom Fields (ACF) plugin in the newsletter editor
+* fixed conflict with the WpToFacebook plugin
+* fixed validation on import of addresses with trim
+* fixed dysfunctional unsubscribe link when Google Analytics campaign inserted
+* added alphanumeric validation on Google Analytics input
+* display clicked links in stats without Google Analytics parameters
+* fixed page/post newsletter subscription widget when javascript conflict returns base64 string
+* fixed WP users synch when subscriber with same email already exists
+* fixed encoded url recorded in click stats
+* added sending status In Queue to differentiate with Not Sent
+* fixed automatic bounce handling
+* added custom roles and permissions
+
+= 1.1.3 - 2012-03-31 =
+
+* fixed unsubscribe link redirection
+* fixed rare issue preventing Mac users from uploading images
+* added Norwegian translation
+* added Slovak translation
+
+= 1.1.2 - 2012-03-26 =
+
+* fixed automatically recreates the subscription page when accidentally deleted
+* fixed more accurate message about folder permissions in wp-content/uploads
+* fixed possibility to delete synchronisable lists
+* fixed pagination on subscribers lists' listing
+* fixed google analytics tracking code
+* fixed relative path to image in newsletter now forced to absolute path
+* fixed widget alignment when labels not within field default value is now within field
+* fixed automatic bounce handling error on some server.
+* fixed scripts enqueuing in frontend, will print as long as there is a wp_footer function call in your theme
+* fixed theme manager returns error on install
+* fixed conflict with the SmallBiz theme
+* fixed conflict with the Events plugin (wp-events)
+* fixed conflict with the Email Users plugin (email-users)
+* fixed outlook 2007 rendering issue
+
+= 1.1.1 - 2012-03-13 =
+
+* fixed small IE8 and IE9 compatibility issues
+* fixed fatal error for new installation
+* fixed wysija admin white screen on wordpres due to get_current_screen function
+* fixed unsubscribe link disappearing because of qtranslate fix
+* fixed old separators just blocked the email wizard
+* fixed unsubscribe link disappearing because of default color
+* fixed settings panel redirection
+* fixed update error message corrected :"An error occured during the update" sounding like update failed even though it succeeded
+* fixed rendering of aligned text
+* fixed daily report email information
+* fixed export: first line with comma, the rest with semi colon now is all semi colon
+* fixed filter by list on subscribers when going on next pages with pagination
+* fixed get_avatar during install completely irrelevant
+* fixed wordpress post in editor when an article had an image with height 0px
+* fixed when domain does not exist, trying to send email, we need to flag it as undelivered after 3 tries and remove it from the queue
+* fixed user tags [user:firstname | defaul:subscriber] left over when sent through queue and on some users
+* fixed get_version when wp-admin folder doesn't exist...
+* fixed Bulk Unsubscribe from all list "why can't I add him"
+
+= 1.1 - 2012/03/03 =
+
+* support for first and last names
+* 14 new themes. First Premium themes
+* added social bookmarks widget
+* added new divider widget
+* added first name and last name feature in subscription form, newsletter content and email subject
+* header is now image only and not text/image
+* small changes in Styles tab of visual editor
+* new full width footer image area (600px)
+* added transparency feature to header, footer, newsletter
+* newsletter width for content narrowed to 564px
+* improved line-height for titles in text editor
+* fixed Outlook and Hotmail padding issue with images
+* improved speed of editor
+* possibility to import automatically and keep in Sync lists from all major plugins: MailPress, Satollo, WP-Autoresponder, Tribulant, Subscribe2, etc.
+* possibility to change "Unsubscribe" link text in footer
+* choose which role can edit subscribers
+* preview of newsletter in new window and not in popup
+* added possibility to choose between excerpt or full article on inserting WP post
+* theme management with API. Themes are now externalized from plugin.
+* removed numbered lists from text editor because of inconsistent display, notably Outlook
+
+= 1.0.1 - 2012/01/18 =
+
+* added SMTP TLS support, useful for instance with live.com smtp
+* added support for special Danish chars in email subscriptions
+* fixed menu position conflict with other themes and plugins
+* fixed subscription form works with jquery 1.3, compatible for themes that use it
+* fixed issue of drag & drop of WP post not working with php magic quotes
+* fixed permissions issue. Only admins could use the plugin despite changing the permissions in Settings > Advanced.
+* fixed display of successful subscription in widget displays better in most theme
+* fixed synching of WordPress user registering through frontend /wp-login.php?action=register
+* fixed redirection unsubscribe link from preview emails
+* fixed cross site scripting security threat
+* fixed pagination on newsletter statistics's page
+* fixed javascript conflict with Tribulant's javascript's includes
+* improved detection of errors during installation
+
+= 1.0 - 2011/12/23 =
+* Premium upgrade available
+* fix image selector width in editor
+* fix front stats of email when email preview and show errors all
+* fix front stats of email when show errors all
+* fix import ONLY subscribed from external plugins such as Tribulant or Satollo
+* fix retrieve wp.posts when time is different on mysql server and apache server
+* fix changing encoding from utf8 to another was not sending
+* newsletter background colour now displays in new Gmail
+* less confusing queue sending status
+* updated language file (pot) with 20 or so modifications
+
+= 0.9.6 - 2011/12/18 =
+* fixed subscribe from a wysija confirmation page bug
+* fixed campaigns "Column does not exists in model .."
+* fixed address and unsubscribe links appearing at bottom of newsletter a second time
+* fixed menu submenu no wysija but newsletters no js
+* fixed bug statistics opened_at not inserted
+* fixed bug limit subscribers updated on subscribers delete
+* fixed daily cron scandir empty dir
+* fixed subscribe from frontend without javascript error
+* fixed subscribe IP server validation when trying in local
+* fixed CSS issues with Wordpress 3.3
+* improving interface of email sending in the newsletter's listing
+* added delete newsletter option
+* added language pot file
+* added french translation
+
+= 0.9.2 - 2011/12/12 =
+* fixed issue with synched users on multisite(each site synch its users only)
+* fixed compatibility issue with wordpress 3.3(thickbox z-index)
+* fixed issue with redundant messages after plugin import
+* fixed version number display
+
+= 0.9.1 - 2011/12/7 =
+* fixed major issue with browser check preventing Safari users from using the plugin
+* fixed issue with wp_attachment function affecting Wordpress post insertion
+* fixed issue when importing subscribers (copy/paste from Gmail)
+* fixed issue related to Wordpress MU
+* minor bugfixes
+
+= 0.9 - 2011/12/23 =
 * Hello World.
