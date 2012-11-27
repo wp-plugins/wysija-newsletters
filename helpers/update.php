@@ -195,11 +195,15 @@ class WYSIJA_help_update extends WYSIJA_object{
         $timeInstalled=$config->getValue('installed_time')+3600;
 
         if(current_user_can('switch_themes') ){
-            if(isset($_REQUEST['action']) && $_REQUEST['action']=='activate-plugin') return;
-            if(time()>$timeInstalled && (!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
-                if(isset($_REQUEST['action']) && $_REQUEST['action']=='whats_new')  $noredirect=true;
+            if(isset($_REQUEST['action']) && $_REQUEST['action']=='activate-plugin') $noredirect=true;
+            if((!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
+                if(isset($_REQUEST['action']) && in_array($_REQUEST['action'], array('whats_new','welcome_new')))  $noredirect=true;
                 if(!$noredirect) {
-                    WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
+                    if(time()>$timeInstalled){
+                        WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
+                    }else{
+                        WYSIJA::redirect('admin.php?page=wysija_campaigns&action=welcome_new');
+                    }
 
                     $mConfig=&WYSIJA::get('config','model');
                     $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
