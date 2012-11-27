@@ -17,8 +17,8 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $controller='subscribers';
                 }else $controller=$_REQUEST['controller'];
 
-
-                if(!empty($_SERVER['HTTP_HOST'])){
+                $mConfig=&WYSIJA::get('config','model');
+                if(!$mConfig->getValue('relative_ajax') && !empty($_SERVER['HTTP_HOST'])){
                     $siteurl=get_site_url();
                     /*try to find the domain part in the site url*/
                     if(strpos($siteurl, $_SERVER['HTTP_HOST'])===false){
@@ -52,7 +52,6 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 }else{
                     $ajaxurl=admin_url( 'admin-ajax.php', 'relative' );
                 }
-
 
 
                 $this->paramsajax=array(
@@ -119,7 +118,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
             ,'labelswithin'=>array('core'=>1,'default'=>true,'label'=>__('Display labels in inputs',WYSIJA),'hidden'=>1)
             ,'submit' =>array('core'=>1,'label'=>__('Button label:',WYSIJA),'default'=>__('Subscribe!',WYSIJA))
             ,'success'=>array('core'=>1,'label'=>__('Success message:',WYSIJA),'default'=>$successmsg)
-            ,'iframe'=>array('core'=>1,'label'=>__('Get iframe version',WYSIJA))
+            ,'iframe'=>array('core'=>1,'label'=>__('iframe version',WYSIJA))
             /*,"php"=>array("core"=>1,"label"=>__('Get php version',WYSIJA))*/
         );
     }
@@ -339,28 +338,37 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     $fieldHTML=$textareas=$labels='';
                     $fieldParams['nolabel']=1;
                     if((isset($instance['submit']))){
-                        $fieldstype=array('iframe'=>__('Get iFrame version',WYSIJA),'php'=>__('Get PHP version',WYSIJA));
+                        $fieldstype=array('iframe'=>__('iFrame version',WYSIJA),'php'=>__('PHP version',WYSIJA),'html'=>__('HTML version',WYSIJA));
 
                         $i=0;
                         $snippets = '';
                         foreach($fieldstype as $myfield=>$mytitle){
-                            if($myfield=='iframe') {
-                                $scriptCloseOther='document.getElementById(\''.$this->get_field_id('php').'\').style.display=\'none\';';
-                                $valuefield=$this->genIframe($instance,true);
+
+                            switch($myfield){
+                                case 'iframe':
+                                    $valuefield=$this->genIframe($instance,true);
+                                    $scriptCloseOther='document.getElementById(\''.$this->get_field_id('php').'\').style.display=\'none\';';
+                                    $scriptCloseOther.='document.getElementById(\''.$this->get_field_id('html').'\').style.display=\'none\';';
+                                    break;
+                                case 'php':
+                                    $valuefield=$this->genPhp($instance,true);
+                                    $scriptCloseOther='document.getElementById(\''.$this->get_field_id('html').'\').style.display=\'none\';';
+                                    $scriptCloseOther.='document.getElementById(\''.$this->get_field_id('iframe').'\').style.display=\'none\';';
+                                    break;
+                                case 'html':
+                                    $valuefield=$this->genHtml($instance,true);
+                                    $scriptCloseOther='document.getElementById(\''.$this->get_field_id('php').'\').style.display=\'none\';';
+                                    $scriptCloseOther.='document.getElementById(\''.$this->get_field_id('iframe').'\').style.display=\'none\';';
+                                    break;
                             }
-                            else{
-                                $scriptCloseOther='document.getElementById(\''.$this->get_field_id('iframe').'\').style.display=\'none\';';
-                                $valuefield=$this->genPhp($instance,true);
-                            }
+
                             $scriptlabel=' style="color:#456465;text-decoration:underline;" onClick="'.$scriptCloseOther.'document.getElementById(\''.$this->get_field_id($myfield).'\').style.display = (document.getElementById(\''.$this->get_field_id($myfield).'\').style.display != \'none\' ? \'none\' : \'block\' );" ';
                             $labels.='<label for="'.$this->get_field_id($myfield).'" '.$scriptlabel.'>'.$mytitle.'</label>';
-                            if($i<=0)$labels.=' | ';
+                            if($i<=1)$labels.=' | ';
                             $snippets .= '<div id="'.$this->get_field_id($myfield).'" style="margin:5px 0 5px 0;overflow:auto;display:none;width:404px;height:120px;background-color:#fff;border:1px solid #dfdfdf;color:#333;">'.nl2br(htmlentities($valuefield)).'</div>';
                             $i++;
                         }
                         $fieldHTML='<div>'.$labels.'</div>'.$snippets;
-
-
                     }
 
                     break;
@@ -437,6 +445,14 @@ class WYSIJA_NL_Widget extends WP_Widget {
         $phpcode.='echo $subscriptionForm;'."\n";
 
         return $phpcode;
+        //$fieldHTML='<div class="widget-control-actions">';
+    }
+
+    function genHtml($instance,$externalsite=false){
+        $this->coreOnly=true;
+        $htmlreturn=$this->widget(array('widget_id'=>  uniqid('html')), $instance);
+        $this->coreOnly=false;
+        return $htmlreturn;
         //$fieldHTML='<div class="widget-control-actions">';
     }
 

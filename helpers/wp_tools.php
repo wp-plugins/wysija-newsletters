@@ -147,10 +147,9 @@ class WYSIJA_help_wp_tools extends WYSIJA_object{
                 $params[$splitkeyval[0]]=$splitkeyval[1];
             }
         }
-
-
+        $url = sprintf('%s://%s%s', $paramsquery['scheme'], $paramsquery['host'], $paramsquery['path']);
         if($params){
-            if (strpos($url, '?') !== false) $charStart='&';
+            if(strpos($url, '?') !== false) $charStart='&';
             else $charStart='?';
             $url.=$charStart;
             $paramsinline=array();
@@ -159,6 +158,11 @@ class WYSIJA_help_wp_tools extends WYSIJA_object{
                 $paramsinline[]=$k.'='.$v;
             }
             $url.=implode('&',$paramsinline);
+        }
+
+        $parsed_url = parse_url($url);
+        if (empty($parsed_url['scheme'])) {
+            $url = get_bloginfo('url') . $url;
         }
         return $url;
     }

@@ -672,6 +672,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                         }
                     }
                 }else{
+
+                    $urlreuse=trim($urlreuse);
                     if($modelConf->getValue('urlstats_base64')){
                         $cururl=base64_encode($urlreuse);
                     }else{
@@ -714,7 +716,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 		$heightsize = $heights[0];
 		$width = empty($widthsize) ? '' : ' width="'.$widthsize.'" ';
 		$height = empty($heightsize) ? '' : ' height="'.$heightsize.'" ';
-                $modelConf=&WYSIJA::get("config","model");
+                $modelConf=&WYSIJA::get('config','model');
                 $args = array();
                 $args['email_id'] = $email->email_id;
                 $args['user_id'] = $user->user_id;

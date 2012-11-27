@@ -42,7 +42,9 @@ class WYSIJA_help_articles extends WYSIJA_object {
         $modelPosts=&WYSIJA::get('wp_posts','model');
         $posts=$modelPosts->get_posts($args);
         if(empty($posts)) return array();
+        $mConfig=&WYSIJA::get('config','model');
         foreach($posts as $key => $post) {
+            if($mConfig->getValue('interp_shortcode'))    $post['post_content']=apply_filters('the_content',$post['post_content']);
             $posts[$key] = (array)$post;
         }
         return $posts;
@@ -198,6 +200,18 @@ class WYSIJA_help_articles extends WYSIJA_object {
             }
         }
         if(isset($post_image['src'])) {
+
+            if(array_key_exists('height', $post_image) === false || array_key_exists('width', $post_image) === false) {
+                try {
+                    $image_info = getimagesize($post_image['src']);
+                    if($image_info !== false) {
+                        $post_image['width'] = $image_info[0];
+                        $post_image['height'] = $image_info[1];
+                    }
+                } catch(Exception $e) {
+                    return null;
+                }
+            }
             $post_image = array_merge($post_image, array('url' => get_permalink($post['ID'])));
         } else {
             $post_image = null;

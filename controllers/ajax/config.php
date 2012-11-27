@@ -22,6 +22,27 @@ class WYSIJA_control_back_config extends WYSIJA_control{
        @ini_set('display_errors', '0');
     }
 
+    function form_delete(){
+        /*delete an element from wysija_forms option*/
+        $wysija_forms=json_decode(get_option('wysija_forms'),true);
+        unset($wysija_forms[$_POST['formid']]);
+        WYSIJA::update_option('wysija_forms', json_encode($wysija_forms));
+        $this->notice('Form deleted');
+        return true;
+    }
+
+    function form_save(){
+        /*add modify an element in the wysija_forms option*/
+        $arrayData=json_decode(stripslashes($_POST['data']),true);
+        $wysija_forms=json_decode(get_option('wysija_forms'),true);
+        if(isset($wysija_forms[$_POST['formid']]))    unset($wysija_forms[$_POST['formid']]);
+        $wysija_forms[$arrayData['id']]=$arrayData;
+        WYSIJA::update_option('wysija_forms', json_encode($wysija_forms));
+        $this->notice('Form added/modified');
+
+        return json_decode(stripslashes($_POST['data']),true);
+    }
+
     function send_test_mail(){
         $this->_displayErrors();
         /*switch the send method*/

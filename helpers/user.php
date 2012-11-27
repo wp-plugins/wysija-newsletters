@@ -370,19 +370,19 @@ class WYSIJA_help_user extends WYSIJA_object{
             }
         }
         $modelEUR=&WYSIJA::get('user_history','model');
-        $modelEUR->delete(array("user_id"=>$user_ids));
+        $modelEUR->delete(array('user_id'=>$user_ids));
         $modelEUR=&WYSIJA::get('email_user_url','model');
-        $modelEUR->delete(array("user_id"=>$user_ids));
+        $modelEUR->delete(array('user_id'=>$user_ids));
         $modelEUS=&WYSIJA::get('email_user_stat','model');
-        $modelEUS->delete(array("user_id"=>$user_ids));
+        $modelEUS->delete(array('user_id'=>$user_ids));
         $modelUL=&WYSIJA::get('user_list','model');
-        $modelUL->delete(array("user_id"=>$user_ids));
-        $modelU=&WYSIJA::get("queue","model");
-        $modelU->delete(array("user_id"=>$user_ids));
+        $modelUL->delete(array('user_id'=>$user_ids));
+        $modelU=&WYSIJA::get('queue','model');
+        $modelU->delete(array('user_id'=>$user_ids));
         $modelU=&WYSIJA::get('user','model');
-        $emailsarr=$modelU->get(array('email'),array("user_id"=>$user_ids));
+        $emailsarr=$modelU->get(array('email'),array('user_id'=>$user_ids));
         $modelU->reset();
-        $modelU->delete(array("user_id"=>$user_ids));
+        $modelU->delete(array('user_id'=>$user_ids));
         $emails=array();
         foreach($emailsarr as $emobj)   $emails[]=$emobj['email'];
         if(count($user_ids)>1)  $this->notice(sprintf(__(' %1$s subscribers have been deleted.',WYSIJA),count($user_ids)));

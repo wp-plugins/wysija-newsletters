@@ -247,7 +247,8 @@ class WYSIJA extends WYSIJA_object{
                 if(!isset($extensionloaded[$extendedplugin])){
                     //we need to call the config this way otherwise it will loop
                     $config=&WYSIJA::get('config','model',false,'wysija-newsletters',false);
-                    $debugmode=(int)$config->getValue('debug_new');
+                    $debugmode=0;
+                    if(is_object($config) && method_exists($config, 'getValue'))  $debugmode=(int)$config->getValue('debug_new');
                     if($debugmode==0 || ($debugmode>0 && !WYSIJA::is_wysija_admin($debugmode))){
                          load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
                     }
@@ -588,12 +589,15 @@ class WYSIJA extends WYSIJA_object{
     public static function hook_add_WP_subscriber($user_id) {
         $data=get_userdata($user_id);
 
+
         //check first if a subscribers exists if it doesn't then let's insert it
+        $modelC=&WYSIJA::get('config','model');
         $modelUser=&WYSIJA::get('user','model');
         $subscriber_exists=$modelUser->getOne(array('user_id'),array('email'=>$data->user_email));
         $modelUser->reset();
         if($subscriber_exists){
             $uid=$subscriber_exists['user_id'];
+
         }else{
             $modelUser->noCheck=true;
 
@@ -601,12 +605,12 @@ class WYSIJA extends WYSIJA_object{
             $lastname=$data->last_name;
             if(!$data->first_name && !$data->last_name) $firstname=$data->display_name;
 
-            $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>1));
+            $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>$modelC->getValue('confirm_dbleoptin')));
+
         }
 
-        $modelConf=&WYSIJA::get('config','model');
         $modelUL=&WYSIJA::get('user_list','model');
-        $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
+        $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()),true);
 
         $helperUser=&WYSIJA::get('user','helper');
         $helperUser->sendAutoNl($uid,$data,'new-user');
@@ -618,7 +622,7 @@ class WYSIJA extends WYSIJA_object{
 
         //check first if a subscribers exists if it doesn't then let's insert it
         $modelUser=&WYSIJA::get('user','model');
-        $modelConf=&WYSIJA::get('config','model');
+        $modelC=&WYSIJA::get('config','model');
         $modelUL=&WYSIJA::get('user_list','model');
 
         $subscriber_exists=$modelUser->getOne(array('user_id'),array('email'=>$data->user_email));
@@ -634,10 +638,10 @@ class WYSIJA extends WYSIJA_object{
 
             $modelUser->update(array('email'=>$data->user_email,'firstname'=>$firstname,'lastname'=>$lastname),array('wpuser_id'=>$data->ID));
 
-            $result=$modelUL->getOne(false,array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
+            $result=$modelUL->getOne(false,array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id')));
             $modelUL->reset();
             if(!$result)
-                $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
+                $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
         }else{
             /*chck that we didnt update the email*/
             $subscriber_exists=$modelUser->getOne(false,array('wpuser_id'=>$data->ID));
@@ -647,14 +651,14 @@ class WYSIJA extends WYSIJA_object{
 
                 $modelUser->update(array('email'=>$data->user_email,'firstname'=>$firstname,'lastname'=>$lastname),array('wpuser_id'=>$data->ID));
 
-                $result=$modelUL->getOne(false,array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
+                $result=$modelUL->getOne(false,array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id')));
                 $modelUL->reset();
                 if(!$result)
-                    $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
+                    $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
             }else{
                 $modelUser->noCheck=true;
-                $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>1));
-                $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelConf->getValue('importwp_list_id')));
+                $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>$modelC->getValue('confirm_dbleoptin')));
+                $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
             }
         }
         return true;
@@ -670,7 +674,7 @@ class WYSIJA extends WYSIJA_object{
     }
 
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
-
+        //WYSIJA::log('pn_transition_post_bt',debug_backtrace());
         WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status));
         if( $new_status=='publish' && $old_status!=$new_status){
             $modelEmail =& WYSIJA::get('email', 'model');
@@ -767,8 +771,9 @@ class WYSIJA extends WYSIJA_object{
         $mConfig=&WYSIJA::get('config','model');
         $fHelper=&WYSIJA::get('forms','helper');
         $queue_frequency=$fHelper->eachValuesSec[$mConfig->getValue('sending_emails_each')];
-        $bounce_frequency=$fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')];
-        return array('queue'=>$queue_frequency,'bounce'=>$bounce_frequency,'daily'=>86400,'weekly'=>2419200,'monthly'=>604800);
+        $bounce_frequency=99999999999999;
+        if(isset($fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')]))  $bounce_frequency=$fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')];
+        return array('queue'=>$queue_frequency,'bounce'=>$bounce_frequency,'daily'=>86400,'weekly'=>604800,'monthly'=>2419200);
     }
     public static function set_cron_schedule($schedule=false,$lastsaved=0,$set_running=false){
         $cron_schedules=array();
@@ -847,7 +852,7 @@ class WYSIJA extends WYSIJA_object{
         if(!empty($processesToRun)){
             //call the cron url
 
-            $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun);
+            $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
 
             //TODO we should use the http class there
             $hHTTP=&WYSIJA::get('http','helper');
@@ -857,10 +862,14 @@ class WYSIJA extends WYSIJA_object{
     }
 }
 
+
 if(isset($_REQUEST['action']) && $_REQUEST['action']=='wysija_cron'){
-    $hCron=WYSIJA::get('cron','helper');
-    $hCron->run();
-    exit;
+    add_action('init', 'init_wysija_cron',1);
+    function init_wysija_cron(){
+        $hCron=WYSIJA::get('cron','helper');
+        $hCron->run();
+        exit;
+    }
 }
 
 /*user synch moved*/

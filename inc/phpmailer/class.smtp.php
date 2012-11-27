@@ -1037,7 +1037,25 @@ class acymailingSMTP
 	 * @access private
 	 * @return string
 	 */
-	function get_lines() {
+
+        function get_lines() {
+            $data = "";
+            while(!feof($this->smtp_conn)) {
+                $str = @fgets($this->smtp_conn,515);
+                if($this->do_debug >= 4) {
+                    echo "SMTP -> get_lines(): \$data was \"$data\"" . $this->CRLF;
+                    echo "SMTP -> get_lines(): \$str is \"$str\"" . $this->CRLF;
+                }
+                $data .= $str;
+                if($this->do_debug >= 4) {
+                    echo "SMTP -> get_lines(): \$data is \"$data\"" . $this->CRLF;
+                }
+                // if 4th character is a space, we are done reading, break the loop
+                if(substr($str,3,1) == " ") { break; }
+            }
+            return $data;
+        }
+        /*function get_lines() {
 		$data = "";
 		while($str = @fgets($this->smtp_conn,515)) {
 			if($this->do_debug >= 4) {
@@ -1055,7 +1073,7 @@ class acymailingSMTP
 			if(substr($str,3,1) == " ") { break; }
 		}
 		return $data;
-	}
+	}*/
 
 	/**
 	 * Initiate a TLS communication with the server.

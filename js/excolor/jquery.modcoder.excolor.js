@@ -70,7 +70,7 @@ jQuery.fn.modcoder_excolor = function (C) {
         moved_slider = jQuery('script');
         for (var i = 0; i < moved_slider.length; i++) {
             j = '' + jQuery(moved_slider[i]).attr('src');
-            j = j.toLowerCase();
+            //j = j.toLowerCase();
             j = j.split('jquery.modcoder.excolor.js');
             if (j.length == 2) {
                 root_path = j[0]

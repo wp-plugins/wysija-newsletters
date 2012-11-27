@@ -193,14 +193,14 @@ class WYSIJA_model_user extends WYSIJA_model{
     }
 
     function afterDelete(){
-        $helperU=&WYSIJA::get("user","helper");
+        $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
         return true;
     }
 
     function afterInsert($id){
 
-        $helperU=&WYSIJA::get("user","helper");
+        $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
 
         do_action('wysija_subscriber_added', $id);

@@ -202,7 +202,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'weekly'=>__('weekly on...',WYSIJA),
                     'monthly'=>__('monthly on the...',WYSIJA),
                     'monthlyevery'=>__('monthly every...',WYSIJA),
-            'immediate'=>__('immediately when a post is published.',WYSIJA));
+            'immediate'=>__('immediately.',WYSIJA));
 
         unset($dataFrequencyNoImmediate['immediate']);
 
@@ -232,7 +232,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->data['autonl']['fields']=array(
             'event'=>array(
                 'values'=>array(
-                    'new-articles'=>__('there are new posts, send...',WYSIJA),
+                    'new-articles'=>__('there\'s new content, send...',WYSIJA),
                     'subs-2-nl'=>__('someone subscribes to the list...',WYSIJA),
                     'new-user'=>__('a new WordPress user is added to your site...',WYSIJA),
                     ),
@@ -1956,7 +1956,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'show_divider' => 'yes',
             'post_limit' => 5,
             'cpt' => 'post',
-            'nopost_message' => __('No new posts.', WYSIJA),
+            'nopost_message' => __('Latest content already sent.', WYSIJA),
             'bgcolor1' => null,
             'bgcolor2' => null
         );

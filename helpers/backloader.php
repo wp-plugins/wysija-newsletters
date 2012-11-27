@@ -8,10 +8,10 @@ class WYSIJA_help_backloader extends WYSIJA_help{
         parent::WYSIJA_help();
     }
     function initLoad(&$controller){
-        wp_enqueue_style('wysija-admin-css', WYSIJA_URL."css/admin.css",array(),WYSIJA::get_version());
-        wp_enqueue_script('wysija-admin', WYSIJA_URL."js/admin.js", array( 'jquery' ), true, WYSIJA::get_version());
+        wp_enqueue_style('wysija-admin-css', WYSIJA_URL.'css/admin.css',array(),WYSIJA::get_version());
+        wp_enqueue_script('wysija-admin', WYSIJA_URL.'js/admin.js', array( 'jquery' ), true, WYSIJA::get_version());
         
-        wp_enqueue_script('wysija-admin-if', WYSIJA_URL."js/admin-wysija.js", array( 'jquery' ),WYSIJA::get_version());
+        wp_enqueue_script('wysija-admin-if', WYSIJA_URL.'js/admin-wysija.js', array( 'jquery' ),WYSIJA::get_version());
 
         if(!$controller->jsTrans){
             $controller->jsTrans["selecmiss"]=__('Please make a selection first!',WYSIJA);

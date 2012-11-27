@@ -18,11 +18,11 @@ class WYSIJA_help_front extends WYSIJA_help{
                 $paramscontroller=$_REQUEST['controller'];
 
                 if($paramscontroller=='stat') $paramscontroller='stats';
-                $this->controller=&WYSIJA::get($paramscontroller,"controller");
+                $this->controller=&WYSIJA::get($paramscontroller,'controller');
                 if(method_exists($this->controller, $_REQUEST['action'])){
                     add_action('init',array($this->controller,$_REQUEST['action']));
 
-                }else $this->error("Action does not exists.");
+                }else $this->error('Action does not exists.');
                 if(isset($_REQUEST['wysija-page'])){
                     
                       add_filter('wp_title', array($this,'meta_page_title'));
@@ -30,7 +30,7 @@ class WYSIJA_help_front extends WYSIJA_help{
                     add_filter( 'the_title', array($this,'scan_title'));
                     add_filter( 'the_content', array($this,'scan_content'));
                     if(isset($_REQUEST['message_success'])){
-                        add_filter( 'the_content', array($this,'scan_content_NLform') );
+                        add_filter( 'the_content', array($this,'scan_content_NLform'),99 );
                     }
                 }
                 if(isset($_REQUEST['wysija-page'])){
@@ -40,12 +40,12 @@ class WYSIJA_help_front extends WYSIJA_help{
                     add_filter( 'the_title', array($this,'scan_title'));
                     add_filter( 'the_content', array($this,'scan_content'));
                     if(isset($_REQUEST['message_success'])){
-                        add_filter( 'the_content', array($this,'scan_content_NLform') );
+                        add_filter( 'the_content', array($this,'scan_content_NLform'),99 );
                     }
                 }
             }
         }else{
-           add_filter( 'the_content', array($this,'scan_content_NLform') );
+           add_filter( 'the_content', array($this,'scan_content_NLform'),99 );
 
         }
 

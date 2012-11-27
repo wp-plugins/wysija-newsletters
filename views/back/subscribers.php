@@ -724,7 +724,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                     <p class="description"><?php echo str_replace(array("[link]","[/link]"),array('<a target="_blank" href="http://support.wysija.com/knowledgebase/importing-subscribers-with-a-csv-file/?utm_source=wpadmin&utm_campaign=import">','</a>'),__('This needs to be in CSV style or a simple paste from Gmail, Hotmail or Yahoo. See [link]examples in our support site[/link].',WYSIJA)) ?></p>
                                 </th>
                                 <td>
-                                    <textarea type="text" cols="130" rows="10" class="validate[required]" id="csvtext" name="wysija[user_list][csv]" /></textarea>
+                                    <textarea type="text" style="width:500px;" cols="130" rows="10" class="validate[required]" id="csvtext" name="wysija[user_list][csv]" /></textarea>
                                     <p class="fieldsmatch"></p>
                                 </td>
                             </tr>
