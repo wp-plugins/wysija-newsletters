@@ -25,6 +25,67 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     }
 
+    function fieldFormHTML_commentform($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get('forms','helper');
+        $checked=false;
+        if($this->model->getValue($key))   $checked=true;
+        $fieldHTML='<p style="float:left;"><label for="'.$key.'">';
+        $fieldHTML.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
+        $fieldHTML.='</label>';
+        $value=$this->model->getValue($key.'_linkname');
+
+        $fieldHTML.='<div id="'.$key.'_linkname'.'" class="linknamecboxes">';
+        $fieldHTML.=$formsHelp->input(array('name'=>'wysija['.$model.']['.$key.'_linkname]', 'size'=>'75'),$value).'</p>';
+        $modelList=&WYSIJA::get('list','model');
+        $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
+        $valuefield=$this->model->getValue($key.'_lists');
+        if(!$valuefield) $valuefield=array();
+        foreach($lists as $list){
+            if(in_array($list['list_id'], $valuefield)) $checked=true;
+            else $checked=false;
+
+            $fieldHTML.= '<p class="labelcheck"><label for="list-'.$list['list_id'].'">'.$formsHelp->checkbox( array('id'=>'list-'.$list['list_id'],
+                        'name'=>'wysija[config]['.$key.'_lists][]', 'class'=>'validate[minCheckbox[1]]'),
+                            $list['list_id'],$checked).$list['name'].'</label></p>';
+        }
+        $fieldHTML.='</div>';
+
+
+        return $fieldHTML;
+    }
+
+    function fieldFormHTML_managesubscribe($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get('forms','helper');
+        $checked=false;
+        if($this->model->getValue($key))   $checked=true;
+        $fieldHTML='<p style="float:left;"><label for="'.$key.'">';
+        $fieldHTML.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
+        $fieldHTML.='</label>';
+        $value=$this->model->getValue($key.'_linkname');
+
+        $fieldHTML.='<div id="'.$key.'_linkname'.'" class="linknamecboxes">';
+        $fieldHTML.=$formsHelp->input(array('name'=>'wysija['.$model.']['.$key.'_linkname]', 'size'=>'75'),$value).'</p>';
+        $fieldHTML.='<p style="margin-bottom:0px;">'.__('Subscribers can choose from these lists :',WYSIJA).'</p>';
+        $modelList=&WYSIJA::get('list','model');
+        $lists=$modelList->get(array('name','list_id','is_public'),array('is_enabled'=>1));
+
+
+        foreach($lists as $list){
+            if($list['is_public']) $checked=true;
+            else $checked=false;
+
+            $fieldHTML.= '<p class="labelcheck"><label for="'.$key.'list-'.$list['list_id'].'">'.$formsHelp->checkbox( array('id'=>$key.'list-'.$list['list_id'],
+                        'name'=>'wysija[config]['.$key.'_lists][]'),
+                            $list['list_id'],$checked).$list['name'].'</label></p>';
+        }
+        $fieldHTML.='</div>';
+
+
+        return $fieldHTML;
+    }
+
     function fieldFormHTML_viewinbrowser($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
         $formsHelp=&WYSIJA::get('forms','helper');
@@ -234,8 +295,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $tabs = array(
             'basics' => __('Basics', WYSIJA),
             'subforms' => __('Subscription Form', WYSIJA),
-            'emailactiv' => __('Activation Email', WYSIJA),
-            'sendingmethod' => __('Sending Method', WYSIJA),
+            'emailactiv' => __('Signup Confirmation', WYSIJA),
+            'sendingmethod' => __('Send With...', WYSIJA),
             'advanced' => __('Advanced', WYSIJA),
             'premium' => __('Premium Upgrade', WYSIJA),
         );
@@ -316,20 +377,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['company_address']=array(
             'type'=>'textarea',
             'label'=>__("Your company's address",WYSIJA),
-            'desc'=>__("The address will be added to your newsletters' footer. This helps avoid spam filters.",WYSIJA),
+            'desc'=>__("The address will be added to your newsletter's footer. This helps avoid spam filters.",WYSIJA),
             'rows'=>"3",
             'cols'=>"40",);
 
         $step['emails_notified']=array(
             'type'=>'email_notifications',
             'label'=>__('Email notifications',WYSIJA),
-            'desc'=>__('Put in the emails of the person who should received all notifications, comma separated.',WYSIJA));
+            'desc'=>__('Enter the email addresses that should receive notifications (separate by comma).',WYSIJA));
 
         $step['from_name']=array(
             'type'=>'fromname',
             'class'=>'validate[required]',
-            'label'=>__('From name & email',WYSIJA),
-            'desc'=>__("The plugin sends automated notifications, but also to your subscribers, like the subscription activation email. Put in the name that should show up in these emails.",WYSIJA));
+            'label'=>__('Sender of notifications',WYSIJA),
+            'desc'=>__("Choose a FROM name and email address for notifications emails.",WYSIJA));
 
         /* TODO add for rooster
         $step['sharedata']=array(
@@ -482,8 +543,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['confirm_dbleoptin']=array(
             'type'=>'radio',
             'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
-            'label'=>__('Send Activation Email',WYSIJA),
-            'desc'=>__('Subscribers will not receive any emails until they activate their subscriptions. Keep this activated to stop fake subscriptions by humans and robots.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/why-you-should-enforce-email-activation/?utm_source=wpadmin&utm_campaign=activation email" target="_blank">'.__("Read more on support.wysija.com",WYSIJA)."</a>");
+            'label'=>__('Enable activation email',WYSIJA),
+            'desc'=>__('Prevent fake signups by sending activation emails to your subscribers.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/why-you-should-enforce-email-activation/?utm_source=wpadmin&utm_campaign=activation email" target="_blank">'.__("Learn more.",WYSIJA)."</a>");
 
         $step['confirm_email_title']=array(
             'type'=>'input',
@@ -542,7 +603,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field='<label for="'.$id.'" class="clearfix">';
                             $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='<h3>'.__('Your own website',WYSIJA).'</h3></label>';
-                            $field.='<p>'.__('The simplest of all solutions for small lists. Your host sets the limit of emails per day.',WYSIJA).'</p>';
+                            $field.='<p>'.__('The simplest solution for small lists. Your web host sets a daily email limit.',WYSIJA).'</p>';
                             echo $field;
                         ?>
                     </th>
@@ -569,7 +630,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $field ='<label for="'.$id.'" class="clearfix">';
                             $field.= $formsHelp->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
                             $field.= '<h3>'.__('SMTP',WYSIJA).'</h3></label>';
-                            $field.='<p>'.__('Perfect for sending with a professional SMTP provider, which we highly recommended for big and small lists. We negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=sending method" target="_blank">'.__('Read more on support.wysija.com',WYSIJA).'</a></p>';
+                            $field.='<p>'.__('Send with a professional SMTP provider, a great choice for big and small lists. We\'ve negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=sending method" target="_blank">'.__('Read more',WYSIJA).'</a>.</p>';
                             echo $field;
                         ?>
                     </th>
@@ -778,7 +839,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         <?php
                             $field=__('Send...',WYSIJA);
 
-                            echo $field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">','</a>'),__('Your web host\'s has limits. We suggest 70 emails per hour to be safe. [link]Find out more[/link] on support.wysija.com',WYSIJA)).'</p>';
+                            echo $field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/" target="_blank">','</a>'),__('Your web host has limits. We suggest 70 emails per hour to be safe. [link]Find out more[/link].',WYSIJA)).'</p>';
                         ?>
                     </th>
                     <td colspan="2">
@@ -839,13 +900,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['bounce_email']=array(
             'type'=>'input',
             'label'=>__('Bounce Email',WYSIJA),
-            "desc"=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
+            'desc'=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
             'link'=>'<a class="premium-tab" href="javascript:;" title="'.__("Purchase the premium version.",WYSIJA).'">');
 
         $step=apply_filters('wysija_settings_advanced', $step);
 
         $modelU=&WYSIJA::get('user','model');
         $objUser=$modelU->getCurrentSubscriber();
+
+
+        $step['commentform']=array(
+            'type'=>'commentform',
+            'label'=>__('Subscribe in comments',WYSIJA),
+            'desc'=>__('Visitors who submit a comment on a post can click on a checkbox to subscribe.',WYSIJA),
+            );
 
         $step['viewinbrowser']=array(
             'type'=>'viewinbrowser',
@@ -861,7 +929,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['unsubscribed_title']=array(
             'type'=>'input',
             'label'=>__('Unsubscribe page title',WYSIJA),
-            'desc'=>__('This is the [link]unsubscription confirmation[/link] page a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter.',WYSIJA),
+            'desc'=>__('This is the [link]confirmation page[/link] a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter.',WYSIJA),
             'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1" target="_blank" title="'.__('Preview page',WYSIJA).'">');
 
 
@@ -871,7 +939,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
 
         $step['manage_subscriptions']=array(
-        'type'=>'viewinbrowser',
+        'type'=>'managesubscribe',
         'label'=>__('Subscribers can edit their profile',WYSIJA),
         'desc'=>__('Add a link in the footer of all your newsletters so subscribers can edit their profile and lists. [link]See your own subscriber profile page.[/link]',WYSIJA),
         'link'=>'<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('Preview page',WYSIJA).'">',);
@@ -962,12 +1030,12 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                ),
            'install'=>array(
                'title'=>__('Upgrade in a few clicks.',WYSIJA),
-               'desc'=>__('You don\'t need to reinstall. We\'ll simply activate your site.',WYSIJA)
+               'desc'=>__('You don\'t need to reinstall. We\'ll simply activate your site and you\'ll download a small plugin.',WYSIJA)
                ),
            'happy'=>array(
                'title'=>__('Join our happy users.',WYSIJA),
-               'desc'=>__('Wysija is getting better everyday thanks to users like you. <br />Read [link]what they are saying[/link].',WYSIJA),
-               'link'=>'http://www.wysija.com/youre-the-best-newsletter-plugin-for-wordpress-ever/?utm_source=wpadmin&utm_campaign=premiumtab'
+               'desc'=>__('Wysija is getting better every day thanks to users like you. <br />Read [link]what they are saying[/link].',WYSIJA),
+               'link'=>'http://wordpress.org/support/view/plugin-reviews/wysija-newsletters'
                ),
            'trynow'=>array(
                'title'=>__('Try it now. Not happy? Get your money back.',WYSIJA),
@@ -975,7 +1043,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                ),
        );
 
-       $htmlContent='<div id="premium-content"><h2>'.__('11 Cool Reasons to Upgrade to Premium',WYSIJA).'</h2><div class="bulletium">';
+       $htmlContent='<div id="premium-content"><h2>'.__('12 Cool Reasons to Upgrade to Premium',WYSIJA).'</h2><div class="bulletium">';
 
         foreach($arrayPremiumBullets as $key => $bullet){
             $htmlContent.='<div id="'.$key.'" class="bullet-hold clearfix"><div class="feat-thumb"></div><div class="description"><h3>'.$bullet['title'].'</h3><p>';
@@ -989,7 +1057,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $htmlContent.='</div></div>';
         $htmlContent.='<p class="wysija-premium-wrapper">
             <a class="wysija-premium-btns wysija-premium" href="'.$urlpremium.'" target="_blank">'.__('Upgrade for $99 a year for 1 site.',WYSIJA).'<img src="'.WYSIJA_URL.'img/wpspin_light.gif" alt="loader"/></a></p>';
-        $htmlContent.='<p>'.__('Already paid?', WYSIJA).'<a id="premium-activate" type="submit" class="wysija" href="javascript:;" />'. esc_attr(__('Activate your Premium licence.',WYSIJA)).'</a></p>';
+        $htmlContent.='<br><p>'.__('Already paid?', WYSIJA).' <a id="premium-activate" type="submit" class="wysija" href="javascript:;" />'. esc_attr(__('Activate your Premium licence.',WYSIJA)).'</a></p>';
 
         $htmlContent.='<p>'.str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA)).'</p>';
         $htmlContent.='<p>'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/terms-conditions/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Read our simple and easy [link]terms and conditions.[/link]',WYSIJA)).'</p>';

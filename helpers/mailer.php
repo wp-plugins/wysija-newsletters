@@ -17,6 +17,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
         var $testemail=false;
         var $isMailjet=false;
         var $isElasticRest=false;
+        var $isSendGridRest=false;
         var $DKIM_selector   = 'wys';
         var $listids=false;
         var $listnames=false;
@@ -43,27 +44,35 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->Host = $this->config->getValue('smtp_host');
                     if(in_array(trim($this->Host), array('smtp.elasticemail.com','smtp25.elasticemail.com'))){
 
-                            include_once (WYSIJA_INC. 'phpmailer' . DS . 'class.elasticemail.php');
-                            $this->Mailer = 'elasticemail';
-                            $this->elasticEmail = new acymailingElasticemail();
-                            $this->elasticEmail->Username = trim($this->config->getValue('smtp_login'));
-                            $this->elasticEmail->Password = trim($this->config->getValue('smtp_password'));
-                            $this->isElasticRest=true;
-                        }else{
-                            $this->IsSMTP();
-                            if(strpos($this->Host, 'mailjet.com')!==false){
-                                $this->isMailjet=true;
-                            }
-                            $port = $this->config->getValue('smtp_port');
-                            if(empty($port) && $this->config->getValue('smtp_secure') == 'ssl') $port = 465;
-                            if(!empty($port)) $this->Host.= ':'.$port;
-                            $this->SMTPAuth = (bool) $this->config->getValue('smtp_auth');
-                            $this->Username = trim($this->config->getValue('smtp_login'));
-                            $this->Password = trim($this->config->getValue('smtp_password'));
-                            $this->SMTPSecure = trim((string)$this->config->getValue('smtp_secure'));
-                            if(empty($this->Sender)) $this->Sender = strpos($this->Username,'@') ? $this->Username : $this->config->getValue('from_email');
-                            
+                        include_once (WYSIJA_INC. 'phpmailer' . DS . 'class.elasticemail.php');
+                        $this->Mailer = 'elasticemail';
+                        $this->elasticEmail = new acymailingElasticemail();
+                        $this->elasticEmail->Username = trim($this->config->getValue('smtp_login'));
+                        $this->elasticEmail->Password = trim($this->config->getValue('smtp_password'));
+                        $this->isElasticRest=true;
+                    }elseif(false && in_array(trim($this->Host), array('smtp.sendgrid.net'))){
+
+                        include_once (WYSIJA_INC. 'phpmailer' . DS . 'class.sendgrid.php');
+                        $this->Mailer = 'sendgrid';
+                        $this->sendGrid = new acymailingSendgrid();
+                        $this->sendGrid->Username = trim($this->config->getValue('smtp_login'));
+                        $this->sendGrid->Password = trim($this->config->getValue('smtp_password'));
+                        $this->isSendGridRest=true;
+                    }else{
+                        $this->IsSMTP();
+                        if(strpos($this->Host, 'mailjet.com')!==false){
+                            $this->isMailjet=true;
                         }
+                        $port = $this->config->getValue('smtp_port');
+                        if(empty($port) && $this->config->getValue('smtp_secure') == 'ssl') $port = 465;
+                        if(!empty($port)) $this->Host.= ':'.$port;
+                        $this->SMTPAuth = (bool) $this->config->getValue('smtp_auth');
+                        $this->Username = trim($this->config->getValue('smtp_login'));
+                        $this->Password = trim($this->config->getValue('smtp_password'));
+                        $this->SMTPSecure = trim((string)$this->config->getValue('smtp_secure'));
+                        if(empty($this->Sender)) $this->Sender = strpos($this->Username,'@') ? $this->Username : $this->config->getValue('from_email');
+                        
+                    }
                         break;
                 case 'site':
                     if($this->config->getValue('sending_emails_site_method')=="phpmail"){
@@ -88,7 +97,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->Encoding = '8bit';
 
             $this->WordWrap = 150;
-            if($this->config->getValue('dkim_active') && $this->config->getValue('dkim_pubk') && !$this->isElasticRest){
+            if($this->config->getValue('dkim_active') && $this->config->getValue('dkim_pubk') && !$this->isElasticRest && !$this->isSendGridRest){
                $this->DKIM_domain = $this->config->getValue('dkim_domain');
                $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
            }
@@ -107,7 +116,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->AddReplyTo($this->config->getValue('reply_email'),$replyToName);
             }
 
-            if((bool)$this->config->getValue('embed_images',0) && !$this->isElasticRest){
+            if((bool)$this->config->getValue('embed_images',0) && !$this->isElasticRest && !$this->isSendGridRest){
                     $this->embedImages();
             }
             if(empty($this->Subject) OR empty($this->Body)){

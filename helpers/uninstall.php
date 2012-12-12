@@ -12,18 +12,19 @@ class WYSIJA_help_uninstall extends WYSIJA_object{
     }
     function removeProcess(){
         if(is_admin()){
-            $filename = dirname(__FILE__).DS."uninstall.sql";
-            $handle = fopen($filename, "r");
+            $filename = dirname(__FILE__).DS.'uninstall.sql';
+            $handle = fopen($filename, 'r');
             $query = fread($handle, filesize($filename));
             fclose($handle);
-            $modelObj=&WYSIJA::get("user","model");
-            $queries=str_replace("DROP TABLE `","DROP TABLE `[wysija]",$query);
-            $queries=explode("-- QUERY ---",$queries);
+            $modelObj=&WYSIJA::get('user','model');
+            $queries=str_replace('DROP TABLE `','DROP TABLE `[wysija]',$query);
+            $queries=explode('-- QUERY ---',$queries);
             $modelWysija=new WYSIJA_model();
             global $wpdb;
             foreach($queries as $query)
                 $modelWysija->query($query);
-            delete_option("wysija");
+            delete_option('wysija');
+            WYSIJA::update_option('wysija_reinstall',1);
             global $wp_roles;
             foreach($wp_roles->roles as $rolek=>$roled){
                 if($rolek=='administrator') continue;

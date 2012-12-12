@@ -143,8 +143,6 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
 
     function customFields($params,$formidreal,$submitbutton){
         $html="";
-        $mConfig=&WYSIJA::get('config','model');
-        $nojsval=$mConfig->getValue('no_js_val');
         $validationsCF=array(
             'email' => array("req"=>true,"type"=>"email","defaultLabel"=>__("Email",WYSIJA)),
             'firstname' => array("req"=>true,"defaultLabel"=>__("First name",WYSIJA)),
@@ -158,7 +156,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 if(!isset($field['label']) || !$field['label']) $field['label']=$validationsCF[$fieldKey]['defaultLabel'];
                 if($fieldKey=="email") $fieldid=$formidreal."-wysija-to";
                 else $fieldid=$formidreal.'-'.$fieldKey;
-                if($nojsval){
+                if(isset($params['getHtml'])){
                     $titleplaceholder='placeholder="'.$field['label'].'" title="'.$field['label'].'"';
                 }else{
                     $titleplaceholder='title="'.$field['label'].'"';

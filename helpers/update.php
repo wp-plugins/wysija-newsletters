@@ -176,7 +176,7 @@ class WYSIJA_help_update extends WYSIJA_object{
         if((is_network_admin() || !is_multisite()) && current_user_can('update_plugins') && !empty($r->package) ){
             $this->notice(
                 sprintf(
-                    __('There is a new version of %1$s available. <a href="%2$s" class="thickbox" title="%3$s">View version %4$s details</a> or <a href="%5$s">update automatically</a>.')
+                    __('Hey! %1$s has an update. <a href="%2$s" class="thickbox" title="%3$s">See version %4$s details</a> or simply <a href="%5$s">update automatically</a>.')
                     , '<strong>'.$plugin_name.'</strong>',
                     esc_url($details_url),
                     esc_attr($plugin_name),
@@ -195,9 +195,8 @@ class WYSIJA_help_update extends WYSIJA_object{
         $timeInstalled=$config->getValue('installed_time')+3600;
 
         if(current_user_can('switch_themes') ){
-            if(isset($_REQUEST['action']) && $_REQUEST['action']=='activate-plugin') $noredirect=true;
-            if((!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0)){
-                if(isset($_REQUEST['action']) && in_array($_REQUEST['action'], array('whats_new','welcome_new')))  $noredirect=true;
+            if((!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0) && isset($_REQUEST['page']) && in_array($_REQUEST['page'], array('wysija_config','wysija_campaigns','wysija_subscribers'))){
+                if(isset($_REQUEST['action']) && in_array($_REQUEST['action'], array('whats_new','welcome_new','activate-plugin')))  $noredirect=true;
                 if(!$noredirect) {
                     if(time()>$timeInstalled){
                         WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');

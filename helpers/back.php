@@ -147,7 +147,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             }
         }
 
-        if(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) {
+        if(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON && !WYSIJA::is_plugin_active('wp-cron-control/wp-cron-control.php')) {
             $msg=$config->getValue('ignore_msgs');
             if(!isset($msg['crondisabled'])){
                 $this->notice(
@@ -160,24 +160,7 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         }
         
-        $importPossible=$config->getValue('pluginsImportableEgg');
-
-        if(!$config->getValue('pluginsImportedEgg') && $importPossible){
-            foreach($importPossible as $tableName =>$pluginInfos){
-                if((isset($_REQUEST['action']) && $_REQUEST['action']!='importplugins') || !isset($_REQUEST['action'])){
-                    $msg=$config->getValue('ignore_msgs');
-                    if(!isset($msg['importplugins-'.$tableName])&& (int)$pluginInfos['total']>0){
-                        if(!isset($pluginInfos['total_lists']) || !$pluginInfos['total_lists'] || (int)$pluginInfos['total_lists']<1) $pluginInfos['total_lists']=1;
-                        $sprintfedmsg=sprintf(__('Would you like to import the %1$s lists with a total of %2$s subscribers from the plugin %3$s. [link]Yes[/link]. [link_ignore]I\'ll import them later.[/link_ignore]',WYSIJA),$pluginInfos['total_lists'],$pluginInfos['total'],'<strong>"'.$pluginInfos['name'].'"</strong>');
-                        $this->notice(
-                            str_replace(array('[link_ignore]','[link]','[/link]','[/link_ignore]'),
-                                    array('<a class="linkignore importplugins-'.$tableName.'" href="javascript:;">','<a href="admin.php?page=wysija_subscribers&action=importplugins">','</a>','</a>'),
-                                    $sprintfedmsg
-                                    ),true,true);
-                    }
-                }
-            }
-        }
+        
         if(WYSIJA_ITF){
             global $wysija_installing;
             if( !$config->getValue('sending_emails_ok')){
@@ -185,11 +168,6 @@ class WYSIJA_help_back extends WYSIJA_help{
                 $urlsendingmethod='admin.php?page=wysija_config#tab-sendingmethod';
                 if($_REQUEST['page'] === 'wysija_config') {
                     $urlsendingmethod='#tab-sendingmethod';
-                }
-                if(!isset($msg['setupmsg']) && $wysija_installing!==true){
-                    $this->notice(str_replace(array('[link_widget]','[link_ignore]','[link]','[/link]','[/link_widget]','[/link_ignore]'),
-                        array('<a href="widgets.php">','<a class="linkignore setupmsg" href="javascript:;">','<a id="linksendingmethod" href="'.$urlsendingmethod.'">','</a>','</a>','</a>'),
-                        __('Hurray! Add a form to your site using [link_widget]the Widget[/link_widget] and confirm your site can send emails in the [link]Settings[/link]. [link_ignore]Ignore[/link_ignore].',WYSIJA)),true,true);
                 }
             }
             
@@ -326,7 +304,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $msg=$config->getValue("ignore_msgs");
         $wysijaversion.='<div class="social-foot">';
         $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Spread da word.',WYSIJA).'</a> </div>';
-        $wysijaversion.= '<div class="version">'.__("Wysija Version: ",WYSIJA).'<a href="admin.php?page=wysija_campaigns&action=whats_new">'.WYSIJA::get_version().'</a></div></div>';
+        $wysijaversion.= '<div class="version">'.__('Wysija Version: ',WYSIJA).'<a href="admin.php?page=wysija_campaigns&action=whats_new">'.WYSIJA::get_version().'</a></div></div>';
         if(!isset($msg['socialfoot'])){
             $wysijaversion.='<div class="socials removeme">
 <div class="fb" >

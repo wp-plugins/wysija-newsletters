@@ -13,7 +13,7 @@ class WYSIJA_help_forms{
                             'hourly'=> __('every hour',WYSIJA),
                             'two_hours'=> __('every 2 hours',WYSIJA),
                             'twicedaily'=> __('twice daily',WYSIJA),
-                            'daily'=> __('everyday',WYSIJA));
+                            'daily'=> __('once a day',WYSIJA));
         $this->eachValuesSec=array(
                             'one_min'=> '60',
                             'two_min'=> '120',

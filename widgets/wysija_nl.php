@@ -42,7 +42,6 @@ class WYSIJA_NL_Widget extends WP_Widget {
                         }else{
                             $ajaxurl=str_replace('https://','http://',$ajaxurl);
                         }
-
                     }
 
                     $lastchar=substr($ajaxurl, -1);
@@ -50,7 +49,12 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     if($lastchar!='/')$ajaxurl.='/';
                     $ajaxurl.='wp-admin/admin-ajax.php';
                 }else{
-                    $ajaxurl=admin_url( 'admin-ajax.php', 'relative' );
+                    if($mConfig->getValue('relative_ajax')=='absolute'){
+                        $ajaxurl=admin_url( 'admin-ajax.php', 'absolute' );
+                    }else{
+                        $ajaxurl=admin_url( 'admin-ajax.php', 'relative' );
+                    }
+
                 }
 
 
@@ -62,6 +66,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                 );
 
                 if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
+                if($mConfig->getValue('no_js_val')) $this->paramsajax['noajax']=1;
 
                 $scriptregistered=true;
             }
@@ -450,7 +455,46 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
     function genHtml($instance,$externalsite=false){
         $this->coreOnly=true;
-        $htmlreturn=$this->widget(array('widget_id'=>  uniqid('html')), $instance);
+        $instance['getHtml']=true;
+        $htmlreturn='';
+
+        //generate scripts tags for validation and ajax submission
+        ob_start();
+        //if(isset($_REQUEST['external_site'])) wp_head();
+
+        if(defined('WPLANG') && WPLANG!=''){
+            $locale=explode('_',WPLANG);
+            $wplang=$locale[0];
+        }else{
+            $wplang='en';
+        }
+
+        if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wplang.'.js')){
+            wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wplang.'.js', array( 'jquery' ),WYSIJA::get_version(),true );
+        }else{
+            wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-en.js', array( 'jquery' ),WYSIJA::get_version(),true );
+        }
+        wp_register_script('wysija-validator',WYSIJA_URL.'js/validate/jquery.validationEngine.js', array( 'jquery' ),WYSIJA::get_version(),true );
+        wp_register_script('wysija-front-subscribers', WYSIJA_URL.'js/front-subscribers.js', array( 'jquery' ),WYSIJA::get_version(),true);
+        $this->paramsajax=array(
+                    'action' => 'wysija_ajax',
+                    'controller' => 'subscribers',
+                    'ajaxurl'=>  admin_url('admin-ajax.php','absolute'),
+                    'loadingTrans'  =>__('Loading...',WYSIJA)
+                );
+        if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
+        wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$this->paramsajax );
+        wp_print_scripts('jquery');
+        wp_print_styles('validate-engine-css');
+        wp_print_scripts('wysija-validator-lang');
+        wp_print_scripts('wysija-validator');
+        wp_print_scripts('wysija-front-subscribers');
+
+        $htmlreturn.=ob_get_contents();
+        ob_end_clean();
+
+
+        $htmlreturn.=$this->widget(array('widget_id'=>  uniqid('html')), $instance);
         $this->coreOnly=false;
         return $htmlreturn;
         //$fieldHTML='<div class="widget-control-actions">';

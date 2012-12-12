@@ -6,15 +6,15 @@ class WYSIJA_help_themes extends WYSIJA_object{
     }
     
     function getInstalled(){
-        $helperF=&WYSIJA::get("file","helper");
-        $filenameres=$helperF->exists("themes");
+        $helperF=&WYSIJA::get('file','helper');
+        $filenameres=$helperF->exists('themes');
         if(!$filenameres['result']) {
             return array();
         }
         $installedThemes = array();
         $files = scandir($filenameres['file']);
         foreach($files as $filename){
-            if(!in_array($filename, array('.','..',".DS_Store","Thumbs.db","__MACOSX")) && is_dir($filenameres['file'].DS.$filename) && file_exists($filenameres['file'].DS.$filename.DS."style.css")){
+            if(!in_array($filename, array('.','..','.DS_Store','Thumbs.db','__MACOSX')) && is_dir($filenameres['file'].DS.$filename) && file_exists($filenameres['file'].DS.$filename.DS.'style.css')){
                 $installedThemes[]=$filename;
             }
         }
@@ -55,7 +55,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
             'height' => $height
         );
     }
-    
+
     function getStylesheet($theme)
     {
         $fileHelper =& WYSIJA::get('file', 'helper');
@@ -129,7 +129,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
                             'width' => $width,
                             'height' => $height,
                             'url' => null,
-                            'alt' => __("Footer", WYSIJA),
+                            'alt' => __('Footer', WYSIJA),
                             'alignment' => 'center'
                         )
                     );
@@ -198,7 +198,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
     }
     
     function installTheme($ZipfileResult,$manual=false){
-        $helperF=&WYSIJA::get('file',"helper");
+        $helperF=&WYSIJA::get('file','helper');
         if(!@file_exists($ZipfileResult)){
             
             $dirtemp=$helperF->makeDir();
@@ -211,15 +211,15 @@ class WYSIJA_help_themes extends WYSIJA_object{
         }else $tempzipfile=$ZipfileResult;
 
         
-        $dirtheme=$helperF->makeDir("themes");
+        $dirtheme=$helperF->makeDir('themes');
         if(!$dirtheme){
             $upload_dir = wp_upload_dir();
             $this->error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir'])."<a target='_blank' href='http://codex.wordpress.org/Changing_File_Permissions'>".__('Read documentation',WYSIJA)."</a>");
             return false;
         }
         $timecreated=time();
-        $dirthemetemp=$helperF->makeDir("temp".DS."temp_".$timecreated,0777);
-        $zipclass=&WYSIJA::get("zip","helper");
+        $dirthemetemp=$helperF->makeDir('temp'.DS.'temp_'.$timecreated,0777);
+        $zipclass=&WYSIJA::get('zip','helper');
         if(!$zipclass->unzip_wp($tempzipfile,$dirthemetemp)) {
             $this->error("Error while decompressing archive.");
             $helperF->rrmdir($dirthemetemp);
@@ -228,13 +228,13 @@ class WYSIJA_help_themes extends WYSIJA_object{
         
         $files = scandir($dirthemetemp);
         foreach($files as $filename){
-            if(!in_array($filename, array('.','..',".DS_Store","Thumbs.db")) && !is_dir($dirthemetemp.DS.$filename)){
+            if(!in_array($filename, array('.','..','.DS_Store','Thumbs.db')) && !is_dir($dirthemetemp.DS.$filename)){
 
-                $this->error("In your zip there should be one folder only, with the content of your theme within.");
+                $this->error('In your zip there should be one folder only, with the content of your theme within.');
                 $helperF->rrmdir($dirthemetemp);
                 return false;
             }else{
-                if(!in_array($filename, array('.','..',".DS_Store","Thumbs.db")))    $theme_key=$filename;
+                if(!in_array($filename, array('.','..','.DS_Store','Thumbs.db')))    $theme_key=$filename;
             }
         }
          if(!$theme_key){
@@ -244,20 +244,20 @@ class WYSIJA_help_themes extends WYSIJA_object{
         unlink($tempzipfile);
 
         if($manual && !isset($_REQUEST['overwriteexistingtheme']) && file_exists($dirtheme.DS.$theme_key)){
-            $this->error(sprintf(__('A theme called %1$s exists already. To overwrite it, tick the corresponding checkbox before uploading.',WYSIJA),"<strong>".$_REQUEST['theme_key']."</strong>"),1);
+            $this->error(sprintf(__('A theme called %1$s exists already. To overwrite it, tick the corresponding checkbox before uploading.',WYSIJA),'<strong>'.$theme_key.'</strong>'),1);
             return false;
         }
         
         $result=true;
-            $listoffilestocheck=array($theme_key,"style.css");
+            $listoffilestocheck=array($theme_key,'style.css');
             foreach($listoffilestocheck as $keyindex=> $fileexist){
                 if($keyindex==0)    $testfile=$listoffilestocheck[0];
                 else    $testfile=$listoffilestocheck[0].DS.$fileexist;
                 if($manual){
                     if(!file_exists($dirthemetemp.DS.$testfile)){
 
-                        if($keyindex==0)    $this->error("Missing directory :".$testfile);
-                        else    $this->error("Missing file :".$dirthemetemp.DS.$testfile);
+                        if($keyindex==0)    $this->error('Missing directory :'.$testfile);
+                        else    $this->error('Missing file :'.$dirthemetemp.DS.$testfile);
                         $result=false;
                     }
                 }
@@ -267,7 +267,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
         if($result){
 
             $helperF->rcopy($dirthemetemp.DS.$listoffilestocheck[0],$dirtheme.DS.$listoffilestocheck[0]);
-            $this->notice(sprintf(__('The theme %1$s has been installed on your site.',WYSIJA),"<strong>".$_REQUEST['theme_name']."</strong>"));
+            $this->notice(sprintf(__('The theme %1$s has been installed on your site.',WYSIJA),'<strong>'.$theme_key.'</strong>'));
         }else{
             $this->error(__("We could not install your theme. It appears it's not in the valid format.",WYSIJA),1);
         }
@@ -275,16 +275,16 @@ class WYSIJA_help_themes extends WYSIJA_object{
         $helperF->rrmdir($dirthemetemp);
         return $result;
     }
-    
+
     function delete($themekey){
-        $helperF=&WYSIJA::get('file',"helper");
-        $dirtheme=$helperF->makeDir("themes".DS.$themekey);
+        $helperF=&WYSIJA::get('file','helper');
+        $dirtheme=$helperF->makeDir('themes'.DS.$themekey);
         $helperF->rrmdir($dirtheme);
         if(!file_exists($dirtheme)){
-            $this->notice(sprintf(__('Theme %1$s has been deleted.',WYSIJA),"<strong>".$themekey."</strong>"));
+            $this->notice(sprintf(__('Theme %1$s has been deleted.',WYSIJA),'<strong>'.$themekey.'</strong>'));
             return true;
         }else{
-            $this->error(sprintf(__('Theme %1$s could not be deleted.',WYSIJA),"<strong>".$themekey."</strong>"));
+            $this->error(sprintf(__('Theme %1$s could not be deleted.',WYSIJA),'<strong>'.$themekey.'</strong>'));
             return false;
         }
     }

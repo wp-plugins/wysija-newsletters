@@ -22,9 +22,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $res['templates'] = $wjEngine->renderTheme($theme);
 
             $email_id = (int)$_REQUEST['id'];
-            // save divider
+
             $campaignsHelper =& WYSIJA::get('campaigns', 'helper');
-            $campaignsHelper->saveParameters($email_id, 'divider', $res['templates']['divider_options']);
+            
+            if(isset($res['templates']['divider_options'])) {
+                // save divider
+                $campaignsHelper->saveParameters($email_id, 'divider', $res['templates']['divider_options']);
+            }
 
             // save theme used
             $campaignsHelper->saveParameters($email_id, 'theme', $theme);
@@ -615,20 +619,20 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             }
 
 
-            $httpHelp=&WYSIJA::get("http","helper");
+            $httpHelp=&WYSIJA::get('http','helper');
             $url=admin_url('admin.php');
 
-            $helperToolbox=&WYSIJA::get("toolbox","helper");
+            $helperToolbox=&WYSIJA::get('toolbox','helper');
             $domain_name=$helperToolbox->_make_domain_name($url);
 
-            $request="http://api.wysija.com/download/zip/".$_REQUEST['theme_id']."?domain=".$domain_name;
+            $request='http://api.wysija.com/download/zip/'.$_REQUEST['theme_id'].'?domain='.$domain_name;
             $ZipfileResult = $httpHelp->request($request);
 
             if(!$ZipfileResult){
                 $result=false;
-                $this->error(__("We were unable to contact the API, the site may be down. Please try again later.",WYSIJA),true);
+                $this->error(__('We were unable to contact the API, the site may be down. Please try again later.',WYSIJA),true);
             }else{
-                $themesHelp=&WYSIJA::get("themes","helper");
+                $themesHelp=&WYSIJA::get('themes','helper');
                 $result = $themesHelp->installTheme($ZipfileResult);
 
                 // refresh themes list

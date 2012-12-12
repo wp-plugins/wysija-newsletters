@@ -90,10 +90,9 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
             <div class="alignleft actions">
                 <select name="action2" class="global-action">
                     <option selected="selected" value=""><?php _e('Bulk Actions', WYSIJA); ?></option>
-                    <option value="unsubscribemany"><?php _e('Unsubscribe from all lists', WYSIJA); ?></option>
                     <?php
                     foreach($data['lists'] as $listK => $list){
-                        if(!(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK)){
+                        if(!(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK) && $list['is_enabled']){
                             ?><option value="actionvar_copytolist-listid_<?php echo $listK ?>"><?php
                             echo sprintf(__('Add to list %1$s', WYSIJA),$list['name']);
 
@@ -512,7 +511,6 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                     <thead>
                         <tr class="thead">
                             <th class="manage-column column-name" id="name-list" scope="col" style="width:140px;"><?php _e('Name',WYSIJA) ?></th>
-                            <th class="manage-column column-total" id="total-list" scope="col"><?php _e('Total subscribers',WYSIJA) ?></th>
                             <th class="manage-column column-subscribed" id="subscribed-list" scope="col"><?php _e('Subscribed',WYSIJA) ?></th>
                             <?php
                             $config=&WYSIJA::get("config","model");
@@ -571,7 +569,6 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                         </div>
 
                                     </td>
-                                    <td class="manage-column column-enabled"  scope="col"><?php echo $columns['totals'] ?></td>
                                     <td class="manage-column column-subscribed"  scope="col"><?php echo $columns['subscribers'] ?></td>
                                     <?php
                                     if($config->getValue("confirm_dbleoptin")){
@@ -617,31 +614,6 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                     <input type="text" size="40" class="validate[required]" id="list-name" value="<?php echo esc_attr($data['form']['name']) ?>" name="wysija[list][name]" />
                                 </td>
                             </tr>
-
-                            <?php
-                            $config=&WYSIJA::get('config','model');
-                            if($config->getValue('manage_subscriptions') && $data['form']['is_enabled']):
-
-                            $checked='';
-                            if($data['form']['is_public'])  $checked=' checked="checked" ';
-                            $modelU=&WYSIJA::get('user','model');
-                            $modelU->getFormat=OBJECT;
-
-                            $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
-                            ?>
-                            <tr>
-                                <th scope="row">
-                                    <label for="list-desc"><?php _e('Show in subscriber profile page?',WYSIJA); ?> </label>
-                                    <p class="description"><?php echo str_replace(array('[link]','[/link]'), array('<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('See your own subscriber profile page.',WYSIJA).'">','</a>'), __('Display this list to all subscribers in their [link]subscriber profile page[/link]?',WYSIJA)) ?></p>
-                                </th>
-                                <td>
-                                    <input type="checkbox" id="list-public" <?php echo $checked ?> name="wysija[list][is_public]" />
-                                </td>
-                            </tr>
-
-                            <?php
-                            endif;
-                            ?>
                             <tr>
                                 <th scope="row">
                                     <label for="list-desc"><?php _e('Description',WYSIJA); ?> </label>
