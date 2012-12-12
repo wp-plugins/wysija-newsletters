@@ -188,7 +188,10 @@ class WYSIJA_help extends WYSIJA_object{
             }
         }
 
-        $resultArray["msgs"]=$this->getMsgs();
+        $resultArray['msgs']=$this->getMsgs();
+
+        //this header will allow ajax request from the home domain, this can be a lifesaver when domain mapping is on
+        if(function_exists('home_url'))     header('Access-Control-Allow-Origin: '.home_url());
 
         header('Content-type: application/json');
         $response=json_encode($resultArray);
@@ -394,6 +397,7 @@ class WYSIJA extends WYSIJA_object{
     public static function log($key='default',$data='empty',$category='default'){
         $config=&WYSIJA::get('config','model');
         if((int)$config->getValue('debug_new')>1){
+
             $optionlog=get_option('wysija_log');
             if ( false === $optionlog ){
                 add_option( 'wysija_log', array() ,'','no');
@@ -468,7 +472,7 @@ class WYSIJA extends WYSIJA_object{
         if((int)$config->getValue('total_subscribers')<2000 ){
             $helperQ=&WYSIJA::get('queue','helper');
             $helperQ->report=false;
-            WYSIJA::log('croned_queue process',true);
+            WYSIJA::log('croned_queue process',true,'cron');
             $helperQ->process();
         }
     }
@@ -674,8 +678,7 @@ class WYSIJA extends WYSIJA_object{
     }
 
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
-        //WYSIJA::log('pn_transition_post_bt',debug_backtrace());
-        WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status));
+        WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
         if( $new_status=='publish' && $old_status!=$new_status){
             $modelEmail =& WYSIJA::get('email', 'model');
             $emails = $modelEmail->get(false, array('type' => 2, 'status' => array(1, 3, 99)));

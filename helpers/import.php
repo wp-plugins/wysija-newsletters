@@ -302,7 +302,7 @@ class WYSIJA_help_import extends WYSIJA_object{
         $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
         if(!$isSynch){
-            $this->wp_notice(sprintf(__('%1$s users from %2$s have been imported into the new list %3$s',WYSIJA),"<strong>".$result['total']."</strong>","<strong>".$plugInfo['name']."</strong>","<strong>".$listname."</strong>"));
+
         }else{
 
         }

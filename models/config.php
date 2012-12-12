@@ -13,6 +13,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'viewinbrowser',
         'dkim_active',
         'cron_manual',
+        'commentform',
     );
     var $defaults=array(
         'limit_listing'=>10,
@@ -40,7 +41,9 @@ class WYSIJA_model_config extends WYSIJA_object{
         'editor_fullarticle'=>false,
         'allow_no_js'=>true,
         'urlstats_base64'=>true,
-        'viewinbrowser'=>true
+        'viewinbrowser'=>true,
+        'commentform'=>false,
+
     );
 
     var $capabilities=array();
@@ -93,7 +96,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         $this->defaults['unsubscribe_linkname']=__('Unsubscribe',WYSIJA);
         $this->defaults['manage_subscriptions_linkname']=__('Edit your subscription',WYSIJA);
         $this->defaults['viewinbrowser_linkname']=$this->cleanTrans(__('Display problems? [link]View this newsletter in your browser.[/link]',WYSIJA));
-
+        $this->defaults['commentform_linkname']=__('Yes, add me to your mailing list.',WYSIJA);
 
         /**
          * List of all the conflictive extensions which invite themselves on our interfaces and break some of our js:
@@ -365,6 +368,15 @@ class WYSIJA_model_config extends WYSIJA_object{
 
                 if($key=='dkim_pubk'){
                     $value = str_replace(array('-----BEGIN PUBLIC KEY-----','-----END PUBLIC KEY-----',"\n"),'',$value);
+                }
+
+                if($key=='manage_subscriptions_lists'){
+                    $mList=&WYSIJA::get('list','model');
+                    $mList->update(array('is_public'=>0),array('is_public'=>1));
+                    $mList->reset();
+                    $mList->update(array('is_public'=>1),array('list_id'=>$value));
+
+                    unset($this->values[$key]);
                 }
 
                 if(is_string($value)) $value=$value;

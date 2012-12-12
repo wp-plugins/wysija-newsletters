@@ -14,6 +14,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->js[]='jquery-ui-tabs';
         $this->js[]='wysija-admin-ajax';
         $this->js[]='thickbox';
+        $this->js[]='wysija-validator';
         wp_enqueue_style( 'thickbox' );
 
         wp_enqueue_style('wysija-admin-edit-tb', WYSIJA_URL.'css/admin-editor-forms.css',array(),WYSIJA::get_version());

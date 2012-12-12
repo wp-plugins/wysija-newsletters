@@ -449,6 +449,10 @@ class acymailingPHPMailer extends WYSIJA_OBJECT{
 				$result = $this->elasticEmail->sendMail($this);
 				if (!$result) $this->SetError($this->elasticEmail->error);
 				break;
+                        case 'sendgrid' :
+				$result = $this->sendGrid->sendMail($this);
+				if (!$result) $this->SetError($this->sendGrid->error);
+				break;
 			default:
 				$result = $this->MailSend($header, $body);
 				break;

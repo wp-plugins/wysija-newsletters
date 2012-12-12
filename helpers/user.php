@@ -20,8 +20,8 @@ class WYSIJA_help_user extends WYSIJA_object{
     }
     function checkUserKey(){
         if(isset($_REQUEST['wysija-key'])){
-            $modelUser=&WYSIJA::get("user","model");
-            $result=$modelUser->getDetails(array("keyuser"=>$_REQUEST['wysija-key']));
+            $modelUser=&WYSIJA::get('user','model');
+            $result=$modelUser->getDetails(array('keyuser'=>$_REQUEST['wysija-key']));
             if($result) {
                 return $result;
             }
@@ -100,6 +100,14 @@ class WYSIJA_help_user extends WYSIJA_object{
     }
     
     function addSubscriber($data,$backend=false){
+
+        if(!$backend){
+            $validEmail=apply_filters( 'wysija_beforeAddSubscriber', true ,$data['user']['email']);
+            if(!$validEmail){
+                $this->error(sprintf(__('The email %1$s is not valid!',WYSIJA),'<strong>'.$data['user']['email'].'</strong>'),true);
+                return false;
+            }
+        }
 
         $userHelper=&WYSIJA::get('user','helper');
         if(!$this->validEmail($data['user']['email'])){
@@ -318,7 +326,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         if($delay==0){
             $queueH=&WYSIJA::get('queue','helper');
             $queueH->report=false;
-            WYSIJA::log('insertAutoQueue queue process',array('email_id'=>$email_id,'user_id'=>$user_id));
+            WYSIJA::log('insertAutoQueue queue process',array('email_id'=>$email_id,'user_id'=>$user_id),'queue_process');
             $queueH->process($email_id,$user_id);
         }
         return true;

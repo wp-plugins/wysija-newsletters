@@ -101,7 +101,7 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
         if(isset($args['numberposts'])){
             $customQuery.=' LIMIT 0,'.$args['numberposts'];
         }
-
+        WYSIJA::log('post notif qry',$customQuery,'post_notif');
         return $this->query('get_res',$customQuery);
     }
 

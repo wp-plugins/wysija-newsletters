@@ -214,18 +214,6 @@ class WYSIJA_model_email extends WYSIJA_model{
             }
         }
 
-        $my_post = array(
-                    'post_status' => 'publish',
-                    'post_type' => 'wysija',
-                    'post_author' => $current_user->ID,
-                    );
-
-        $my_post['post_title']=$email['subject'];
-        $my_post['post_content'] ='[wysija_view]'.$email['email_id'].'[/wysija_view]';
-
-        /*$post_id=wp_insert_post( $my_post );
-        $sentstatus['params']=array('vib_id'=>$post_id);*/
-
         $this->reset();
         $this->update($sentstatus,array('email_id'=>$email['email_id']));
     }

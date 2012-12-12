@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.1
 Tested up to: 3.5
-Stable tag: 2.1.8
+Stable tag: 2.1.9
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -91,6 +91,7 @@ Translations are included in the plugin. Join the translation teams on [our Tran
 * Greek
 * Hungarian
 * Italian
+* Japanese
 * Norwegian
 * Polish
 * Portuguese PT
@@ -106,8 +107,6 @@ Translations are included in the plugin. Join the translation teams on [our Tran
 == Installation ==
 
 There are 3 ways to install this plugin:
-
-Note: premium users don't need to reinstall anything. It's the same plugin.
 
 = 1. The super easy way =
 1. In your Admin, go to menu Plugins > Add
@@ -151,8 +150,23 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.1.9 - 2012-12-11 =
+* added checkbox to comments in post for visitors to optin. Activate in Settings > Advanced
+* improved default newsletter into simple 5 min. guide 
+* improved over a dozen confusing labels and strings
+* improved compatibility with domain mapping
+* added hook wysija_preview to browser version of newsletter (thx to Matt)
+* fixed autoload new posts on scroll in the newsletter WordPress post widget
+* fixed missing total click stats in newsletter stats
+* fixed saving changes when going back to Step 2 from Step 3
+* added sending autoresponders to subscribers added via the admin
+* removed 3 messages after installation. Nobody reads them.
+* removed bulk add to synch list
+* removed bulk unsubscribe to all. Too dangerous.
+* went for a walk in the park with friends to celebrate this new version
+
 = 2.1.8 - 2012-11-27 =
-* added get HTML version
+* added get HTML version of form. See in Widgets.
 * improved Wysija homemade cron, available in Settings > Advanced
 * removed validation for first name & last name on subscriber profile
 * fixed incompatibility with "Root Relative URLs" plugin
@@ -524,5 +538,5 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed issue related to Wordpress MU
 * minor bugfixes
 
-= 0.9 - 2011/12/23 =
+= 0.9 - 2011/12/3 =
 * Hello World.

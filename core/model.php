@@ -871,7 +871,7 @@ class WYSIJA_model extends WYSIJA_object{
             dbg($wpdb,0);*/
             if($mysqlerror) {
                 $wysija_queries_errors[]=$mysqlerror;
-                WYSIJA::log('queries_errors',$mysqlerror);
+                WYSIJA::log('queries_errors',$mysqlerror,'query_errors');
             }
 
         }

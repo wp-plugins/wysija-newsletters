@@ -49,15 +49,16 @@ class WYSIJA_help_install extends WYSIJA_object{
         $values['wysija_db_version']=WYSIJA::get_version();
         $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
         $values['dkim_domain']=$wptoolboxs->_make_domain_name();
+        if(get_option('wysija_reinstall',0)) $values['wysija_whats_new']=WYSIJA::get_version();
         $modelConf->save($values);
         
         $this->testNLplugins();
-        $this->wp_notice(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_config">','</a>'),__('Wysija has been installed successfully. Go to the [link]settings page[/link] now, and start blasting emails.',WYSIJA)));
         
         $wptools =& WYSIJA::get('wp_tools', 'helper');
         $wptools->set_default_rolecaps();
         global $wysija_installing;
         $wysija_installing=false;
+        WYSIJA::update_option('wysija_reinstall',0);
         return true;
     }
 
@@ -113,292 +114,200 @@ class WYSIJA_help_install extends WYSIJA_object{
         $modelCampaign=&WYSIJA::get('campaign','model');
         $campaign_id=$modelCampaign->insert(
                 array(
-                    "name"=>__('Example Newsletter',WYSIJA),
-                    "description"=>__('Default newsletter created automatically during installation.',WYSIJA),
+                    'name'=>__('5 Minute User Guide',WYSIJA),
+                    'description'=>__('Default newsletter created automatically during installation.',WYSIJA),
                     ));
         $modelEmail=&WYSIJA::get('email','model');
         $modelEmail->fieldValid=false;
         $dataEmail=array(
             'campaign_id'=>$campaign_id,
-            'subject'=>__('Example Newsletter',WYSIJA));
-
-
-        $wjEngine =& WYSIJA::get('wj_engine', 'helper');
-        $defaultStyles = $wjEngine->getDefaultStyles();
-        $defaultStyles['h1']['size'] = 36;
-        $defaultStyles['html']['background']=$defaultStyles['header']['background']=$defaultStyles['footer']['background']="E8E8E8";
-
-        $dividersHelper =& WYSIJA::get('dividers', 'helper');
-        $defaultDivider = $dividersHelper->getDefault();
-        $dataEmail['wj_data']=array (
-          'version' => '2.1.0',
-          'header' =>
-          array (
-            'text' => NULL,
-            'image' =>
-            array (
-              'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/header.png',
-              'width' => 600,
-              'height' => 72,
-              'alignment' => 'center',
-              'static' => false,
-            ),
-            'alignment' => 'center',
-            'static' => true,
-            'type' => 'header'
-          ),
-          'body' =>
-          array (
-            'block-1' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h1 class="align-center">'.
-                  __('Example & Guide',WYSIJA).'</h2><p>'.
-                  __("This example newsletter is for you to <span style='color: #008000;'>experiment</span> with. It takes about 15 minutes to read through this guide. Its pretty intuitive altogether.",WYSIJA).'</p><p>'.
-                  __('Things you can do right in this newsletter :',WYSIJA).'</p><ul><li>'.
-                  __('Drop a WordPress post',WYSIJA).'</li><li>'.
-                  __('<strong>Insert</strong> images',WYSIJA).'</li><li>'.
-                  __('Change your <strong>divider style</strong>',WYSIJA).'</li><li>'.
-                  __('Click on this text to <strong>edit</strong> it',WYSIJA).'</li><li>'.
-                  __('<strong>Reorder</strong> items around',WYSIJA).'</li><li>'.
-                  __('Install a <strong>new theme</strong> and apply it',WYSIJA).'</li><li>'.
-                  __('Change the styles in the Style tab',WYSIJA).'</li></ul>'
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '1',
-              'type' => 'content',
-            ),
-            'block-2' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("Duplicate, Don't Save",WYSIJA).'</h2><p>'.
-                  __("We often get asked: <strong><em>How can I save my design</em>?</strong> Well, you can't.",WYSIJA).'</p><p>'.
-                  __("You simply need to duplicate a previous newsletter to take its design. If you're installing Wysija for a colleague or a client, create a draft newsletter he or she can duplicate at will.",WYSIJA).'</p>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '2',
-              'type' => 'content',
-            ),
-            'block-3' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("Images and Text Together",WYSIJA).'</h2>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '3',
-              'type' => 'content',
-            ),
-            'block-4' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<p>'.
-                  __("It's possible to mix text with images.</p><p><strong>Try it:</strong> mouse over the image to realign it left or right.",WYSIJA).'</p><p>'.
-                  __("You can replace that image by dropping a new one over it.",WYSIJA).'</p><p>'.
-                  __("Because email clients don't load images by default, you can add an <strong>alternate text</strong> that will show.",WYSIJA).'</p><p>'.
-                  __("<strong>Try it:</strong> click on the link button of the image.",WYSIJA).'</p><p>'.
-                  __("When you drop a <strong>WordPress post, it will include the first image in that post or the post's featured image</strong>. All other images will be ignored!",WYSIJA).'</p>',
-              ),
-              'image' =>
-              array (
-                'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/pigeon.png',
-                'width' => 281,
-                'height' => 190,
-                'url' => 'http://www.wysija.com',
-                'alt' => 'A bird with an envelop',
-                'alignment' => 'left',
-                'static' => false,
-              ),
-              'alignment' => 'left',
-              'static' => false,
-              'position' => '4',
-              'type' => 'content',
-            ),
-            'block-5' => array_merge($defaultDivider, array(
-                    'position' => '5',
-                    'type' => 'divider'
-                )
-            ),
-            'block-6' =>
-            array (
-              'text' =>
-              array (
-                'value' =>
-                  '<h2 class="align-center">'.__('Lorem Ipsum Venus Vinci', WYSIJA).'</h2>'.
-                  '<p>'.__("If you want to use a special font for your titles, you'll have to create them as an image in <strong>Photoshop</strong>, just like the example title above.",WYSIJA).'</p><p>'.
-                  __("<strong>Why? </strong>The choices of fonts on newsletters are very very limited.",WYSIJA).' '.
-                  __("Fonts aren't sent with emails. Fonts reside in the email clients of the world (Outlook, Gmail, Yahoo) and the computers that open those emails. Only a few fonts are really on all these machines. Crazy but true.",WYSIJA).'</p>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '7',
-              'type' => 'content',
-            ),
-            'block-7' => array_merge($defaultDivider, array(
-              'position' => '8',
-              'type' => 'divider'
-            )
-            ),
-            'block-8' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("Can I Insert Videos in my Newsletters?",WYSIJA).'</h2>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '9',
-              'type' => 'content',
-            ),
-            'block-9' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<p>'.
-                  __("You <strong>can't</strong> insert videos in your emails. Instead, use an image that looks like the player.",WYSIJA).'</p><p>'.
-                  __("Find images of popular players by visiting this page (copy and paste it!):",WYSIJA).'</p><p>http://support.wysija.com/knowledgebase/how-to-embed-a-video-from-youtube-or-vimeo-in-your-newsletter/</p><p>&nbsp;</p>',
-              ),
-              'image' =>
-              array (
-                'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/youtube-video.png',
-                'width' => 321,
-                'height' => 182,
-                'alignment' => 'left',
-                'static' => false,
-              ),
-              'alignment' => 'left',
-              'static' => false,
-              'position' => '10',
-              'type' => 'content',
-            ),
-            'block-10' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("Social Bookmark Icons",WYSIJA).'</h2>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '11',
-              'type' => 'content',
-            ),
-            'block-11' =>
-            array (
-              'width' => 184,
-              'alignment' => 'center',
-              'items' =>
-              array (
-                0 =>
-                array (
-                  'src' => WYSIJA_UPLOADS_URL.'bookmarks/medium/02/facebook.png',
-                  'width' => 32,
-                  'height' => 32,
-                  'url' => 'http://www.facebook.com/wysija',
-                  'alt' => 'Facebook',
-                  'cellWidth' => 61,
-                  'cellHeight' => 32,
-                ),
-                1 =>
-                array (
-                  'src' => WYSIJA_UPLOADS_URL.'bookmarks/medium/02/twitter.png',
-                  'width' => 32,
-                  'height' => 32,
-                  'url' => 'http://www.twitter.com/wysija',
-                  'alt' => 'Twitter',
-                  'cellWidth' => 61,
-                  'cellHeight' => 32,
-                ),
-                2 =>
-                array (
-                  'src' => WYSIJA_UPLOADS_URL.'bookmarks/medium/02/google.png',
-                  'width' => 32,
-                  'height' => 32,
-                  'url' => 'http://www.google.com',
-                  'alt' => 'Google',
-                  'cellWidth' => 61,
-                  'cellHeight' => 32,
-                ),
-              ),
-              'position' => '12',
-              'type' => 'gallery',
-            ),
-            'block-12' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<p>'.
-                  __("The icons above were added using the <em>Social bookmarks</em> widget. Try it. It's in the <em>Contents</em> tab on the right. You'll see you have plenty of icon choices. Neat!",WYSIJA).'</p>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '13',
-              'type' => 'content',
-            ),
-            'block-13' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("Get Help on support.wysija.com",WYSIJA).'</h2><p>'.
-                  __("Of course, things don't always work the way they should. But we're here to help. Find us on support.wysija.com. We have documentation and a ticket system if you need to get us involved.",WYSIJA).'</p>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '15',
-              'type' => 'content',
-            ),
-            'block-14' =>
-            array (
-              'text' =>
-              array (
-                'value' => '<h2 class="align-center">'.
-                  __("I Want to Change my Footer's Content!",WYSIJA).'</h2><p class="align-left">'.
-                  __("You can change the footer text in Wysija's Settings, and not here.",WYSIJA).' '.
-                  __("In <em>The Basics</em> tab, you can add <strong>your postal address</strong> (good against spam filters), or whatever you see fit.",WYSIJA).' '.
-                  __('Change the text for the "<strong>Unsubscribe</strong>" link in the <em>Advanced</em> tab of the Settings.',WYSIJA).'</p>',
-              ),
-              'image' => NULL,
-              'alignment' => 'center',
-              'static' => false,
-              'position' => '16',
-              'type' => 'content',
-            ),
-          ),
-          'footer' =>
-          array (
-            'text' => NULL,
-            'image' =>
-            array (
-              'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/footer.png',
-              'width' => 600,
-              'height' => 46,
-              'alignment' => 'center',
-              'static' => false,
-            ),
-            'alignment' => 'center',
-            'static' => true,
-            'type' => 'footer',
-          ),
+            'subject'=>__('5 Minute User Guide',WYSIJA)
         );
 
+        $wjEngine =& WYSIJA::get('wj_engine', 'helper');
+
+        $hDividers =& WYSIJA::get('dividers', 'helper');
+        $defaultDivider = $hDividers->getDefault();
+
+        $hBookmarks =& WYSIJA::get('bookmarks', 'helper');
+        $bookmarks = $hBookmarks->getAllByIconset('medium', '02');
+        //--------------
+        $dataEmail['wj_data'] = array(
+            'version' => WYSIJA::get_version(),
+            'header' => array(
+                'text' => null,
+                'image' => array(
+                    'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/header.png',
+                    'width' => 600,
+                    'height' => 72,
+                    'alignment' => 'center',
+                    'static' => false
+                ),
+                'alignment' => 'center',
+                'static' => false,
+                'type' => 'header'
+            ),
+            'body' => array(
+                'block-1' => array(
+                    'text' => array(
+                        'value' => '<h2><strong>'.__('Step 1:', WYSIJA).'</strong> '.__('hey, click on this text!', WYSIJA).'</h2>'.'<p>'.__('To edit, simply click on this block of text.', WYSIJA).'</p>'
+                    ),
+                    'image' => null,
+                    'alignment' => 'left',
+                    'static' => false,
+                    'position' => 1,
+                    'type' => 'content'
+                ),
+                'block-2' => array_merge(array(
+                        'position' => 2,
+                        'type' => 'divider'
+                    ), $defaultDivider
+                ),
+                'block-3' => array(
+                    'text' => array(
+                        'value' => '<h2><strong>'.__('Step 2:', WYSIJA).'</strong> '.__('play with this image', WYSIJA).'</h2>'
+                    ),
+                    'image' => null,
+                    'alignment' => 'left',
+                    'static' => false,
+                    'position' => 3,
+                    'type' => 'content'
+                ),
+                'block-4' => array(
+                    'text' => array(
+                        'value' => '<p>'.__('Position your mouse over the image to the left.', WYSIJA).'</p>'
+                    ),
+                    'image' => array(
+                        'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/pigeon.png',
+                        'width' => 281,
+                        'height' => 190,
+                        'alignment' => 'left',
+                        'static' => false
+                    ),
+                    'alignment' => 'left',
+                    'static' => false,
+                    'position' => 4,
+                    'type' => 'content'
+                ),
+                'block-5' => array_merge(array(
+                        'position' => 5,
+                        'type' => 'divider'
+                    ), $defaultDivider
+                ),
+                'block-6' => array(
+                    'text' => array(
+                        'value' => '<h2><strong>'.__('Step 3:', WYSIJA).'</strong> '.__('drop content here', WYSIJA).'</h2>'.
+                                    '<p>'.sprintf(__('Drag and drop %1$stext, posts, dividers.%2$s Look on the right!', WYSIJA), '<strong>', '</strong>').'</p>'.
+                                    '<p>'.sprintf(__('You can even %1$ssocial bookmarks%2$s like these:', WYSIJA), '<strong>', '</strong>').'</p>'
+                    ),
+                    'image' => null,
+                    'alignment' => 'left',
+                    'static' => false,
+                    'position' => 6,
+                    'type' => 'content'
+                ),
+                'block-7' => array(
+                    'width' => 184,
+                    'alignment' => 'center',
+                    'items' => array(
+                        array_merge(array(
+                            'url' => 'http://www.facebook.com/wysija',
+                            'alt' => 'Facebook',
+                            'cellWidth' => 61,
+                            'cellHeight' => 32
+                        ), $bookmarks['facebook']),
+                        array_merge(array(
+                            'url' => 'http://www.twitter.com/wysija',
+                            'alt' => 'Twitter',
+                            'cellWidth' => 61,
+                            'cellHeight' => 32
+                        ), $bookmarks['twitter']),
+                        array_merge(array(
+                            'url' => 'https://plus.google.com/104749849451537343615',
+                            'alt' => 'Google',
+                            'cellWidth' => 61,
+                            'cellHeight' => 32
+                        ), $bookmarks['google'])
+                    ),
+                    'position' => 7,
+                    'type' => 'gallery'
+                ),
+                'block-8' => array_merge(array(
+                        'position' => 8,
+                        'type' => 'divider'
+                    ), $defaultDivider
+                ),
+                'block-9' => array(
+                    'text' => array(
+                        'value' => '<h2><strong>'.__('Step 4:', WYSIJA).'</strong> '.__('and the footer?', WYSIJA).'</h2>'.
+                                    '<p>'.sprintf(__('Change the footer\'s content in Wysija\'s %1$sSettings%2$s page.', WYSIJA), '<strong>', '</strong>').'</p>'
+                    ),
+                    'image' => null,
+                    'alignment' => 'left',
+                    'static' => false,
+                    'position' => 9,
+                    'type' => 'content'
+                )
+            ),
+            'footer' => array(
+                'text' => NULL,
+                'image' => array(
+                    'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/footer.png',
+                    'width' => 600,
+                    'height' => 46,
+                    'alignment' => 'center',
+                    'static' => false,
+                ),
+                'alignment' => 'center',
+                'static' => false,
+                'type' => 'footer'
+            )
+        );
+        $dataEmail['wj_styles'] = array(
+            'html' => array(
+                'background' => 'e8e8e8'
+            ),
+            'header' => array(
+                'background' => 'e8e8e8'
+            ),
+            'body' => array(
+                'color' => '000000',
+                'family' => 'Arial',
+                'size' => 16,
+                'background' => 'ffffff'
+            ),
+            'footer' => array(
+                'background' => 'e8e8e8'
+            ),
+            'h1' => array(
+                'color' => '000000',
+                'family' => 'Trebuchet MS',
+                'size' => 40
+            ),
+            'h2' => array(
+                'color' => '424242',
+                'family' => 'Trebuchet MS',
+                'size' => 30
+            ),
+            'h3' => array(
+                'color' => '424242',
+                'family' => 'Trebuchet MS',
+                'size' => 24
+            ),
+            'a' => array(
+                'color' => '0000FF',
+                'underline' => false
+            ),
+            'unsubscribe' => array(
+                'color' => '000000'
+            ),
+            'viewbrowser' => array(
+                'color' => '000000',
+                'family' => 'Arial',
+                'size' => 12
+            )
+        );
+        //---- END DEFAULT EMAIL ---------
         foreach( $dataEmail['wj_data'] as $key =>&$eachval){
             if($key=="body") {
                 foreach($eachval as &$realeachval){
@@ -410,35 +319,16 @@ class WYSIJA_help_install extends WYSIJA_object{
             'quickselection' => array(
                 'wp-301' => array(
                     'identifier' => 'wp-301',
-                    'width' => 600,
-                    'height' => 72,
-                    'url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/header.png',
-                    'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/header-150x72.png'
-                ),
-                'wp-302' => array(
-                    'identifier' => 'wp-302',
                     'width' => 281,
                     'height' => 190,
                     'url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/pigeon.png',
                     'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/pigeon-150x150.png'
-                ),
-                'wp-303' => array(
-                    'identifier' => 'wp-303',
-                    'width' => 562,
-                    'height' => 318,
-                    'url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/youtube-video.png',
-                    'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/youtube-video-150x150.png'
-                ),
-                'wp-304' => array(
-                    'identifier' => 'wp-304',
-                    'width' => 600,
-                    'height' => 46,
-                    'url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/footer.png',
-                    'thumb_url' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/footer-150x46.png'
                 )
             )
         );
-        $dataEmail['wj_styles'] = $defaultStyles;
+        $wjEngine =& WYSIJA::get('wj_engine', 'helper');
+        $wjEngine->setData($dataEmail['wj_data']);
+        $result = false;
         $dataEmail['params'] = base64_encode(serialize($dataEmail['params']));
         $dataEmail['wj_styles'] = base64_encode(serialize($dataEmail['wj_styles']));
         $dataEmail['wj_data'] = base64_encode(serialize($dataEmail['wj_data']));
@@ -446,6 +336,13 @@ class WYSIJA_help_install extends WYSIJA_object{
         $dataEmail['replyto_name']=$dataEmail['from_name']=$valuesconfig['from_name'];
         $dataEmail['replyto_email']=$dataEmail['from_email']=$valuesconfig['from_email'];
         $data['email']['email_id']=$modelEmail->insert($dataEmail);
+
+        $modelEmail =& WYSIJA::get('email', 'model');
+        $emailData = $modelEmail->getOne(array('wj_styles', 'subject', 'params', 'email_id'), array('email_id' => $data['email']['email_id']));
+        $wjEngine->setStyles($emailData['wj_styles'], true);
+        $values = array('wj_data' => $wjEngine->getEncoded('data'));
+        $values['body'] = $wjEngine->renderEmail($emailData);
+        $result = $modelEmail->update($values, array('email_id' => $data['email']['email_id']));
     }
     function createTables(){
         $haserrors=false;

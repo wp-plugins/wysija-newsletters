@@ -117,7 +117,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		if(count($queueElements) < $this->send_limit){
 			$this->finish = true;
 		}
-                WYSIJA::log('helpers -> Queue ->process',$queueElements);
+                WYSIJA::log('helpers -> Queue ->process',$queueElements,'queue_process');
 		foreach($queueElements as $oneQueue){
 			$currentMail++; $this->nbprocess++;
 			if($this->report){
@@ -125,7 +125,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				if(function_exists('ob_flush')) @ob_flush();
 				@flush();
 			}
-                        WYSIJA::log('helpers -> Queue ->process ->sendOne',array('email_id'=>$oneQueue->email_id,'oneQueue'=>$oneQueue));
+                        WYSIJA::log('helpers -> Queue ->process ->sendOne',array('email_id'=>$oneQueue->email_id,'oneQueue'=>$oneQueue),'queue_process');
 			$result = $mailHelper->sendOne($oneQueue->email_id,$oneQueue);
 			$queueDeleteOk = true;
 			$otherMessage = '';
@@ -135,7 +135,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				$queueDelete[$oneQueue->email_id][] = $oneQueue->user_id;
 				$statsAdd[$oneQueue->email_id][1][(int)$mailHelper->sendHTML][] = $oneQueue->user_id;
 				$queueDeleteOk = $this->_deleteQueue($queueDelete);
-                                WYSIJA::log('helpers -> Queue ->process ->sendOne resultOK(queue delete)',$queueDelete);
+                                WYSIJA::log('helpers -> Queue ->process ->sendOne resultOK(queue delete)',$queueDelete,'queue_process');
 				$queueDelete = array();
 				if($this->nbprocess%10 == 0){
 					$this->_statsAdd($statsAdd);
@@ -165,7 +165,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				}else{
 					$queueUpdate[$oneQueue->email_id][] = $oneQueue->user_id;
 				}
-                                WYSIJA::log('helpers -> Queue ->process ->sendOne resultFAILED(queue update)',$queueUpdate);
+                                WYSIJA::log('helpers -> Queue ->process ->sendOne resultFAILED(queue update)',$queueUpdate,'queue_process');
 			}
 
                         $messageOnScreen = $mailHelper->reportMessage;
@@ -220,14 +220,14 @@ class WYSIJA_help_queue extends WYSIJA_object{
 
 
                         $realquery='DELETE FROM `[wysija]queue` WHERE email_id = '.intval($email_id).' AND user_id IN ('.implode(',',$subscribers).') LIMIT '.$nbsub;
-                        WYSIJA::log('helpers -> Queue ->process ->deleteQueue',$realquery);
+                        WYSIJA::log('helpers -> Queue ->process ->deleteQueue',$realquery,'queue_process');
                         $res=$modelQ->query($realquery);
 			if(!$res){
 				$status = false;
-                                WYSIJA::log('helpers -> Queue ->process ->deleteQueue failed',true);
+                                WYSIJA::log('helpers -> Queue ->process ->deleteQueue failed',true,'queue_process');
 
 			}else{
-                                WYSIJA::log('deleting queue ok',array('email_id'=>$email_id,'subscribers'=>$subscribers));
+                                WYSIJA::log('deleting queue ok',array('email_id'=>$email_id,'subscribers'=>$subscribers),'queue_process');
                                 $nbdeleted = $modelQ->getAffectedRows();
 				if($nbdeleted != $nbsub){
 					$status = false;
