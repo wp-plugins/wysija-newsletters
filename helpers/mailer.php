@@ -22,11 +22,11 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
         var $listids=false;
         var $listnames=false;
 
-	function WYSIJA_help_mailer($extension="",$config=false) {
-            $this->subscriberClass = &WYSIJA::get("user","model");
+	function WYSIJA_help_mailer($extension='',$config=false) {
+            $this->subscriberClass = &WYSIJA::get('user','model');
             $this->subscriberClass->getFormat=OBJECT;
-            $this->encodingHelper = &WYSIJA::get("encoding","helper");
-            $this->config =&WYSIJA::get("config","model");
+            $this->encodingHelper = &WYSIJA::get('encoding','helper');
+            $this->config =&WYSIJA::get('config','model');
             
             if(!empty($config)){
 
@@ -50,7 +50,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                         $this->elasticEmail->Username = trim($this->config->getValue('smtp_login'));
                         $this->elasticEmail->Password = trim($this->config->getValue('smtp_password'));
                         $this->isElasticRest=true;
-                    }elseif(false && in_array(trim($this->Host), array('smtp.sendgrid.net'))){
+                    }elseif(in_array(trim($this->Host), array('smtp.sendgrid.net')) && $this->config->getValue('smtp_rest')){
 
                         include_once (WYSIJA_INC. 'phpmailer' . DS . 'class.sendgrid.php');
                         $this->Mailer = 'sendgrid';
@@ -75,7 +75,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     }
                         break;
                 case 'site':
-                    if($this->config->getValue('sending_emails_site_method')=="phpmail"){
+                    if($this->config->getValue('sending_emails_site_method')=='phpmail'){
                         $this->IsMail();
                     }else{
                        $this->IsSendmail();
@@ -120,7 +120,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->embedImages();
             }
             if(empty($this->Subject) OR empty($this->Body)){
-                    $this->reportMessage = __("There is no subject or body in this email",WYSIJA);
+                    $this->reportMessage = __('There is no subject or body in this email',WYSIJA);
                     $this->errorNumber = 8;
                     return false;
             }
@@ -150,7 +150,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $receivers[] = $oneReceiver[0];
             }
             if(!$result){
-                $this->reportMessage = sprintf(__("Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers));
+                $this->reportMessage = sprintf(__('Error Sending Message <b><i>%s</i></b> to <b><i>%s</i></b>',WYSIJA),$this->Subject,implode('", "',$receivers));
                     if(!empty($this->ErrorInfo)) {
 
                         foreach($this->ErrorInfo as $error){
@@ -165,7 +165,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                             $this->error($this->reportMessage);
                     }
             }else{
-                    $this->reportMessage = sprintf(__("Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>",WYSIJA),$this->Subject,implode('", "',$receivers));
+                    $this->reportMessage = sprintf(__('Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>',WYSIJA),$this->Subject,implode('", "',$receivers));
                     if($this->report){
                         if(!empty($warnings)){
                             $this->reportMessage .= ' | '.$warnings;
@@ -222,9 +222,9 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 preg_match_all("#\[user:([^\]|]*)([^\]]*)\]#Uis", $emailobj->body, $values_user);
                 $tags=array();
                 foreach($values_user[0] as  $tag ){
-                    $tags[$tag]=explode(" | ",str_replace(array("[","]"),"",$tag));
+                    $tags[$tag]=explode(' | ',str_replace(array('[',']'),'',$tag));
                     foreach($tags[$tag] as &$arg){
-                        $arg=explode(":",$arg);
+                        $arg=explode(':',$arg);
                     }
                 }
                 $emailobj->tags=$tags;
@@ -236,7 +236,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             static $mainurl = '';
             $siteurl=get_option('siteurl');
             $lastchar=substr($siteurl, -1);
-            if($lastchar!="/")$siteurl.="/";
+            if($lastchar!='/')$siteurl.='/';
             if(empty($mainurl)){
                 $urls = parse_url($siteurl);
                 if(!empty($urls['path'])){

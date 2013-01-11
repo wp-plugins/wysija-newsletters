@@ -188,20 +188,25 @@ class WYSIJA_help extends WYSIJA_object{
             }
         }
 
-        $resultArray['msgs']=$this->getMsgs();
+        $resultArray['msgs'] = $this->getMsgs();
 
         //this header will allow ajax request from the home domain, this can be a lifesaver when domain mapping is on
-        if(function_exists('home_url'))     header('Access-Control-Allow-Origin: '.home_url());
+        if(function_exists('home_url')) header('Access-Control-Allow-Origin: '.home_url());
 
         header('Content-type: application/json');
-        $response=json_encode($resultArray);
+        $jsonData = json_encode($resultArray);
 
         //in some case scenario our client will have jquery forcing the jsonp so we need to adapt ourselves
-        if(isset($_REQUEST['callback'] ))   $response=$_REQUEST['callback'].'('.$response.')';
-        echo $response;
+        if(isset($_REQUEST['callback'])) {
+            $hJSONP =& WYSIJA::get('jsonp', 'helper');
+            if($hJSONP->isValidCallback($_REQUEST['callback'])) {
+                print $_REQUEST['callback'] . "($jsonData);";
+            }
+        } else {
+            print $jsonData;
+        }
         die();
     }
-
 }
 
 
@@ -210,11 +215,25 @@ class WYSIJA extends WYSIJA_object{
     function WYSIJA(){
 
     }
+
+    /**
+     * function created at the beginning to handle particular cases with WP get_permalink it got much smaller recently
+     * @param type $pageid
+     * @param type $params
+     * @param type $simple
+     * @return type
+     */
     public static function get_permalink($pageid,$params=array(),$simple=false){
         $hWPtools=&WYSIJA::get('wp_tools','helper');
         return $hWPtools->get_permalink($pageid,$params,$simple);
     }
 
+    /**
+     * translate the plugin
+     * @staticvar boolean $extensionloaded
+     * @param type $extendedplugin
+     * @return boolean
+     */
     public static function load_lang($extendedplugin=false){
         static $extensionloaded = false;
 
@@ -252,6 +271,7 @@ class WYSIJA extends WYSIJA_object{
                     $config=&WYSIJA::get('config','model',false,'wysija-newsletters',false);
                     $debugmode=0;
                     if(is_object($config) && method_exists($config, 'getValue'))  $debugmode=(int)$config->getValue('debug_new');
+
                     if($debugmode==0 || ($debugmode>0 && !WYSIJA::is_wysija_admin($debugmode))){
                          load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
                     }
@@ -266,6 +286,12 @@ class WYSIJA extends WYSIJA_object{
         }
     }
 
+    /**
+     * check if the user is tech support as this can be used to switch the language back to english when helping our customers
+     * @global type $current_user
+     * @param type $debugmode
+     * @return type
+     */
     public static function is_wysija_admin($debugmode=false){
         //to allow wysija team members to work in english mode if debug is activated
         global $current_user;
@@ -394,6 +420,13 @@ class WYSIJA extends WYSIJA_object{
 
     }
 
+    /**
+     * log function to spot some strange issues when sending emails for instance
+     * @param type $key
+     * @param type $data
+     * @param type $category
+     * @return type
+     */
     public static function log($key='default',$data='empty',$category='default'){
         $config=&WYSIJA::get('config','model');
         if((int)$config->getValue('debug_new')>1){
@@ -412,6 +445,7 @@ class WYSIJA extends WYSIJA_object{
 
     /**
      * the filter to add option to the cron frequency instead of being stuck with hourly, daily and twicedaily...
+     * we can add filters but we cannot delete other values such as the default ones, as this might break other plugins crons
      * @param type $param
      * @return type
      */
@@ -459,7 +493,7 @@ class WYSIJA extends WYSIJA_object{
     }
 
     /**
-     * cron where the frequency is decided by the administrator
+     * scheduled task for sending the emails in the queue, the frequency is set in the settings
      */
     public static function croned_queue() {
         /* create the automatic post notifications email if there is any*/
@@ -479,6 +513,7 @@ class WYSIJA extends WYSIJA_object{
 
 
     /**
+     * everyday we make sure not to leave any trash files
      * remove temporary files
      */
     public static function croned_daily() {
@@ -503,6 +538,9 @@ class WYSIJA extends WYSIJA_object{
         }
     }
 
+    /**
+     * monthly cron not active yet
+     */
     public static function croned_monthly() {
         @ini_set('max_execution_time',0);
 
@@ -514,6 +552,9 @@ class WYSIJA extends WYSIJA_object{
         }
     }
 
+    /**
+     * when we deactivate the plugin we clear the WP install from those cron records
+     */
     public static function deactivate() {
         wp_clear_scheduled_hook('wysija_cron_queue');
         wp_clear_scheduled_hook('wysija_cron_bounce');
@@ -523,7 +564,13 @@ class WYSIJA extends WYSIJA_object{
     }
 
 
-
+    /**
+     * wysija's redirect allows to save some variables for the next page load such as notices etc..
+     * @global type $wysija_msg
+     * @global type $wysija_queries
+     * @global type $wysija_queries_errors
+     * @param type $redirectTo
+     */
     public static function redirect($redirectTo){
          /* save the messages */
         global $wysija_msg,$wysija_queries,$wysija_queries_errors;
@@ -534,7 +581,9 @@ class WYSIJA extends WYSIJA_object{
         exit;
     }
 
-
+    /**
+     * custom post type for wysija is call wysijap as in wysija's post
+     */
     public static function create_post_type() {
 
         //by default there is url rewriteing on wysijap custom post, though in one client case I had to deactivate it.
@@ -581,7 +630,13 @@ class WYSIJA extends WYSIJA_object{
 
     }
 
-
+    /**
+     * wysija update_option function is very similar to WordPress' one but it
+     * can also manage new options not automatically loaded each time
+     * @param type $option_name
+     * @param type $newvalue
+     * @param type $defaultload this parameter is the advantage other Wp's update_option here
+     */
     public static function update_option($option_name,$newvalue,$defaultload='no'){
         if ( get_option( $option_name ) != $newvalue ) {
             update_option( $option_name, $newvalue );
@@ -590,6 +645,11 @@ class WYSIJA extends WYSIJA_object{
         }
     }
 
+    /**
+     * When a WordPress user is added we also need to add it to the subscribers list
+     * @param type $user_id
+     * @return type
+     */
     public static function hook_add_WP_subscriber($user_id) {
         $data=get_userdata($user_id);
 
@@ -621,6 +681,11 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
+    /**
+     * when a WordPress user is updated we also need to update the corresponding subscriber
+     * @param type $user_id
+     * @return type
+     */
     public static function hook_edit_WP_subscriber($user_id) {
         $data=get_userdata($user_id);
 
@@ -668,6 +733,10 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
+    /**
+     * when a wp user is deleted we also delete the subscriber corresponding to it
+     * @param type $user_id
+     */
     public static function hook_del_WP_subscriber($user_id) {
         $modelConf=&WYSIJA::get('config','model');
         $modelUser=&WYSIJA::get('user','model');
@@ -677,6 +746,13 @@ class WYSIJA extends WYSIJA_object{
         $modelUser->delete(array('user_id'=>$data['user_id'],'list_id'=>$modelConf->getValue('importwp_list_id')));
     }
 
+    /**
+     * post notification transition hook, know when a post really gets published
+     * @param type $new_status
+     * @param type $old_status
+     * @param type $post
+     * @return type
+     */
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
         WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
         if( $new_status=='publish' && $old_status!=$new_status){
@@ -696,11 +772,18 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
+    /**
+     * uninstall process not used
+     */
     public static function uninstall(){
         $helperUS=&WYSIJA::get('uninstall','helper');
         $helperUS->uninstall();
     }
 
+    /**
+     * this function is run when wysija gets activated
+     * there is no installation process here, all is about checking the global status of the app
+     */
     public static function activate(){
         $encoded_option=get_option('wysija');
         $installApp=false;
@@ -709,27 +792,47 @@ class WYSIJA extends WYSIJA_object{
             if(isset($values['installed'])) $installApp=true;
         }
 
-        /*test again for plugins on reactivation*/
+        //test again for plugins on reactivation
         if($installApp){
             $importHelp=&WYSIJA::get('import','helper');
             $importHelp->testPlugins();
 
-            /*resynch wordpress list*/
+            //resynch wordpress list
             $helperU=&WYSIJA::get('user','helper');
             $helperU->synchList($values['importwp_list_id']);
         }
     }
 
+    /**
+     * the is_plugin_active functions from WordPress sometimes are not loaded so here is one that works for single and multisites anywhere in the code
+     * @param type $pluginName
+     * @return type
+     */
     public static function is_plugin_active($pluginName){
         $arrayactiveplugins=get_option('active_plugins');
-        if(in_array($pluginName, $arrayactiveplugins)/*is_plugin_active($conflictPlug['file'])*/) {
-            //plugin is activated
+        //we check in the list of the site options if the plugin is activated
+        if(in_array($pluginName, $arrayactiveplugins)) {
+            //plugin is activated for that site
             return true;
         }
+
+        //if this is a multisite it might not be activated in the site option but network activated though
+        if(is_multisite()){
+            $plugins = get_site_option('active_sitewide_plugins');
+            //plugin is activated for that multisite
+            if(isset($plugins[$pluginName])){
+                return true;
+            }
+        }
+
         return false;
     }
 
-    /*make sure that the current user has the good access rights corresponding to its role*/
+    /**
+     * make sure that the current user has the good access rights corresponding to its role
+     * @global type $current_user
+     * @return type
+     */
     public static function update_user_caps(){
         global $current_user;
 
@@ -740,6 +843,11 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
+    /**
+     * depending where it's used the base function from WordPress doesn't work, so this one will work anywhere
+     * @param type $capability
+     * @return type
+     */
     public static function current_user_can($capability){
         if(!$capability) return false;
         WYSIJA::update_user_caps();
@@ -747,9 +855,16 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
+    /**
+     * this function get and sets the cron schedules when Wysija's own cron system is active
+     * @staticvar type $cron_schedules
+     * @param type $schedule
+     * @return type
+     */
     public static function get_cron_schedule($schedule='queue'){
         static $cron_schedules;
 
+        //if the cron schedules are already loaded statically then we just have to return the right schedule value
         if(!empty($cron_schedules)){
             if($schedule=='all') return $cron_schedules;
             if(isset($cron_schedules[$schedule])) {
@@ -759,6 +874,7 @@ class WYSIJA extends WYSIJA_object{
                 return false;
             }
         }else{
+            //this is the first time this function is executed so let's get them from the db and store them statically
             $cron_schedules=get_option('wysija_schedules',array());
             if(!empty($cron_schedules)){
                 if(isset($cron_schedules[$schedule]))   return $cron_schedules[$schedule];
@@ -770,6 +886,11 @@ class WYSIJA extends WYSIJA_object{
         }
         return false;
     }
+
+    /**
+     * return the frequency for each cron task needed by wysija
+     * @return type an array of frequencies
+     */
     public static function get_cron_frequencies(){
         $mConfig=&WYSIJA::get('config','model');
         $fHelper=&WYSIJA::get('forms','helper');
@@ -778,6 +899,15 @@ class WYSIJA extends WYSIJA_object{
         if(isset($fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')]))  $bounce_frequency=$fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')];
         return array('queue'=>$queue_frequency,'bounce'=>$bounce_frequency,'daily'=>86400,'weekly'=>604800,'monthly'=>2419200);
     }
+
+    /**
+     * set the next cron schedule
+     * TODO : needs probably to make the difference of running process for the next schedule, so that there is no delay(this is only problematic on some slow servers)
+     * @param type $schedule
+     * @param type $lastsaved
+     * @param type $set_running
+     * @return type
+     */
     public static function set_cron_schedule($schedule=false,$lastsaved=0,$set_running=false){
         $cron_schedules=array();
 
@@ -815,7 +945,10 @@ class WYSIJA extends WYSIJA_object{
         return true;
     }
 
-    /*check that there is no due cron*/
+    /**
+     * check that there is no passed schedules that need to be executed now
+     * @return type
+     */
     public static function cron_check() {
 
         $cron_schedules=WYSIJA::get_cron_schedule('all');

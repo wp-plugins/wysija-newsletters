@@ -24,7 +24,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $email_id = (int)$_REQUEST['id'];
 
             $campaignsHelper =& WYSIJA::get('campaigns', 'helper');
-            
+
             if(isset($res['templates']['divider_options'])) {
                 // save divider
                 $campaignsHelper->saveParameters($email_id, 'divider', $res['templates']['divider_options']);
@@ -413,21 +413,25 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         // get back email data as it will be updated during the rendering (articles ids + articles count)
         $emailChild = $wjEngine->getEmailData();
 
-        if($emailChild['type']==2 && isset($emailChild['params']['autonl']['articles'])){
-            $countvar=$firstsubject=$totalchild='';
-            if(isset($emailChild['params']['autonl']['articles']['count'])) $countvar=(int)$emailChild['params']['autonl']['articles']['count'];
-            if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstsubject=$emailChild['params']['autonl']['articles']['first_subject'];
-            if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalchild=(int)$emailChild['params']['autonl']['articles']['total_child'];
-            if(empty($firstsubject)){
+        if((int)$emailChild['type'] === 2 && isset($emailChild['params']['autonl']['articles'])){
+
+            $itemCount = 0;
+            $totalCount = 1;
+            $firstSubject = '';
+
+            if(isset($emailChild['params']['autonl']['articles']['count'])) $itemCount = (int)$emailChild['params']['autonl']['articles']['count'];
+            if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstSubject = $emailChild['params']['autonl']['articles']['first_subject'];
+            if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalCount = (int)$emailChild['params']['autonl']['articles']['total_child'] + 1;
+
+            if(empty($firstSubject)) {
                 $this->error(__('There are no articles to be sent in this email.',WYSIJA),1);
-                return array('result'=>false);
+                return array('result' => false);
             }
             $emailObject->subject = str_replace(
                     array('[total]','[number]','[post_title]'),
-                    array($totalchild,$countvar,$firstsubject),
+                    array($totalCount, $itemCount, $firstSubject),
                     $emailChild['subject']);
         }
-
 
         $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
 
@@ -446,7 +450,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 }
                 $params['params']=base64_encode(serialize($paramsemail));
             }
-
         }
 
         $params['email_id']=$emailObject->email_id;

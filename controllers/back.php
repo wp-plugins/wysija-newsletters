@@ -9,19 +9,20 @@ class WYSIJA_control_back extends WYSIJA_control{
     var $msgOnSave=true;
     var $pref=array();
     var $statuses=array();
+    var $viewShow=null;
 
     function WYSIJA_control_back(){
         parent::WYSIJA_control();
         global $wysija_msg,$wysija_queries,$wysija_queries_errors;
-        $wysija_msgTemp=get_option("wysija_msg");
+        $wysija_msgTemp=get_option('wysija_msg');
         if(is_array($wysija_msgTemp) && count($wysija_msgTemp)>0){
             $wysija_msg=$wysija_msgTemp;
         }
 
         $modelEmail =& WYSIJA::get('email', 'model');
         $campaign = $modelEmail->getOne('params', array('email_id' => 12));
-        $wysija_qryTemp=get_option("wysija_queries");
-        $wysija_qryErrors=get_option("wysija_queries_errors");
+        $wysija_qryTemp=get_option('wysija_queries');
+        $wysija_qryErrors=get_option('wysija_queries_errors');
         if(is_array($wysija_qryTemp) && count($wysija_qryTemp)>0){
             $wysija_queries=$wysija_qryTemp;
         }
@@ -30,9 +31,9 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysija_queries_errors=$wysija_qryErrors;
         }
 
-        WYSIJA::update_option("wysija_queries","");
-        WYSIJA::update_option("wysija_queries_errors","");
-        WYSIJA::update_option("wysija_msg","");
+        WYSIJA::update_option('wysija_queries','');
+        WYSIJA::update_option('wysija_queries_errors','');
+        WYSIJA::update_option('wysija_msg','');
         $this->pref=get_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',true);
 
         $prefupdate=false;
@@ -43,7 +44,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->pref=array();
         }
 
-        if(!isset($_GET['action'])) $action="default";
+        if(!isset($_GET['action'])) $action='default';
         else $action=$_GET['action'];
 
         if(isset($_REQUEST['limit_pp'])){
@@ -75,14 +76,19 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(get_option('wysicheck')){
             //$this->notice('licence check');
             $onedaysec=7*24*3600;
-                $helpLic=&WYSIJA::get('licence','helper');
-                $res=$helpLic->check(true);
-                if($res['nocontact']){
-                    /* redirect instantly to a page with a javascript file  where we check the domain is ok */
-                    $data=get_option('wysijey');
-                    /* remotely connect to host */
-                    wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
-                }
+            $helpLic=&WYSIJA::get('licence','helper');
+            $res=$helpLic->check(true);
+            if($res['nocontact']){
+                /* redirect instantly to a page with a javascript file  where we check the domain is ok */
+                $data=get_option('wysijey');
+                /* remotely connect to host */
+                wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
+            }
+        }
+
+        //check if the name of the site or the upload folder has changed of name :
+        if(WYSIJA_UPLOADS_URL!=$modelC->getValue('uploadurl')){
+
         }
 
     }
@@ -105,9 +111,9 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         /*get the filters*/
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
-            $this->filters["like"]=array();
+            $this->filters['like']=array();
             foreach($this->searchable as $searchable){
-                $this->filters["like"][$searchable]=$_REQUEST['search'];
+                $this->filters['like'][$searchable]=$_REQUEST['search'];
             }
 
         }
@@ -122,15 +128,16 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         if($this->statuses){
             //we count by statuses
-            $query="SELECT count(".$this->modelObj->pk.") as count, status FROM `[wysija]".$this->modelObj->table_name."` GROUP BY status";
-            $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
+            $query='SELECT count('.$this->modelObj->pk.') as count, status FROM `[wysija]'.$this->modelObj->table_name.'` GROUP BY status';
+            $countss=$this->modelObj->query('get_res',$query,ARRAY_A);
             $counts=array();
             $this->modelObj->countRows=0;
 
             foreach($countss as $count){
                 $mystat=(int)$count['status'];
+
                 $this->statuses[$mystat]['count']=$count['count'];
-                $this->statuses[$mystat]['uri']=$this->getDefaultUrl(false)."&link_filter=".$this->statuses[$mystat]['key'];
+                $this->statuses[$mystat]['uri']=$this->getDefaultUrl(false).'&link_filter='.$this->statuses[$mystat]['key'];
 
                 $this->modelObj->countRows=$this->modelObj->countRows+$count['count'];
                 $this->viewObj->statuses=$this->statuses;
@@ -146,13 +153,13 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(isset($_REQUEST['orderby'])){
             $this->modelObj->orderBy($_REQUEST['orderby'],strtoupper($_REQUEST['ordert']));
         }else{
-            $this->modelObj->orderBy($this->modelObj->getPk(),"DESC");
+            $this->modelObj->orderBy($this->modelObj->getPk(),'DESC');
         }
         $this->modelObj->limitON=true;
 
         $data=$this->modelObj->getRows($this->list_columns);
 
-        $methodDefaultData="defaultData";
+        $methodDefaultData='defaultData';
         if(method_exists($this,$methodDefaultData )){
             $this->$methodDefaultData($data);
         }
@@ -177,15 +184,15 @@ class WYSIJA_control_back extends WYSIJA_control{
         $this->WYSIJA_control_back();
         if($this->model){
             if(isset($_REQUEST['action']))  $action=$_REQUEST['action'];
-            else  $action="defaultDisplay";
-            if(!$action) $action="defaultDisplay";
+            else  $action='defaultDisplay';
+            if(!$action) $action='defaultDisplay';
 
             if($action){
                 $this->_tryAction($action);
             }
 
         }else{
-            $this->error("No Model is linked to this controller : ". get_class($this));
+            $this->error('No Model is linked to this controller : '. get_class($this));
             return false;
         }
 
@@ -200,7 +207,7 @@ class WYSIJA_control_back extends WYSIJA_control{
     }
 
     function _tryAction($action){
-
+        $action=strip_tags($action);
         $_REQUEST   = stripslashes_deep($_REQUEST);
         $_POST   = stripslashes_deep($_POST);
 
@@ -211,7 +218,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->viewShow=$this->action;
             if(!$this->viewShow) $this->viewShow='defaultDisplay';
 
-            if(strpos($action, "bulk_")===false)$this->$action();
+            if(strpos($action, 'bulk_')===false)$this->$action();
             else {
                 $this->$action($_REQUEST['wysija'][$this->model][$this->modelObj->pk]);
             }
@@ -219,17 +226,17 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->__setMetaTitle();
         }else{
             /* in some bulk actions we need to specify the action name and one or few variables*/
-            if(strpos($action,"actionvar_")!== false){
-                $data=explode("-",$action);
+            if(strpos($action,'actionvar_')!== false){
+                $data=explode('-',$action);
                 $datas=array();
 
                 foreach($data as $dt){
-                    $res=explode("_",$dt);
+                    $res=explode('_',$dt);
                     $datas[$res[0]]=$res[1];
                 }
 
-                $action =$datas["actionvar"];
-                unset($datas["actionvar"]);
+                $action =$datas['actionvar'];
+                unset($datas['actionvar']);
                 $this->action=$action;
 
                 if(method_exists($this, $this->action)){
@@ -239,11 +246,11 @@ class WYSIJA_control_back extends WYSIJA_control{
                     $this->__setMetaTitle();
 
                 }else{
-                    $this->error("Action '".$action."' does not exists in controller : ". get_class($this));
+                    $this->error("Action '".$action."' does not exist in controller : ". get_class($this));
                     $this->redirect();
                 }
             }else{
-                $this->error("Action '".$action."' does not exists in controller : ". get_class($this));
+                $this->error("Action '".$action."' does not exist in controller : ". get_class($this));
                 $this->redirect();
                 //$this->defaultDisplay();
             }
@@ -265,7 +272,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
     function _checkTotalSubscribers(){
 
-        $config=&WYSIJA::get("config","model");
+        $config=&WYSIJA::get('config','model');
         $totalSubscribers=$config->getValue('total_subscribers');
 
         if((int)$totalSubscribers>1900){
@@ -293,7 +300,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             //$this->viewObj->render($this->action,$data);
 
         }else{
-            $this->error("Cannot edit element primary key is missing : ". get_class($this));
+            $this->error('Cannot edit element primary key is missing : '. get_class($this));
         }
 
     }
@@ -305,7 +312,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->data[$this->modelObj->table_name]=$this->modelObj->getOne($this->form_columns,array($this->modelObj->pk=>$id));
 
         }else{
-            $this->error("Cannot view element primary key is missing : ". get_class($this));
+            $this->error('Cannot view element primary key is missing : '. get_class($this));
         }
 
     }
@@ -315,7 +322,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(!$dataPost){
             $data=array();
             foreach($this->form_columns as $key){
-                $data[$key]="";
+                $data[$key]='';
             }
         }else{
 
@@ -323,7 +330,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             foreach($this->form_columns as $key){
                 if($key != $this->viewObj->model->pk)  $data[$key]=$dataPost[$key];
             }
-            $data[$this->viewObj->model->pk]="";
+            $data[$this->viewObj->model->pk]='';
         }
 
 
@@ -342,8 +349,13 @@ class WYSIJA_control_back extends WYSIJA_control{
             $result=$this->modelObj->update($_POST['wysija'][$this->model],$conditions);
 
             if($this->msgOnSave){
-                if($result) $this->notice($this->messages['update'][true]);
-                else{
+
+                // Create the update success message and add edit again link.
+                $update_success = str_replace(array('[LINK]','[/LINK]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$result.'" >',"</a>"), $this->messages['update'][true]);
+
+                if ($result) {
+                    $this->notice($update_success);
+                } else {
                     if($result==0){
 
                     }else{
@@ -405,7 +417,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             $result=$this->modelObj->delete($conditions);
             $this->modelObj->reset();
         }
-        $this->notice(__("Elements deleted",WYSIJA));
+        $this->notice(__('Elements deleted',WYSIJA));
         $this->redirect();
     }
 
@@ -417,7 +429,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         $result=$this->modelObj->delete($conditions);
         if($result){
-            $this->notice(__("Element has been deleted.",WYSIJA));
+            $this->notice(__('Element has been deleted.',WYSIJA));
         }
 
 
@@ -444,7 +456,7 @@ class WYSIJA_control_back extends WYSIJA_control{
     }
 
     function popupReturn($viewFunc) {
-        return wp_iframe( array($this->viewObj,"popup_".$viewFunc), $this->data);
+        return wp_iframe( array($this->viewObj,'popup_'.$viewFunc), $this->data);
     }
 
     function _addTab($defaulttab){
@@ -460,7 +472,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         $config=&WYSIJA::get('config','model');
         $_GET['post_id']=$_REQUEST['post_id']=$config->getValue('confirm_email_link');
         $post_id = isset($_GET['post_id'])? (int) $_GET['post_id'] : 0;
-        if(file_exists(ABSPATH."wp-admin".DS.'admin.php')) require_once(ABSPATH."wp-admin".DS.'admin.php');
+        if(file_exists(ABSPATH.'wp-admin'.DS.'admin.php')) require_once(ABSPATH.'wp-admin'.DS.'admin.php');
 
         @header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
@@ -472,10 +484,10 @@ class WYSIJA_control_back extends WYSIJA_control{
             //if wp version includes plupload then let's use it
             if(version_compare(get_bloginfo('version'), '3.3.0')>= 0){
                 $this->iframeTabs=array(
-            'special_new_wordp_upload'=>__("Upload",WYSIJA));
+            'special_new_wordp_upload'=>__('Upload',WYSIJA));
             }else{
                 $this->iframeTabs=array(
-            'special_wordp_upload'=>__("Upload",WYSIJA));
+            'special_wordp_upload'=>__('Upload',WYSIJA));
             }
 
             $this->iframeTabs['special_wysija_browse']=__('Newsletter Images',WYSIJA);

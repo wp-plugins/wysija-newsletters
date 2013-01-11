@@ -2,27 +2,27 @@
 defined('WYSIJA') or die('Restricted access');
 
 class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
-    var $model="user";
-    var $view="widget_nl";
+    var $model='user';
+    var $view='widget_nl';
 
     function WYSIJA_control_front_subscribers(){
         parent::WYSIJA_control_front();
         if(isset($_REQUEST['message_success'])){
             $this->messages['insert'][true]=$_REQUEST['message_success'];
         }else{
-            $this->messages['insert'][true]=__("User has been inserted.",WYSIJA);
+            $this->messages['insert'][true]=__('User has been inserted.',WYSIJA);
         }
 
-        $this->messages['insert'][false]=__("User has not been inserted.",WYSIJA);
-        $this->messages['update'][true]=__("User has been updated.",WYSIJA);
-        $this->messages['update'][false]=__("User has not been updated.",WYSIJA);
+        $this->messages['insert'][false]=__('User has not been inserted.',WYSIJA);
+        $this->messages['update'][true]=__('User has been updated.',WYSIJA);
+        $this->messages['update'][false]=__('User has not been updated.',WYSIJA);
     }
 
    function save(){
         $config=&WYSIJA::get('config','model');
 
-        if(!$config->getValue("allow_no_js")){
-            $this->notice(__("Subscription without JavaScript is disabled.",WYSIJA));
+        if(!$config->getValue('allow_no_js')){
+            $this->notice(__('Subscription without JavaScript is disabled.',WYSIJA));
             return false;
         }
 
@@ -72,7 +72,6 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
                 }
 
             }
-
         }
 
         $widgetdata=array();

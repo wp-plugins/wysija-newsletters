@@ -9,7 +9,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     function WYSIJA_view_back_campaigns(){
         $this->title=__("All Newsletters");
         $this->WYSIJA_view_back();
-        $this->jsTrans['selecmiss']=__('Please select some users first!',WYSIJA);
+        $this->jsTrans['selecmiss']=__('Select at least 1 subscriber!',WYSIJA);
         $this->search=array('title'=>__('Search newsletters',WYSIJA));
         $this->column_actions=array('editlist'=>__('Edit',WYSIJA),'duplicatelist'=>__('Duplicate',WYSIJA),'deletelist'=>__('Delete',WYSIJA));
     }
@@ -708,7 +708,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             if($letsgo){
                 $helperToolbox=&WYSIJA::get('toolbox','helper');
                if($row['type']!=2){
-                   $return.= '<p><strong>'.sprintf(__('Time remaining: %1$s',WYSIJA),$helperToolbox->duration($data['sent'][$row['email_id']]['remaining_time'],true,4)).'</strong><br/>'.$statusdata.$pause.'</p>';
+                   $return.= '<p><strong>'.sprintf(__('%1$s left.',WYSIJA),$helperToolbox->duration($data['sent'][$row['email_id']]['remaining_time'],true,4)).'</strong><br/>'.$statusdata.$pause.'</p>';
                    $return.= '<div class="info-stats">';
                }
 
@@ -719,7 +719,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                //Next batch of xx emails will be sent in xx minutes. Don't wait & send right now.
                if($pending){
-                   $return.= '<span style="color:#555">'.sprintf(__('%1$s email(s) pending.',WYSIJA),$nextBatchnumber);
+                   $return.= '<span style="color:#555"><a href="admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$row['email_id'].'&pending=1" title="view pending" class="action-send-test-editor" >'.sprintf(__('%1$s email(s) pending.',WYSIJA).'</a>',$nextBatchnumber);
                    $return.= '</span>';
                }else{
                    if($data['sent'][$row['email_id']]['running_for']){
@@ -954,8 +954,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'class'=>'validate[minCheckbox[1]] checkbox',
             'rowclass'=>'listcheckboxes',
             'label'=>__('Lists',WYSIJA),
-            'labeloff'=>1,
-            'desc'=>__('The list of subscribers which will be used for that campaign.',WYSIJA));
+            'labeloff'=>1);
         }
 
 
@@ -1072,7 +1071,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <li class="notice"><?php _e('Drag the widgets below into your newsletter.', WYSIJA) ?></li>
                     <li><a class="wysija_item" wysija_type="text"><?php _e('Plain text',WYSIJA) ?></a></li>
                     <?php if((int)$data['email']['type'] === 1 || ((int)$data['email']['type'] === 2 && (empty($data['email']['params']['autonl']['event']) || $data['email']['params']['autonl']['event'] !== 'new-articles'))) { ?><li><a class="wysija_item" wysija_type="post"><?php _e('WordPress post',WYSIJA) ?></a></li><?php } ?>
-                    <?php if((int)$data['email']['type'] === 2) { ?><li><a class="wysija_item" id="wysija-widget-autopost" wysija_type="popup-auto-post"><?php _e('Automatic latest posts', WYSIJA) ?></a></li><?php } ?>
+                    <?php if((int)$data['email']['type'] === 2) { ?><li><a class="wysija_item" id="wysija-widget-autopost" wysija_type="popup-auto-post"><?php _e('Automatic latest content', WYSIJA) ?></a></li><?php } ?>
                     <li>
                         <a class="wysija_item" wysija_type="divider" wysija_src="<?php echo $divider['src'] ?>" wysija_width="<?php echo $divider['width'] ?>" wysija_height="<?php echo $divider['height'] ?>"><?php _e('Divider',WYSIJA) ?></a>
                         <a id="wysija_divider_settings" class="wysija_item_settings settings" href="javascript:;" href2="admin.php?page=wysija_campaigns&action=dividers&tab=dividers&emailId=<?php echo $_REQUEST['id'] ?>"><span></span></a>
@@ -1455,13 +1454,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 if((int)$this->data['email']['type']==2){
                     $sendNow=esc_attr(__('Activate now',WYSIJA));
                     $saveresumesend=esc_attr(__('Activate now',WYSIJA));
-                    $buttonsave=esc_attr(__('Save & close',WYSIJA));
+                    $buttonsave=esc_attr(__('Save as draft and close',WYSIJA));
                     $buttonsendlater=$buttonsave;
                 }else{
                     $sendNow=esc_attr(__('Send',WYSIJA));
                     $saveresumesend=esc_attr(__('Send',WYSIJA));
                     $buttonsave=esc_attr(__('Save & close',WYSIJA));
-                    $buttonsendlater=esc_attr(__('Save & close',WYSIJA));
+                    $buttonsendlater=esc_attr(__('Save as draft and close',WYSIJA));
                 }
 
                 if((int)$this->data['email']['status']==0){
@@ -1654,7 +1653,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             if(isset($valuefield[$list['list_id']]))    $checked=true;
 
             $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">';
-            $fieldHTML.=$formObj->checkbox( array('class'=>$params['class'].' checklists','alt'=>$list['name'], 'id'=>$field.$list['list_id'],'name'=>"wysija[campaign_list][list_id][]"),$list['list_id'],$checked).$list['name'].' <strong>('.$list['count'].')</strong>';
+            $fieldHTML.=$formObj->checkbox( array('class'=>$params['class'].' checklists','alt'=>$list['name'], 'id'=>$field.$list['list_id'],'name'=>"wysija[campaign_list][list_id][]"),$list['list_id'],$checked).$list['name'].' ('.$list['count'].')';
             $fieldHTML.='<input type="hidden" id="'.$field.$list['list_id'].'count" value="'.$list['count'].'" />';
             $fieldHTML.='</label></p>';
 
@@ -1835,7 +1834,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 $wptools=&WYSIJA::get('wp_tools','helper');
                 $post_types=$wptools->get_post_types();
             ?>
-            <label for="cpt"><?php _e('Select the post type', WYSIJA) ?></label>
+            <label for="cpt"><?php _e('Select post type', WYSIJA) ?></label>
             <select name="cpt" id="cpt">
             <?php
                 if($showall === true) {

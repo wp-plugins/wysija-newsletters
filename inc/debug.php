@@ -4,30 +4,33 @@ global $wysija_queries;
 $wysija_queries=array();
 
 include_once('dBug.php');
-function dbg($mixed,$exit=true){
-    if(!function_exists('is_user_logged_in')) include(ABSPATH.'wp-includes'.DS.'pluggable.php');
-    if(is_user_logged_in() || isset($_GET['dbg'])){
-        new dBug ( $mixed );
-        if($exit) {
-            global $wysija_msg,$wysija_queries,$wysija_queries_errors;
-            echo '<h2>WYSIJA MSG</h2>';
-            echo '<pre>';
-            dbg($wysija_msg,0);
-            echo '</pre>';
+if(!function_exists('dbg')) {
+    function dbg($mixed,$exit=true){
+        if(!function_exists('is_user_logged_in')) include(ABSPATH.'wp-includes'.DS.'pluggable.php');
+        if(is_user_logged_in() || isset($_GET['dbg'])){
+            new dBug ( $mixed );
+            if($exit) {
+                global $wysija_msg,$wysija_queries,$wysija_queries_errors;
+                echo '<h2>WYSIJA MSG</h2>';
+                echo '<pre>';
+                dbg($wysija_msg,0);
+                echo '</pre>';
+                
+                echo '<h2>WYSIJA QUERIES</h2>';
+                echo '<pre>';
+                dbg($wysija_queries,0);
+                echo '</pre>';
 
-            echo '<h2>WYSIJA QUERIES</h2>';
-            echo '<pre>';
-            dbg($wysija_queries,0);
-            echo '</pre>';
-
-            echo '<h2>WYSIJA QUERIES ERRORS</h2>';
-            echo '<pre>';
-            dbg($wysija_queries_errors,0);
-            echo '</pre>';
-            exit;
+                echo '<h2>WYSIJA QUERIES ERRORS</h2>';
+                echo '<pre>';
+                dbg($wysija_queries_errors,0);
+                echo '</pre>';
+                exit;
+            }
         }
     }
 }
+
 $debugok=false;
 $pageisconfig=false;
 //dbg(WYSIJA_DBG);

@@ -3,22 +3,22 @@ defined('WYSIJA') or die('Restricted access');
 
 
 class WYSIJA_control_front_confirm extends WYSIJA_control_front{
-    var $model="user";
-    var $view="confirm";
+    var $model='user';
+    var $view='confirm';
 
     function WYSIJA_control_front_confirm(){
         parent::WYSIJA_control_front();
     }
 
     function _testKeyuser(){
-        $this->helperUser=&WYSIJA::get("user","helper");
+        $this->helperUser=&WYSIJA::get('user','helper');
 
         $this->userData=$this->helperUser->checkUserKey();
         add_action('init',array($this,'testsession'));
 
         if(!$this->userData){
-            $this->title=__("Page does not exist.",WYSIJA);
-            $this->subtitle=__("Please verify your link to this page.",WYSIJA);
+            $this->title=__('Page does not exist.',WYSIJA);
+            $this->subtitle=__('Please verify your link to this page.',WYSIJA);
             return false;
         }
         return true;
@@ -183,30 +183,42 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             }
 
             //0 - get current lists of the user
-            $userlists=$modelUL->get(array('list_id'),array('user_id'=>$id));
+            $userlists=$modelUL->get(array('list_id','unsub_date'),array('user_id'=>$id));
 
             $oldlistids=$newlistids=array();
-            foreach($userlists as $listdata)    $oldlistids[]=$listdata['list_id'];
+            foreach($userlists as $listdata)    $oldlistids[$listdata['list_id']]=$listdata['unsub_date'];
 
             $config=&WYSIJA::get('config','model');
             $dbloptin=$config->getValue('confirm_dbleoptin');
             //1 - insert new user_list
             if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
+                $modelUL->reset();
+                $modelUL->update(array('sub_date'=>time()),array('user_id'=>$id));
                 foreach($_POST['wysija']['user_list']['list_id'] as $list_id){
-                    if(!in_array($list_id, $oldlistids)){
+                    //if the list is not already recorded for the user then we will need to insert it
+                    if(!isset($oldlistids[$list_id])){
                         $modelUL->reset();
                         $newlistids[]=$list_id;
                         $dataul=array('user_id'=>$id,'list_id'=>$list_id,'sub_date'=>time());
+                        //if double optin is on then we want to send a confirmation email for newly added subscription
                         if($dbloptin){
                             unset($dataul['sub_date']);
                             $modelUL->nohook=true;
                         }
                         $modelUL->insert($dataul);
+                    //if the list is recorded already then let's check the status, if it is an unsubed one then we update it
                     }else{
-                        $alreadysubscribelistids[]=$list_id;
+                        if($oldlistids[$list_id]>0){
+                            $modelUL->reset();
+                            $modelUL->update(array('unsub_date'=>0,'sub_date'=>time()),array('user_id'=>$id,'list_id'=>$list_id));
+                        }
+                        //$alreadysubscribelistids[]=$list_id;
                     }
                 }
             }
+
+
+
 
             //if a confirmation email needs to be sent then we send it
             if($dbloptin && !empty($newlistids)){
@@ -219,10 +231,10 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
 
             $notEqual = array_merge($core_listids, $list_ids);
 
-            //delete the lists to which you've unsubscribed
+            //delete the lists from which you've removed yourself
             $condiFirst = array('notequal'=>array('list_id'=> $notEqual), 'equal' => array('user_id' => $id, 'unsub_date' => 0));
             $modelUL=&WYSIJA::get('user_list','model');
-            $modelUL->delete($condiFirst);
+            $modelUL->update(array('unsub_date'=>time()),$condiFirst);
             $modelUL->reset();
             $this->notice(__('Newsletter profile has been updated.',WYSIJA));
             $this->subscriptions();

@@ -190,7 +190,6 @@ class WYSIJA_model_email extends WYSIJA_model{
      * @return type
      */
     function send($email,$queueemails=false){
-
         if(!is_array($email)){
             if(is_numeric($email)){
                 $email=$this->getOne($email);
@@ -198,7 +197,7 @@ class WYSIJA_model_email extends WYSIJA_model{
         }
 
         $sentstatus=array('status'=>99,'sent_at'=>time());
-        if((int)$email['type']==2){
+        if((int)$email['type'] === 2){
             /* post notification make a child newsletter when the timing is immediate otherwise let the cron take care of it */
             /*I don't see why I did that in the first place. no need to do that.*/
             /*if($email['params']['autonl']['event']=='new-articles' && $email['params']['autonl']['when-article']=='immediate'){
@@ -226,7 +225,7 @@ class WYSIJA_model_email extends WYSIJA_model{
         $emailChild=$email;
         $paramsVal=$email['params'];
 
-        if(!isset($paramsVal['autonl']['total_child']))  $paramsVal['autonl']['total_child']=0;
+        if(!isset($paramsVal['autonl']['total_child'])) $paramsVal['autonl']['total_child'] = 0;
         $paramsVal['autonl']['total_child']++;
 
         unset($emailChild['email_id']);

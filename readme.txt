@@ -1,9 +1,9 @@
 === Wysija Newsletters ===
 Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
-Requires at least: 3.1
+Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.1.9
+Stable tag: 2.2
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -98,8 +98,8 @@ Translations are included in the plugin. Join the translation teams on [our Tran
 * Portuguese BR
 * Romanian
 * Russian
+* Serbian
 * Slovak
-* Slovenian
 * Spanish
 * Swedish
 * Turkish
@@ -150,9 +150,29 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.2 - 2013-01-11 =
+
+* added script detector in debug mode to help resolve plugin & theme conflicts
+* added checkbox option in WordPress registration form. See Advanced Settings.
+* added on auto newsletter duplication reset the [number] tag
+* added a safeguard for manually deleted activation email in database
+* added support for SendGrid's web API to avoid blocked SMTP ports
+* added a sending status load bar for currently sending newsletter
+* improved "subscribe in comments" option for better Akismet integration
+* improved iframe.css inclusion for MS. All child sites take the main site's styles by default
+* renamed list "WordPress Synched" to "WordPress users" for clarity
+* fixed "HTML version" which was not working for visitors
+* fixed subscription form "HTML version" missing hidden fields in post/page widget
+* fixed newsletters themes installation with unsafe paths
+* fixed missing page/post title when subscribing without ajax
+* fixed encoding issue in HTML and PHP version of the subscription form in the widget
+* fixed save issue of subscriber's status in Subscriber's detail page in admin
+* fixed over 25 mini bugs
+* fixed lunch and went for a well deserved beer
+
 = 2.1.9 - 2012-12-11 =
 * added checkbox to comments in post for visitors to optin. Activate in Settings > Advanced
-* improved default newsletter into simple 5 min. guide 
+* improved default newsletter into simple 5 min. guide
 * improved over a dozen confusing labels and strings
 * improved compatibility with domain mapping
 * added hook wysija_preview to browser version of newsletter (thx to Matt)
@@ -160,7 +180,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed missing total click stats in newsletter stats
 * fixed saving changes when going back to Step 2 from Step 3
 * added sending autoresponders to subscribers added via the admin
-* removed 3 messages after installation. Nobody reads them.
+* removed 3 messages after installation. Nobody reads them
 * removed bulk add to synch list
 * removed bulk unsubscribe to all. Too dangerous.
 * went for a walk in the park with friends to celebrate this new version
