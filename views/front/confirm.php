@@ -3,7 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_view_front_confirm extends WYSIJA_view_front {
 
     function WYSIJA_view_front_confirm(){
-        $this->model=&WYSIJA::get("user","model");
+        $this->model=&WYSIJA::get('user','model');
     }
 
     /**
@@ -15,7 +15,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
     function subscriptions($data){
         $this->addScripts(false);
         $content=$this->messages();
-        $formObj=&WYSIJA::get("forms","helper");
+        $formObj=&WYSIJA::get('forms','helper');
 
         $content.='<form id="wysija-subscriptions" method="post" action="#wysija-subscriptions" class="form-valid">';
 
@@ -67,7 +67,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                         <td>
                             '.$formObj->radios(
                     array('id'=>'status', 'name'=>'wysija[user][status]'),
-                    array("-1"=>" ".__("Unsubscribed",WYSIJA)." ","1"=>" ".__("Subscribed",WYSIJA)." "),
+                    array("-1"=>" ".__("Unsubscribed",WYSIJA)." ","1"=>" ".__('Subscribed',WYSIJA).' '),
                     $data['user']['details']['status'],
                     ' class="validate[required]" ').'
                         </td>
@@ -106,44 +106,27 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                 }
             }
 
-
-            $formObj=&WYSIJA::get("forms","helper");
+            $formObj=&WYSIJA::get('forms','helper');
             foreach($data['list'] as $list){
-
                 $checked=false;
-                $extratext=$extraCheckbox='';
-                if(isset($valuefield[$list['list_id']])) {
+                $extratext=$extraCheckbox=$hiddenField='';
 
+                if(isset($valuefield[$list['list_id']])) {
+                    //if the subscriber has this list and is not unsubed then we check the checkbox
                     if($valuefield[$list['list_id']]['unsub_date']<=0){
                         $checked=true;
+                    }else{
+                        //we keep a reference of the list to which we are unsubscribed
+                        $hiddenField=$formObj->hidden(array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][unsub_list][]", 'class'=>'checkboxx'),$list['list_id']);
                     }
                 }
                 $labelHTML= '<label for="'.$field.$list['list_id'].'">'.$list['name'].'</label>';
                 $fieldHTML=$formObj->checkbox( array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][list_id][]", 'class'=>'checkboxx'),$list['list_id'],$checked,$extraCheckbox).$labelHTML;
-                $content.= "<tr><td colspan='2'>". $fieldHTML."</td></tr>";
+                $fieldHTML.=$hiddenField;
+                $content.= '<tr><td colspan="2">'. $fieldHTML.'</td></tr>';
             }
 
-
-
-
-            /*foreach($data['list'] as $list){
-                $status="-2";
-                if(isset($valuefield[$list['list_id']])){
-                    $status=$valuefield[$list['list_id']]['status'];
-                }
-                $labelHTML= '<p><label for="'.$field.$list['list_id'].'">'.$list['name'].'</label></p>';
-                $fieldHTML="<p>".$formObj->radios(
-                        array('id'=>$field.$list['list_id'], 'name'=>'wysija[user_list]['.$list['list_id'].']'),
-                        array("-1"=>" ".__("Unsubscribed",WYSIJA)." ","1"=>" ".__("Subscribed",WYSIJA)." "),
-                        $status,
-                        ' class="validate[required]" ')."</p>";
-
-                 $content.="<tr><th>".$labelHTML."</th><td>". $fieldHTML."</td></tr>";
-
-            }*/
         }
-
-
 
         $content.="</tbody></table>";
         $content.='<p class="submit">

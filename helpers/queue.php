@@ -18,13 +18,13 @@ class WYSIJA_help_queue extends WYSIJA_object{
  	var $listsubClass;
   	var $subClass;
 	function WYSIJA_help_queue(){
-            $this->config = &WYSIJA::get("config","model");
-            $this->subClass = &WYSIJA::get("user","model");//acymailing_get('class.sub');
-            $this->listsubClass = &WYSIJA::get("user_list","model");//acymailing_get('class.listsub');
+            $this->config = &WYSIJA::get('config','model');
+            $this->subClass = &WYSIJA::get('user','model');//acymailing_get('class.sub');
+            $this->listsubClass = &WYSIJA::get('user_list','model');//acymailing_get('class.listsub');
             $this->listsubClass->checkAccess = false;
             $this->listsubClass->sendNotif = false;
             $this->listsubClass->sendConf = false;
-            $this->send_limit = (int) $this->config->getValue("sending_emails_number");
+            $this->send_limit = (int) $this->config->getValue('sending_emails_number');
             if(isset($_REQUEST['totalsend'])){
                 $this->send_limit = (int) $_REQUEST['totalsend']-$_REQUEST['alreadysent'];
             }
@@ -38,7 +38,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	}
 	function process($emailid=false,$user_id=false){
             if($emailid)    $this->email_id=$emailid;
-                $queueClass = &WYSIJA::get("queue","model");
+                $queueClass = &WYSIJA::get('queue','model');
 		$queueElements = $queueClass->getReady($this->send_limit,$this->email_id,$user_id);
                 $this->total=count($queueElements);
                 $this->start=0;
@@ -52,12 +52,12 @@ class WYSIJA_help_queue extends WYSIJA_object{
                             if($this->report){
                                 $disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
                                 $disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
-                                $disp.= "<div style='background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
-                                $disp.= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
-                                $disp.= sprintf(__('There are %1$s delayed email(s)',WYSIJA),count($queueElements));
+                                $disp.= '<div style="background-color : white;border : 1px solid grey; padding : 3px;font-size:14px">';
+                                $disp.= '<span id="divpauseinfo" style="padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;"> </span>';
+                                $disp.= sprintf(__('There are %1$s pending email(s)',WYSIJA),count($queueElements));
                                 $disp.= '</div>';
                                 foreach($queueElements as $element){
-                                    $disp.= "<div id='divinfo'>".sprintf(__('Email will be sent to %1$s at %2$s',WYSIJA),'<b>'.$element['email'].'</b>','<em>'.date_i18n(get_option('date_format').' H:i',$element['send_at']).'</em>')." </div>";
+                                    $disp.= '<div id="divinfo">'.sprintf(__('Email will be sent to %1$s at %2$s',WYSIJA),'<b>'.$element['email'].'</b>','<em>'.date_i18n(get_option('date_format').' H:i',$element['send_at']).'</em>').' </div>';
                                 }
                                 echo $disp;
                             }

@@ -9,6 +9,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
     var $_context = 'editor';
 
+    var $_hide_viewbrowser = false;
+    var $_hide_unsubscribe = false;
+
     var $_data = null;
     var $_styles = null;
 
@@ -60,8 +63,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'styleTransparent' => __('Check this box if you want transparency', WYSIJA),
             'ajaxLoading' => __('Loading...', WYSIJA),
             'customFieldsLabel' => __('Add first or last name of subscriber', WYSIJA),
-            'autoPostSettingsTitle' => __('Post selection options', WYSIJA),
-            'autoPostEditSettings' => __('Edit Automatic latest posts', WYSIJA),
+            'autoPostSettingsTitle' => __('Selection options', WYSIJA),
+            'autoPostEditSettings' => __('Edit Automatic latest content', WYSIJA),
             'autoPostImmediateNotice' => __('You can only add one widget when designing a post notification sent immediately after an article is published', WYSIJA),
             'toggleImagesTitle' => __('Preview without images', WYSIJA)
         );
@@ -214,7 +217,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'viewbrowser' => array(
                 'color' => '000000',
                 'family' => 'Arial',
-                'size' => $this->VIEWBROWSER_SIZES[3]
+                'size' => $this->VIEWBROWSER_SIZES[4]
             )
         );
     }
@@ -315,13 +318,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
     
     function renderThemes() {
         $themes = array();
-        $themeHelper =& WYSIJA::get('themes', 'helper');
-        $installed = $themeHelper->getInstalled();
+        $hThemes =& WYSIJA::get('themes', 'helper');
+        $installed = $hThemes->getInstalled();
         if(empty($installed)) {
             return '';
         } else {
             foreach($installed as $theme) {
-                $themes[] = $themeHelper->getInformation($theme);
+                $themes[] = $hThemes->getInformation($theme);
             }
         }
         $wjParser =& WYSIJA::get('wj_parser', 'helper');
@@ -330,8 +333,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
     }
     function renderThemeStyles($theme = 'default') {
         $this->setContext('editor');
-        $themeHelper =& WYSIJA::get('themes', 'helper');
-        $stylesheet = $themeHelper->getStylesheet($theme);
+        $hThemes =& WYSIJA::get('themes', 'helper');
+        $stylesheet = $hThemes->getStylesheet($theme);
         if($stylesheet === NULL) {
 
             $this->setStyles(null);
@@ -428,8 +431,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'footer' => null,
             'divider' => null
         );
-        $themeHelper =& WYSIJA::get('themes', 'helper');
-        $data = $themeHelper->getData($theme);
+        $hThemes =& WYSIJA::get('themes', 'helper');
+        $data = $hThemes->getData($theme);
         if($data['header'] !== NULL) {
             $output['header'] = $this->renderEditorHeader($data['header']);
         }
@@ -523,12 +526,21 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 $data['text_container'] = '.wysija-text-container';
                 $data['unsubscribe_container'] = '#wysija_unsubscribe';
 
-                $data['is_rtl'] = is_rtl();
+                if(function_exists('is_rtl')) {
+                    $data['is_rtl'] = is_rtl();
+                } else {
+                    $data['is_rtl'] = false;
+                }
             break;
         }
         return $wjParser->render($data, 'styles/css-'.$data['context'].'.html');
     }
     
+    function renderNotification($email = NULL) {
+        $this->_hide_viewbrowser = true;
+        $this->_hide_unsubscribe = true;
+        return $this->renderEmail($email);
+    }
     function renderEmail($email = NULL) {
 
         @ini_set('pcre.backtrack_limit', 1000000);
@@ -546,7 +558,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 'footer' => $this->renderEmailFooter(),
                 'unsubscribe' => $this->renderEmailUnsubscribe(),
                 'css' => $this->renderStyles(),
-                'styles' => $this->getStyles()
+                'styles' => $this->getStyles(),
+                'hide_viewbrowser' => $this->_hide_viewbrowser,
+                'hide_unsubscribe' => $this->_hide_unsubscribe
             );
 
             $data['subject'] = $this->getEmailData('subject');
@@ -671,8 +685,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
                 $params['readmore'] = trim(base64_decode($params['readmore']));
 
-                $articlesHelper =& WYSIJA::get('articles', 'helper');
-                $posts = $articlesHelper->getPosts($params);
+                $hArticles =& WYSIJA::get('articles', 'helper');
+                $posts = $hArticles->getPosts($params);
 
                 $postIds = array();
                 $postCount = 0;
@@ -706,7 +720,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                         }
                         if($params['image_alignment'] !== 'none') {
 
-                            $posts[$key]['post_image'] = $articlesHelper->getImage($posts[$key]);
+                            $posts[$key]['post_image'] = $hArticles->getImage($posts[$key]);
 
                             if($params['image_alignment'] === 'alternate') {
                                 $image_alignment = ($postIterator > 0) ? 'left' : 'right';
@@ -720,7 +734,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
                         $post_params = array_merge($params, array('image_alignment' => $image_alignment));
 
-                        $posts[$key] = $articlesHelper->convertPostToBlock($posts[$key], $post_params);
+                        $posts[$key] = $hArticles->convertPostToBlock($posts[$key], $post_params);
 
                         $posts[$key]['background_color'] = 'transparent';
 

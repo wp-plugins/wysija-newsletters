@@ -2,14 +2,14 @@
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_model_queue extends WYSIJA_model{
 
-    var $pk=array("email_id","user_id");
-    var $table_name="queue";
+    var $pk=array('email_id','user_id');
+    var $table_name='queue';
     var $columns=array(
-        'email_id'=>array("type"=>"integer"),
-        'user_id'=>array("type"=>"integer"),
-        'send_at' => array("req"=>true,"type"=>"integer"),
-        'priority' => array("type"=>"integer"),
-        'number_try' => array("type"=>"integer")
+        'email_id'=>array('type'=>'integer'),
+        'user_id'=>array('type'=>'integer'),
+        'send_at' => array('req'=>true,'type'=>'integer'),
+        'priority' => array('type'=>'integer'),
+        'number_try' => array('type'=>'integer')
     );
 
 
@@ -20,23 +20,23 @@ class WYSIJA_model_queue extends WYSIJA_model{
 
     function queueCampaign($campaignobj){
         if(!$campaignobj) {
-            $this->error("Missing campaign id in queueCampaign()");
+            $this->error('Missing campaign id in queueCampaign()');
             return false;
         }
 
         /* get campaign information */
-        $modelCamp=&WYSIJA::get("campaign","model");
+        $modelCamp=&WYSIJA::get('campaign','model');
         $data=$modelCamp->getDetails($campaignobj);
-        $modelC=&WYSIJA::get("config","model");
-        if($modelC->getValue("confirm_dbleoptin")) $statusmin=0;
+        $modelC=&WYSIJA::get('config','model');
+        if($modelC->getValue('confirm_dbleoptin')) $statusmin=0;
         else $statusmin=-1;
 
 
-        $query="INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ";
-        $query.="SELECT ".$data['email']['email_id'].", A.user_id,".time()."
+        $query='INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ';
+        $query.='SELECT '.$data['email']['email_id'].', A.user_id,'.time().'
             FROM [wysija]user_list as A
                 JOIN [wysija]user as B on A.user_id=B.user_id
-                    WHERE B.status>".$statusmin." AND A.list_id IN (".implode(",",$data['campaign']['lists']['ids']).") AND A.sub_date>".$statusmin." ";
+                    WHERE B.status>'.$statusmin.' AND A.list_id IN ('.implode(',',$data['campaign']['lists']['ids']).') AND A.sub_date>'.$statusmin.' ';
 
         $this->query($query);
 
@@ -69,10 +69,10 @@ class WYSIJA_model_queue extends WYSIJA_model{
             $mailid = intval($mailid);
             if(empty($mailid)) return false;
 
-            $classLists =&WYSIJA::get("campaign_list","model");
+            $classLists =&WYSIJA::get('campaign_list','model');
             $lists = $classLists->getReceivers($mailid,false);
             if(empty($lists)) return 0;
-            $config = &WYSIJA::get("config","model");
+            $config = &WYSIJA::get('config','model');
             $querySelect = 'SELECT DISTINCT a.user_id,'.$mailid.','.$time.','.(int) $config->getValue('priority_newsletter',3);
             $querySelect .= ' FROM [wysija]user_list as a ';
             $querySelect .= ' JOIN [wysija]user as b ON a.user_id = b.user_id ';

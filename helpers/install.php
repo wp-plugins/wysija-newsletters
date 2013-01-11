@@ -34,14 +34,14 @@ class WYSIJA_help_install extends WYSIJA_object{
         $mailModel=&WYSIJA::get('email','model');
         $mailModel->blockMe=true;
         $values['confirm_email_id']=$mailModel->insert(
-                array("type"=>"0",
-                    "from_email"=>$values["from_email"],
-                    "from_name"=>$values["from_name"],
-                    "replyto_email"=>$values["from_email"],
-                    "replyto_name"=>$values["from_name"],
-                    "subject"=>$modelConf->getValue("confirm_email_title"),
-                    "body"=>$modelConf->getValue("confirm_email_body"),
-                    "status"=>99));
+                array('type'=>'0',
+                    'from_email'=>$values['from_email'],
+                    'from_name'=>$values['from_name'],
+                    'replyto_email'=>$values['from_email'],
+                    'replyto_name'=>$values['from_name'],
+                    'subject'=>$modelConf->getValue('confirm_email_title'),
+                    'body'=>$modelConf->getValue('confirm_email_body'),
+                    'status'=>99));
         
         $values['installed']=true;
         $values['manage_subscriptions']=true;
@@ -89,17 +89,22 @@ class WYSIJA_help_install extends WYSIJA_object{
         }
         
 
-        
-        $helperF=&WYSIJA::get('file','helper');
-        if(!$helperF->makeDir()){
-            $upload_dir = wp_upload_dir();
-            $this->wp_error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir']).'<a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions">'.__('Read documentation',WYSIJA).'</a>');
-            $haserrors=true;
-        }
 
-        if($haserrors) return false;
+        $hFile = &WYSIJA::get('file','helper');
+        $upload_dir = wp_upload_dir();
+        $temp_dir = $hFile->makeDir();
+        if (!$temp_dir) {
+            $this->wp_error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir']).'<a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions">'.__('Read documentation',WYSIJA).'</a>');
+            $haserrors = true;
+        } else {
+
+            $index_file = 'index.html';
+            fclose(fopen($temp_dir.$index_file, "w"));
+        }
+        if ($haserrors) return false;
         return true;
     }
+
     function defaultList(&$values){
         $model=&WYSIJA::get('list','model');
         $listname=__('My first list',WYSIJA);
@@ -109,6 +114,11 @@ class WYSIJA_help_install extends WYSIJA_object{
             'is_public'=>1,
             'is_enabled'=>1));
         $values['default_list_id']=$defaultListId;
+
+        $helperUser=&WYSIJA::get('user','helper');
+        $current_user=WYSIJA::wp_get_userdata();
+        $user_ids = array($current_user->ID);
+        $id=$helperUser->addToList($values['default_list_id'],$user_ids);
     }
     function defaultCampaign($valuesconfig){
         $modelCampaign=&WYSIJA::get('campaign','model');
@@ -346,13 +356,13 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
     function createTables(){
         $haserrors=false;
-        $filename = dirname(__FILE__).DS."install.sql";
-        $handle = fopen($filename, "r");
+        $filename = dirname(__FILE__).DS.'install.sql';
+        $handle = fopen($filename, 'r');
         $query = fread($handle, filesize($filename));
         fclose($handle);
-        $modelObj=&WYSIJA::get("user","model");
-        $query=str_replace("CREATE TABLE IF NOT EXISTS `","CREATE TABLE IF NOT EXISTS `".$modelObj->getPrefix(),$query);
-        $queries=explode("-- QUERY ---",$query);
+        $modelObj=&WYSIJA::get('user','model');
+        $query=str_replace('CREATE TABLE IF NOT EXISTS `','CREATE TABLE IF NOT EXISTS `'.$modelObj->getPrefix(),$query);
+        $queries=explode('-- QUERY ---',$query);
 
         global $wpdb;
         foreach($queries as $qry){
@@ -364,7 +374,7 @@ class WYSIJA_help_install extends WYSIJA_object{
             }
         }
 
-        $arraytables=array("user_list","user","list","campaign","campaign_list","email","user_field","queue","user_history","email_user_stat","url","email_user_url","url_mail");
+        $arraytables=array('user_list','user','list','campaign','campaign_list','email','user_field','queue','user_history','email_user_stat','url','email_user_url','url_mail');
         $modelWysija=new WYSIJA_model();
         $missingtables=array();
         foreach($arraytables as $tablename){
@@ -381,13 +391,16 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
     function createWYSIJAdir(&$values){
         $upload_dir = wp_upload_dir();
-        $dirname=$upload_dir['basedir'].DS."wysija".DS;
-        $url=$upload_dir['baseurl']."/wysija/";
+        $dirname=$upload_dir['basedir'].DS.'wysija'.DS;
+        $url=$upload_dir['baseurl'].'/wysija/';
         if(!file_exists($dirname)){
             if(!mkdir($dirname, 0755,true)){
                 return false;
             }
         }
+
+        $filename = 'index.html';
+        fclose(fopen($dirname.$filename, "w"));
         $values['uploadfolder']=$dirname;
         $values['uploadurl']=$url;
     }
@@ -417,7 +430,7 @@ class WYSIJA_help_install extends WYSIJA_object{
       if (is_dir($dir)) {
         $files = scandir($dir);
         foreach ($files as $file)
-        if ($file != "." && $file != "..") $this->rrmdir("$dir".DS."$file");
+        if ($file != '.' && $file != '..') $this->rrmdir("$dir".DS."$file");
         rmdir($dir);
       }
       else if (file_exists($dir)) {
@@ -431,7 +444,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         mkdir($dst);
         $files = scandir($src);
         foreach ($files as $file)
-        if ($file != "." && $file != "..") $this->rcopy("$src/$file", "$dst/$file");
+        if ($file != '.' && $file != '..') $this->rcopy("$src/$file", "$dst/$file");
       }
       else if (file_exists($src)) {
           copy(str_replace('/',DS,$src), str_replace('/',DS,$dst));
@@ -440,8 +453,8 @@ class WYSIJA_help_install extends WYSIJA_object{
     function recordDefaultUserField(){
         $modelUF=&WYSIJA::get("user_field","model");
         $arrayInsert=array(
-            array("name"=>__("First name",WYSIJA),"column_name"=>"firstname","error_message"=>__("Please enter first name",WYSIJA)),
-            array("name"=>__("Last name",WYSIJA),"column_name"=>"lastname","error_message"=>__("Please enter last name",WYSIJA)));
+            array('name'=>__('First name',WYSIJA),'column_name'=>'firstname','error_message'=>__('Please enter first name',WYSIJA)),
+            array('name'=>__('Last name',WYSIJA),'column_name'=>'lastname','error_message'=>__('Please enter last name',WYSIJA)));
         foreach($arrayInsert as $insert){
             $modelUF->insert($insert);
             $modelUF->reset();
@@ -463,7 +476,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         'post_type' => 'wysijap',
         'post_author' => 1,
         'post_content' => '[wysija_page]',
-        'post_title' => __("Subscription confirmation",WYSIJA),
+        'post_title' => __('Subscription confirmation',WYSIJA),
         'post_name' => 'subscriptions');
 
         $helpersWPPOSTS=&WYSIJA::get('wp_posts','model');
@@ -485,7 +498,7 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
 
     function testNLplugins(){
-        $importHelp=&WYSIJA::get("import","helper");
+        $importHelp=&WYSIJA::get('import','helper');
         $importHelp->testPlugins();
     }
 }

@@ -121,7 +121,6 @@ class WYSIJA_model extends WYSIJA_object{
         $query.=$this->makeOrderBY();
 
         if($this->limitON) $query.=$this->setLimit($page,$limit);
-
         $results=$this->query("get_res",$query,$this->getFormat);
 
         //$this->escapeQuotesFromRes($results);
@@ -260,23 +259,31 @@ class WYSIJA_model extends WYSIJA_object{
                 foreach($values as $condK => $condVal){
 
                     /* secure from injections */
-                    $this->_secureFieldVal($condK,$condVal);
+                    $this->_secureFieldVal($condK, $condVal);
 
                     switch($type){
                         case "equal":
                             if(is_array($condVal)){
                                 $conditions[]=$condK.' IN ("'.implode('","', $condVal).'")';
                             }else{
-                                if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
-                                $conditions[]=$condK.'='.$condVal;
+                                if(is_null($condVal)) {
+                                    $conditions[] = $condK.' IS NULL';
+                                } else {
+                                    if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                                    $conditions[] = $condK.'='.$condVal;
+                                }
                             }
                             break;
                         case "notequal":
                             if(is_array($condVal)){
                                 $conditions[]=$condK.' NOT IN ("'.implode('","', $condVal).'")';
                             }else{
-                                if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
-                                $conditions[]=$condK.' != '.$condVal;
+                                if(is_null($condVal)) {
+                                    $conditions[] = $condK.' IS NOT NULL';
+                                } else {
+                                    if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
+                                    $conditions[] = $condK.' != '.$condVal;
+                                }
                             }
                             break;
                         case "like":
@@ -405,7 +412,6 @@ class WYSIJA_model extends WYSIJA_object{
         }else{
             $this->error(sprintf('missing values in model insert : %1$s.', get_class($this)));
         }
-
     }
 
 
@@ -823,7 +829,7 @@ class WYSIJA_model extends WYSIJA_object{
 
             $columnName = $column;
             if(!isset($this->columns[$columnName])){
-                $this->error(sprintf('Column %1$s does not exists in model : %2$s', $columnName, get_class($this)));
+                $this->error(sprintf('Column %1$s does not exist in model : %2$s', $columnName, get_class($this)));
                 return false;
             }
         }

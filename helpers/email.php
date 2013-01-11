@@ -32,6 +32,8 @@ class WYSIJA_help_email extends WYSIJA_object{
                 case "smtp":
                     $smtp=array();
                     $send_method="SMTP";
+                    $config=&WYSIJA::get("config","model");
+                    if(!isset($values['smtp_rest'])) unset($config->values['smtp_rest']);
                     break;
                 case "gmail":
                     $send_method="Gmail";

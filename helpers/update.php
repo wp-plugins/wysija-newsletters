@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
         
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2');
     }
 
     function runUpdate($version){
@@ -147,10 +147,33 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
                 break;
+           case '2.2':
+               $mConfig=&WYSIJA::get('config','model');
+
+               $mList=&WYSIJA::get('list','model');
+               $mList->update(array('name'=>'WordPress Users'),array('list_id'=>$mConfig->getValue('importwp_list_id'), 'namekey'=>'users'));
+
+               $querys[]='DELETE FROM `[wysija]user_list` WHERE `list_id` = '.$mConfig->getValue('importwp_list_id').' AND `user_id` in ( SELECT user_id FROM `[wysija]user` where wpuser_id=0 );';
+                $errors=$this->runUpdateQueries($querys);
+                if($errors){
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
+                return true;
+               break;
             default:
                 return false;
         }
         return false;
+    }
+    function customerRequestMissingSubscriber(){
+        $mConfig=&WYSIJA::get('config','model');
+        $querys[]='UPDATE `[wysija]user_list` as A set A.sub_date= '.time().' where A.sub_date=0;';
+        $errors=$this->runUpdateQueries($querys);
+        if($errors){
+            $this->error(implode($errors,"\n"));
+            return false;
+        }
     }
     
     function checkForNewVersion($file='wysija-newsletters/index.php'){

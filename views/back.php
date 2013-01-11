@@ -96,8 +96,16 @@ class WYSIJA_view_back extends WYSIJA_view{
 
                         foreach($this->statuses as $keyst=>$status){
                             $class='';
-                            if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']==$status['key']) $class='current';
-                            echo '<li><a class="'.$class.'" href="'.$status['uri'].'">'.$status['title'].' <span class="count">('.$status['count'].')</span></a>';
+                            if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter'] === $status['key']) $class='current';
+
+                            // set item count: defaults to 0
+                            $count = (isset($status['count'])) ? (int)$status['count'] : 0;
+
+                            if(isset($status['uri'])) {
+                                echo '<li><a class="'.$class.'" href="'.$status['uri'].'">'.$status['title'].' <span class="count">('.$count.')</span></a>';
+                            } else {
+                                echo '<li><a class="'.$class.'" href="javascript:;">'.$status['title'].' <span class="count">('.$count.')</span></a>';
+                            }
                             if($last_key!=$keyst) echo ' | ';
                             echo '</li>';
 
@@ -207,99 +215,59 @@ class WYSIJA_view_back extends WYSIJA_view{
 
     }
 
-    /**
-     * helping function for listing management here is the pagination function
-     */
-    function pagination($paramsurl='',$second=false){
-        $numperofpages=1;
-        $numperofpages=ceil($this->model->countRows/$this->model->limit);
+    // Pagination for listing pages.
+    function pagination($paramsurl='', $second=false) {
 
-            ?>
-            <div class="tablenav-pages">
-                <span class="displaying-num"><?php
-                $limitend=$this->model->limit_end;
-                if($this->model->limit_end>$this->model->countRows) $limitend=$this->model->countRows;
-                if($numperofpages>1) echo sprintf(__('Displaying %1$d-%2$d of %3$d.',WYSIJA), $this->model->limit_start+1,$limitend,$this->model->countRows);
-                else echo sprintf(__('%1$d Items',WYSIJA), $this->model->countRows);
+        $number_of_pages = 1;
+        $number_of_pages = ceil($this->model->countRows/$this->model->limit);
 
-                        ?></span>
-                <?php
-                $pagiNUM=1;
-                if(isset($_REQUEST['pagi'])) $pagiNUM=$_REQUEST['pagi'];
-                if($numperofpages>1){
-                    $textBoxPagi="";
-                    $sufix="";
-                    if($second) $sufix="-2";
+        echo '<div class="tablenav-pages">';
 
-                    $textBoxPagi='<input id="wysija-pagination'.$sufix.'" type="text" name="pagi'.$sufix.'" size="4" value="'.$pagiNUM.'" />';
-                    $textBoxPagi.='<input id="wysija-pagination-max'.$sufix.'" type="hidden" name="pagimax'.$sufix.'" value="'.$numperofpages.'" />';
+        $current_page = 1;
+        if (isset($_REQUEST['pagi'])) {
+            $current_page = $_REQUEST['pagi'];
+        }
 
-                    $pagi='';
-                    if($pagiNUM!=1){
-                        $pagi.='<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi=1'.$paramsurl.'" alt="1" title="'.sprintf(__('Page %1$s',WYSIJA),1).'">«</a>';
-                        if($pagiNUM>2) $pagi.='<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($pagiNUM-1).$paramsurl.'" alt="'.($pagiNUM-1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($pagiNUM-1)).'" ><</a>';
-                    }
+        if ($number_of_pages > 1) {
 
-                    if($numperofpages>10){
-                        if($pagiNUM>3){
-                            if($pagiNUM>4)  $pagi.='<span class="dots">...</span>';
-                            for($i=$pagiNUM-3;$i<=$pagiNUM-1;$i++){
-                                if($i-1==$this->model->page){
-                                    $pagi.='<span class="page-numbers current">'.$i.'</span>';
-                                }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
-                            }
-                        }else{
-                            for($i=1;$i<=3;$i++){
-                                if($i-1==$this->model->page){
-                                    $pagi.='<span class="page-numbers current">'.$i.'</span>';
-                                }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
-                            }
-                            $pagi.='<span class="dots">...</span>';
-                        }
+            // Pagination input box to manually enter the page requested.
+            $pagination_input = "";
+            $suffix = "";
+            if ($second) {
+                $suffix = "-2";
+            }
+            $pagination_input = '<input id="wysija-pagination' . $suffix . '" type="text" name="pagi' . $suffix . '" size="4" value="' . $current_page . '" />';
+            $pagination_input .= '<input id="wysija-pagination-max' . $suffix . '" type="hidden" name="pagimax' . $suffix . '" value="' . $number_of_pages . '" />';
 
-                        $pagi.=$textBoxPagi;
+            // Final pagination container.
+            $pagi = '';
 
-                        if($pagiNUM>3 && $pagiNUM<($numperofpages-3)){
-                            for($i=$pagiNUM+1;$i<=$pagiNUM+3;$i++){
-                                if($i-1==$this->model->page){
-                                    $pagi.='<span class="page-numbers current">'.$i.'</span>';
-                                }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
-                            }
-                            $pagi.='<span class="dots">...</span>';
-                        }else{
-                            if($pagiNUM<3){
-                                $pagi.='<span class="dots">...</span>';
-                                for($i=($numperofpages-2);$i<=$numperofpages;$i++){
-                                    if($i-1==$this->model->page){
-                                        $pagi.='<span class="page-numbers current">'.$i.'</span>';
-                                    }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
-                                }
-                            }
-
-
-                        }
-
-                    }else{
-                        $pagi.=$textBoxPagi;
-                        for($i=1;$i<=$numperofpages;$i++){
-                            if($i-1==$this->model->page){
-                                $pagi.='<span class="page-numbers current">'.$i.'</span>';
-                            }else $pagi.='<a href="admin.php?page='.$_REQUEST['page'].'&pagi='.$i.$paramsurl.'" class="page-numbers" alt="'.$i.'" >'.$i.'</a>';
-                        }
-                    }
-
-
-                    if($numperofpages >2 && $pagiNUM!=$numperofpages){
-
-                        if(($numperofpages-$pagiNUM)>=2) $pagi.='<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($pagiNUM+1).$paramsurl.'" alt="'.($pagiNUM+1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($pagiNUM+1)).'">></a>';
-                        $pagi.='<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.$numperofpages.$paramsurl.'" alt="'.$numperofpages.'" title="'.sprintf(__('Page %1$s',WYSIJA),$numperofpages).'" >»</a>';
-
-                    }
-                    echo $pagi;
+            // Pagination Previous Arrows.
+            if ($current_page != 1) {
+                $pagi .= '<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi=1'.$paramsurl.'" alt="1" title="'.sprintf(__('Page %1$s',WYSIJA),1).'">&laquo;</a>';
+                if ($current_page>2) {
+                    $pagi .= '<a class="prev page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($current_page-1).$paramsurl.'" alt="'.($current_page-1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($current_page-1)).'" >&lsaquo;</a>';
                 }
-                ?>
-            </div>
-            <?php
+            }
+
+            // Input field and total pages.
+            $pagi .= $pagination_input;
+            $pagi.= '<span class="total-pages">' . sprintf(__('of %1$s',WYSIJA), $number_of_pages) . '</span>';
+
+            // Pagination Next arrows.
+            if($number_of_pages > 2 && $current_page != $number_of_pages){
+                if (($number_of_pages - $current_page) >= 2) {
+                    $pagi .= '<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($current_page+1).$paramsurl.'" alt="'.($current_page+1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($current_page+1)).'">&rsaquo;</a>';
+                }
+                $pagi .= '<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.$number_of_pages.$paramsurl.'" alt="'.$number_of_pages.'" title="'.sprintf(__('Page %1$s',WYSIJA),$number_of_pages).'" >&raquo;</a>';
+            }
+
+            echo $pagi;
+
+        }
+
+        echo '</div>';
+
     }
 
 

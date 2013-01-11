@@ -29,8 +29,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         
         if(defined('DOING_AJAX')){
 
-            if(!isset($_REQUEST['adminurl']) && !isset($_REQUEST['wysilog']))    add_action('wp_ajax_nopriv_wysija_ajax', array($this, 'ajax'));
-            else    add_action('wp_ajax_wysija_ajax', array($this, 'ajax'));
+            add_action( 'after_setup_theme', array($this, 'ajax_setup') );
         }else{
             if(WYSIJA_ITF)  {
                 add_action('admin_init', array($this->controller, 'main'));
@@ -71,6 +70,25 @@ class WYSIJA_help_back extends WYSIJA_help{
             }
             $this->controller->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
         }
+
+        if($config->getValue('commentform')){
+            add_action('wp_set_comment_status',  array($this,'comment_approved'), 60,2);
+       }
+    }
+    function comment_approved($cid,$comment_status){
+
+        $metaresult=get_comment_meta($cid, 'wysija_comment_subscribe', true);
+        if($comment_status=='approve' && get_comment_meta($cid, 'wysija_comment_subscribe', true)){
+            $mConfig=&WYSIJA::get('config','model');
+            $comment = get_comment($cid);
+            $userHelper=&WYSIJA::get('user','helper');
+            $data=array('user'=>array('email'=>$comment->comment_author_email,'firstname'=>$comment->comment_author),'user_list'=>array('list_ids'=>$mConfig->getValue('commentform_lists')));
+            $userHelper->addSubscriber($data);
+        }
+    }
+    function ajax_setup(){
+        if(!isset($_REQUEST['adminurl']) && !is_user_logged_in())    add_action('wp_ajax_nopriv_wysija_ajax', array($this, 'ajax'));
+        else    add_action('wp_ajax_wysija_ajax', array($this, 'ajax'));
     }
     function disable_wysija_version_requests( $r, $url ) {
         if ( 0 !== strpos( $url, 'http://api.wordpress.org/plugins/update-check' ) )

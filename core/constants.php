@@ -25,6 +25,11 @@ $upload_dir = wp_upload_dir();
 
 define('WYSIJA_UPLOADS_DIR',str_replace('/',DS,$upload_dir['basedir']).DS.'wysija'.DS);
 define('WYSIJA_UPLOADS_URL',$upload_dir['baseurl'].'/wysija/');
+if(is_multisite()){
+    define('WYSIJA_UPLOADS_MS_DIR',str_replace(get_option( 'upload_path' ), get_blog_option(1, 'upload_path'), $upload_dir['basedir']).DS.'wysija'.DS);
+    define('WYSIJA_UPLOADS_MS_URL',get_blog_option(1, 'siteurl').'/'.get_blog_option(1, 'upload_path').'/wysija/');
+}
+
 define('WYSIJA_INC',WYSIJA_DIR.'inc'.DS);
 define('WYSIJA_CORE',WYSIJA_DIR.'core'.DS);
 define('WYSIJA_VIEWS',WYSIJA_DIR.'views'.DS);

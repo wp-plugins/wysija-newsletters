@@ -49,11 +49,11 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         $configVal=$this->_convertPostedInarray();
 
         /*send a test mail*/
-        $toolbox=&WYSIJA::get('email','helper');
-        $res['result']=$toolbox->send_test_mail($configVal);
+        $hEmail=&WYSIJA::get('email','helper');
+        $res['result']=$hEmail->send_test_mail($configVal);
 
         if($res['result']){
-            $modelConf=&WYSIJA::get("config","model");
+            $modelConf=&WYSIJA::get('config','model');
             $modelConf->save(array('sending_emails_ok'=>$res['result']));
         }
         $this->_hideErrors();
@@ -168,7 +168,6 @@ class WYSIJA_control_back_config extends WYSIJA_control{
 
 
     function validate(){
-
         $helpLic=&WYSIJA::get('licence','helper');
         $res=$helpLic->check();
 

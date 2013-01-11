@@ -14,6 +14,8 @@ class WYSIJA_model_config extends WYSIJA_object{
         'dkim_active',
         'cron_manual',
         'commentform',
+        'smtp_rest',
+        'registerform',
     );
     var $defaults=array(
         'limit_listing'=>10,
@@ -43,6 +45,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'urlstats_base64'=>true,
         'viewinbrowser'=>true,
         'commentform'=>false,
+        'registerform'=>false
 
     );
 
@@ -96,7 +99,8 @@ class WYSIJA_model_config extends WYSIJA_object{
         $this->defaults['unsubscribe_linkname']=__('Unsubscribe',WYSIJA);
         $this->defaults['manage_subscriptions_linkname']=__('Edit your subscription',WYSIJA);
         $this->defaults['viewinbrowser_linkname']=$this->cleanTrans(__('Display problems? [link]View this newsletter in your browser.[/link]',WYSIJA));
-        $this->defaults['commentform_linkname']=__('Yes, add me to your mailing list.',WYSIJA);
+        $this->defaults['registerform_linkname']=$this->defaults['commentform_linkname']=__('Yes, add me to your mailing list.',WYSIJA);
+
 
         /**
          * List of all the conflictive extensions which invite themselves on our interfaces and break some of our js:
@@ -412,7 +416,7 @@ class WYSIJA_model_config extends WYSIJA_object{
 
                 WYSIJA::set_cron_schedule('queue');
             }
-            $this->notice(__('Your Wysija settings have been updated!',WYSIJA));
+            $this->notice(__('Your settings are saved.',WYSIJA));
         }
     }
 

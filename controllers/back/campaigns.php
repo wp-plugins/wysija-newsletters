@@ -3,10 +3,10 @@
 global $viewMedia;
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
-    var $model="campaign";
-    var $view="campaigns";
-    var $list_columns=array("campaign_id","name", "description");
-    var $searchable=array("name", "description");
+    var $model='campaign';
+    var $view='campaigns';
+    var $list_columns=array('campaign_id','name', 'description');
+    var $searchable=array('name', 'description');
     var $filters=array();
 
     function WYSIJA_control_back_campaigns(){
@@ -29,7 +29,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'title'=>'First Time? See it in Action',
             'format'=>'normal',
             'paragraphs'=>array(
-                    "Watch this 6 minute demo by one of our users (with a soothing voice too).",
+                    'Watch this 6 minute demo by one of our users (with a soothing voice too).',
                     "<iframe width='853' height='480' src='http://www.youtube.com/embed/pYzaHDTg5Jk' frameborder='0' allowfullscreen></iframe>"
                 )
             );
@@ -39,7 +39,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'cols'=>array(
                  array(
                     'title'=>'5 minute newbie guide',
-                    'content'=>'Your Wysija comes with an example newsletter. You\'ll see it when you close this welcome page. Edit it and start playing with it.'
+                    'content'=>'Your Wysija comes with an example newsletter. You\'ll see it when you close this welcome page. Edit it to start playing with it.'
             ),
                array(
                     'title'=>"Tip: visitors who comment can also subscribe",
@@ -63,7 +63,18 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         );
 
         $this->viewObj->skip_header=true;
+
         return true;
+    }
+
+    /**
+     * Sometimes our users have a bug where not all of the users from their list are showing up when sending, this is the action to call to fix it
+     * this is very rare.
+     */
+    function fix_lists(){
+        $hUpdate=&WYSIJA::get('update','helper');
+        $hUpdate->customerRequestMissingSubscriber();
+        exit;
     }
 
 	/* Welcome page for updaters */
@@ -74,7 +85,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $hReadme=&WYSIJA::get('readme','helper');
         $hReadme->scan();
         $this->data=array();
-        $this->data['abouttext']='Thanks for updating. You\'re cool.';
+        $this->data['abouttext']='It smells fresher here. Thanks for updating.';
 
         $mConfig=&WYSIJA::get('config','model');
         $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
@@ -93,16 +104,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 'title'=>'Added and Improved',
             'cols'=>array(
                 array(
-                    'title'=>"Subscribe in comments",
-                    'content'=>"Visitors who add comments to your posts can now join your mailing list by clicking on a checkbox. Nifty. Activate this option in your Advanced settings."
+                    'title'=>"Smoother for SendGrid",
+                    'content'=>"Sending with SendGrid? Send via the web API optionally to avoid blocked SMTP ports and increased speed in some cases. See your SMTP options to find it."
             ),
                 array(
-                    'title'=>'Easier for first time users',
-                    'content'=>'<a href="http://www.wysija.com/first-minutes-new-user/" title="First 5 minutes of users in Wysija" target="_blank" >We\'ve recently studied</a> what new users do in Wysija. We\'ve improved some text and made a new newsletter guide (available on new installs only).'
+                    'title'=>'Checkbox for WP Registration',
+                    'content'=>"Perfect for membership sites. Visitors who register to your site can now click a checkbox to join a list of your choice. Your current list <em>WordPress Users</em> can now be used to send important site information, instead of newsletters. Tidier. Activate in Advanced Settings."
             ),
                 array(
-                    'title'=>'Thank you. Yes, you!',
-                    'content'=>"You heeded our call and added ".'<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On our blog!">your reviews</a>. This really means the world to us 4. Keep \'em comin\'! Or click on the social bookmarks at the bottom of this page.'
+                    'title'=>"Ten short of 100 written reviews",
+                    'content'=>"We love reviews because they encourage us. They really really do. "."<a href='http://wordpress.org/support/view/plugin-reviews/wysija-newsletters' target='_blank' title='On wordpress.org'>Add your own</a> and make our day."
             )
             ),
             'format'=>'three-col',
@@ -112,12 +123,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'title'=>'We\'re Hiring a Hacker',
             'format'=>'normal',
             'paragraphs'=>array(
-                    "We've busted our HR capacity. We need new muscles.<br /><br />If you're young, girl or guy, and <strong>you want a serious PHP and jQuery challenge</strong>, not to mention responsibility, <a href='http://www.wysija.com/contact/' target='_blank' title='Our contact form'>get in touch with us</a>. <br /><br />You could add your own 5000 lines of code to the existing 45 000 by January. About 25 000 users will start appreciating your work."
+                    "We've busted our HR capacity. We need new muscles.<br /><br />If you're young, girl or guy, and <strong>you want a serious PHP and javascript challenge</strong>, not to mention responsibility, <a href='http://www.wysija.com/contact/' target='_blank' title='Our contact form'>get in touch with us</a>. <br /><br />You could add your own 5000 lines of code to the existing 45 000 by February. About 30 000 users will start appreciating your work."
                 )
         );
 
         $this->data['sections'][]=array(
-            'title'=>'Detailed Changes in this Release',
+            'title'=>'Change log',
             'format'=>'bullets',
             'paragraphs'=>$hReadme->changelog[WYSIJA::get_version()]
             );
@@ -139,22 +150,21 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     /* START prem check hook */
-    /*when curl or any php remote function not available wysija.com returns lcheck to that function*/
-    function licok(){
+    // when curl or any php remote function not available wysija.com returns lcheck to that function
+    function licok() {
         parent::WYSIJA_control_back();
-        $dt=get_option("wysijey");
+        $dt = get_option('wysijey');
 
-        if(isset($_REQUEST['xtz']) && $dt==$_REQUEST['xtz']){
-            $dataconf=array('premium_key'=>base64_encode(get_option('home').time()),'premium_val'=>time());
-            $this->notice(__("Premium version is valid for your site.",WYSIJA));
-        }else{
-            $dataconf=array('premium_key'=>"",'premium_val'=>"");
-            //$datadomain=unserialize(base64_decode($dt));
-            $this->error(str_replace(array("[link]","[/link]"),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$dt.'" target="_blank">','</a>'),
-            __("Premium licence does not exist for your site. Purchase it [link]here[/link].",WYSIJA)),1);
+        if(isset($_REQUEST['xtz']) && $dt === $_REQUEST['xtz']){
+            $dataconf = array('premium_key'=> base64_encode(get_option('home').time()), 'premium_val' => time());
+            $this->notice(__('Premium version is valid for your site.',WYSIJA));
+        } else {
+            $dataconf = array('premium_key' => '', 'premium_val' => '');
+            $this->error(str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$dt.'" target="_blank">','</a>'),
+            __('Premium licence does not exist for your site. Purchase it [link]here[/link].',WYSIJA)), 1);
         }
-        WYSIJA::update_option("wysicheck",false);
-        $modelConf=&WYSIJA::get("config","model");
+        WYSIJA::update_option('wysicheck',false);
+        $modelConf=&WYSIJA::get('config','model');
         $modelConf->save($dataconf);
 
         $this->redirect('admin.php?page=wysija_config#tab-premium');
@@ -162,8 +172,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     /* END prem check hook */
 
     function validateLic(){
-        $helpLic=&WYSIJA::get("licence","helper");
-        $res=$helpLic->check();
+        $helpLic=&WYSIJA::get('licence','helper');
+        $res = $helpLic->check();
 
         $this->redirect();
     }
@@ -172,7 +182,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $modelQ=&WYSIJA::get('queue','model');
         $config=&WYSIJA::get('config','model');
         if((int)$config->getValue('total_subscribers')<2000  ){
-
             if($modelQ->count()>0){
                 $helperQ=&WYSIJA::get('queue','helper');
                 $emailid=false;
@@ -384,9 +393,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $listres=$modelList->query('get_res',$query);
 
         if($count){
-          $configM=&WYSIJA::get('config','model');
-          $condit='>=';
-          if($configM->getValue('confirm_dbleoptin')) $condit='>';
+          $mConfig =& WYSIJA::get('config','model');
+          $condit = '>=';
+          if($mConfig->getValue('confirm_dbleoptin')) $condit='>';
           $qry1="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `[wysija]user_list` as A LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id WHERE B.status $condit 0 GROUP BY list_id";
 
           $total=$modelList->getResults($qry1);
@@ -502,17 +511,27 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         /* 1 - copy the campaign entry */
 
-        $model=&WYSIJA::get("campaign","model");
+        $model=&WYSIJA::get('campaign','model');
         $query='INSERT INTO `[wysija]campaign` (`name`,`description`)
-            SELECT concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`name`),`description` FROM [wysija]campaign
+            SELECT concat("'.stripslashes(__('Copy of ',WYSIJA)).'",`name`),`description` FROM [wysija]campaign
             WHERE campaign_id='.(int)$_REQUEST['id'];
         $campaignid=$model->query($query);
 
         /* 2 - copy the email entry */
         $query='INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`,`modified_at`)
-            SELECT '.$campaignid.', concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().','.time().' FROM [wysija]email
+            SELECT '.$campaignid.', concat("'.stripslashes(__('Copy of ',WYSIJA)).'",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().','.time().' FROM [wysija]email
             WHERE email_id='.(int)$_REQUEST['email_id'];
         $emailid=$model->query($query);
+
+        //let's reset the count of total childs for auto newsletter
+        $mEmail=&WYSIJA::get('email','model');
+        $emailData=$mEmail->getOne(false,array('email_id'=>$emailid));
+
+        if($emailData['type']==2){
+            $paramsReseted=$emailData['params'];
+            if(isset($paramsReseted['autonl']['total_child']))  $paramsReseted['autonl']['total_child']=0;
+            $mEmail->update(array('params'=>$paramsReseted),array('email_id'=>$emailid));
+        }
 
         /* 3 - copy the campaign_list entry */
         $query="INSERT INTO `[wysija]campaign_list` (`campaign_id`,`list_id`,`filter`)
@@ -520,21 +539,21 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             WHERE campaign_id=".(int)$_REQUEST['id'];
         $model->query($query);
 
-        $this->notice(__("The newsletter has been duplicated.",WYSIJA));
+        $this->notice(__('The newsletter has been duplicated.',WYSIJA));
 
         $this->redirect('admin.php?page=wysija_campaigns&id='.$emailid.'&action=edit');
     }
     function duplicateEmail(){
         if(!$this->_checkEmailExists($_REQUEST['id'])) return;
 
-        $model=&WYSIJA::get("campaign","model");
+        $model=&WYSIJA::get('campaign','model');
         /* 2 - copy the email entry */
         $query='INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`,`modified_at`)
             SELECT `campaign_id`, concat("'.stripslashes(__("Copy of ",WYSIJA)).'",`subject`),`body`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,'.time().','.time().' FROM [wysija]email
             WHERE email_id='.(int)$_REQUEST['id'];
         $emailid = $model->query($query);
 
-        $this->notice(__("The newsletter has been duplicated.",WYSIJA));
+        $this->notice(__('The newsletter has been duplicated.',WYSIJA));
 
         $this->redirect('admin.php?page=wysija_campaigns&id='.$emailid.'&action=edit');
     }
@@ -587,13 +606,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->js[]='jquery-ui-datepicker';
 
-        $modelList=&WYSIJA::get("list","model");
+        $modelList=&WYSIJA::get('list','model');
         $modelList->limitON=false;
         $this->data=array();
         $this->data['lists']=$this->__getLists(false,true,true);
 
-        $modelEmail=&WYSIJA::get("email","model");
-        $this->data['email']=$modelEmail->getOne(false,array("email_id"=>$_REQUEST['id']));
+        $modelEmail=&WYSIJA::get('email','model');
+        $this->data['email']=$modelEmail->getOne(false,array('email_id'=>$_REQUEST['id']));
 
         if((int)$this->data['email']['type']==2){
             $this->js['wysija-edit-autonl']='wysija-edit-autonl';
@@ -618,8 +637,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->jsLoc['wysija-edit-autonl']['autofields']=$this->data['autonl']['fields'];
 
-        $modelCL=&WYSIJA::get("campaign_list","model");
-        $this->data['campaign_list']=$modelCL->get(false,array("campaign_id"=>$this->data['email']['campaign_id']));
+        $modelCL=&WYSIJA::get('campaign_list','model');
+        $this->data['campaign_list']=$modelCL->get(false,array('campaign_id'=>$this->data['email']['campaign_id']));
         //dbg($this->data);
 
     }
@@ -628,16 +647,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->requireSecurity();
 
         if(isset($_REQUEST['id'])){
-            $modelCampaign=&WYSIJA::get("campaign","model");
-            $modelCampaign->delete(array("campaign_id"=>$_REQUEST['id']));
+            $modelCampaign=&WYSIJA::get('campaign','model');
+            $modelCampaign->delete(array('campaign_id'=>$_REQUEST['id']));
 
-            $modelCampaignL=&WYSIJA::get("campaign_list","model");
-            $modelCampaignL->delete(array("campaign_id"=>$_REQUEST['id']));
+            $modelCampaignL=&WYSIJA::get('campaign_list','model');
+            $modelCampaignL->delete(array('campaign_id'=>$_REQUEST['id']));
 
-            $modelEmail=&WYSIJA::get("email","model");
-            $modelEmail->delete(array("campaign_id"=>$_REQUEST['id']));
+            $modelEmail=&WYSIJA::get('email','model');
+            $modelEmail->delete(array('campaign_id'=>$_REQUEST['id']));
 
-            $this->notice(__("Newsletter deleted.",WYSIJA));
+            $this->notice(__('Newsletter deleted.',WYSIJA));
 
         }else{
 
@@ -652,10 +671,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         if(!$this->_checkEmailExists($_REQUEST['id'])) return;
         if(isset($_REQUEST['id'])){
 
-            $modelEmail=&WYSIJA::get("email","model");
-            $modelEmail->delete(array("email_id"=>$_REQUEST['id']));
+            $modelEmail=&WYSIJA::get('email','model');
+            $modelEmail->delete(array('email_id'=>$_REQUEST['id']));
 
-            $this->notice(__("Newsletter deleted.",WYSIJA));
+            $this->notice(__('Newsletter deleted.',WYSIJA));
 
         }else{
 
@@ -674,17 +693,17 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         if(isset($_REQUEST['id'])){
 
-            $modelEmail=&WYSIJA::get("email","model");
+            $modelEmail=&WYSIJA::get('email','model');
             $modelEmail->fieldValid=false;
             $emaildataarr=$modelEmail->getOne(array('email_id'=>$_REQUEST['id']));
 
-            $modelCampaign=&WYSIJA::get("campaign","model");
-            $modelCampaign->update(array("name"=>$_POST['wysija']['email']['subject'],"description"=>""),array("campaign_id"=>$emaildataarr['campaign_id']));
+            $modelCampaign=&WYSIJA::get('campaign','model');
+            $modelCampaign->update(array('name'=>$_POST['wysija']['email']['subject'],'description'=>''),array('campaign_id'=>$emaildataarr['campaign_id']));
             $campaign_id=$emaildataarr['campaign_id'];
             $email_id=$emaildataarr['email_id'];
             $dataEmail=array(
-                "campaign_id"=>$campaign_id,
-                "subject"=>$_POST['wysija']['email']['subject'],
+                'campaign_id'=>$campaign_id,
+                'subject'=>$_POST['wysija']['email']['subject'],
                 'type'=>$_POST['wysija']['email']['type']);
 
             if((int)$dataEmail['type'] === 2){
@@ -708,12 +727,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 $_REQUEST['return']=1;
             }
 
-            $data['email']['email_id']=$modelEmail->update($dataEmail,array("email_id"=>$_REQUEST['id']));
+            $data['email']['email_id']=$modelEmail->update($dataEmail,array('email_id'=>$_REQUEST['id']));
         } else {
-            $modelCampaign=&WYSIJA::get("campaign","model");
+            $modelCampaign=&WYSIJA::get('campaign','model');
             $campaign_id = $modelCampaign->insert(array('name' => $_POST['wysija']['email']['subject'], 'description' => ''));
 
-            $modelEmail=&WYSIJA::get("email","model");
+            $modelEmail=&WYSIJA::get('email','model');
             $modelEmail->fieldValid=false;
             $emaildata=array(
                 'campaign_id' => $campaign_id,
@@ -778,7 +797,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'body' => array(
                         'block-1' => array(
                             'text' => array(
-                                'value' => '<h3 class="align-right">'.sprintf(__("The posts below were added with the widget %sAutomatic latest posts%s", WYSIJA), '<strong>', '</strong>').'</h3>'
+                                'value' => '<h3 class="align-right">'.sprintf(__("The posts below were added with the widget %sAutomatic latest content%s", WYSIJA), '<strong>', '</strong>').'</h3>'
                             ),
                             'image' => array(
                                 'src' => WYSIJA_EDITOR_IMG.'default-newsletter/autonewsletter/arrow-up.png',
@@ -1847,88 +1866,86 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         /* set the name of the new list*/
         $prefix="";
-        if(isset($_REQUEST['link_filter'])) $prefix=" (".$this->viewObj->getTransStatusEmail($_REQUEST['link_filter']).")";
+        if(isset($_REQUEST['link_filter'])) $prefix=' ('.$this->viewObj->getTransStatusEmail($_REQUEST['link_filter']).')';
         $listname=sprintf(__('Segment of %1$s',WYSIJA), $email['subject'].$prefix);
 
         /*insert new list*/
-        $modelL=&WYSIJA::get("list","model");
-        $listid=$modelL->insert(array("is_enabled"=>1,"name"=>$listname,"description"=>__("List created based on a newsletter segment.",WYSIJA)));
+        $modelL=&WYSIJA::get('list','model');
+        $listid=$modelL->insert(array('is_enabled'=>1,'name'=>$listname,'description'=>__('List created based on a newsletter segment.',WYSIJA)));
 
         /* get list of subscribers filtered or not */
-        $query=$this->getListSubscriberQry($listid.", A.user_id, ".time().", 0");
+        $query=$this->getListSubscriberQry($listid.', A.user_id, '.time().', 0');
 
-        $query2="INSERT INTO `[wysija]user_list` (`list_id`,`user_id`,`sub_date`,`unsub_date`)
-            ".$query;
+        $query2='INSERT INTO `[wysija]user_list` (`list_id`,`user_id`,`sub_date`,`unsub_date`) '.$query;
 
         $this->modelObj->query($query2);
 
         $this->notice(sprintf(__('A new list "%1$s" has been created out of this segment.',WYSIJA), $listname));
-        $this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']);
+        $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id='.$_REQUEST['id']);
     }
 
     function unsubscribeall(){
-        /* delete from user_lists where select from email_user_stat */
-        $query=$this->getListSubscriberQry("B.user_id");
-        //$query2="DELETE FROM `".$this->modelObj->getPrefix()."user_list` as A LEFT JOIN `".$this->modelObj->getPrefix()."list` as B on A.list_id=B.list_id where B.is_enabled >0 and A.user_id IN ($query)";
-        $query2="DELETE FROM `[wysija]user_list` where user_id IN ($query) AND list_id not IN(SELECT list_id from `[wysija]list` WHERE is_enabled<1)";
+        //delete from user_lists where select from email_user_stat
+        $query=$this->getListSubscriberQry('B.user_id');
+        $query2="UPDATE `[wysija]user_list` where user_id IN ($query) AND list_id not IN(SELECT list_id from `[wysija]list` WHERE is_enabled<1)";
         $this->modelObj->query($query2);
 
-        /* unsubscribe from user where select from email_user_stat */
+        //unsubscribe from user where select from email_user_stat
         $query2="UPDATE `[wysija]user` set `status`=-1 where user_id IN ($query)";
         $this->modelObj->query($query2);
 
-        $this->notice(__("The segment has been unbsubscribed from all the lists.",WYSIJA));
-        $this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']);
+        $this->notice(__('The segment has been unbsubscribed from all the lists.',WYSIJA));
+        $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id='.$_REQUEST['id']);
     }
 
 
     function sendconfirmation(){
-        /* delete from user_lists where select from email_user_stat */
-        $query=$this->getListSubscriberQry("B.user_id ");
+        //delete from user_lists where select from email_user_stat
+        $query=$this->getListSubscriberQry('B.user_id ');
 
-        $user_ids=$this->modelObj->query("get_res",$query);
+        $user_ids=$this->modelObj->query('get_res',$query);
 
         $uids=array();
         foreach($user_ids as $data){
             $uids[]=$data['user_id'];
         }
 
-        $helperUser=&WYSIJA::get("user","helper");
+        $helperUser=&WYSIJA::get('user','helper');
         $helperUser->sendConfirmationEmail($uids);
-        $this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']);
+        $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id='.$_REQUEST['id']);
     }
 
 
     function removequeue(){
         /* delete from queue where select from email_user_stat */
-        $query=$this->getListSubscriberQry("B.user_id");
+        $query=$this->getListSubscriberQry('B.user_id');
         $query2="DELETE FROM `[wysija]queue` where user_id IN ($query) AND email_id=".$this->emailObj['email_id'];
         $this->modelObj->query($query2);
 
-        $this->notice(__("The segment has been removed from the queue of this newsletter.",WYSIJA));
-        $this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']);
+        $this->notice(__('The segment has been removed from the queue of this newsletter.',WYSIJA));
+        $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id='.$_REQUEST['id']);
     }
 
     function export(){
         /* select from email_user_stat left join user */
-        $query=$this->getListSubscriberQry("B.user_id");
-        $result=$this->modelObj->query("get_res",$query);
+        $query=$this->getListSubscriberQry('B.user_id');
+        $result=$this->modelObj->query('get_res',$query);
         $user_ids=array();
         foreach($result as $user) $user_ids[]=$user['user_id'];
 
-        $fileHelp=&WYSIJA::get("file","helper");
-        $tempfilename=$fileHelp->temp(implode(",",$user_ids),"export_userids",".txt");
+        $fileHelp=&WYSIJA::get('file','helper');
+        $tempfilename=$fileHelp->temp(implode(',',$user_ids),'export_userids','.txt');
 
         //$this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']."&user_ids=".serialize($result));
-        $this->redirect("admin.php?page=wysija_subscribers&action=exportcampaign&camp_id=".$_REQUEST['id']."&file_name=".  base64_encode($tempfilename['path']));
+        $this->redirect('admin.php?page=wysija_subscribers&action=exportcampaign&camp_id='.$_REQUEST['id'].'&file_name='.  base64_encode($tempfilename['path']));
     }
 
 
 
     function unsubscribelist($data){
 
-        $modelL=&WYSIJA::get("list","model");
-        $list=$modelL->getOne(false,array("list_id"=>$data['listid']));
+        $modelL=&WYSIJA::get('list','model');
+        $list=$modelL->getOne(false,array('list_id'=>$data['listid']));
         if($list['is_enabled']){
             /* delete from user_lists where select from email_user_stat */
             $query=$this->getListSubscriberQry("B.user_id");
@@ -1940,7 +1957,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $this->notice(sprintf(__('The segment cannot be unbsubscribed from an [IMPORT] list.',WYSIJA),$list['name']));
         }
 
-        $this->redirect("admin.php?page=wysija_campaigns&action=viewstats&id=".$_REQUEST['id']);
+        $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id='.$_REQUEST['id']);
     }
 
 
@@ -1983,18 +2000,18 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function themes(){
-       $this->iframeTabs=array('themes'=>__("Install Themes",WYSIJA));
-       $this->js[]='wysija-admin-ajax';
-       $this->js[]='wysija-base-script-64';
-       $this->jsTrans['viewinfos']=__("Details & PSD",WYSIJA);
-       $this->jsTrans['viewback']=__("<< Back",WYSIJA);
-       $this->jsTrans['install']=__("Install",WYSIJA);
-       $this->jsTrans['reinstall']=__("Reinstall",WYSIJA);
-       $this->jsTrans['premiumonly']=__("Premium Only",WYSIJA);
+       $this->iframeTabs = array('themes' => __('Install Themes', WYSIJA));
+       $this->js[] = 'wysija-admin-ajax';
+       $this->js[] = 'wysija-base-script-64';
+       $this->jsTrans['viewinfos'] = __('Details & PSD', WYSIJA);
+       $this->jsTrans['viewback'] = __('<< Back', WYSIJA);
+       $this->jsTrans['install'] = __('Install', WYSIJA);
+       $this->jsTrans['reinstall'] = __('Reinstall', WYSIJA);
+       $this->jsTrans['premiumonly'] = __('Premium', WYSIJA);
 
-       $configM=&WYSIJA::get("config","model");
+       $mConfig=&WYSIJA::get("config","model");
        //change the translation of the button when it's premium
-       if($configM->getValue("premium_key"))$this->jsTrans['ispremium']=1;
+       if($mConfig->getValue("premium_key"))$this->jsTrans['ispremium']=1;
        else $this->jsTrans['ispremium']=0;
 
        $this->jsTrans['premiumfiles']=__('Photoshop file available for Premium users. [link]11 good reasons to upgrade.[/link]',WYSIJA);
@@ -2404,5 +2421,3 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }*/
 
 }
-
-

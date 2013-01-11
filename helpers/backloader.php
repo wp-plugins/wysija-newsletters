@@ -80,14 +80,15 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                                 'wysijaplugin' => $plugin,
                                 'dataType'=>"json",
                                 'ajaxurl'=>admin_url( 'admin-ajax.php', 'relative' ),
+                                'pluginurl'=>plugins_url( 'wysija-newsletters' ),
                                 'loadingTrans'  =>__('Loading...',WYSIJA)
                             );
                             if(is_user_logged_in()){
                                 $dataajaxxx['adminurl']=admin_url( 'admin.php' );
-                                $dataajaxxx['wysilog']='1';
+
                             }
                             wp_localize_script( 'wysija-admin-ajax', $ajaxvarname.'AJAX',$dataajaxxx );
-                            wp_enqueue_script("jquery-ui-dialog");
+                            wp_enqueue_script('jquery-ui-dialog');
                             wp_enqueue_script($js);
                             wp_enqueue_style('wysija-tabs-css', WYSIJA_URL."css/smoothness/jquery-ui-1.8.20.custom.css",array(),WYSIJA::get_version());
                             break;
@@ -98,7 +99,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                         case 'wysija-edit-autonl':
                             wp_enqueue_script('wysija-edit-autonl', WYSIJA_URL."js/admin-campaigns-editAutonl.js",array('jquery'),WYSIJA::get_version());
                             break;
-                        case "wysija-editor":
+                        case 'wysija-editor':
                             wp_enqueue_script("wysija-prototype", WYSIJA_URL."js/prototype/prototype.js",array(),WYSIJA::get_version());
                             wp_deregister_script('thickbox');
                             wp_register_script('thickbox',WYSIJA_URL."js/thickbox/thickbox.js",array(),WYSIJA::get_version());

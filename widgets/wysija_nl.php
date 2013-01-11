@@ -65,7 +65,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     'loadingTrans'  =>__('Loading...',WYSIJA)
                 );
 
-                if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
+                //if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
                 if($mConfig->getValue('no_js_val')) $this->paramsajax['noajax']=1;
 
                 $scriptregistered=true;
@@ -444,7 +444,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         $instance2=$instance;
         if(isset($instance2['preview'])) unset($instance2['preview']);
         $instance2['widget_id']=$this->id.'-php';
-        $phpcode='$widgetdata='.var_export($instance2,true).';'."\n";
+        $phpcode='$widgetdata='.utf8_decode(var_export($instance2,true)).';'."\n";
         $phpcode.='$widgetNL=new WYSIJA_NL_Widget(1);'."\n";
         $phpcode.='$subscriptionForm= $widgetNL->widget($widgetdata,$widgetdata);'."\n";
         $phpcode.='echo $subscriptionForm;'."\n";
@@ -482,7 +482,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     'ajaxurl'=>  admin_url('admin-ajax.php','absolute'),
                     'loadingTrans'  =>__('Loading...',WYSIJA)
                 );
-        if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
+        //if(is_user_logged_in()) $this->paramsajax['wysilog']=1;
         wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$this->paramsajax );
         wp_print_scripts('jquery');
         wp_print_styles('validate-engine-css');
@@ -492,9 +492,11 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         $htmlreturn.=ob_get_contents();
         ob_end_clean();
-
+        unset($instance['preview']);
+        //dbg($instance,0);
 
         $htmlreturn.=$this->widget(array('widget_id'=>  uniqid('html')), $instance);
+        $htmlreturn=utf8_decode($htmlreturn);
         $this->coreOnly=false;
         return $htmlreturn;
         //$fieldHTML='<div class="widget-control-actions">';

@@ -67,25 +67,22 @@ class WYSIJA_help_user extends WYSIJA_object{
             $modelU=&WYSIJA::get('queue','model');
             $modelU->delete(array('user_id'=>$user_id));
 
-            $modelUserList->delete(array('user_id'=>$user_id,'list_id'=>$listidsenableduser));
+            $modelUserList->update(array('unsub_date'=>time(), 'sub_date'=>0),array('user_id'=>$user_id));
         }
         $modelUser=&WYSIJA::get('user','model');
         $modelUser->update(array('status'=>$status),array('user_id'=>$user_id));
 
-        
         if($status){
-            
+
             if(!$auto){
                 $modelUserList=&WYSIJA::get('user_list','model');
-                $datecol='sub_date';
-                $cols=array($datecol=>$time,'unsub_date'=>0);
+                $cols=array('sub_date'=>$time,'unsub_date'=>0);
                 $modelUserList->update($cols,array('user_id'=>$user_id,'list_id'=>$listids));
             }
-            
+
             $lists=$this->getUserLists($user_id,$listids);
             $this->sendAutoNl($user_id,$lists);
         }
-
         return $listidsenableduser;
     }
     function checkData(&$data){
@@ -122,7 +119,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         if($userGet){
 
             if($backend){
-                $this->error(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$userGet['user_id'].'" >',"</a>"),__(' Oops! This user already exists. Find him [link]here[/link].',WYSIJA)),true);
+                $this->error(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$userGet['user_id'].'" >',"</a>"),__('Subscriber already exists. [link]Click to edit[/link].',WYSIJA)),true);
                 return false;
             }
 
@@ -360,8 +357,23 @@ class WYSIJA_help_user extends WYSIJA_object{
             }
             $mailer->listnames=$arrayNames;
         }
+
+        $mEmail=&WYSIJA::get('email','model');
+        $mEmail->getFormat=OBJECT;
+        $emailConfirmationData=$mEmail->getOne(false,array('email_id'=>$config->getValue('confirm_email_id')));
+        if(empty($emailConfirmationData)){
+
+            $dataEmailCon=array('from_name'=>$config->getValue('from_name'),'from_email'=>$config->getValue('from_email'),
+                    'replyto_name'=>$config->getValue('replyto_name'),'replyto_email'=>$config->getValue('replyto_email'),
+                    'subject'=>$config->getValue('confirm_email_title'),'body'=>$config->getValue('confirm_email_body'),'type'=>'0','status'=>'99');
+            $confemailid=$mEmail->insert($dataEmailCon);
+            if($confemailid)    $config->save(array('confirm_email_id'=>$confemailid));
+            $mEmail->reset();
+            $mEmail->getFormat=OBJECT;
+            $emailConfirmationData=$mEmail->getOne(false,array('email_id'=>$config->getValue('confirm_email_id')));
+        }
         foreach($users as $userObj){
-            $resultsend=$mailer->sendOne($config->getValue('confirm_email_id'),$userObj,true);
+            $resultsend=$mailer->sendOne($emailConfirmationData,$userObj,true);
         }
         if(!$sendone)   $this->notice(sprintf(__('%1$d emails have been sent to unconfirmed subscribers.',WYSIJA),count($users)));
         else    return $resultsend;
@@ -503,16 +515,17 @@ class WYSIJA_help_user extends WYSIJA_object{
                     }
                 }
                 $infosImport=array('name'=>'WordPress',
-            "pk"=>"ID",
-            "matches"=>array("ID"=>"wpuser_id","user_email"=>"email","display_name"=>"firstname"),
-            "matchesvar"=>array("status"=>1));
-                $importHelper=&WYSIJA::get("import","helper");
+            'pk'=>'ID',
+            'matches'=>array('ID'=>'wpuser_id','user_email'=>'email','display_name'=>'firstname'),
+            'matchesvar'=>array('status'=>1));
+                $importHelper=&WYSIJA::get('import','helper');
                 $listsids=array(
-                    "wysija_list_main_id"=>$data['list_id']
+                    'wysija_list_main_id'=>$data['list_id']
                 );
                 $importHelper->import($data['namekey'],$infosImport,false,$total,$listsids);
             }elseif(strpos($data['namekey'], 'query-')!==false){
                 
+
                 $queryUid=apply_filters('wysija_synch_'.  str_replace('-', '_', $data['namekey']));
                 $importHelper=&WYSIJA::get('import','helper');
                 $queryUid=str_replace(array('[list_id]','[created_at]'), array($data['list_id'],time()), $queryUid);
@@ -525,7 +538,6 @@ class WYSIJA_help_user extends WYSIJA_object{
                     $importHelper=&WYSIJA::get('import','helper');
                     $dataMainList=$model->getOne(false,array('namekey'=>$data['namekey'],'is_enabled'=>'0'));
                     $importHelper->import($data['namekey'],$importHelper->getPluginsInfo($data['namekey']),false,false,array('wysija_list_main_id'=>$dataMainList['list_id']));
-
                 }
             }
             $this->notice(sprintf(__('List "%1$s" has been synchronised.',WYSIJA),$data['name']));

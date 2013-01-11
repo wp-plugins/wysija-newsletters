@@ -33,7 +33,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
             header('Content-Disposition: attachment; filename="export_wysija.csv"');
             readfile($path);
             exit();
-        }else $this->error(__('Yikes! We couldn\'t export. Make sure that your folder permissions for /wp-content/upload/wysija/temp is set to 755.',WYSIJA),true);
+        }else $this->error(__('Yikes! We couldn\'t export. Make sure that your folder permissions for /wp-content/uploads/wysija/temp is set to 755.',WYSIJA),true);
     }
     
     function clear(){
