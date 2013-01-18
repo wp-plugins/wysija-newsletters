@@ -300,7 +300,11 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         $this->reset();
 
+        //we use to have a filter compared to the first send date, but we should have a filter to the lastSend date instead
         if(!isset($email['params']['autonl']['firstSend'])) $paramsVal['autonl']['firstSend']=time();
+        $paramsVal['autonl']['lastSend']=time();
+
+
         $this->update(array('params'=>$paramsVal), array('email_id'=>$email['email_id']));
         return $nextSendValue;
     }

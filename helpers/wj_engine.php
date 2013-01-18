@@ -675,13 +675,25 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     }
                 }
 
-                if(isset($email['params']['autonl']['articles']['immediatepostid'])){
-                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
-                    $params['post_limit'] = 1;
-                }
                 if(isset($email['params']['autonl']['firstSend'])){
                     $params['post_date'] = $email['params']['autonl']['firstSend'];
                 }
+
+                if(isset($email['params']['autonl']['articles']['immediatepostid'])){
+                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
+                    $params['post_limit'] = 1;
+                }else{
+
+                    if(!empty($email['sent_at'])){
+                        $params['post_date'] = $email['sent_at'];
+                    }else{
+                        if(isset($email['params']['autonl']['lastSend'])){
+                            $params['post_date'] = $email['params']['autonl']['lastSend'];
+                        }
+                    }
+                }
+
+
 
                 $params['readmore'] = trim(base64_decode($params['readmore']));
 

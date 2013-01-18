@@ -60,8 +60,8 @@ class WYSIJA_model_list extends WYSIJA_model{
             foreach($listres as $res) $listids[]=$res['list_id'];
 
             /* add the count of subscribers and unsubscribers */
-            $qry="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `".$this->getPrefix()."user_list` as A WHERE list_id IN (".implode(',',$listids).") GROUP BY list_id";
-            $qry1="SELECT count(distinct A.user_id) as total,B.status,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") GROUP BY A.list_id,B.status";
+            $qry="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `".$this->getPrefix()."user_list` as A WHERE list_id IN (".implode(',',$listids).")  GROUP BY list_id";
+            $qry1="SELECT count(distinct A.user_id) as total,B.status,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") and A.sub_date>0 and A.unsub_date=0 GROUP BY A.list_id,B.status";
             /*$qry15="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") AND B.status =0 GROUP BY list_id";
             $qry2="SELECT count(distinct A.user_id) as nbunsub,A.list_id FROM `".$this->getPrefix()."user_list` as A LEFT JOIN `".$this->getPrefix()."user` as B on A.user_id=B.user_id WHERE list_id IN (".implode(',',$listids).") AND B.status <0 GROUP BY list_id";*/
 
