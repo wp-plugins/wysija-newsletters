@@ -112,7 +112,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'content'=>"Perfect for membership sites. Visitors who register to your site can now click a checkbox to join a list of your choice. Your current list <em>WordPress Users</em> can now be used to send important site information, instead of newsletters. Tidier. Activate in Advanced Settings."
             ),
                 array(
-                    'title'=>"Ten short of 100 written reviews",
+                    'title'=>"We love you and your kind words!",
                     'content'=>"We love reviews because they encourage us. They really really do. "."<a href='http://wordpress.org/support/view/plugin-reviews/wysija-newsletters' target='_blank' title='On wordpress.org'>Add your own</a> and make our day."
             )
             ),
