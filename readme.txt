@@ -161,6 +161,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed post notification could send some past articles in one specific case scenario
 * fixed wrong count of subscribers in backend interfaces
 * fixed still sending to subscribers manually removed from a list in the backend
+* fixed number of WordPress users don't match with the number in our WordPress Users list
 * added support for German umlaut in email addresses
 
 = 2.2 - 2013-01-11 =
