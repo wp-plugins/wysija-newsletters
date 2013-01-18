@@ -89,7 +89,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
 
 
             $fieldHTML= '';
-            $field="list";
+            $field='list';
             $valuefield=array();
             foreach($data['user']['lists'] as $list){
                 $valuefield[$list['list_id']]=$list;
@@ -98,7 +98,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
 
 
             $fieldHTML= '';
-            $field="list";
+            $field='list';
             $valuefield=array();
             if($data['user']){
                 foreach($data['user']['lists'] as $list){
@@ -128,7 +128,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
 
         }
 
-        $content.="</tbody></table>";
+        $content.='</tbody></table>';
         $content.='<p class="submit">
                         '.$this->secure(array('controller'=>"confirm",'action'=>"save", 'id'=> $data['user']['details']['user_id']),false,false).'
                         <input type="hidden" name="wysija[user][user_id]" id="user_id" value="'.esc_attr($data['user']['details']['user_id']).'" />
@@ -136,7 +136,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                         <input type="hidden" value="save" name="action" />
                         <input type="submit" value="'.esc_attr(__('Save',WYSIJA)).'" class="button-primary wysija">
                     </p>';
-        $content.="</form>";
+        $content.='</form>';
         return $content;
     }
 

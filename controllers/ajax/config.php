@@ -68,7 +68,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
 
 
         /*try to connect to thebounce server*/
-        $bounceClass=&WYSIJA::get("bounce","helper");
+        $bounceClass=&WYSIJA::get('bounce','helper');
         $bounceClass->report = true;
         $res['result']=false;
         if($bounceClass->init($configVal)){

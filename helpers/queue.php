@@ -72,13 +72,12 @@ class WYSIJA_help_queue extends WYSIJA_object{
 			$disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
 			$disp .= '<title>'.addslashes(__("Send Process",WYSIJA)).'</title>';
 			$disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
-			$disp.= "<div style='background-color : white;border : 1px solid grey; padding : 3px;font-size:14px'>";
+			$disp.= "<div style='padding: 3px;'>";
 			$disp.= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
-			$disp.= __("Send Process",WYSIJA).': <span id="counter"/>'.$this->start.'</span> / '. $this->total;
+			$disp.= __("Total of batch",WYSIJA).': <span id="counter"/>'.$this->start.'</span> / '. $this->total;
 			$disp.= '</div>';
 			$disp.= "<div id='divinfo' style='display:none; position:fixed; bottom:3px;left:3px;background-color : white; border : 1px solid grey; padding : 3px;'> </div>";
-			$disp .= '<br /><br />';
-                        $url = 'admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
+      $url = 'admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
 
 			$disp.= '<script type="text/javascript" language="javascript">';
 			$disp.= 'var mycounter = document.getElementById("counter");';
@@ -286,7 +285,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		$this->messages[] = strip_tags($message);
 		if(!$this->report) return;
 		if(!empty($num)){
-			$color = $status ? 'green' : 'red';
+			$color = $status ? 'black' : 'red';
 			echo '<br/>'.$num.' : <font color="'.$color.'">'.$message.'</font>';
 		}else{
 			echo '<script type="text/javascript" language="javascript">setInfo(\''. addslashes($message) .'\')</script>';

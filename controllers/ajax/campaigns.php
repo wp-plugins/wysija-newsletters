@@ -429,7 +429,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             }
             $emailObject->subject = str_replace(
                     array('[total]','[number]','[post_title]'),
-                    array($totalCount, $itemCount, $firstSubject),
+                    array($itemCount, $totalCount, $firstSubject),
                     $emailChild['subject']);
         }
 
@@ -724,7 +724,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             // get email params
             $email_id = (int)$_REQUEST['id'];
             $modelEmail =& WYSIJA::get('email', 'model');
-            $email = $modelEmail->getOne('params', array('email_id' => $email_id));
+            $email = $modelEmail->getOne(array('params','sent_at'), array('email_id' => $email_id));
 
             $articlesHelper =& WYSIJA::get('articles', 'helper');
             $wjEngine =& WYSIJA::get('wj_engine', 'helper');
@@ -741,6 +741,17 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             if(!empty($email['params']['autonl']['firstSend'])) {
                 $params['post_date'] = $email['params']['autonl']['firstSend'];
             }
+
+            //we set the post_date to filter articles only older than the last time we sent articles
+            if(!empty($email['sent_at'])){
+                $params['post_date'] = $email['sent_at'];
+            }else{
+                if(isset($email['params']['autonl']['lastSend'])){
+                    $params['post_date'] = $email['params']['autonl']['lastSend'];
+                }
+            }
+
+
 
             $posts = $articlesHelper->getPosts($params);
 

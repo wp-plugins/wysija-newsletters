@@ -15,7 +15,8 @@ class WYSIJA_help_user extends WYSIJA_object{
     }
     function validEmail($email){
             if(empty($email) OR !is_string($email)) return false;
-            if(!preg_match('/^([a-z0-9_\'&\.\-\+\æ\ø\å])+\@(([a-z0-9\-\æ\ø\å])+\.)+([a-z0-9]{2,10})+$/i',$email)) return false;
+            $stringSpecialChars='\æ\ø\å\ä\ö\ü';
+            if(!preg_match('/^([a-z0-9_\'&\.\-\+'.$stringSpecialChars.'])+\@(([a-z0-9\-'.$stringSpecialChars.'])+\.)+([a-z0-9]{2,10})+$/i',$email)) return false;
             return true;
     }
     function checkUserKey(){

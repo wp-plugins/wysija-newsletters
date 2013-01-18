@@ -7,10 +7,9 @@ class WYSIJA_help_email extends WYSIJA_object{
     
     function stripPersonalLinks($content){
 
+        $content = preg_replace('#<td id="wysija_viewbrowser_content"[^>]*>(.*)</td>#Uis','',$content);
 
-        $content= preg_replace('#<td id="wysija_viewbrowser_content"[^>]*>(.*)</td>#Uis','',$content);
-
-        $content= preg_replace('#<td id="wysija_unsubscribe_content"[^>]*>(.*)</td>#Uis','',$content);
+        $content = preg_replace('#<td id="wysija_unsubscribe_content"[^>]*>(.*)</td>#Uis','',$content);
         return $content;
     }
 

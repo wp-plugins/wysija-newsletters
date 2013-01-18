@@ -165,7 +165,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                             $this->error($this->reportMessage);
                     }
             }else{
-                    $this->reportMessage = sprintf(__('Message <b><i>%s</i></b> successfully sent to <b><i>%s</i></b>',WYSIJA),$this->Subject,implode('", "',$receivers));
+                    $this->reportMessage = sprintf(__('Successfully sent to <b><i>%s</i></b>',WYSIJA), implode('", "',$receivers));
                     if($this->report){
                         if(!empty($warnings)){
                             $this->reportMessage .= ' | '.$warnings;
@@ -589,8 +589,12 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                         switch($valuetotest[0]){
                             case "user":
                                 $column=$valuetotest[1];
-                                if(isset($receiver->$column) && $receiver->$column) $tagreplaceval=$receiver->$column;
-                                else continue;
+                                if(isset($receiver->$column) && $receiver->$column) {
+                                    $tagreplaceval=$receiver->$column;
+                                 } else {
+                                    $tagreplaceval = "subscriber";
+                                    continue;
+                                }
                                 break(2);
                             case "default":
                                 $tagreplaceval=$valuetotest[1];

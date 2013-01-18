@@ -46,8 +46,6 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
                //user is not confirmed yet
                if((int)$this->userData['details']['status']<1){
                     $this->helperUser->subscribe($this->userData['details']['user_id'],true, false,$listids);
-                    $this->title=sprintf($modelConf->getValue('subscribed_title'),  implode(', ', $names));
-                    $this->subtitle=$modelConf->getValue('subscribed_subtitle');
                     $this->helperUser->uid=$this->userData['details']['user_id'];
                     if($modelConf->getValue('emails_notified') && $modelConf->getValue('emails_notified_when_sub'))    $this->helperUser->_notify($this->userData['details']['email']);
                     return true;

@@ -60,7 +60,6 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                             $modelUL->reset();
                             $modelUL->update(array('unsub_date'=>0,'sub_date'=>time()),array('user_id'=>$id,'list_id'=>$list_id));
                         }
-                        //$alreadysubscribelistids[]=$list_id;
                     }
                 }
             }
@@ -71,12 +70,14 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                 $hUser->sendConfirmationEmail($id,true,$newlistids);
             }
 
-            $notEqual=array_merge($core_listids, $_POST['wysija']['user_list']['list_id']);
+            $arrayLists=array();
+            if(isset($_POST['wysija']['user_list'])) $arrayLists=$_POST['wysija']['user_list']['list_id'];
+            $notEqual=array_merge($core_listids, $arrayLists);
 
             //TODOUNSUB delete the lists to which you've unsubscribed
             $condiFirst=array('notequal'=>array('list_id'=> $notEqual ),'equal'=>array('user_id'=>$id,'unsub_date'=>0));
             $modelUL=&WYSIJA::get('user_list','model');
-            $modelUL->update(array('unsub_date'=>time()),$condiFirst);
+            $modelUL->update(array('unsub_date'=>time(),'sub_date'=>0),$condiFirst);
             $modelUL->reset();
         }else{
             //instead of going through a classic save we should save through the helper
@@ -102,7 +103,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->viewObj->msgPerPage=__('Subscribers per page:',WYSIJA);
 
         $this->jsTrans["selecmiss"]=__('Select at least 1 subscriber!',WYSIJA);
-        $filterJoin=false;
+        $orphaned=$filterJoin=false;
         /*get the filters*/
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
             $this->filters["like"]=array();
@@ -1295,7 +1296,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
     function _getLists($limit=false){
 
-        $modelList=&WYSIJA::get("list","model");
+        $modelList=&WYSIJA::get('list','model');
         $modelList->escapingOn=true;
         $modelList->_limitison=$limit;
         return $modelList->getLists();
@@ -1303,7 +1304,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
     function _getForm($id=false){
         if($id){
-            $modelList=&WYSIJA::get("list","model");
+            $modelList=&WYSIJA::get('list','model');
 
             return $modelList->getLists($id);
         }else{
