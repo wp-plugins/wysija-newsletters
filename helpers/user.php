@@ -552,14 +552,14 @@ class WYSIJA_help_user extends WYSIJA_object{
     function cleanWordpressUsersList(){
 
         $model=&WYSIJA::get('list','model');
-        $query="UPDATE `[wysija]user` as A LEFT JOIN [wp]users as B on A.email=B.user_email SET A.`wpuser_id` = B.ID WHERE A.`wpuser_id`=0";
+        $query="UPDATE [wysija]user as A LEFT JOIN [wp]users as B on A.email=B.user_email SET A.wpuser_id = B.ID WHERE A.wpuser_id=0";
         $model->query($query);
 
 
         $model->reset();
         $model->query($query);
         $mConfig=&WYSIJA::get('config','model');
-        $selectuserCreated="SELECT `[wysija]user`.`user_id`, ".$mConfig->getValue('importwp_list_id').", ".time()." FROM [wysija]user WHERE wpuser_id>0";
+        $selectuserCreated="SELECT [wysija]user.user_id, ".$mConfig->getValue('importwp_list_id').", ".time()." FROM [wysija]user WHERE wpuser_id>0";
         $query="INSERT IGNORE INTO `[wysija]user_list` (`user_id`,`list_id`,`sub_date`) ".$selectuserCreated;
         $model->reset();
         $model->query($query);

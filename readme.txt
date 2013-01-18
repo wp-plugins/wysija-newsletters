@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -149,6 +149,10 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.2.2 - 2013-01-18 =
+
+* fixed immediate single post notification not being triggerred
 
 = 2.2.1 - 2013-01-18 =
 
