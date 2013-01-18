@@ -19,22 +19,39 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         wp_print_scripts('jquery');
         wp_print_styles('validate-engine-css');
         if(isset($_REQUEST['external_site'])){
-            $fileurl=false;
+            $iframeJsUrl=$iframeCssUrl=false;
             //check if an iframe.css file exists in the site uploads/wysija/css/iframe.css or in MS blogs.dir/5/files/wysija/css/iframe.css
             if(file_exists(WYSIJA_UPLOADS_DIR.'css'.DS.'iframe.css')){
-                $fileurl=WYSIJA_UPLOADS_URL.'css/iframe.css';
+                $iframeCssUrl=WYSIJA_UPLOADS_URL.'css/iframe.css';
             }else{
                //if we are in a multisite check to see if there is a file defined in the main site
                 if(is_multisite() && file_exists(WYSIJA_UPLOADS_MS_DIR.'css'.DS.'iframe.css')){
-                    $fileurl=WYSIJA_UPLOADS_MS_URL.'css/iframe.css';
+                    $iframeCssUrl=WYSIJA_UPLOADS_MS_URL.'css/iframe.css';
                 }
             }
-            apply_filters('wysija_iframe_css_url', $fileurl);
+            apply_filters('wysija_iframe_css_url', $iframeCssUrl);
+
+            //check if an iframe.js file exists in the site uploads/wysija/js/iframe.js or in MS blogs.dir/5/files/wysija/js/iframe.js
+            if(file_exists(WYSIJA_UPLOADS_DIR.'js'.DS.'iframe.js')){
+                $iframeJsUrl=WYSIJA_UPLOADS_URL.'js/iframe.js';
+            }else{
+               //if we are in a multisite check to see if there is a file defined in the main site
+                if(is_multisite() && file_exists(WYSIJA_UPLOADS_MS_DIR.'js'.DS.'iframe.js')){
+                    $iframeJsUrl=WYSIJA_UPLOADS_MS_URL.'js/iframe.js';
+                }
+            }
+            apply_filters('wysija_iframe_js_url', $iframeJsUrl);
 
             //if an iframe file has been detected then load it
-            if($fileurl){
-               wp_register_style('wysija-iframe',$fileurl,array(),WYSIJA::get_version());
-               wp_print_styles('wysija-iframe');
+            if($iframeCssUrl){
+               wp_register_style('wysija-iframe-css',$iframeCssUrl,array(),WYSIJA::get_version());
+               wp_print_styles('wysija-iframe-css');
+            }
+
+            //if an iframe js file has been detected then load it
+            if($iframeJsUrl){
+               wp_register_style('wysija-iframe-js',$iframeJsUrl,array(),WYSIJA::get_version());
+               wp_print_styles('wysija-iframe-js');
             }
         }
         wp_print_scripts('wysija-validator-lang');

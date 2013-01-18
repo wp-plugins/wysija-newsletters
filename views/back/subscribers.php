@@ -581,6 +581,9 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                                 <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=synchlisttotal&_wpnonce=<?php echo $this->secure(array("action"=>"synchlisttotal","id"=>$columns['list_id']),true); ?>" class="submitsynch"><?php _e('Get all MS users',WYSIJA)?></a>
                                             </span>
                                             <?php endif; ?>
+                                            <?php if(!$columns['is_enabled'] && $columns['namekey']!='users'): ?>
+                                            |
+                                            <?php endif; ?>
                                             <span class="view_subscribers">
                                                 <a href="admin.php?page=wysija_subscribers&filter-list=<?php echo $columns['list_id'] ?>"><?php _e('View Subscribers',WYSIJA)?></a>
                                             </span>

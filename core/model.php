@@ -246,7 +246,7 @@ class WYSIJA_model extends WYSIJA_object{
                         $i=1;
                         $likeCond="";
                         foreach($values as $qfield => $qval){
-                            $likeCond.=$qfield." LIKE '%".addcslashes($qval, '%_' )."%'";
+                            $likeCond.=$qfield." LIKE '%".mysql_real_escape(addcslashes($qval, '%_' ))."%'";
                             if($i<$total){
                                 $likeCond.=" OR ";
                             }
@@ -287,7 +287,7 @@ class WYSIJA_model extends WYSIJA_object{
                             }
                             break;
                         case "like":
-                                $conditions[]=$condK." LIKE '%".addcslashes($condVal, '%_' )."%'";
+                                $conditions[]=$condK." LIKE '%".mysql_real_escape(addcslashes($condVal, '%_' ))."%'";
                             break;
                         case "greater":
                             if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
@@ -380,11 +380,20 @@ class WYSIJA_model extends WYSIJA_object{
 
                 $value = current($name);
 
+                //security escaping
+                if(!is_string(key($name)) OR preg_match('|[^a-z0-9#_.-]|i',key($name)) !== 0 ){
+                    $orderByCol="";
+                }else $orderByCol=key($name);
+                //security escaping
+                if(!is_string($value) OR preg_match('|[^a-z0-9#_.-]|i',$value) !== 0 ){
+                    $orderByVal="";
+                }else $orderByVal=$value;
+
                 if($i === ($count - 1)) {
-                    $this->orderby .= key($name);
-                    $this->ordert = $value;
+                    $this->orderby .= $orderByCol;
+                    $this->ordert = $orderByVal;
                 } else {
-                    $this->orderby .= key($name).' '.$value;
+                    $this->orderby .=$orderByCol.' '.$orderByVal;
                     $this->orderby .= ', ';
                     next($name);
                 }
