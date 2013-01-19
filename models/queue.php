@@ -36,7 +36,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
         $query.='SELECT '.$data['email']['email_id'].', A.user_id,'.time().'
             FROM [wysija]user_list as A
                 JOIN [wysija]user as B on A.user_id=B.user_id
-                    WHERE B.status>'.$statusmin.' AND A.list_id IN ('.implode(',',$data['campaign']['lists']['ids']).') AND A.sub_date>'.$statusmin.' ';
+                    WHERE B.status>'.$statusmin.' AND A.list_id IN ('.implode(',',$data['campaign']['lists']['ids']).') AND A.sub_date>'.$statusmin.' AND A.unsub_date=0 ';
 
         $this->query($query);
 

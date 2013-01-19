@@ -15,7 +15,8 @@ class WYSIJA_help_user extends WYSIJA_object{
     }
     function validEmail($email){
             if(empty($email) OR !is_string($email)) return false;
-            if(!preg_match('/^([a-z0-9_\'&\.\-\+\æ\ø\å])+\@(([a-z0-9\-\æ\ø\å])+\.)+([a-z0-9]{2,10})+$/i',$email)) return false;
+            $stringSpecialChars='\æ\ø\å\ä\ö\ü';
+            if(!preg_match('/^([a-z0-9_\'&\.\-\+'.$stringSpecialChars.'])+\@(([a-z0-9\-'.$stringSpecialChars.'])+\.)+([a-z0-9]{2,10})+$/i',$email)) return false;
             return true;
     }
     function checkUserKey(){
@@ -485,7 +486,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         $modelC->save(array('total_subscribers'=>$count));
         return true;
     }
-
+    
     function synchList($listid,$total=false){
         $model=&WYSIJA::get('list','model');
         $data=$model->getOne(false,array('list_id'=>(int)$listid,'is_enabled'=>'0'));
@@ -523,6 +524,7 @@ class WYSIJA_help_user extends WYSIJA_object{
                     'wysija_list_main_id'=>$data['list_id']
                 );
                 $importHelper->import($data['namekey'],$infosImport,false,$total,$listsids);
+                $this->cleanWordpressUsersList();
             }elseif(strpos($data['namekey'], 'query-')!==false){
                 
 
@@ -546,5 +548,21 @@ class WYSIJA_help_user extends WYSIJA_object{
             $this->error(__('The list does not exists or cannot be synched.',WYSIJA),true);
             return false;
         }
+    }
+    function cleanWordpressUsersList(){
+
+        $model=&WYSIJA::get('list','model');
+        $query="UPDATE [wysija]user as A LEFT JOIN [wp]users as B on A.email=B.user_email SET A.wpuser_id = B.ID WHERE A.wpuser_id=0";
+        $model->query($query);
+
+
+        $model->reset();
+        $model->query($query);
+        $mConfig=&WYSIJA::get('config','model');
+        $selectuserCreated="SELECT [wysija]user.user_id, ".$mConfig->getValue('importwp_list_id').", ".time()." FROM [wysija]user WHERE wpuser_id>0";
+        $query="INSERT IGNORE INTO `[wysija]user_list` (`user_id`,`list_id`,`sub_date`) ".$selectuserCreated;
+        $model->reset();
+        $model->query($query);
+        return true;
     }
 }

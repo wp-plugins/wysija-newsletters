@@ -112,7 +112,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'content'=>"Perfect for membership sites. Visitors who register to your site can now click a checkbox to join a list of your choice. Your current list <em>WordPress Users</em> can now be used to send important site information, instead of newsletters. Tidier. Activate in Advanced Settings."
             ),
                 array(
-                    'title'=>"Ten short of 100 written reviews",
+                    'title'=>"We love you and your kind words!",
                     'content'=>"We love reviews because they encourage us. They really really do. "."<a href='http://wordpress.org/support/view/plugin-reviews/wysija-newsletters' target='_blank' title='On wordpress.org'>Add your own</a> and make our day."
             )
             ),
@@ -132,17 +132,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'format'=>'bullets',
             'paragraphs'=>$hReadme->changelog[WYSIJA::get_version()]
             );
-
-            /*if(!WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php') && $mConfig->getValue('premium_key')){
-            $this->data['sections'][]=array(
-                'title'=>'Something just for Premium users',
-                'format'=>'normal',
-                'paragraphs'=>array(
-                    'Paragraph 1.',
-                     'Para 2
-                    )
-                );
-        }*/
 
 
         $this->viewObj->skip_header=true;
@@ -190,7 +179,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 }
                 $helperQ->process($emailid);
             }else{
-                echo '<strong>'.__('Queue is empty!',WYSIJA).'</strong>';
+                echo '<strong style="font-family: Arial; font-weight: bold; font-size: 12px;">'.__('Queue is empty!',WYSIJA).'</strong>';
             }
             exit;
         }else {
@@ -396,7 +385,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
           $mConfig =& WYSIJA::get('config','model');
           $condit = '>=';
           if($mConfig->getValue('confirm_dbleoptin')) $condit='>';
-          $qry1="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `[wysija]user_list` as A LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id WHERE B.status $condit 0 GROUP BY list_id";
+          $qry1="SELECT count(distinct A.user_id) as nbsub,A.list_id FROM `[wysija]user_list` as A LEFT JOIN `[wysija]user` as B on A.user_id=B.user_id WHERE B.status $condit 0 and A.sub_date>0 and A.unsub_date=0 GROUP BY list_id";
 
           $total=$modelList->getResults($qry1);
 
@@ -1258,7 +1247,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }
 
         if(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']){
-            $this->filters["equal"]=array('C.list_id'=>$_REQUEST['filter-list']);
+            $this->filters['equal']=array('C.list_id'=>$_REQUEST['filter-list']);
         }
 
         if(isset($_REQUEST['filter-date']) && $_REQUEST['filter-date']){
@@ -1317,7 +1306,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
         $query="SELECT count(email_id) as campaigns, type FROM `[wysija]email` WHERE campaign_id > 0 GROUP BY type";
-        $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
+        $countss=$this->modelObj->query('get_res',$query,ARRAY_A);
         foreach($countss as $count){
             switch($count['type']){
                 case "1":
@@ -1357,6 +1346,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $orderby=' ORDER BY ';
 
         if(isset($_REQUEST['orderby'])){
+            if(!is_string($_REQUEST['orderby']) OR preg_match('|[^a-z0-9#_.-]|i',$_REQUEST['orderby']) !== 0 ){
+                $_REQUEST['orderby']="";
+            }
+            if(!in_array(strtoupper($_REQUEST['ordert']),array('DESC','ASC'))) $_REQUEST['ordert'] = 'DESC';
             $orderby.=$_REQUEST['orderby']." ".$_REQUEST['ordert'];
         }else{
             $orderby=' ORDER BY ';
@@ -1387,7 +1380,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->modelObj->reset();
 
-        $this->data['datemin']=$this->modelObj->query("get_row",$query2.$queryFinal2);
+        $this->data['datemin']=$this->modelObj->query('get_row',$query2.$queryFinal2);
         $this->modelObj->reset();
 
         /* make a loop from the first created to now and increment an array of months */
@@ -1395,14 +1388,14 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->data['dates']=array();
 
         if((int)$this->data['datemin']['datemin']>1){
-            setlocale(LC_TIME, "en_US");
+            setlocale(LC_TIME, 'en_US');
             $firstdayof=getdate($this->data['datemin']['datemin']);
 
             $formtlettres="1 ".date("F",$this->data['datemin']['datemin'])." ".date("Y",$this->data['datemin']['datemin']) ;
             $monthstart=strtotime($formtlettres);
 
             if($monthstart>0){
-               for($i=$monthstart;$i<$now;$i=strtotime("+1 month",$i)){
+               for($i=$monthstart;$i<$now;$i=strtotime('+1 month',$i)){
                     $this->data['dates'][$i]=date_i18n('F Y',$i);//date('F Y',$i);
                 }
             }
@@ -1624,6 +1617,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     break;
                 case "unsubscribe":
                     $this->filters["equal"]=array('B.status'=>3);
+                    break;
+                case 'notsent':
+                    $this->filters["equal"]=array('B.status'=>-2);
                     break;
             }
         }
@@ -2014,7 +2010,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
        if($mConfig->getValue("premium_key"))$this->jsTrans['ispremium']=1;
        else $this->jsTrans['ispremium']=0;
 
-       $this->jsTrans['premiumfiles']=__('Photoshop file available for Premium users. [link]11 good reasons to upgrade.[/link]',WYSIJA);
+       $this->jsTrans['premiumfiles']=__('Photoshop file available as part of [link]Premium features[/link].',WYSIJA);
        $helperLicence=&WYSIJA::get("licence","helper");
        //$urlpremium="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&testprod=1&controller=orders&action=checkout&popformat=1&wysijadomain=".$helperLicence->getDomainInfo();
 
@@ -2391,33 +2387,5 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         echo '</body></html>';
         exit;
     }
-
-    /*function update_wjp(){
-        $current=get_site_transient( 'update_plugins' );
-
-        $objectwjp=null;
-        $objectwjp->id=9999999;
-        $objectwjp->slug='wysija-newsletters-premium';
-        $objectwjp->new_version='2.1.5';
-        $objectwjp->url='http://www.wysija.com/wordpress-newsletter-plugin-premium/';
-        $objectwjp->package='http://packager.wysija.com/download/zip?key=wysija-newsletters-premium';
-        $current->response['wysija-newsletters-premium/index.php']=$objectwjp;
-
-        $to_send = (object) compact('plugins', 'active');
-
-        $options = array(
-            'timeout' => ( ( defined('DOING_CRON') && DOING_CRON ) ? 30 : 3),
-            'body' => array( 'plugins' => serialize( $to_send ) ),
-            'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' )
-        );
-
-        $raw_response = wp_remote_post('http://packager.wysija.com/release/check/?key=wysija-newsletters-premium',$options);
-
-        set_site_transient( 'update_plugins',$current );
-
-        include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
-        $upgrader = new Plugin_Upgrader( new Plugin_Installer_Skin( compact('title', 'url', 'nonce', 'plugin', 'api') ) );
-        $response=$upgrader->upgrade('wysija-newsletters-premium/index.php');
-    }*/
 
 }

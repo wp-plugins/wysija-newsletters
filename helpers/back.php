@@ -54,7 +54,7 @@ class WYSIJA_help_back extends WYSIJA_help{
              $wptools->set_default_rolecaps();
         }
 
-        
+
         if($config->getValue('premium_key') && !WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php')){
             add_filter( 'pre_set_site_transient_update_plugins', array($this,'prevent_update_wysija'));
             add_filter( 'http_request_args', array($this,'disable_wysija_version_requests'), 5, 2 );

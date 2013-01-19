@@ -708,7 +708,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             if($letsgo){
                 $helperToolbox=&WYSIJA::get('toolbox','helper');
                if($row['type']!=2){
-                   $return.= '<p><strong>'.sprintf(__('%1$s left.',WYSIJA),$helperToolbox->duration($data['sent'][$row['email_id']]['remaining_time'],true,4)).'</strong><br/>'.$statusdata.$pause.'</p>';
+                   $return.= '<p><strong>'.sprintf(__('Time remaining: %1$s',WYSIJA),$helperToolbox->duration($data['sent'][$row['email_id']]['remaining_time'],true,4)).'</strong><br/>'.$statusdata.$pause.'</p>';
                    $return.= '<div class="info-stats">';
                }
 

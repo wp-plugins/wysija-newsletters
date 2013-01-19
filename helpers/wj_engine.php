@@ -675,13 +675,28 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     }
                 }
 
-                if(isset($email['params']['autonl']['articles']['immediatepostid'])){
-                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
-                    $params['post_limit'] = 1;
-                }
                 if(isset($email['params']['autonl']['firstSend'])){
                     $params['post_date'] = $email['params']['autonl']['firstSend'];
                 }
+
+                if(isset($email['params']['autonl']['articles']['immediatepostid'])){
+                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
+                    $params['post_limit'] = 1;
+                }else{
+
+                    if(isset($email['params']['autonl']['lastSend'])){
+                        $params['post_date'] = $email['params']['autonl']['lastSend'];
+                    }else{
+
+                        $mEmail=&WYSIJA::get('email','model');
+                        $mEmail->reset();
+                        $mEmail->orderBy('email_id','DESC');
+                        $lastEmailSent=$mEmail->getOne(false,array('campaign_id'=>$email['campaign_id'],'type'=>'1'));
+                        if(isset($data['sent_at'])) $params['post_date'] = $lastEmailSent['sent_at'];
+                    }
+                }
+
+
 
                 $params['readmore'] = trim(base64_decode($params['readmore']));
 
