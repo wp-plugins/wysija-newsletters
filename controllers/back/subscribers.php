@@ -45,23 +45,26 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
                 $modelUL->reset();
                 $modelUL->update(array('sub_date'=>time()),array('user_id'=>$id));
-                foreach($_POST['wysija']['user_list']['list_id'] as $list_id){
-                    //if the list is not already recorded for the user then we will need to insert it
-                    if(!isset($oldlistids[$list_id])){
-                        $modelUL->reset();
-                        $newlistids[]=$list_id;
-                        $dataul=array('user_id'=>$id,'list_id'=>$list_id,'sub_date'=>time());
-                        //if double optin is on and user is unconfirmed or unsubscribed, then we need to set it as unconfirmed subscription
-                        if($dbloptin && (int)$_POST['wysija']['user']['status']<1)  unset($dataul['sub_date']);
-                        $modelUL->insert($dataul);
-                    //if the list is recorded already then let's check the status, if it is an unsubed one then we update it
-                    }else{
-                        if($oldlistids[$list_id]>0){
+                if(!empty($_POST['wysija']['user_list']['list_id'])){
+                    foreach($_POST['wysija']['user_list']['list_id'] as $list_id){
+                        //if the list is not already recorded for the user then we will need to insert it
+                        if(!isset($oldlistids[$list_id])){
                             $modelUL->reset();
-                            $modelUL->update(array('unsub_date'=>0,'sub_date'=>time()),array('user_id'=>$id,'list_id'=>$list_id));
+                            $newlistids[]=$list_id;
+                            $dataul=array('user_id'=>$id,'list_id'=>$list_id,'sub_date'=>time());
+                            //if double optin is on and user is unconfirmed or unsubscribed, then we need to set it as unconfirmed subscription
+                            if($dbloptin && (int)$_POST['wysija']['user']['status']<1)  unset($dataul['sub_date']);
+                            $modelUL->insert($dataul);
+                        //if the list is recorded already then let's check the status, if it is an unsubed one then we update it
+                        }else{
+                            if($oldlistids[$list_id]>0){
+                                $modelUL->reset();
+                                $modelUL->update(array('unsub_date'=>0,'sub_date'=>time()),array('user_id'=>$id,'list_id'=>$list_id));
+                            }
                         }
                     }
                 }
+
             }
 
             //if a confirmation email needs to be sent then we send it
@@ -70,14 +73,19 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                 $hUser->sendConfirmationEmail($id,true,$newlistids);
             }
 
+            if((int)$_POST['wysija']['user']['status']==0 || (int)$_POST['wysija']['user']['status']==1){
+                $modelUL->reset();
+                $modelUL->update(array('unsub_date'=>0,'sub_date'=>time()),array('user_id'=>$id,'list_id'=>$core_listids));
+            }
+
             $arrayLists=array();
-            if(isset($_POST['wysija']['user_list'])) $arrayLists=$_POST['wysija']['user_list']['list_id'];
+            if(isset($_POST['wysija']['user_list']['list_id'])) $arrayLists=$_POST['wysija']['user_list']['list_id'];
             $notEqual=array_merge($core_listids, $arrayLists);
 
-            //TODOUNSUB delete the lists to which you've unsubscribed
+            //delete the lists to which you've unsubscribed except the core ones
             $condiFirst=array('notequal'=>array('list_id'=> $notEqual ),'equal'=>array('user_id'=>$id,'unsub_date'=>0));
             $modelUL=&WYSIJA::get('user_list','model');
-            $modelUL->update(array('unsub_date'=>time(),'sub_date'=>0),$condiFirst);
+            $modelUL->delete($condiFirst);
             $modelUL->reset();
         }else{
             //instead of going through a classic save we should save through the helper
@@ -102,23 +110,24 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->js[]='wysija-admin-list';
         $this->viewObj->msgPerPage=__('Subscribers per page:',WYSIJA);
 
-        $this->jsTrans["selecmiss"]=__('Select at least 1 subscriber!',WYSIJA);
+        $this->jsTrans['selecmiss']=__('Select at least 1 subscriber!',WYSIJA);
         $orphaned=$filterJoin=false;
-        /*get the filters*/
+        //get the filters
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
-            $this->filters["like"]=array();
+            $this->filters['like']=array();
             $_REQUEST['search']=trim($_REQUEST['search']);
             foreach($this->searchable as $field)
-                $this->filters["like"][$field]=trim($_REQUEST['search']);
+                $this->filters['like'][$field]=trim($_REQUEST['search']);
         }
 
         // Lists filters
         if(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']){
             if ($_REQUEST['filter-list'] == 'orphaned') {
-                $this->filters["equal"]=array('list_id' => null);
+                $this->filters['equal']=array('list_id' => null);
                 $orphaned = true;
             } else {
-                $this->filters["equal"]=array('list_id' => $_REQUEST['filter-list']);
+                //we only get subscribed or unconfirmed users
+                $this->filters['equal']=array('list_id' => $_REQUEST['filter-list']);
                 $filterJoin=true;
             }
         }
@@ -126,16 +135,15 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $config=&WYSIJA::get('config','model');
         if(isset($_REQUEST['link_filter']) && $_REQUEST['link_filter']){
             switch($_REQUEST['link_filter']){
-                case "unconfirmed":
-                    $this->filters["equal"]=array('status'=>0);
+                case 'unconfirmed':
+                    $this->filters['equal']=array('status'=>0);
                     break;
-                case "unsubscribed":
-                    $this->filters["equal"]=array('status'=>-1);
+                case 'unsubscribed':
+                    $this->filters['equal']=array('status'=>-1);
                     break;
-                case "subscribed":
-
-                    if($config->getValue("confirm_dbleoptin"))  $this->filters["equal"]=array('status'=>1);
-                    else $this->filters["greater_eq"]=array('status'=>0);
+                case 'subscribed':
+                    if($config->getValue('confirm_dbleoptin'))  $this->filters['equal']=array('status'=>1);
+                    else $this->filters['greater_eq']=array('status'=>0);
                     break;
             }
         }
@@ -143,39 +151,38 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->modelObj->noCheck=true;
 
 
-        /* 0 - counting request */
-
+        //0 - counting request */
         if($filterJoin){
 
-            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `[wysija]user_list` as B";
-            $queryCmmonStart.=" JOIN `[wysija]".$this->modelObj->table_name."` as A on A.user_id=B.user_id";
+            $queryCmmonStart='SELECT count(distinct A.user_id) as users FROM `[wysija]user_list` as B';
+            $queryCmmonStart.=' JOIN `[wysija]'.$this->modelObj->table_name.'` as A on A.user_id=B.user_id';
 
         } elseif($orphaned) {
 
-            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `[wysija]user` as B";
-            $queryCmmonStart.=" JOIN `[wysija]user_list` as A on A.user_id=B.user_id";
+            $queryCmmonStart='SELECT count(distinct A.user_id) as users FROM `[wysija]user` as B';
+            $queryCmmonStart.=' JOIN `[wysija]user_list` as A on A.user_id=B.user_id';
 
         } else {
-            $queryCmmonStart="SELECT count(distinct A.user_id) as users FROM `[wysija]".$this->modelObj->table_name."` as A";
+            $queryCmmonStart='SELECT count(distinct A.user_id) as users FROM `[wysija]'.$this->modelObj->table_name.'` as A';
         }
 
 
-        /* all the counts query */
+        //all the counts query */
 
-        $query="SELECT count(user_id) as users, status FROM `[wysija]".$this->modelObj->table_name."` GROUP BY status";
-        $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
+        $query='SELECT count(user_id) as users, status FROM `[wysija]'.$this->modelObj->table_name.'` GROUP BY status';
+        $countss=$this->modelObj->query('get_res',$query,ARRAY_A);
         $counts=array();
         $total=0;
 
         foreach($countss as $count){
             switch($count['status']){
-                case "0":
+                case '0':
                     $type='unconfirmed';
                     break;
-                case "-1":
+                case '-1':
                     $type='unsubscribed';
                     break;
-                case "1":
+                case '1':
                     $type='subscribed';
                     break;
             }
@@ -183,15 +190,15 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $counts[$type]=$count['users'];
         }
         //if(!isset($counts["unconfirmed"])) $counts["unconfirmed"]=0;
-        if(!$config->getValue("confirm_dbleoptin"))  {
-            if(isset($counts["subscribed"])) {
-                if(isset($counts["unconfirmed"]))   $counts["subscribed"]=$counts["subscribed"]+$counts["unconfirmed"];
-                else $counts["subscribed"]=$counts["subscribed"];
+        if(!$config->getValue('confirm_dbleoptin'))  {
+            if(isset($counts['subscribed'])) {
+                if(isset($counts['unconfirmed']))   $counts['subscribed']=$counts['subscribed']+$counts['unconfirmed'];
+                else $counts['subscribed']=$counts['subscribed'];
 
             }else{
-                $counts["subscribed"]=$counts["unconfirmed"];
+                $counts['subscribed']=$counts['unconfirmed'];
             }
-            unset($counts["unconfirmed"]);
+            unset($counts['unconfirmed']);
 
         }
 
@@ -202,20 +209,20 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         if($this->filters)  $this->modelObj->setConditions($this->filters);
 
 
-        /* 1 - user request */
+        //1 - user request
 
         if($filterJoin){
 
-            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]user_list` as B";
+            $query="SELECT distinct(A.user_id), A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]user_list` as B";
             $query.=" JOIN `[wysija]".$this->modelObj->table_name."` as A on A.user_id=B.user_id";
 
         }elseif($orphaned) {
 
-            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]user` as A";
+            $query="SELECT distinct(A.user_id), A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]user` as A";
             $query.=" LEFT JOIN `[wysija]user_list` as B on B.user_id=A.user_id";
 
         } else {
-            $query="SELECT A.user_id, A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]".$this->modelObj->table_name."` as A";
+            $query="SELECT distinct(A.user_id), A.firstname, A.lastname,A.status , A.email, A.created_at FROM `[wysija]".$this->modelObj->table_name."` as A";
         }
 
         $queryFinal=$this->modelObj->makeWhere();
@@ -225,11 +232,11 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         else $this->modelObj->countRows=$counts['all'];
 
-        $orderby=" ORDER BY ";
+        $orderby=' ORDER BY ';
         if(isset($_REQUEST['orderby'])){
-            $orderby.=$_REQUEST['orderby']." ".$_REQUEST['ordert'];
+            $orderby.=$_REQUEST['orderby'].' '.$_REQUEST['ordert'];
         }else{
-            $orderby.=$this->modelObj->pk." desc";
+            $orderby.=$this->modelObj->pk.' desc';
         }
 
         $this->data['subscribers']=$this->modelObj->getResults($query.$queryFinal." ".$orderby.$this->modelObj->setLimit());
@@ -268,7 +275,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         /* 3 - user_list request */
         if($user_ids){
             $modeluList=&WYSIJA::get('user_list','model');
-            $userlists=$modeluList->get(array('list_id','user_id'),array('user_id'=>$user_ids,'unsub_date'=>0));
+            $userlists=$modeluList->get(array('list_id','user_id','unsub_date'),array('user_id'=>$user_ids));
         }
 
 
@@ -286,39 +293,51 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             if($userlists){
                 foreach($userlists as $key=>$userlist){
                     if($subscriber['user_id']==$userlist['user_id'] && isset($lists[$userlist['list_id']])){
-                        if(!isset($this->data['subscribers'][$keysus]['lists']) ){
+                        //what kind of list ist it ? unsubscribed ? or not
 
-                            $this->data['subscribers'][$keysus]['lists']=$this->data['lists'][$userlist['list_id']]['name'];
+                        if($userlist['unsub_date']>0){
+                            if(!isset($this->data['subscribers'][$keysus]['unsub_lists']) ){
+                                $this->data['subscribers'][$keysus]['unsub_lists']=$this->data['lists'][$userlist['list_id']]['name'];
+                            }else{
+                                $this->data['subscribers'][$keysus]['unsub_lists'].=', '.$this->data['lists'][$userlist['list_id']]['name'];
+                            }
+                       }else{
+                            if(!isset($this->data['subscribers'][$keysus]['lists']) ){
+                                $this->data['subscribers'][$keysus]['lists']=$this->data['lists'][$userlist['list_id']]['name'];
+                            }else{
+                                $this->data['subscribers'][$keysus]['lists'].=', '.$this->data['lists'][$userlist['list_id']]['name'];
+                            }
+
                         }
-                        else $this->data['subscribers'][$keysus]['lists'].=', '.$lists[$userlist['list_id']]['name'];
+
                     }
                 }
             }
         }
 
         if(!$this->data['subscribers']){
-            $this->notice(__("Yikes! Couldn't find any subscribers.",WYSIJA));
+            $this->notice(__('Yikes! Couldn\'t find any subscribers.',WYSIJA));
         }
 
     }
 
     function main(){
-         $this->messages['insert'][true]=__("Subscriber has been saved.",WYSIJA);
-        $this->messages['insert'][false]=__("Subscriber has not been saved.",WYSIJA);
-        $this->messages['update'][true]=__("Subscriber has been modified. [LINK]Edit again[/LINK].",WYSIJA);
-        $this->messages['update'][false]=__("Subscriber has not been modified.",WYSIJA);
+         $this->messages['insert'][true]=__('Subscriber has been saved.',WYSIJA);
+        $this->messages['insert'][false]=__('Subscriber has not been saved.',WYSIJA);
+        $this->messages['update'][true]=__('Subscriber has been modified. [link]Edit again[/link].',WYSIJA);
+        $this->messages['update'][false]=__('Subscriber has not been modified.',WYSIJA);
         parent::WYSIJA_control_back();
 
-        /*we change the default model of the controller based on the action*/
+        //we change the default model of the controller based on the action
         if(isset($_REQUEST['action'])){
             switch($_REQUEST['action']){
-                case "listsedit":
-                case "savelist":
-                case "lists":
-                    $this->model="list";
+                case 'listsedit':
+                case 'savelist':
+                case 'lists':
+                    $this->model='list';
                     break;
                 default:
-                    $this->model="user";
+                    $this->model='user';
             }
         }
 
@@ -365,6 +384,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     function lists(){
         $this->js[]='wysija-admin-list';
         $this->_commonlists();
+
         $this->modelObj=&WYSIJA::get('list','model');
         $this->viewObj->title=__('Edit lists',WYSIJA);
         $this->modelObj->countRows=$this->modelObj->count();
@@ -377,7 +397,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->_commonlists();
         $this->data['form']=$this->_getForm($_REQUEST['id']);
 
-        $this->viewObj->title=sprintf(__('Editing list %1$s',WYSIJA), "<b><i>".$this->data['form']['name']."</i></b>");
+        $this->viewObj->title=sprintf(__('Editing list %1$s',WYSIJA), '<b><i>'.$this->data['form']['name'].'</i></b>');
     }
 
     function addlist(){
@@ -393,7 +413,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
          * 1 duplicate the list
          * 2 duplicate the list's subscribers
          */
-        $model=&WYSIJA::get("list","model");
+        $model=&WYSIJA::get('list','model');
         $data=$model->getOne(array("name","welcome_mail_id","unsub_mail_id"),array("list_id"=>(int)$_REQUEST['id']));
 
         $query="INSERT INTO `[wysija]email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`)

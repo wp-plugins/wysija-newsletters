@@ -14,7 +14,19 @@
                 init : function(ed, url) {
                         // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
                         ed.addCommand('wysijaCustomFieldsInsert', function() {
-                                ed.execCommand('mceInsertContent', false, '[user:firstname | user:lastname | default:subscriber]');
+
+                                // ed.execCommand('mceInsertContent', false, '[user:firstname | user:lastname | default:subscriber]');
+
+                                ed.windowManager.open({
+                                    file : url + '/shortcodes.html', // file that contains HTML for our modal window
+                                    width : 500 + parseInt(ed.getLang('button.delta_width', 0)), // size of our window
+                                    height : 300 + parseInt(ed.getLang('button.delta_height', 0)), // size of our window
+                                    inline : 1,
+                                    resizable: false
+                                }, {
+                                    plugin_url : url
+                                });
+
                         });
 
                         // Register example button
@@ -50,7 +62,7 @@
                                 author : 'Wysija',
                                 authorurl : 'http://www.wysija.com',
                                 infourl : 'http://www.wysija.com',
-                                version : '0.1'
+                                version : '0.2'
                         };
                 }
         });

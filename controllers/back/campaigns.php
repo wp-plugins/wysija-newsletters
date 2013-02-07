@@ -16,49 +16,55 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 	/* Welcome page first time install */
     function welcome_new(){
         $this->title=$this->viewObj->title=__('Welcome Page!',WYSIJA);
-        $this->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
+        $this->jsTrans['instalwjp']=__('Installing Wysija Newsletter Premium plugin',WYSIJA);
         $hReadme=&WYSIJA::get('readme','helper');
         $hReadme->scan();
         $this->data=array();
-        $this->data['abouttext']='A Brand New Wysija. Let the Fun Begin.';
+        $this->data['abouttext']=__('A Brand New Wysija. Let the Fun Begin.',WYSIJA);
 
         $mConfig=&WYSIJA::get('config','model');
         $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
 
         $this->data['sections'][]=array(
-            'title'=>'First Time? See it in Action',
+            'title'=>__('First Time? See it in Action',WYSIJA),
             'format'=>'normal',
             'paragraphs'=>array(
-                    'Watch this 6 minute demo by one of our users (with a soothing voice too).',
-                    "<iframe width='853' height='480' src='http://www.youtube.com/embed/pYzaHDTg5Jk' frameborder='0' allowfullscreen></iframe>"
+                    __('Watch this 6 minute demo by one of our users (with a soothing voice too).',WYSIJA),
+                    '<iframe width="853" height="480" src="http://www.youtube.com/embed/pYzaHDTg5Jk" frameborder="0" allowfullscreen></iframe>'
                 )
             );
 
         $this->data['sections'][]=array(
-                'title'=>'What You Can Do',
+                'title'=>__('What You Can Do',WYSIJA),
             'cols'=>array(
                  array(
-                    'title'=>'5 minute newbie guide',
-                    'content'=>'Your Wysija comes with an example newsletter. You\'ll see it when you close this welcome page. Edit it to start playing with it.'
+                    'title'=>__('5 minute newbie guide',WYSIJA),
+                    'content'=>__('Your Wysija comes with an example newsletter. You\'ll see it when you close this welcome page. Edit it to start playing with it.',WYSIJA)
             ),
                array(
-                    'title'=>"Tip: visitors who comment can also subscribe",
-                    'content'=>"Visitors who add comments to your posts can now join your mailing list by clicking on a checkbox. Nifty. Activate this option, and many others, in your Advanced settings."
+                    'title'=>__('Tip: visitors who comment can also subscribe',WYSIJA),
+                    'content'=>__('Visitors who add comments to your posts can now join your mailing list by clicking on a checkbox. Nifty. Activate this option, and many others, in your Advanced settings.',WYSIJA)
             ),
 
                 array(
-                    'title'=>'Help yourself. Or let us help you.',
-                    'content'=>'We got documentation and a ticket system on <a href="http://support.wysija.com/" target="_blank" title="On our blog!">support.wysija.com</a>. We answer within 24h.'
+                    'title'=>__('Help yourself. Or let us help you.',WYSIJA),
+                    'content'=>  str_replace(
+                            array('[link]','[/link]'),
+                            array('<a href="http://support.wysija.com/" target="_blank" title="On our blog!">','</a>'),
+                            __('We got documentation and a ticket system on [link]support.wysija.com[/link]. We answer within 24h.',WYSIJA))
             )
             ),
             'format'=>'three-col',
         );
 
         $this->data['sections'][]=array(
-            'title'=>'Wysi... what?',
+            'title'=>__('Wysi... what?',WYSIJA),
             'format'=>'normal',
             'paragraphs'=>array(
-                    "So who are we? We're 4 guys who decided in 2011 that WordPress needed a better emailing solution. The tag line <em>What You Send Is Just Awesome</em> was born and the acronym Wysija became our name. If you like what we do, make sure <a href='http://www.wysija.com/you-want-to-help-us-out/' target='_blank'>you spread the good word</a>."
+            str_replace(
+                    array('[link]','[/link]'),
+                    array('<a href="http://www.wysija.com/you-want-to-help-us-out/" target="_blank">','</a>'),
+                    __('So who are we? We\'re 4 guys who decided in 2011 that WordPress needed a better emailing solution. The tag line <em>What You Send Is Just Awesome</em> was born and the acronym Wysija became our name. If you like what we do, make sure [link]you spread the good word[/link].',WYSIJA))
                 )
         );
 
@@ -85,11 +91,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $hReadme=&WYSIJA::get('readme','helper');
         $hReadme->scan();
         $this->data=array();
-        $this->data['abouttext']='It smells fresher here. Thanks for updating.';
+        $this->data['abouttext']='You updated! It\'s like having the next gadget, but better.';
 
         $mConfig=&WYSIJA::get('config','model');
         $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
-
 
         /*$this->data['sections'][]=array(
             'title'=>'Say <em>Bonjour</em> to Welcome Screen',
@@ -101,31 +106,50 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
         $this->data['sections'][]=array(
-                'title'=>'Added and Improved',
+            'title'=>'Added',
             'cols'=>array(
                 array(
-                    'title'=>"Smoother for SendGrid",
-                    'content'=>"Sending with SendGrid? Send via the web API optionally to avoid blocked SMTP ports and increased speed in some cases. See your SMTP options to find it."
+                    'title'=>'"Tags" or shortcodes',
+                    'content'=>"In your editor, you can now add more than just the first name and last name. These shortcodes can dynamically add the day of the week, the month, the year, the latest post title automatically, etc."
             ),
                 array(
-                    'title'=>'Checkbox for WP Registration',
-                    'content'=>"Perfect for membership sites. Visitors who register to your site can now click a checkbox to join a list of your choice. Your current list <em>WordPress Users</em> can now be used to send important site information, instead of newsletters. Tidier. Activate in Advanced Settings."
+                    'title'=>'Single sending method for Multisite',
+                    'content'=>"Huge time saver. You only need to configure Wysija once for all the sites on your network. Find the MS tab in your settings."
             ),
                 array(
-                    'title'=>"We love you and your kind words!",
-                    'content'=>"We love reviews because they encourage us. They really really do. "."<a href='http://wordpress.org/support/view/plugin-reviews/wysija-newsletters' target='_blank' title='On wordpress.org'>Add your own</a> and make our day."
+                    'title'=>"Custom roles for autoresponders",
+                    'content'=>"You can now send follow up emails or drip campaigns to WordPress users that are in a custom role. Perfect for membership or e-commerce sites."
             )
             ),
             'format'=>'three-col',
         );
 
-        $this->data['sections'][]=array(
+$this->data['sections'][]=array(
+            'title'=>'Improved',
+            'cols'=>array(
+                array(
+                    'title'=>"Getting better at RTL",
+                    'content'=>"We're working on improving support for right-to-left languages. If you see anything wrong, do let us know."
+            ),
+                array(
+                    'title'=>'Dozen of bug fixes',
+                    'content'=>"Thanks to all for your feedback. We're able to improve our plugin for everybody. Keep it coming."
+            ),
+                array(
+                    'title'=>"Love kittens?",
+                    'content'=>"Each time one of our users forgets to write a review, a kitten dies. It's sad and breaks our hearts. "."<a href='http://wordpress.org/support/view/plugin-reviews/wysija-newsletters' target='_blank' title='On wordpress.org'>Add your own review</a> and save a kitten today."
+            )
+            ),
+            'format'=>'three-col',
+        );
+
+        /*$this->data['sections'][]=array(
             'title'=>'We\'re Hiring a Hacker',
             'format'=>'normal',
             'paragraphs'=>array(
                     "We've busted our HR capacity. We need new muscles.<br /><br />If you're young, girl or guy, and <strong>you want a serious PHP and javascript challenge</strong>, not to mention responsibility, <a href='http://www.wysija.com/contact/' target='_blank' title='Our contact form'>get in touch with us</a>. <br /><br />You could add your own 5000 lines of code to the existing 45 000 by February. About 30 000 users will start appreciating your work."
                 )
-        );
+        );*/
 
         $this->data['sections'][]=array(
             'title'=>'Change log',
@@ -167,7 +191,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->redirect();
     }
 
-    function send_test_editor($dataPost=false){
+    /**
+     * this function is triggered when sending manually the emails with the "Don't wait and send right now" button
+     * @param type $dataPost
+     */
+    function manual_send($dataPost=false){
         $modelQ=&WYSIJA::get('queue','model');
         $config=&WYSIJA::get('config','model');
         if((int)$config->getValue('total_subscribers')<2000  ){
@@ -183,7 +211,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             }
             exit;
         }else {
+            //deprecated
             do_action('wysija_send_test_editor');
+
+            do_action('wysija_manual_send');
         }
 
         exit;
@@ -278,6 +309,14 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             if($datal['is_enabled'])    $dataLists[$datal['list_id']]=$datal['name'];
         }
 
+        // Get all available roles
+        $wptoolsH =& WYSIJA::get('wp_tools','helper');
+        $roles = $wptoolsH->wp_get_all_roles();
+        $available_roles = array('any'=>__('in any role,',WYSIJA));
+        foreach ($roles as $role => $name) {
+            $available_roles[$role] = __('as ' . $name . ',',WYSIJA);
+        }
+
         $this->data['autonl']['fields']=array(
             'event'=>array(
                 'values'=>array(
@@ -306,14 +345,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 'style'=>'width:300px;'
                 ),
             'roles'=>array(
-                'values'=>array(
-                    'any'=>__('in any role,',WYSIJA),
-                    'administrator'=>__('as an administrator,',WYSIJA),
-                    'editor'=>__('as an editor,',WYSIJA),
-                    'author'=>__('as an author,',WYSIJA),
-                    'contributor'=>__('as a contributor,',WYSIJA),
-                    'subscriber'=>__('as a subscriber,',WYSIJA),
-                    )
+                'values'=>$available_roles
             ),
             'numberafter'=>array(
                 'type'=>'input',
@@ -548,12 +580,22 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function immediateWarning(){
-        $modelC=&WYSIJA::get('config','model');
-        $number=$modelC->getValue('sending_emails_number');
-        $per=$modelC->getValue('sending_emails_each');
+        $mConfig=&WYSIJA::get('config','model');
+
+        $is_multisite=is_multisite();
+
+        //$is_multisite=true;//PROD comment that line
+        if($is_multisite && $mConfig->getValue('sending_method')=='network'){
+           $sending_emails_each=$mConfig->getValue('ms_sending_emails_each');
+           $number=$mConfig->getValue('ms_sending_emails_number');
+        }else{
+           $sending_emails_each=$mConfig->getValue('sending_emails_each');
+           $number=$mConfig->getValue('sending_emails_number');
+        }
+
         $formsHelp=&WYSIJA::get('forms','helper');
 
-        $timespan=$formsHelp->eachValuesSec[$per];
+        $timespan=$formsHelp->eachValuesSec[$sending_emails_each];
         $tb=&WYSIJA::get('toolbox','helper');
 
         $this->immediatewarning=str_replace(
@@ -611,7 +653,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }else{
             $this->jsTrans['autonl']=true;
             $this->viewObj->immediatewarning='';
-            $this->jsTrans['send']=__('Send',WYSIJA);
+            $this->jsTrans['send']= __('Send',WYSIJA);
         }
 
         if((int)$this->data['email']['type']==1){
@@ -1470,9 +1512,19 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 /**/
                 $modelC=&WYSIJA::get('config','model');
                 $running=false;
+
+                $is_multisite=is_multisite();
+
+                //$is_multisite=true;//PROD comment that line
+                if($is_multisite && $modelC->getValue('sending_method')=='network'){
+                   $sending_emails_each=$modelC->getValue('ms_sending_emails_each');
+                }else{
+                   $sending_emails_each=$modelC->getValue('sending_emails_each');
+                }
+
                 if($modelC->getValue('cron_manual')){
                     $formsHelp=&WYSIJA::get('forms','helper');
-                    $queue_frequency=$formsHelp->eachValuesSec[$modelC->getValue('sending_emails_each')];
+                    $queue_frequency=$formsHelp->eachValuesSec[$sending_emails_each];
                     $queue_scheduled=WYSIJA::get_cron_schedule('queue');
 
                     $next_scheduled_queue=$queue_scheduled['next_schedule'];
@@ -1516,10 +1568,20 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     $this->data['sent'][$sentot['email_id']]['left']= (int)$this->data['sent'][$sentot['email_id']]['total'] - (int)$this->data['sent'][$sentot['email_id']]['to'];
                 }
 
+
+                $is_multisite=is_multisite();
+
+                //$is_multisite=true;//PROD comment that line
+                if($is_multisite && $modelC->getValue('sending_method')=='network'){
+                   $sending_emails_number=$modelC->getValue('ms_sending_emails_number');
+                }else{
+                   $sending_emails_number=$modelC->getValue('sending_emails_number');
+                }
+
                if(isset($this->data['sent'])){
                    foreach($this->data['sent'] as $key => $camp){
                         if($this->data['sent'][$key]['left']>0){
-                            $cronsneeded=ceil($this->data['sent'][$key]['left']/$modelC->getValue('sending_emails_number'));
+                            $cronsneeded=ceil($this->data['sent'][$key]['left']/$sending_emails_number);
                             $this->data['sent'][$key]['remaining_time']=$cronsneeded *$queue_frequency;
                             $this->data['sent'][$key]['running_for']=$running;
                             $this->data['sent'][$key]['next_batch']=$next_scheduled_queue-time();

@@ -5,7 +5,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_back extends WYSIJA_help{
     function WYSIJA_help_back(){
         parent::WYSIJA_help();
-        
+
         $config=&WYSIJA::get('config','model');
         define('WYSIJA_DBG',(int)$config->getValue('debug_new'));
 
@@ -14,11 +14,12 @@ class WYSIJA_help_back extends WYSIJA_help{
             ini_set('display_errors', '0');
         }
 
-        
+
+
         if(isset($_GET['page']) && substr($_GET['page'],0,7)=='wysija_'){
             define('WYSIJA_ITF',TRUE);
             $this->controller=&WYSIJA::get(str_replace('wysija_','',$_GET['page']),'controller');
-        }else{
+        }else{//check if we are pluging in wordpress interface
             define('WYSIJA_ITF',FALSE);
         }
         if(WYSIJA_DBG>0) include_once(WYSIJA_INC.'debug.php');
@@ -26,7 +27,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             function dbg($mixed,$exit=true){}
         }
 
-        
+
         if(defined('DOING_AJAX')){
 
             add_action( 'after_setup_theme', array($this, 'ajax_setup') );
@@ -38,42 +39,38 @@ class WYSIJA_help_back extends WYSIJA_help{
                 }
                 add_action('after_setup_theme',array($this,'resolveConflicts'));
             }
-            
 
-            
+
+
             add_action('after_setup_theme', array('WYSIJA', 'update_user_caps'),11);
             add_action('admin_menu', array($this, 'define_translated_strings'),98);
             add_action('admin_menu', array($this, 'add_menus'),99);
             add_action('admin_enqueue_scripts',array($this, 'add_js'),10,1);
 
-            
+
             add_action('admin_head-post-new.php',array($this,'addCodeToPagePost'));
             add_action('admin_head-post.php',array($this,'addCodeToPagePost'));
-            
+
              $wptools =& WYSIJA::get('wp_tools', 'helper');
              $wptools->set_default_rolecaps();
-        }
 
+            if($config->getValue('premium_key') && !WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php')){
+                add_filter( 'pre_set_site_transient_update_plugins', array($this,'prevent_update_wysija'));
+                add_filter( 'http_request_args', array($this,'disable_wysija_version_requests'), 5, 2 );
+                if(file_exists(WYSIJA_PLG_DIR.'wysija-newsletters-premium'.DS.'index.php')){
 
-        if($config->getValue('premium_key') && !WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php')){
-            add_filter( 'pre_set_site_transient_update_plugins', array($this,'prevent_update_wysija'));
-            add_filter( 'http_request_args', array($this,'disable_wysija_version_requests'), 5, 2 );
-            if(file_exists(WYSIJA_PLG_DIR.'wysija-newsletters-premium'.DS.'index.php')){
+                    $this->notice('<p>'.__('You need to activate the Wysija Premium plugin.',WYSIJA).' <a id="install-wjp" class="button-primary"  href="admin.php?page=wysija_campaigns&action=install_wjp">'.__('Activate now',WYSIJA).'</a></p>');
+                }else{
 
-                $this->notice('<h1>'.__('You need to activate the wysija premium plugin.',WYSIJA).' <a id="install-wjp" class="wysija-premium-btns wysija-premium"  href="admin.php?page=wysija_campaigns&action=install_wjp">'.__('Activate now.',WYSIJA).'</a></h1>');
-            }else{
-
-                $readmoreaboutchange=str_replace(
-                                array('[link]','[/link]'),
-                                array('<a  href="http://support.wysija.com/knowledgebase/premium-users-get-their-own-extra-plugin/" target="_blank">','</a>'), __('Premium users [link]need to install[/link] an additional plugin.',WYSIJA));
-                $this->notice('<h1>'.$readmoreaboutchange.' <a id="install-wjp" class="wysija-premium-btns wysija-premium"  href="admin.php?page=wysija_campaigns&action=install_wjp">'.__('Install now in one click.',WYSIJA).'</a></h1>');
+                    $this->notice('<p>'.__('Congrats, your Premium license is active. One last step...',WYSIJA).' <a id="install-wjp" class="button-primary"  href="admin.php?page=wysija_campaigns&action=install_wjp">'.__('Install the Premium plugin.',WYSIJA).'</a></p>');
+                }
+                $this->controller->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
             }
-            $this->controller->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
         }
 
         if($config->getValue('commentform')){
             add_action('wp_set_comment_status',  array($this,'comment_approved'), 60,2);
-       }
+        }
     }
     function comment_approved($cid,$comment_status){
 
@@ -276,10 +273,11 @@ class WYSIJA_help_back extends WYSIJA_help{
             $jstrans=$this->controller->jsTrans;
 
             $jstrans['gopremium']=__('Go Premium!',WYSIJA);
-            
+
             $backloader->jsParse($this->controller,$pagename,WYSIJA_URL);
 
             $backloader->loadScriptsStyles($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
+
             $backloader->localize($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
         }
             $jstrans['newsletters']=__('Newsletters',WYSIJA);

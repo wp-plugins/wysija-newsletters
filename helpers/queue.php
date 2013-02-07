@@ -24,7 +24,13 @@ class WYSIJA_help_queue extends WYSIJA_object{
             $this->listsubClass->checkAccess = false;
             $this->listsubClass->sendNotif = false;
             $this->listsubClass->sendConf = false;
-            $this->send_limit = (int) $this->config->getValue('sending_emails_number');
+            $is_multisite=is_multisite();
+
+            if($is_multisite && $this->config->getValue('sending_method')=='network'){
+                $this->send_limit=(int)$this->config->getValue('ms_sending_emails_number');
+            }else{
+                $this->send_limit=(int)$this->config->getValue('sending_emails_number');
+            }
             if(isset($_REQUEST['totalsend'])){
                 $this->send_limit = (int) $_REQUEST['totalsend']-$_REQUEST['alreadysent'];
             }
@@ -70,14 +76,14 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				ob_end_flush();
 			}
 			$disp = '<html><head><meta http-equiv="Content-Type" content="text/html;charset=utf-8" />';
-			$disp .= '<title>'.addslashes(__("Send Process",WYSIJA)).'</title>';
+			$disp .= '<title>'.addslashes(__('Send Process',WYSIJA)).'</title>';
 			$disp .= '<style>body{font-size:12px;font-family: Arial,Helvetica,sans-serif;}</style></head><body>';
 			$disp.= "<div style='padding: 3px;'>";
 			$disp.= "<span id='divpauseinfo' style='padding:10px;margin:5px;font-size:16px;font-weight:bold;display:none;background-color:black;color:white;'> </span>";
-			$disp.= __("Total of batch",WYSIJA).': <span id="counter"/>'.$this->start.'</span> / '. $this->total;
+			$disp.= __('Total of batch',WYSIJA).': <span id="counter"/>'.$this->start.'</span> / '. $this->total;
 			$disp.= '</div>';
 			$disp.= "<div id='divinfo' style='display:none; position:fixed; bottom:3px;left:3px;background-color : white; border : 1px solid grey; padding : 3px;'> </div>";
-      $url = 'admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
+      $url = 'admin.php?page=wysija_campaigns&action=manual_send&emailid='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
 
 			$disp.= '<script type="text/javascript" language="javascript">';
 			$disp.= 'var mycounter = document.getElementById("counter");';
@@ -101,8 +107,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 			if(function_exists('ob_flush')) @ob_flush();
 			@flush();
 		}//endifreport
-                $mailHelper=&WYSIJA::get("mailer","helper");
-
+                $mailHelper=&WYSIJA::get('mailer','helper');
 		$mailHelper->report = false;
 
                 $mailHelper->SMTPKeepAlive = true;
@@ -148,7 +153,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				if(in_array($mailHelper->errorNumber,$mailHelper->errorNewTry)){
 					if(empty($maxTry) OR $oneQueue->number_try < $maxTry-1){
 						$newtry = true;
-						$otherMessage = sprintf(__("Next try in %s minutes.",WYSIJA),round($this->config->getValue('queue_delay')/60));
+						$otherMessage = sprintf(__('Next try in %s minutes.',WYSIJA),round($this->config->getValue('queue_delay')/60));
 					}
 					if($mailHelper->errorNumber == 1) $this->consecutiveError ++;
                                         if($this->consecutiveError == 2) sleep(1);
@@ -175,12 +180,12 @@ class WYSIJA_help_queue extends WYSIJA_object{
 				break;
 			}
 			if(!empty($this->stoptime) AND $this->stoptime < time()){
-				$this->_display(__("Process refreshed to avoid a time limit.",WYSIJA));
+				$this->_display(__('Process refreshed to avoid a time limit.',WYSIJA));
 				if($this->nbprocess < count($queueElements)) $this->finish = false;
 				break;
 			}
 			if($this->consecutiveError > 2 AND $this->successSend>3){
-				$this->_display(__("Process refreshed to avoid a possible loss of connection.",WYSIJA));
+				$this->_display(__('Process refreshed to avoid a possible loss of connection.',WYSIJA));
 				break;
 			}
 			if($this->consecutiveError > 5 OR connection_aborted()){
@@ -205,7 +210,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 
 		}
 		if($this->report){
-			echo "</body></html>";
+			echo '</body></html>';
                         exit;
 		}
 		return true;
@@ -213,7 +218,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	function _deleteQueue($queueDelete){
 		if(empty($queueDelete)) return true;
 		$status = true;
-                $modelQ=&WYSIJA::get("queue","model");
+                $modelQ=&WYSIJA::get('queue','model');
 		foreach($queueDelete as $email_id => $subscribers){
 			$nbsub = count($subscribers);
 
@@ -230,7 +235,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
                                 $nbdeleted = $modelQ->getAffectedRows();
 				if($nbdeleted != $nbsub){
 					$status = false;
-					$this->_display(__("Newsletters are already being sent. Your latest newsletter will be sent afterwards.",WYSIJA));
+					$this->_display(__('Newsletters are already being sent. Your latest newsletter will be sent afterwards.',WYSIJA));
 				}
 			}
 		}
@@ -240,7 +245,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	function _statsAdd($statsAdd){
 		$time = time();
 		if(empty($statsAdd)) return true;
-                $modelEUS=&WYSIJA::get("email_user_stat","model");
+                $modelEUS=&WYSIJA::get('email_user_stat','model');
 		foreach($statsAdd as $email_id => $infos){
 			$email_id = intval($email_id);
 			foreach($infos as $status => $infosSub){
@@ -256,7 +261,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	function _queueUpdate($queueUpdate){
 		if(empty($queueUpdate)) return true;
 		$delay = $this->config->getValue('queue_delay',3600);
-                $modelQ=&WYSIJA::get("queue","model");
+                $modelQ=&WYSIJA::get('queue','model');
 		foreach($queueUpdate as $email_id => $subscribers){
 			$query = 'UPDATE `[wysija]queue` SET send_at = send_at + '.$delay.', number_try = number_try +1 WHERE email_id = '.$email_id.' AND user_id IN ('.implode(',',$subscribers).')';
 			$modelQ->query($query);
@@ -264,19 +269,18 @@ class WYSIJA_help_queue extends WYSIJA_object{
 	}
 	function _handleError(){
 		$this->finish = true;
-		$message = __("The Send Process stopped because there are too many errors.",WYSIJA);
+		$message = __('The Send Process stopped because there are too many errors.',WYSIJA);
 		$message .= '<br/>';
-		$message .= __("We kept all non delivered emails in the queue, so you will be able to resume the send process later.",WYSIJA);
+		$message .= __('We kept all non delivered emails in the queue, so you will be able to resume the send process later.',WYSIJA);
 		$message .= '<br/>';
 		if($this->report){
 			if(empty($this->successSend) AND empty($this->start)){
-				$message .= __("Please verify your mail configuration and make sure you can send a test of this email.",WYSIJA);
+				$message .= __('Please verify your mail configuration and make sure you can send a test of this email.',WYSIJA);
 				$message .= '<br/>';
-				$message .= __("If you recently, successfully, sent a lot of emails, those errors may also be due to your server limitations.",WYSIJA);
+				$message .= __('If you recently, successfully, sent a lot of emails, those errors may also be due to your server limitations.',WYSIJA);
 			}else{
-				$message .= __("Your server apparently refuses to send more emails.",WYSIJA);
+				$message .= __('Your server apparently refuses to send more emails.',WYSIJA);
 				$message .= '<br/>';
-				
 			}
 		}
 		$this->_display($message);
@@ -305,7 +309,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
                         $status = $this->subClass->getSubscriptionStatus($subid);
                 }
                 $message = '';
-                $modelU=&WYSIJA::get("user","model");
+                $modelU=&WYSIJA::get('user','model');
 		switch($this->config->getValue('bounce_action_maxtry')){
 			case 'sub' :
 				$listId = $this->config->getValue('bounce_action_lists_maxtry');
@@ -364,7 +368,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
             $modelQ->query($realquery);
 
             $conditions=array();
-            $conditions["less"]=array('send_at'=>time()-(3600*48));
+            $conditions['less']=array('send_at'=>time()-(3600*48));
             if($modelQ->exists($conditions)){
 
                 $configM->save(array('queue_sends_slow'=>1));

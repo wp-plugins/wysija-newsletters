@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.2.3
+Stable tag: 2.3
 
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
@@ -25,25 +25,25 @@ http://vimeo.com/46247528
 
 * Drag & drop visual editor, an HTML-free experience
 * Post notifications, like Feedburner, Subscribe2 or MailChimp's RSS-to-Email
-* [Selection of over 20 themes](http://www.wysija.com/newsletter-templates-wordpress/). Photoshop files included
+* [Selection of over 30 themes](http://www.wysija.com/newsletter-templates-wordpress/). Photoshop files included
 * Get stats for each newsletter: opens, clicks, unreads, unsubscribes
 * Add a subscription form in your sidebar or pages
 * Your newsletters look the same in Gmail, iPhone, Android, Outlook, Yahoo, Hotmail, etc.
 * Your WordPress users have their own list
 * Import subscribers from MailChimp, Aweber, etc.
-* One click import from MailPress, Tribulant, Satollo, Subscribe2, etc.
+* One click import from Tribulant, Satollo, Subscribe2, etc.
 * Single or double opt-in, your choice
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
 * Autoresponders, i.e. "Send email 3 days after someone subscribes"
 * Unlimited number of lists
-* Free version is limited to 2000 subscribers
+* Sending in free version is limited to 2000 subscribers
 
 = Premium version =
 
 [Wysija Premium](http://www.wysija.com/wordpress-newsletter-plugin-premium/) offers these nifty extra features:
 
-* Unlimited number of subscribers
+* Send to more than 2000 subscribers
 * Stats for individual subscribers (opened, clicked)
 * Total clicks for each link in your newsletter
 * Access to Premium themes
@@ -56,16 +56,10 @@ http://vimeo.com/46247528
 
 [Visit our Premium page](http://www.wysija.com/wordpress-newsletter-plugin-premium/).
 
-= Upcoming major release =
-
-* Subscriber profiles, ie. gender, city, or whatever you want
-* Dozens of mini improvements based on user feedback
-* Possibility to insert your own HTML in newsletter
-
 = Future releases =
 
-* New stats page
-* Custom post types support
+* Subscriber profiles, ie. gender, city, or whatever you want
+* Possibility to insert your own HTML in newsletter
 * Display a list of past newsletters sent in a page of your site (shortcode)
 
 = Support =
@@ -76,9 +70,8 @@ We got a dedicated website just to help you out. And we're quite quick to reply.
 
 = Translations in your language =
 
-Translations are included in the plugin. Join the translation teams on [our Transifex page](https://www.transifex.com/projects/p/wysija/).
+[Get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
 
-* Your language: [get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
 * Arabic
 * Catalan
 * Chinese
@@ -90,6 +83,7 @@ Translations are included in the plugin. Join the translation teams on [our Tran
 * German
 * Greek
 * Hungarian
+* Indonesian
 * Italian
 * Japanese
 * Norwegian
@@ -149,6 +143,24 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.3 - 2013-02-07 =
+
+* added "shortcodes" for newsletter. Add more than first and last name, like dates, links Supported in subject line too.
+* added custom roles to autoresponders so you can send to more than just the default roles (admin, editor, author, etc.)
+* added single sending method for all sites in Multisite. See new "MS" tab in settings for more
+* added DKIM optional upgrade to 1024 bits to comply with Gmail (Premium feature)
+* added support for Premium behind firewall with no possible requests to wysija.com
+* fixed images uploaded in Wysija are now resized to 600px. Next release will include images from media library.
+* fixed lightbox (popups) width for right to left languages
+* fixed subscription form on WordPress user registration
+* fixed load translation error on Windows server
+* fixed wrong count for the issue number tag [number] in daily, weekly and monthly post notification
+* fixed immediate custom post notification wrongly triggered
+* fixed browser view error for rare scenarios
+* fixed SendGrid web API not able to send newsletters to subscribers with first name and/or last name
+* fixed WordPress' images browser
+* fixed breakfast, with a buttered toast and nice latte
 
 = 2.2.3 - 2013-01-19 =
 
@@ -515,7 +527,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * improved line-height for titles in text editor
 * fixed Outlook and Hotmail padding issue with images
 * improved speed of editor
-* possibility to import automatically and keep in Sync lists from all major plugins: MailPress, Satollo, WP-Autoresponder, Tribulant, Subscribe2, etc.
+* possibility to import automatically and keep in sync lists from all major plugins: MailPress, Satollo, WP-Autoresponder, Tribulant, Subscribe2, etc.
 * possibility to change "Unsubscribe" link text in footer
 * choose which role can edit subscribers
 * preview of newsletter in new window and not in popup

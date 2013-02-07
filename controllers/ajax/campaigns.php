@@ -186,10 +186,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
         if(!$result) {
             // throw error
-            $this->error(__("Image selection has not been saved.", WYSIJA));
+            $this->error(__('Image selection has not been saved.', WYSIJA));
         } else {
             // save successful
-            $this->notice(__("Image selection has been saved.", WYSIJA));
+            $this->notice(__('Image selection has been saved.', WYSIJA));
         }
 
         return array('result' => $result);
@@ -421,7 +421,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
             if(isset($emailChild['params']['autonl']['articles']['count'])) $itemCount = (int)$emailChild['params']['autonl']['articles']['count'];
             if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstSubject = $emailChild['params']['autonl']['articles']['first_subject'];
-            if(isset($emailChild['params']['autonl']['articles']['total_child'])) $totalCount = (int)$emailChild['params']['autonl']['articles']['total_child'] + 1;
+            if(isset($emailClone['params']['autonl']['total_child'])) $totalCount = (int)$emailClone['params']['autonl']['total_child'] + 1;
 
             if(empty($firstSubject)) {
                 $this->error(__('There are no articles to be sent in this email.',WYSIJA),1);
@@ -470,6 +470,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         return $resultarray;
     }
 
+    /**
+     * send spam test function step 2 of the newsletter edition process
+     */
     function send_spamtest(){
         return apply_filters('wysija_send_spam_test','',$this);
     }

@@ -67,7 +67,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                         <td>
                             '.$formObj->radios(
                     array('id'=>'status', 'name'=>'wysija[user][status]'),
-                    array("-1"=>" ".__("Unsubscribed",WYSIJA)." ","1"=>" ".__('Subscribed',WYSIJA).' '),
+                    array('-1'=>' '.__('Unsubscribed',WYSIJA).' ','1'=>' '.__('Subscribed',WYSIJA).' '),
                     $data['user']['details']['status'],
                     ' class="validate[required]" ').'
                         </td>
@@ -118,6 +118,7 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
                     }else{
                         //we keep a reference of the list to which we are unsubscribed
                         $hiddenField=$formObj->hidden(array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][unsub_list][]", 'class'=>'checkboxx'),$list['list_id']);
+                        $hiddenField.=' / <span class="wysija-unsubscribed-on">'.sprintf(__('Unsubscribed on %1$s',WYSIJA),  date('D, j M Y H:i:s', $valuefield[$list['list_id']]['unsub_date'])).'</span>';
                     }
                 }
                 $labelHTML= '<label for="'.$field.$list['list_id'].'">'.$list['name'].'</label>';

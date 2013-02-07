@@ -103,7 +103,7 @@ class WYSIJA_help_front extends WYSIJA_help{
         return $result;
     }
     function register_posted($login,$email,$errors){
-        if ( empty($errors) && isset($_POST['wysija']['register_subscribe']) && $_POST['wysija']['register_subscribe']) {
+        if ( empty($errors->errors) && isset($_POST['wysija']['register_subscribe']) && $_POST['wysija']['register_subscribe']) {
             $mConfig=&WYSIJA::get('config','model');
             $userHelper=&WYSIJA::get('user','helper');
             $data=array('user'=>array('email'=>$email),'user_list'=>array('list_ids'=>$mConfig->getValue('registerform_lists')));

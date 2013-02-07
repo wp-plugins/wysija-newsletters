@@ -10,7 +10,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                 return $events;
             }else{
                 if(isset($events[$key])) return $events[$key];
-                return false; 
+                return false;
             }
         }else{
             if(isset($events[$key])) return false;
@@ -49,7 +49,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                     case 'daily':
                         $timeNext=date('m/d/y',$timenow);
                         $timeNext.=' '.$email["params"]['autonl']['time'];
-                        $timeNext=strtotime($timeNext); 
+                        $timeNext=strtotime($timeNext);
                         $toolboxH=&WYSIJA::get('toolbox','helper');
 
                         if($timenow>$toolboxH->offset_time($timeNext)){
@@ -61,7 +61,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                         $timeNext=strtotime("next ".ucfirst($email["params"]['autonl']['dayname']),$timenow);
                         $timeNext=date('m/d/y',$timeNext);
                         $timeNext.=' '.$email["params"]['autonl']['time'];
-                        $timeNext=strtotime($timeNext); 
+                        $timeNext=strtotime($timeNext);
                         $toolboxH=&WYSIJA::get('toolbox','helper');
 
                         if($timenow>$toolboxH->offset_time($timeNext)){
@@ -97,7 +97,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                             $timeFirstDayofNextMonth=strtotime(($timeCurrentMonth+1).'/1/'.$timeCurrentYear.' '.$email["params"]['autonl']['time']);
                             $timeNext=$this->getNextDay($timeFirstDayofNextMonth,$email["params"]['autonl']['dayname'],$email["params"]['autonl']['dayevery'],$timenow);
                         }
-                        break;             
+                        break;
                 }
             }
         }
@@ -112,7 +112,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         }
         return $firstDayOfMonth;
     }
-    
+
     
     function checkPostNotif(){
         $modelEmail=&WYSIJA::get('email','model');
@@ -131,7 +131,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
             }
         }
     }
-    
+
     
     function checkScheduled(){
         $modelEmail=&WYSIJA::get('email','model');

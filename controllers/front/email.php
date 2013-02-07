@@ -39,6 +39,7 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
 
         // Parse and replace user tags.
         $mailerH->parseUserTags($current_email);
+        $mailerH->parseSubjectUserTags($current_email);
         $mailerH->replaceusertags($current_email, $current_user);
 
         // Set Title
