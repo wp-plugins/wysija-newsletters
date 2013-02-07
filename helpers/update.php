@@ -201,7 +201,7 @@ class WYSIJA_help_update extends WYSIJA_object{
 	$plugins_allowedtags = array('a' => array('href' => array(),'title' => array()),'abbr' => array('title' => array()),'acronym' => array('title' => array()),'code' => array(),'em' => array(),'strong' => array());
 	$plugin_name = wp_kses( $plugin_data['Name'], $plugins_allowedtags );
 	$details_url = self_admin_url('plugin-install.php?tab=plugin-information&plugin=' . $r->slug . '&section=changelog&TB_iframe=true&width=600&height=800');
-        if((is_network_admin() || !is_multisite()) && current_user_can('update_plugins') && !empty($r->package) ){
+        if(((is_multisite() && current_user_can('manage_network') ) || current_user_can('update_plugins') ) && !empty($r->package) ){
             $this->notice(
                 sprintf(
                     __('Hey! %1$s has an update. <a href="%2$s" class="thickbox" title="%3$s">See version %4$s details</a> or simply <a href="%5$s">update automatically</a>.')

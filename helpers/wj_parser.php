@@ -61,6 +61,24 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
     {
         $this->_inline = $bool;
     }
+    public function renderForJS($vars, $template) {
+        if (is_object ($vars)) {
+            $vars = get_object_vars($vars);
+        }
+        if ($string = $this->_loadTemplate ($template)) {
+
+            $this->_vars = $vars;
+
+            if($this->_inline) {
+                $string = preg_replace("#(\t|\r|\n)#UiS", '', trim($string));
+                $string = preg_replace("#> +<#UiS", '><', $string);
+            }
+            $output = $this->_parseForJS($string);
+            return $output;
+        } else {
+            throw new Exception('wysija parser needs a template');
+        }
+    }
     public function render($vars, $template)
     {
         if (is_object ($vars)) {
@@ -87,7 +105,144 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
         }
     }
 
-    protected function _parse ($string, $vars=null)
+    protected function _parseForJS($string, $vars = null) {
+        $old_string = $string;
+        if (null === $vars) {
+            $vars =& $this->_vars;
+        }
+        # search loop, include or if statement
+        while (preg_match ("`".self::_OPEN."(".self::_LOOP."|".self::_FOREACH."|".self::_INCLUDE."|".self::_IF."|".self::_SET."|".self::_TRANSLATE.")([^\{]*?)".self::_CLOSE."`", $string, $preg)) {
+            $result_pattern = '';
+            $tag_mask = $preg[0];
+            $tag_type = $preg[1];
+            $tag_properties = $preg[2];
+            # LOOP & FOREACH
+            if ($tag_type == self::_LOOP || $tag_type == self::_FOREACH ) {
+                $loop_name = $this->_getProperty ('name', $tag_properties);
+                $loop_as = $this->_getProperty ('value', $tag_properties);
+                $loop_key = $this->_getProperty ('key', $tag_properties);
+                $loop_row_size = $this->_getProperty ('row_size', $tag_properties);
+                $reverse = $this->_getProperty ('reverse', $tag_properties);
+                # define loop string and replace pattern
+                $loop_replace_pattern = $this->_getEncapsuledPattern ($string, $tag_type, $tag_mask);
+                preg_match ("`".$loop_replace_pattern."`s", $string, $loops);
+                $loop_string = $loops[1];
+                # loop on array
+                preg_match ("`^".self::_VAR."`", $loop_name, $preg);
+                $loop_array = $this->_getValue ($preg, $vars);
+				if ($reverse) {
+					$loop_array = array_reverse ($loop_array);
+				}
+                if (is_array ($loop_array)) {
+                    $count = count ($loop_array);
+                    $loop = array ();
+                    $i = 0;
+                    foreach ($loop_array as $line) {
+                        # meta values
+                        if (is_array($line)) {
+                            # is pair ?
+                            $line[self::_PAIR] = ($i+1)%2 ;
+                            # position in list
+                            $i < $count-1 ? $line[self::_LAST] = false : $line[self::_LAST] = true;
+                            $i == 0 ? $line[self::_FIRST] = true : $line[self::_FIRST] = false;
+                            # rows and columns infos
+                            if ($loop_row_size) {
+                                # col position
+                                ($i+1)%$loop_row_size ? $line[self::_LAST_COL] = false : $line[self::_LAST_COL] = true;
+                                ($i+1)%$loop_row_size==1 ? $line[self::_FIRST_COL] = true : $line[self::_FIRST_COL] = false;
+                                # row position
+                                $i<$loop_row_size ? $line[self::_FIRST_ROW] = true : $line[self::_FIRST_ROW] = false;
+                                $modulo = $count%$loop_row_size;
+                                if (($modulo && $i>=$count-$modulo) || (!$modulo && $i>=$count-$loop_row_size)) {
+                                    $line[self::_LAST_ROW] = true;
+                                } else {
+                                    $line[self::_LAST_ROW] = false;
+                                }
+                            }
+                        }
+                        # switch case
+                        if ($tag_type == self::_LOOP) {
+                            $loop_key ? $line[$loop_key] = $i : $line[self::_COUNTER] = $i;
+                            $loop[] = $this->_parseForJS($loop_string, $line);
+                        } else {
+                            $loop_key ? $vars[$loop_key] = $i : $vars[self::_COUNTER] = $i;
+                            $vars[$loop_as] = $line;
+                            $loop[] = $this->_parseForJS($loop_string, $vars);
+                        }
+                        $i++;
+                    }
+                    $result_pattern .= implode ($loop, '');
+                }
+                # replace
+                $string = preg_replace ("`".$loop_replace_pattern."`s", $result_pattern, $string, 1);
+            }
+            # IF
+            if ($tag_type == self::_IF) {
+                $replace_pattern = $this->_getEncapsuledPattern ($string, self::_IF, $tag_mask);
+                preg_match ("`".$replace_pattern."`s", $string, $result);
+                $if_string = $result[1];
+                # condition
+                if ($this->_getConditionResult ($tag_properties, $vars)) {
+                    $result_pattern = $if_string;
+                }
+                # replace
+                $string = preg_replace ("`".$replace_pattern."`s", $result_pattern, $string, 1);
+            }
+            # INCLUDE
+            if ($tag_type == self::_INCLUDE) {
+                $replace_pattern = $tag_mask;
+                $include_file = $this->_getProperty ('file', $tag_properties);
+                $var_type = substr($include_file, 0, 1);
+                if ($var_type == '#' || $var_type == '$') {
+                    $var_name = substr($include_file, 1, strlen($include_file)-1);
+                    $include_file = $this->_getValue (array($include_file, $var_type, $var_name), $vars);
+                    $result_pattern = $this->_loadTemplate($include_file);
+                } else {
+                    $result_pattern = $this->_loadTemplate($include_file);
+                }
+                # replace
+                $string = str_replace ($tag_mask, $result_pattern, $string);
+            }
+            # SET
+            if ($tag_type == self::_SET) {
+                $replace_pattern = $tag_mask;
+                $var_name = $this->_getProperty ('var', $tag_properties);
+                $var_type = substr ($var_name, 0, 1);
+                $var_name = substr ($var_name, 1, strlen ($var_name)-1);
+                $var_value = $this->_getProperty ('value', $tag_properties);
+                $var_concat = $this->_getProperty ('concat', $tag_properties);
+                if ($var_value) {
+                    if (preg_match ("`".self::_VAR.self::_MODIFIER."`", $var_value, $is_var)) {
+                        $var_value = $this->_getValue ($is_var, $vars);
+                    }
+                } else if ($var_concat) {
+                    $split = explode (',', $var_concat);
+                    $var_value = '';
+                    foreach ($split as $value) {
+                        if (preg_match ("`".self::_VAR.self::_MODIFIER."`", $value, $is_var)) {
+                            $var_value .= $this->_getValue ($is_var, $vars);
+                        } else {
+                            $var_value .= $value;
+                        }
+                    }
+                }
+                # set value
+                if ($var_type == '#') {
+                    $this->_setValue($var_name, $var_value, $vars);
+                } else if ($var_type == '$') {
+                    $this->_setValue($var_name, $var_value, $this->_vars);
+                }
+                # replace
+                $string = str_replace ($tag_mask, '', $string);
+            }
+        }
+
+
+        $string = $this->_replaceForJS($string, $vars);
+        return $string;
+    }
+
+    protected function _parse($string, $vars=null)
     {
         $old_string = $string;
         if (null === $vars) {
@@ -272,11 +427,29 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
     }
     protected function _replace ($string, $vars)
     {
-        while (preg_match ("`".self::_OPEN.self::_VAR.self::_MODIFIER.self::_CLOSE."`", $string, $reg)) {
+        while(preg_match ("`".self::_OPEN.self::_VAR.self::_MODIFIER.self::_CLOSE."`", $string, $reg)) {
             $value = $this->_getValue ($reg, $vars);
             $string = str_replace ($reg[0], strval ($value), $string);
         }
         return $string;
+    }
+    protected function _replaceForJS($string, $vars)
+    {
+        while(preg_match ("`".self::_OPEN.self::_VAR.self::_MODIFIER.self::_CLOSE."`", $string, $reg)) {
+
+
+            $value = $this->_convertVarToJS($reg);
+            $string = str_replace($reg[0], strval ($value), $string);
+        }
+        return $string;
+    }
+    protected function _convertVarToJS($var) {
+        if(isset($var[2])) {
+
+            return '#{'.$var[2].'}';
+        } else {
+            return $var[0];
+        }
     }
     protected function _getConditionResult ($condition, $vars)
     {
@@ -294,7 +467,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
     protected function _setValue ($var_string, $value, &$vars)
     {
         # array
-        $array = explode ('.', $var_string);
+        $array = explode('.', $var_string);
         $count_array = count ($array);
         if ($count_array > 1) {
             $string_eval = "\$vars['".$array[0]."']";

@@ -24,8 +24,14 @@ class WYSIJA_help_licence extends WYSIJA_help{
         }
         $res['domain_name'] = $domainData;
         $res['nocontact'] = false;
-        $hHTTP =& WYSIJA::get('http','helper');
-        $jsonResult = $hHTTP->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domainData);
+        $mConfig=&WYSIJA::get('config','model');
+        if($mConfig->getValue('nocurl')){
+            $jsonResult=false;
+        }else{
+            $hHTTP =& WYSIJA::get('http','helper');
+            $jsonResult = $hHTTP->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domainData);
+        }
+
         if($jsonResult) {
             $decoded = json_decode($jsonResult, true);
             if(isset($decoded['result']) === false) {
@@ -52,14 +58,27 @@ class WYSIJA_help_licence extends WYSIJA_help{
                         $res['code'] = $decoded['code'];
                         switch($res['code']){
                             case 1: //Domain \'%1$s\' does not exist.
+                                $errormsg=__('\'%1$s\' does not exist!',WYSIJA);
+                                break;
                             case 2: //'Licence (id: %d) does not exist for domain "%s"
+                                $errormsg=__('There\'s no license for "%s". If you\'re Premium, add this domain in your [link]account manager[/link].',WYSIJA);
+                                break;
                             case 3: //Licence has expired
+                                $errormsg=__('Your Premium licence has expired.',WYSIJA);
+                                break;
                             case 4: //You need to manually add this domain to your [link]account manager[/link]
+                                $errormsg=__('You can add this domain to your [link]account manager[/link].',WYSIJA);
+                                break;
                             case 5: //Your licence does not allow more domains, please upgrade your licence in your [link]account manager[/link]
-                                $errormsg=$decoded['error'];
+                                $errormsg=__('Your licence does\'t allow more domains. Upgrade from your [link]account manager[/link].',WYSIJA);
+                                break;
                             default:
+                                $errormsg=$decoded['error'];
                         }
-                        $this->error($errormsg, true);
+                        $this->error(str_replace(
+                                array('[link]','[/link]'),
+                                array('<a href="http://www.wysija.com/account/licences/" target="_blank">','</a>'),
+                                $errormsg), true);
                     }
 
                     $configData = array('premium_key' => '', 'premium_val' => '');
@@ -86,12 +105,12 @@ class WYSIJA_help_licence extends WYSIJA_help{
         $res1=$errorssl=false;
         if(function_exists('openssl_pkey_new')){
             while ($err = openssl_error_string());
-            $res1=openssl_pkey_new(array('private_key_bits' => 512));
+            $res1=openssl_pkey_new(array('private_key_bits' => 1024));
             $errorssl=openssl_error_string();
         }
         if(function_exists('openssl_pkey_new') && $res1 && !$errorssl  && function_exists('openssl_pkey_get_details')){
             $rsaKey = array('private' => '', 'public' => '', 'error' => '');
-            $res = openssl_pkey_new(array('private_key_bits' => 512));
+            $res = openssl_pkey_new(array('private_key_bits' => 1024));
             if($res && !openssl_error_string()){
 
                 $privkey = '';
@@ -99,18 +118,18 @@ class WYSIJA_help_licence extends WYSIJA_help{
 
                 $pubkey = openssl_pkey_get_details($res);
 
-                $configData=array('dkim_domain'=>$dkim_domain,'dkim_privk'=>$privkey,'dkim_pubk'=>$pubkey['key']);
+                $configData=array('dkim_domain'=>$dkim_domain,'dkim_privk'=>$privkey,'dkim_pubk'=>$pubkey['key'],'dkim_1024'=>1);
                 $mConfig =& WYSIJA::get('config','model');
                 $mConfig->save($configData);
             }
         }else{//fetch them through a request to wysija.com
             $domainData=$this->getDomainInfo();
             $hHTTP =& WYSIJA::get('http','helper');
-            $jsonResult = $hHTTP->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkim&data='.$domainData);
-            
+            $jsonResult = $hHTTP->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&data='.$domainData);
+
             if($jsonResult){
                 $decoded=json_decode($jsonResult);
-                $configData=array('dkim_domain'=>$dkim_domain,'dkim_privk'=>$decoded->dkim_privk,'dkim_pubk'=>$decoded->dkim_pubk->key);
+                $configData=array('dkim_domain'=>$dkim_domain,'dkim_privk'=>$decoded->dkim_privk,'dkim_pubk'=>$decoded->dkim_pubk->key,'dkim_1024'=>1);
                 $mConfig =& WYSIJA::get('config','model');
                 $mConfig->save($configData);
                 WYSIJA::update_option('dkim_autosetup',false);

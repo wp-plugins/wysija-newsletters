@@ -311,15 +311,18 @@ class WYSIJA_help_user extends WYSIJA_object{
             }
             $queueData['send_at']=time()+$delay;
         }
-        
-        if(isset($emailparams['unique_send']) && $emailparams['unique_send']){
+        if(!$modelQueue->exists(array('email_id'=>$email_id,'user_id'=>$user_id))){
             
-            $modelEUS=&WYSIJA::get('email_user_stat','model');
-            if(!$modelEUS->exists(array('email_id'=>$email_id,'user_id'=>$user_id)))
-                    $modelQueue->insert($queueData);
-        }else{
-            $modelQueue->insert($queueData);
+            if(isset($emailparams['unique_send']) && $emailparams['unique_send']){
+                
+                $modelEUS=&WYSIJA::get('email_user_stat','model');
+                if(!$modelEUS->exists(array('email_id'=>$email_id,'user_id'=>$user_id)))
+                        $modelQueue->insert($queueData,true);
+            }else{
+                $modelQueue->insert($queueData,true);
+            }
         }
+
 
         if($delay==0){
             $queueH=&WYSIJA::get('queue','helper');

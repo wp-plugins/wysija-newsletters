@@ -60,13 +60,24 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         return $res;
     }
 
-    function bounce_connect(){
-
-
+    function send_test_mail_ms(){
+        $this->_displayErrors();
+        /*switch the send method*/
         $configVal=$this->_convertPostedInarray();
 
+        /*send a test mail*/
+        $hEmail=&WYSIJA::get('email','helper');
+        $res['result']=$hEmail->send_test_mail($configVal,true);
+        if($res['result']){
+            $modelConf=&WYSIJA::get('config','model');
+            $modelConf->save(array('ms_sending_emails_ok'=>$res['result']));
+        }
+        //$this->_hideErrors();
+        return $res;
+    }
 
-
+    function bounce_connect(){
+        $configVal=$this->_convertPostedInarray();
         /*try to connect to thebounce server*/
         $bounceClass=&WYSIJA::get('bounce','helper');
         $bounceClass->report = true;

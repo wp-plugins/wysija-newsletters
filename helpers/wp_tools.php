@@ -85,7 +85,12 @@ class WYSIJA_help_wp_tools extends WYSIJA_object{
         }
         return $possible_values;
     }
-
+    function wp_get_all_roles() {
+        
+        global $wp_roles;
+        $all_roles = $wp_roles->get_names();
+        return $all_roles;
+    }
     function is_caching_active(){
         $checkPlugins=array(
             'wp-super-cache/wp-cache.php' ,

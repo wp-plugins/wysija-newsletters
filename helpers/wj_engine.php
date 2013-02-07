@@ -680,7 +680,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                 }
 
                 if(isset($email['params']['autonl']['articles']['immediatepostid'])){
-                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
+                    $params['includeonly'] = $email['params']['autonl']['articles']['immediatepostid'];
                     $params['post_limit'] = 1;
                 }else{
 

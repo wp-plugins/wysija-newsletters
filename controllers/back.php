@@ -287,7 +287,6 @@ class WYSIJA_control_back extends WYSIJA_control{
                     sprintf(__('Yikes! You\'re near the limit of %1$s subscribers for Wysija\'s free version. Upgrade to [link]Premium[/link] to send without limits, and more.',WYSIJA)
                             ,"2000")));
             }
-
         }
     }
 
@@ -339,19 +338,19 @@ class WYSIJA_control_back extends WYSIJA_control{
 
     function save(){
         $this->requireSecurity();
-        /* see if it's an update or an insert */
-        /*get the pk and its value as a conditions where pk = pkval*/
+        //see if it's an update or an insert
+        //get the pk and its value as a conditions where pk = pkval
         $conditions=$this->getPKVal($this->modelObj);
 
         if($conditions){
-            /* this an update */
+            //this an update
 
             $result=$this->modelObj->update($_POST['wysija'][$this->model],$conditions);
 
             if($this->msgOnSave){
 
                 // Create the update success message and add edit again link.
-                $update_success = str_replace(array('[LINK]','[/LINK]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$result.'" >',"</a>"), $this->messages['update'][true]);
+                $update_success = str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$result.'" >',"</a>"), $this->messages['update'][true]);
 
                 if ($result) {
                     $this->notice($update_success);
@@ -379,7 +378,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             }
 
         }else{
-            /* this is an insert */
+            //this is an insert
             unset($_POST['wysija'][$this->model][$this->modelObj->pk]);
             $result=$this->modelObj->insert($_POST['wysija'][$this->model]);
 
@@ -403,7 +402,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         }
 
-        /*now we redirect to the edit page with the data in it*/
+        //now we redirect to the edit page with the data in it
         return $result;
     }
 
@@ -422,7 +421,7 @@ class WYSIJA_control_back extends WYSIJA_control{
     }
 
     function delete(){
-        /* see if it's an update or an insert */
+        // see if it's an update or an insert
         $this->requireSecurity();
         $conditions=$this->getPKVal($this->modelObj);
         if(!$conditions) $this->error('Cannot obtain PKVal from GET or POST.');
@@ -434,7 +433,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
 
         $this->modelObj->reset();
-        /*now we redirect to the edit page with the data in it*/
+        //now we redirect to the edit page with the data in it
         $this->action='main';
         $this->redirect();
     }

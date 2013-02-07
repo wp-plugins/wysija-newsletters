@@ -40,8 +40,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             case 'main':
                  $arrayMenus=array();
                 /*if($this->queuedemails){
-                    $arrayTrans["send_test_editor"]=sprintf(__('Send %1$s queued emails right now.',WYSIJA),$this->queuedemails);
-                    $arrayMenus[]="send_test_editor";
+                    $arrayTrans["manual_send"]=sprintf(__('Send %1$s queued emails right now.',WYSIJA),$this->queuedemails);
+                    $arrayMenus[]="manual_send";
                 }*/
                 $arrayMenus[]='add';
                 break;
@@ -712,25 +712,35 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                    $return.= '<div class="info-stats">';
                }
 
+                $is_multisite=is_multisite();
 
-               if($sentleft>(int)$config->getValue('sending_emails_number')) $nextBatchnumber=(int)$config->getValue('sending_emails_number');
+                //$is_multisite=true;//PROD comment that line
+                if($is_multisite && $config->getValue('sending_method')=='network'){
+                    $sending_emails_number=(int)$config->getValue('ms_sending_emails_number');
+                }else{
+                    $sending_emails_number=(int)$config->getValue('sending_emails_number');
+                }
+
+               if($sentleft>$sending_emails_number) $nextBatchnumber=$sending_emails_number;
                else  $nextBatchnumber=(int)$sentleft;
-
 
                //Next batch of xx emails will be sent in xx minutes. Don't wait & send right now.
                if($pending){
-                   $return.= '<span style="color:#555"><a href="admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$row['email_id'].'&pending=1" title="view pending" class="action-send-test-editor" >'.sprintf(__('%1$s email(s) pending.',WYSIJA).'</a>',$nextBatchnumber);
+                   $return.= '<span style="color:#555"><a href="admin.php?page=wysija_campaigns&action=manual_send&emailid='.$row['email_id'].'&pending=1" title="view pending" class="action-send-test-editor" >'.sprintf(__(' %1$s email(s) scheduled.',WYSIJA).'</a>',$nextBatchnumber);
                    $return.= '</span>';
                }else{
                    if($data['sent'][$row['email_id']]['running_for']){
                        $return.= sprintf(__('Current batch has been sent for %1$s',WYSIJA),$data['sent'][$row['email_id']]['running_for']);
                    }else{
-                      $return.= sprintf(__('Next batch of %1$s emails will be sent in %2$s. ',WYSIJA),$nextBatchnumber,trim($helperToolbox->duration($data['sent'][$row['email_id']]['next_batch'],true,4)));
-                      $return.= '<a href="admin.php?page=wysija_campaigns&action=send_test_editor&emailid='.$row['email_id'].'" class="action-send-test-editor" >'.__('Don\'t wait & send right now.',WYSIJA).'</a>';
+                        $time_remaining = trim($helperToolbox->duration($data['sent'][$row['email_id']]['next_batch'],true,4));
+                        if ($time_remaining === '') {
+                            $return.= __('Oops! The event scheduler of WordPress is having hiccups. If this is permanent, contact Wysija support.',WYSIJA);
+                        } else {
+                            $return.= sprintf(__('Next batch of %1$s emails will be sent in %2$s. ',WYSIJA), $nextBatchnumber, $time_remaining);
+                        }
+                        $return.= '<a href="admin.php?page=wysija_campaigns&action=manual_send&emailid='.$row['email_id'].'" class="action-send-test-editor" >'.__('Don\'t wait & send right now.',WYSIJA).'</a>';
                    }
-
                }
-
             }else{
                 $return.= $statusdata;
                 $link= str_replace(
@@ -739,7 +749,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     __('To resume send [link]Go premium now![/link]',WYSIJA));
                  $return.= '<p>'.$link.'</p>';
             }
-
         }else $return.= $statusdata;
         $return.='</div>';
         return $return;
@@ -1401,7 +1410,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             'type'=>'fromname',
             'class'=>'validate[required]',
             'label'=>__('Sender',WYSIJA),
-            'desc'=>__('This is name & email of yourself or your company.',WYSIJA));
+            'desc'=>__('Name & email of yourself or your company.',WYSIJA));
 
 
 
@@ -1457,8 +1466,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $buttonsave=esc_attr(__('Save as draft and close',WYSIJA));
                     $buttonsendlater=$buttonsave;
                 }else{
-                    $sendNow=esc_attr(__('Send',WYSIJA));
-                    $saveresumesend=esc_attr(__('Send',WYSIJA));
+
+                    $sendNow=esc_attr(__( 'Send',WYSIJA));
+                    $saveresumesend=esc_attr(__( 'Send',WYSIJA ));
                     $buttonsave=esc_attr(__('Save & close',WYSIJA));
                     $buttonsendlater=esc_attr(__('Save as draft and close',WYSIJA));
                 }
@@ -2522,13 +2532,16 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     if ( $post && $post->post_type == 'attachment' )
                             $attachments = array($post->ID => $post);
                     else
-                            $attachments = get_children( array( 'post_parent' => $post_id, 'post_type' => 'attachment', 'orderby' => 'ID', 'order' => 'DESC') );
+                            $attachments = get_children( array( 'post_parent' => $post_id, 'post_type' => 'attachment', 'orderby' => 'ID', 'order' => 'DESC', 'post_mime_type'=>'image') );
             } else {
-		if ( is_array($GLOBALS['wp_the_query']->posts) ){
+
+                /* old weird code
+                if ( is_array($GLOBALS['wp_the_query']->posts) ){
                     foreach ( $GLOBALS['wp_the_query']->posts as $attachment ){
                          $attachments[$attachment->ID] = $attachment;
                     }
-                }
+                }*/
+                $attachments = get_children( array( 'post_type' => 'attachment', 'orderby' => 'ID', 'order' => 'DESC', 'post_mime_type'=>'image') );
 
 
             }
@@ -2632,7 +2645,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 }
             ?>
 
-            <a class="wysija-premium-btns wysija-premium" href="admin.php?page=wysija_campaigns"><?php _e('Thanks! Now bring me to Wysija.',WYSIJA); ?></a>
+            <a class="button-primary" href="admin.php?page=wysija_campaigns"><?php _e('Thanks! Now take me to Wysija.',WYSIJA); ?></a>
 
         </div>
 

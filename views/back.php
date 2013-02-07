@@ -460,18 +460,17 @@ class WYSIJA_view_back extends WYSIJA_view{
     }
 
     function buildMyForm($step,$data,$model,$required=false){
-        $formFields="";
+        $formFields='';
 
         foreach($step as $row =>$colparams){
-            $class="";
-            $value="";
+            $class=$value='';
             $paramscolumn=false;
             if(isset($colparams['rowclass'])) $class=' class="'.$colparams['rowclass'].'" ';
             $formFields.='<tr '.$class.'>';
-            if($model=="config"){
+            if($model=='config'){
                 $value=$this->model->getValue($row);
             }else{
-                if($row!="lists")   {
+                if($row!='lists')   {
                     if(is_array($model)){
                         foreach($model as $mod){
                             if(isset($data[$mod][$row])){
@@ -479,12 +478,11 @@ class WYSIJA_view_back extends WYSIJA_view{
                                 break;
                             }
                         }
-
                     }else{
                         if(isset($colparams['isparams'])){
                             $params=$data[$model][$colparams['isparams']];
                             //if(!is_array($data[$model][$colparams['isparams']]))    $params=unserialize(base64_decode($data[$model][$colparams['isparams']]));
-                            $value="";
+                            $value='';
                             if(isset($params[$row]))    $value=$params[$row];
                             $paramscolumn=$colparams['isparams'];
                         }
@@ -492,20 +490,20 @@ class WYSIJA_view_back extends WYSIJA_view{
                     }
                     if($value) $value;
                     elseif(isset($_REQUEST['wysija'][$this->model->table_name][$row])) $value=$_REQUEST['wysija'][$this->model->table_name][$row];
-                    elseif(isset($colparams["default"])) $value=$colparams["default"];
-                    else $value="";
+                    elseif(isset($colparams['default'])) $value=$colparams['default'];
+                    else $value='';
                 }elseif(isset($data[$row])) $value=$data[$row];
-                elseif(isset($colparams["default"])) $value=$colparams["default"];
-                else $value="";
+                elseif(isset($colparams['default'])) $value=$colparams['default'];
+                else $value='';
             }
 
-            if($required && !isset($colparams["class"]))   $colparams["class"]=$this->getClassValidate($this->model->columns[$row],true);
+            if($required && !isset($colparams['class']))   $colparams['class']=$this->getClassValidate($this->model->columns[$row],true);
 
             if(isset($colparams['label'])) $label=$colparams['label'];
             else  $label=ucfirst($row);
             $desc='';
             if(isset($colparams['desc'])){
-                if(isset($colparams['link'])) $colparams['desc']=str_replace(array("[link]","[/link]"),array($colparams['link'],"</a>"),$colparams['desc']);
+                if(isset($colparams['link'])) $colparams['desc']=str_replace(array('[link]','[/link]'),array($colparams['link'],'</a>'),$colparams['desc']);
                 $desc='<p class="description">'.$colparams['desc'].'</p>';
             }
             //if(isset($colparams['desc'])) $desc='<p class="description">'.$colparams['desc'].'</p>';
@@ -533,7 +531,7 @@ class WYSIJA_view_back extends WYSIJA_view{
      * @param type $type
      * @return type
      */
-    function fieldHTML($key,$val="",$model="",$params=array(),$paramscolumn=false){
+    function fieldHTML($key,$val='',$model='',$params=array(),$paramscolumn=false){
         $classValidate=$wrap='';
         /*get the params of that field if there is*/
         $type=$params['type'];
@@ -541,53 +539,58 @@ class WYSIJA_view_back extends WYSIJA_view{
         if($params)  $classValidate=$this->getClassValidate($params);
 
         if($paramscolumn){
-            $col=$paramscolumn."][".$key;
+            $col=$paramscolumn.']['.$key;
         }else $col=$key;
 
         switch($type){
-            case "pk":
+            case 'pk':
                 return '<input type="hidden" value="'.$val.'" id="'.$key.'" name="wysija['.$model.']['.$col.']">';
                 break;
-            case "boolean":
-                $formObj=&WYSIJA::get("forms","helper");
+            case 'boolean':
+                $formObj=&WYSIJA::get('forms','helper');
                 $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$params['values'],$val,$classValidate);
                 break;
-            case "roles":
+            case 'roles':
                 $wptools=&WYSIJA::get('wp_tools','helper');
                 $editable_roles=$wptools->wp_get_editable_roles();
 
-                $formObj=&WYSIJA::get("forms","helper");
+                $formObj=&WYSIJA::get('forms','helper');
                 $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$editable_roles,$val,$classValidate);
                 break;
-            case "password":
+            case 'password':
                 if(!isset($params['size'])){
                     $classValidate.=' size="80"';
                 }
-                $formObj=&WYSIJA::get("forms","helper");
+                $formObj=&WYSIJA::get('forms','helper');
                 $wrap.=$formObj->input(array('type'=>'password','id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$val,$classValidate);
                 break;
-            case "radio":
+            case 'disabled_radio':
 
-                $formObj=&WYSIJA::get("forms","helper");
+                $formObj=&WYSIJA::get('forms','helper');
+                $wrap.=$formObj->radios(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']', 'disabled'=>'disabled'),$params['values'],$val,$classValidate);
+                break;
+            case 'radio':
+
+                $formObj=&WYSIJA::get('forms','helper');
                 $wrap.=$formObj->radios(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$params['values'],$val,$classValidate);
                 break;
-            case "dropdown_keyval":
+            case 'dropdown_keyval':
                 $newoption=array();
                 foreach($params['values'] as $vall){
                     $newoption[$vall]=$vall;
                 }
-                $formObj=&WYSIJA::get("forms","helper");
+                $formObj=&WYSIJA::get('forms','helper');
                 $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$key.']'),$newoption,$val,$classValidate);
                 break;
-            case "dropdown":
-                $formObj=&WYSIJA::get("forms","helper");
+            case 'dropdown':
+                $formObj=&WYSIJA::get('forms','helper');
                 $wrap.=$formObj->dropdown(array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']'),$params['values'],$val,$classValidate);
                 break;
-            case "wysija_pages_list":
+            case 'wysija_pages_list':
                 $wrapd=get_pages( array('post_type'=>"wysijap",'echo'=>0,'name'=>'wysija['.$model.']['.$col.']','id'=>$key,'selected' => $val,'class'=>$classValidate) );
 
                 break;
-            case "pages_list":
+            case 'pages_list':
                 $wrap.=wp_dropdown_pages( array('echo'=>0,'name'=>'wysija['.$model.']['.$col.']','id'=>$key,'selected' => $val,'class'=>$classValidate) );
                 break;
             default:
@@ -600,11 +603,11 @@ class WYSIJA_view_back extends WYSIJA_view{
                     $classValidate.=' class="'.$params['class'].'"';
                 }
 
-                $specialMethod="fieldFormHTML_".$type;
+                $specialMethod='fieldFormHTML_'.$type;
 
                 if(method_exists($this, $specialMethod)) $wrap.=$this->$specialMethod($key,$val,$model,$params);
                 else{
-                    $formObj=&WYSIJA::get("forms","helper");
+                    $formObj=&WYSIJA::get('forms','helper');
                     if(method_exists($formObj, $type)){
                         $dataInput=array('id'=>$key, 'name'=>'wysija['.$model.']['.$col.']');
 
@@ -757,7 +760,7 @@ class WYSIJA_view_back extends WYSIJA_view{
     }
 
     function fieldFormHTML_fromname($key,$val,$model,$params){
-        $formObj=&WYSIJA::get("forms","helper");
+        $formObj=&WYSIJA::get('forms','helper');
         $disableEmail=false;
         if($model!='config') $model='email';
         if($key=='from_name')   $keyemail='from_email';
@@ -773,21 +776,35 @@ class WYSIJA_view_back extends WYSIJA_view{
             $valemail=$this->model->getValue($keyemail);
         }
 
-        /*if from email and sending method is gmail then the email is blocked to the smtp_login*/
+        //if from email and sending method is gmail then the email is blocked to the smtp_login
         if($key=='from_name'){
             $modelConfig=&WYSIJA::get('config','model');
-            if($modelConfig->getValue('sending_method')=='gmail')   {
-                $dataInputEmail['readonly']='readonly';
-                $dataInputEmail['class'].=' disabled';
-                $valemail=$modelConfig->getValue('smtp_login');
+            switch($modelConfig->getValue('sending_method')){
+                case 'gmail':
+                    $dataInputEmail['readonly']='readonly';
+                    $dataInputEmail['class']='disabled';
+                    $valemail=$modelConfig->getValue('smtp_login');
+
+                    //if the user didn't enter the email address then we put it ourself
+                    if(strpos($valemail, '@')===false && strpos($valemail, '@gmail.com')===false){
+                        $valemail.='@gmail.com';
+                    }
+                    $from_name_field=$formObj->input($dataInputEmail ,$valemail);
+                    break;
+                case 'network':
+                    $from_name_field='&nbsp;&nbsp;'.$modelConfig->getValue('ms_from_email').$formObj->hidden($dataInputEmail ,$valemail);
+                    break;
+                default :
+                    $from_name_field=$formObj->input($dataInputEmail ,$valemail);
             }
+
+        }else{
+            $from_name_field=$formObj->input($dataInputEmail ,$valemail);
         }
 
 
-
-
         $fieldHtml=$formObj->input( array('class'=>'validate[required]', 'id'=>$key,'name'=>"wysija[$model][$key]"),$valname);
-        $fieldHtml.=$formObj->input($dataInputEmail ,$valemail);
+        $fieldHtml.=$from_name_field;
         return $fieldHtml;
     }
 

@@ -1,8 +1,8 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_control_back_config extends WYSIJA_control_back{
-    var $view="config";
-    var $model="config";
+    var $view='config';
+    var $model='config';
 
     function WYSIJA_control_back_config(){
 
@@ -11,10 +11,17 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
 
     function main(){
         parent::WYSIJA_control_back();
-        $this->js[]='jquery-ui-tabs';
-        $this->js[]='wysija-admin-ajax';
-        $this->js[]='thickbox';
-        $this->js[]='wysija-validator';
+        //$this->js[]='jquery-ui-tabs';
+        //$this->js[]='wysija-admin-ajax';
+        //$this->js[]='thickbox';
+        //$this->js[]='wysija-validator';
+
+        // wysija form editor
+        $this->js[]='wysija-form-editor';
+        //$this->js[]='wysija-admin-ajax-proto';
+        //$this->js[]='wysija-admin-ajax';
+        //$this->js[]='wysija-base-script-64';
+
         wp_enqueue_style( 'thickbox' );
 
         wp_enqueue_style('wysija-admin-edit-tb', WYSIJA_URL.'css/admin-editor-forms.css',array(),WYSIJA::get_version());
@@ -23,25 +30,35 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         if(!isset($_REQUEST['action'])) $this->action='main';
         else $this->action=$_REQUEST['action'];
         $localaction=$this->action;
+
+
+        $this->jsTrans['testemail']=__('Sending a test email',WYSIJA);
+        $this->jsTrans['bounceconnect']=__('Bounce handling connection test',WYSIJA);
+        $this->jsTrans['processbounceT']=__('Bounce handling processing',WYSIJA);
+        $this->jsTrans['doubleoptinon']=__('Subscribers will now need to activate their subscription by email in order to receive your newsletters. This is recommended.',WYSIJA);
+        $this->jsTrans['doubleoptinoff']=__('Unconfirmed subscribers will receive your newslettters from now on without the need to activate their subscriptions.',WYSIJA);
+        $this->jsTrans['processbounce']=__('Process bounce handling now!',WYSIJA);
+        $this->jsTrans['errorbounceforward']=__('When setting up the bounce system, you need to have a different address for the bounce email and the forward to address',WYSIJA);
+
+
         switch($localaction){
             case 'log':
             case 'save':
             case 'clearlog':
                 return $this->$localaction();
                 break;
-            case "reinstall":
+            case 'reinstall':
                 $this->reinstall();
                 //if(defined('WYSIJA_REDIRECT'))  $this->redirectProcess();
 
                 return;
                 break;
             case 'dkimcheck':
-
                 $this->dkimcheck();
                 if(defined('WYSIJA_REDIRECT'))  $this->redirectProcess();
                 return;
                 break;
-            case "doreinstall":
+            case 'doreinstall':
                 $this->doreinstall();
                 if(defined('WYSIJA_REDIRECT')){
                      global $wysi_location;
@@ -58,14 +75,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
 
 
         $this->data=array();
-        $this->action="main";
-        $this->jsTrans["testemail"]=__("Sending a test email",WYSIJA);
-        $this->jsTrans["bounceconnect"]=__("Bounce handling connection test",WYSIJA);
-        $this->jsTrans["processbounceT"]=__("Bounce handling processing",WYSIJA);
-        $this->jsTrans["doubleoptinon"]=__("Subscribers will now need to activate their subscription by email in order to receive your newsletters. This is recommended.",WYSIJA);
-        $this->jsTrans["doubleoptinoff"]=__("Unconfirmed subscribers will receive your newslettters from now on without the need to activate their subscriptions.",WYSIJA);
-        $this->jsTrans["processbounce"]=__("Process bounce handling now!",WYSIJA);
-        $this->jsTrans["errorbounceforward"]=__("When setting up the bounce system, you need to have a different address for the bounce email and the forward to address",WYSIJA);
+        $this->action='main';
 
         if(isset($_REQUEST['validate'])){
             $this->notice(str_replace(array('[link]','[/link]'),
@@ -81,11 +91,9 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         if(isset($_POST['xtz'])){
 
             $dataconf=json_decode(base64_decode($_POST['xtz']));
-
             if(isset($dataconf->dkim_pubk->key) && isset($dataconf->dkim_privk)){
-
                 $modelConf=&WYSIJA::get('config','model');
-                $dataconfsave=array('dkim_pubk'=>$dataconf->dkim_pubk->key, 'dkim_privk'=>$dataconf->dkim_privk);
+                $dataconfsave=array('dkim_pubk'=>$dataconf->dkim_pubk->key, 'dkim_privk'=>$dataconf->dkim_privk,'dkim_1024'=>1);
 
                 $modelConf->save($dataconfsave);
                 WYSIJA::update_option('dkim_autosetup',false);
@@ -107,7 +115,6 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function reinstall(){
-
         $this->viewObj->title=__('Reinstall Wysija?',WYSIJA);
         return true;
     }
@@ -115,7 +122,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     function changeMode(){
         $helperFile=&WYSIJA::get('file','helper');
         $helperFile->chmodr(WYSIJA_UPLOADS_DIR, 0666, 0777);
-        $this->redirect("admin.php?page=wysija_config");
+        $this->redirect('admin.php?page=wysija_config');
         return true;
     }
 
@@ -124,7 +131,6 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         if(isset($_REQUEST['postedfrom']) && $_REQUEST['postedfrom']=='reinstall'){
             $uninstaller=&WYSIJA::get('uninstall','helper');
             $uninstaller->reinstall();
-
         }
         $this->redirect('admin.php?page=wysija_config');
         return true;
@@ -146,6 +152,4 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->redirect('admin.php?page=wysija_config&action=log');
         return true;
     }
-
-
 }

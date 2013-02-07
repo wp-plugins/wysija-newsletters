@@ -128,7 +128,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                         else echo '<option '.$selected.' value="'.$list['list_id'].'">'.$list['name'].'</option>';
                     }
                     ?>
-                    <?php 
+                    <?php
                         $orphaned_selected = '';
                         if(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list'] === 'orphaned') {
                             $orphaned_selected =' selected="selected" ';
@@ -206,10 +206,10 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                     <tbody class="list:<?php echo $this->model->table_name.' '.$this->model->table_name.'-list" id="wysija-'.$this->model->table_name.'"' ?>>
 
                             <?php
-                            $listingRows="";
+                            $listingRows='';
                             $alt=true;
 
-                            $statuses=array("-1"=>__("Unsubscribed",WYSIJA),"0"=>__("Unconfirmed",WYSIJA),"1"=>__("Subscribed",WYSIJA));
+                            $statuses=array('-1'=>__('Unsubscribed',WYSIJA),'0'=>__('Unconfirmed',WYSIJA),'1'=>__('Subscribed',WYSIJA));
 
                             $config=&WYSIJA::get("config","model");
                             if(!$config->getValue("confirm_dbleoptin"))  $statuses["0"]=$statuses["1"];
@@ -240,7 +240,17 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                     </td>
                                     <?php /*<td><?php echo $row["firstname"] ?></td>
                                     <td><?php  echo $row["lastname"] ?></td> */ ?>
-                                    <td><?php if(isset($row["lists"])) echo $row["lists"] ?></td>
+                                    <td><?php
+
+                                    if(isset($row['lists'])){
+                                        echo $row['lists'];
+                                        if(isset($row['unsub_lists'])) echo ' / ';
+                                    }
+
+                                    if(isset($row['unsub_lists'])) echo '<span class="wysija-unsubscribed-on" title="'.__('Lists to which the subscriber was subscribed.',WYSIJA).'">'.$row['unsub_lists'].'</span>';
+
+
+                                    ?></td>
                                     <td><?php  echo $statuses[$row["status"]]; ?></td>
                                     <?php /*<td><?php echo $row["emails"] ?></td>
                                     <td><?php echo $row["opened"] ?></td>
@@ -414,7 +424,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                         <td>
                             <?php
                             $fieldHTML= '';
-                            $field="list";
+                            $field='list';
                             $valuefield=array();
                             if($data['user'] && isset($data['user']['lists'])){
                                 foreach($data['user']['lists'] as $list){
@@ -434,13 +444,14 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                         $checked=true;
                                     }else{
                                         //we keep a reference of the list to which we are unsubscribed
-                                        $hiddenField=$formObj->hidden(array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][unsub_list][]", 'class'=>'checkboxx'),$list['list_id']);
+                                        $hiddenField=$formObj->hidden(array('id'=>$field.$list['list_id'],'name'=>'wysija[user_list][unsub_list][]', 'class'=>'checkboxx'),$list['list_id']);
+                                        $hiddenField.=' / <span class="wysija-unsubscribed-on"> '.  sprintf(__('Unsubscribed on %1$s',WYSIJA),  date('D, j M Y H:i:s', $valuefield[$list['list_id']]['unsub_date'])).'</span>';
                                     }
                                 }
 
 
                                 $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">';
-                                $datacheck=array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][list_id][]", 'class'=>'validate[minCheckbox[1]]');
+                                $datacheck=array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][list_id][]", 'class'=>'');
                                 if(!$list['is_enabled']) $datacheck['disabled']='disabled';
                                 $fieldHTML.=$formObj->checkbox( $datacheck,$list['list_id'],$checked,$extraCheckbox).$list['name'];
                                 $fieldHTML.=$hiddenField;

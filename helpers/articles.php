@@ -14,6 +14,11 @@ class WYSIJA_help_articles extends WYSIJA_object {
         } else {
             $include = NULL;
         }
+        if(!empty($params['includeonly'])) {
+            $includeonly = $params['includeonly'];
+        } else {
+            $includeonly = NULL;
+        }
 
         if(strlen($params['category_ids']) === 0) {
             $categories = NULL;
@@ -28,6 +33,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
             'orderby'         => 'post_date',
             'order'           => 'DESC',
             'include'         => $include,
+            'includeonly'         => $includeonly,
             'exclude'         => $exclude,
             'meta_key'        => NULL,
             'meta_value'      => NULL,
