@@ -3,8 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.3
-
+Stable tag: 2.3.1
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
@@ -144,8 +143,9 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
-= 2.3 - 2013-02-07 =
+= 2.3.1 - 2013-02-07 =
 
+* added correction of our commit through svn some files were missing
 * added "shortcodes" for newsletter. Add more than first and last name, like dates, links Supported in subject line too.
 * added custom roles to autoresponders so you can send to more than just the default roles (admin, editor, author, etc.)
 * added single sending method for all sites in Multisite. See new "MS" tab in settings for more
@@ -161,6 +161,10 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed SendGrid web API not able to send newsletters to subscribers with first name and/or last name
 * fixed WordPress' images browser
 * fixed breakfast, with a buttered toast and nice latte
+
+= 2.3 - 2013-02-07 =
+
+* svn error please update your version to the latest one
 
 = 2.2.3 - 2013-01-19 =
 

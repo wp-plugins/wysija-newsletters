@@ -15,11 +15,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             <h3><?php _e('If you confirm this, all your current Wysija data will be erased (newsletters, themes, statistics, lists, subscribers, etc.)',WYSIJA); ?></h3>
             <p class="submit">
                 <input type="submit" value="<?php _e('Confirm Reinstallation',WYSIJA)?>" class="button-secondary" id="submit" name="submit" />
-                <?php $this->secure(array('action'=>"doreinstall")); ?>
+                <?php $this->secure(array('action'=>'doreinstall')); ?>
             </p>
         </form>
         <?php
-
     }
 
     function fieldFormHTML_commentform($key,$value,$model,$paramsex){
@@ -334,7 +333,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     function tabs($current = 'basics') {
         $tabs = array(
             'basics' => __('Basics', WYSIJA),
-            'subforms' => __('Subscription Form', WYSIJA),
+            'subforms' => __('Subscription Form', WYSIJAFUTURE),
             'emailactiv' => __('Signup Confirmation', WYSIJA),
             'sendingmethod' => __('Send With...', WYSIJA),
             'advanced' => __('Advanced', WYSIJA),
@@ -533,7 +532,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $hFormEngine =& WYSIJA::get('wj_form_engine', 'helper');
 
         ?>
-        <a id="wj-create-new-form" class="button-secondary"><?php echo __('New form',WYSIJA);?></a>
+        <a id="wj-create-new-form" class="button-secondary"><?php echo __('New form',WYSIJAFUTURE);?></a>
         <?php
         // get all forms
         $wysija_forms = json_decode(get_option('wysija_forms'), true);
@@ -561,7 +560,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         ?>
 
         <select id="wysija_form_list" name="wysija[profiles][forms]">
-            <option value=""><?php echo __('Edit a form...',WYSIJA) ?></option>
+            <option value=""><?php echo __('Edit a form...',WYSIJAFUTURE) ?></option>
             <?php
             foreach($wysija_forms as $key => $form) {
                 echo '<option value="'.$key.'">'.$form['name'].'</option>';
@@ -589,7 +588,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     ?>
                 </div>
                 <div id="general-part">
-                    <div class="list-selection"><p><?php _e('Add subscribers to these lists:',WYSIJA) ?></p><?php
+                    <div class="list-selection"><p><?php _e('Add subscribers to these lists:',WYSIJAFUTURE) ?></p><?php
                     $fieldHTML= '';
 
                     $modelList=&WYSIJA::get('list','model');
@@ -608,14 +607,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     ?></div>
                 </div>
                 <p class="submit">
-                    <a href="javascript:;" id="forms-save" class="button-primary wysija" ><?php echo esc_attr(__('Save',WYSIJA)); ?></a>
-                    <a href="javascript:;" id="form-delete"><?php echo esc_attr(__('Delete',WYSIJA)); ?></a>
+                    <a href="javascript:;" id="forms-save" class="button-primary wysija" ><?php echo esc_attr(__('Save',WYSIJAFUTURE)); ?></a>
+                    <a href="javascript:;" id="form-delete"><?php echo esc_attr(__('Delete',WYSIJAFUTURE)); ?></a>
                 </p>
             </div>
             <div id="wysija_form_toolbar">
                 <ul class="wysija_form_toolbar_tabs">
                     <li class="wjt-content">
-                        <a class="selected" href="javascript:;" rel="wj_content"><?php _e('Content',WYSIJA)?></a>
+                        <a class="selected" href="javascript:;" rel="wj_content"><?php _e('Content',WYSIJAFUTURE)?></a>
                     </li>
                 </ul>
 
@@ -661,9 +660,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                     // extra widgets that can be added more than once
                     $extraTypes = array(
-                        'list-selection' => array('label'=>__('List selection',WYSIJA), 'type'=>'list'),
-                        'text-instructions' => array('label' => __('Random text or instructions', WYSIJA), 'type' => 'text'),
-                        'divider' => array('label' => __('Divider', WYSIJA), 'type' => 'divider')
+                        'list-selection' => array('label'=>__('List selection',WYSIJAFUTURE), 'type'=>'list'),
+                        'text-instructions' => array('label' => __('Random text or instructions', WYSIJAFUTURE), 'type' => 'text'),
+                        'divider' => array('label' => __('Divider', WYSIJAFUTURE), 'type' => 'divider')
                     );
                     foreach($extraTypes as $key=>$data){
                         echo '<li><a class="wysija_form_item" id="'.$key.'" wysija_type="'.$data['type'].'">'.$data['label'].'</a></li>';
@@ -682,17 +681,17 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
     function premiumSoonFields(){
         $html='';
-        $html.='<li class="notice">'.str_replace(array('[link]','[/link]'), array('<a href="javascript:;" class="premium-tab">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJA)).'</li>';
+        $html.='<li class="notice">'.str_replace(array('[link]','[/link]'), array('<a href="javascript:;" class="premium-tab">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJAFUTURE)).'</li>';
         $extraTypes=array(
-                        'new-text'=>array('label'=>__('Text or number',WYSIJA),'type'=>'text'),
-                        'new-textarea'=>array('label'=>__('Paragraph text',WYSIJA),'type'=>'textarea'),
-                        'new-date'=>array('label'=>__('Date or birthday',WYSIJA),'type'=>'date'),
-                        'new-radio'=>array('label'=>__('Radio buttons',WYSIJA),'type'=>'radio'),
-                        'new-checkbox'=>array('label'=>__('Checkboxes',WYSIJA),'type'=>'checkbox'),
-                        'new-dropdown'=>array('label'=>__('Dropdown list',WYSIJA),'type'=>'dropdown'),
-                        'new-image'=>array('label'=>__('Image',WYSIJA),'type'=>'image'),
-                        'new-file'=>array('label'=>__('File',WYSIJA),'type'=>'file'),
-                        'new-country'=>array('label'=>__('Country, State or Province',WYSIJA),'type'=>'country'));
+                        'new-text'=>array('label'=>__('Text or number',WYSIJAFUTURE),'type'=>'text'),
+                        'new-textarea'=>array('label'=>__('Paragraph text',WYSIJAFUTURE),'type'=>'textarea'),
+                        'new-date'=>array('label'=>__('Date or birthday',WYSIJAFUTURE),'type'=>'date'),
+                        'new-radio'=>array('label'=>__('Radio buttons',WYSIJAFUTURE),'type'=>'radio'),
+                        'new-checkbox'=>array('label'=>__('Checkboxes',WYSIJAFUTURE),'type'=>'checkbox'),
+                        'new-dropdown'=>array('label'=>__('Dropdown list',WYSIJAFUTURE),'type'=>'dropdown'),
+                        'new-image'=>array('label'=>__('Image',WYSIJAFUTURE),'type'=>'image'),
+                        'new-file'=>array('label'=>__('File',WYSIJAFUTURE),'type'=>'file'),
+                        'new-country'=>array('label'=>__('Country, State or Province',WYSIJAFUTURE),'type'=>'country'));
         foreach($extraTypes as $key=>$data){
             $html.='<li><a class="wysija_form_item disabled" id="'.$key.'" wysija_type="'.$data['label'].'">'.$data['label'].'</a></li>';
         }
