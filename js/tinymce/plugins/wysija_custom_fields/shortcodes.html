@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Insert Shortcode</title>
+
+<script src="../../tiny_mce_popup.js"></script>
+
+<style>
+
+body {
+  font: 12px/18px Arial, sans-serif;
+  color: #000;
+  background: #ffffff;
+  padding: 8px;
+  margin: 0px;
+}
+
+ul, a {
+  padding: 0px;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+
+  .shortcodes h4 {
+    font-weight: bold;
+    color: #000;
+  }
+
+  .button {
+    display: block;
+    width: auto;
+    border: 1px solid #3178a2;
+    padding: 6px;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .button:hover {
+    color: #3178a2;
+    background: #f6f6f6;
+  }
+
+</style>
+
+<script type="text/javascript">
+
+var ButtonDialog = {
+  local_ed : 'ed',
+  init : function(ed) {
+    ButtonDialog.local_ed = ed;
+    tinyMCEPopup.resizeToInnerSize();
+  },
+  insert : function insertButton(ed, content) {
+ 
+    // Try and remove existing style / blockquote
+    tinyMCEPopup.execCommand('mceRemoveNode', false, null);
+ 
+    var output = '';
+ 
+    // setup the output of our shortcode
+    output = '[';
+      output += content;
+      output += ']';
+ 
+    tinyMCEPopup.execCommand('mceReplaceContent', false, output);
+ 
+    // Return
+    tinyMCEPopup.close();
+  }
+};
+tinyMCEPopup.onInit.add(ButtonDialog.init, ButtonDialog);
+ 
+</script>
+
+</head>
+
+<body class="shortcodes">
+    <h4>Subscriber:</h4>
+    <ul>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:firstname | default:subscriber')">First Name</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:lastname | default:subscriber')">Last Name</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:email')">Email Address</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:displayname | default:member')">WordPress user display name</a>
+      </li>
+    </ul>
+    <h4>Newsletter:</h4>
+    <ul>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:subject')">Newsletter Subject</a>
+      </li>
+    </ul>
+    <h4>Post Notifications:</h4>
+    <ul>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:total')">Total number of posts or pages</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:post_title')">Latest post title</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:number')">Issue number</a>
+      </li>
+    </ul>
+    <h4>Date:</h4>
+    <ul>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:d')">Current day of the month number</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:dordinal')">Current day of the month in ordinal, ie. 2nd, 3rd, etc.</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:dtext')">Full name of current day</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:m')">Current month number</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:mtext')">Full name of current month</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:y')">Year</a>
+      </li>
+    </ul>
+    <h4>Links :</h4>
+    <ul>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:unsubscribe')">Unsubscribe link</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:manage')">Edit subscription page link</a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:browser')">View in browser link</a>
+      </li>
+    </ul>
+</body>
+
+</html>

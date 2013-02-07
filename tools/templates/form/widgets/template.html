@@ -1,0 +1,13 @@
+{loop name="#fields"}
+    <div class="wysija_form_template{if #static} static{/if}" wysija_type="{#type}" wysija_field="{#field}">
+        <div class="wysija_settings" style="display:none;">
+            <a class="settings" href="javascript:;"><span></span>{$i18n.editSettings}</a>
+        </div>
+        <div class="wysija_params">
+            {foreach name="#params" key="j" value="param"}
+                <input type="hidden" name="{#key}" value="{#param}" />
+            {/foreach}
+        </div>
+        {#template}
+    </div>
+{/loop}

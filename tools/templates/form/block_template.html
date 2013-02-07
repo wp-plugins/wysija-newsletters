@@ -1,0 +1,12 @@
+<div class="wysija_form_block{if #static} static{/if}" wysija_type="{#type}" wysija_field="{#field}">
+    <div class="wysija_settings" style="display:none;">
+        <a class="settings" href="javascript:;"><span></span>{$i18n.editSettings}</a>
+    </div>
+    <div class="wysija_params">
+        {foreach name="#params" key="key" value="value"}
+            <input type="hidden" name="{#key}" value="{#value}" />
+        {/foreach}
+    </div>
+    {set var="$template" concat="templates/form/widgets/,#type,.html"}
+    {include file="$template"}
+</div>
