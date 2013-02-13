@@ -239,7 +239,9 @@ class WYSIJA extends WYSIJA_object{
 
         if(!$extendedplugin) return $extensionloaded;
 
-        add_action('init', array('WYSIJA','load_lang_init'),0);
+        if(!$extensionloaded){
+            add_action('init', array('WYSIJA','load_lang_init'));
+        }
         //each plugin has a different name
         if ( !$extensionloaded || !isset($extensionloaded[$extendedplugin])) {
             $transstring = null;
