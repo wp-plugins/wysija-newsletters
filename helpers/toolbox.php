@@ -99,17 +99,18 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         $domain_name=explode('/',$domain_name);
         return $domain_name[0];
     }
+    
     function duration($s,$durationin=false,$level=1){
         $t=time();
         if($durationin){
             $e=$t+$s;
             $s=$t;
-            
+
             $timestamp = $e - $s;
         }else{
             $timestamp = $t - $s;
         }
-        
+
         $years=floor($timestamp/(60*60*24*365));$timestamp%=60*60*24*365;
         $weeks=floor($timestamp/(60*60*24*7));$timestamp%=60*60*24*7;
         $days=floor($timestamp/(60*60*24));$timestamp%=60*60*24;
@@ -118,7 +119,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if($timestamp>60)$secs=$timestamp%60;
         else $secs=$timestamp;
 
-        
+
         $str='';
         $mylevel=0;
         if ($mylevel<$level && $years >= 1) { $str.= sprintf(_n( '%1$s year', '%1$s years', $years, WYSIJA ),$years)." ";$mylevel++; }
@@ -129,32 +130,24 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if ($mylevel<$level && $secs >= 1) { $str.=sprintf(_n( '%1$s second', '%1$s seconds', $secs, WYSIJA ),$secs)." ";$mylevel++; }
         return $str;
     }
-    function serverTimeToLocal($val){
-        $curenttime=time();
-        $curentofftime=$this->offset_time($curenttime);
-        $timedifference=$curenttime-$curentofftime;
-        return $val+$timedifference;
-    }
-    function localTimeToServer($val){
-        $curenttime=time();
-        $curentofftime=$this->offset_time($curenttime);
-        $timedifference=$curenttime-$curentofftime;
-        return $val-$timedifference;
-    }
+    
     function localtime($time,$justtime=false){
         if($justtime) $time=strtotime($time);
         return date(get_option('time_format'),$time);
     }
+    
     function time_tzed($val=false){
         return gmdate( 'Y-m-d H:i:s', $this->offset_time($val) );
     }
-    function offset_time($val=false){
+    
+    function offset_time($unixTime=false){
         $gmttime=time() - date('Z');
         $time_offseted=$gmttime + ( get_option( 'gmt_offset' ) * 3600 );
-        if(!$val) return $time_offseted;
+        if(!$unixTime) return $time_offseted;
         $timediff=time()-$time_offseted;
-        return $val +$timediff;
+        return $unixTime +$timediff;
     }
+    
     function getday($day=false){
         $days=array('monday'=>__('Monday',WYSIJA),
                     'tuesday'=>__('Tuesday',WYSIJA),
@@ -166,6 +159,7 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if(!$day || !isset($days[$day])) return $days;
         else return $days[$day];
     }
+    
     function getweeksnumber($week=false){
         $weeks=array(
                     '1'=>__('1st',WYSIJA),
@@ -176,9 +170,10 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         if(!$week || !isset($weeks[$week])) return $weeks;
         else return $weeks[$week];
     }
-
+    
     function getdaynumber($day=false){
         $daynumbers=array();
+
         for($i = 1;$i < 29;$i++) {
             switch($i){
                 case 1:

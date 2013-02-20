@@ -266,7 +266,7 @@ $this->data['sections'][]=array(
         $this->viewObj->title=__('First step: main details',WYSIJA);
         $this->viewShow='add';
         $this->data=array();
-        $this->data['campaign']=array("name"=>"","description"=>"");
+        $this->data['campaign']=array('name'=>'','description'=>'');
         $modelConfig=&WYSIJA::get('config','model');
         $this->data['email']=array('subject'=>'','from_email'=>$modelConfig->getValue('from_email'),'from_name'=>$modelConfig->getValue('from_name'));
         $this->data['lists']=$this->__getLists(false,true,true);
@@ -287,13 +287,13 @@ $this->data['sections'][]=array(
         unset($dataFrequencyNoImmediate['immediate']);
 
         $times = array();
-        $time = strtotime("00:00:00");
+        $time = strtotime('00:00:00');
         $toolboxH=&WYSIJA::get('toolbox','helper');
-        $times["00:00:00"]=$toolboxH->localtime($time);
+        $times['00:00:00']=$toolboxH->localtime($time);
 
         for($i = 1;$i < 24;$i++) {
-            $time = strtotime("+ 1hour",$time);
-            $key = date("H:i:s",$time);
+            $time = strtotime('+ 1hour',$time);
+            $key = date('H:i:s',$time);
             $times[$key] = $toolboxH->localtime($time);
         }
 
@@ -444,12 +444,12 @@ $this->data['sections'][]=array(
         if($this->data['email']['status']>0){
             $this->redirect();
         }
-        $this->title=sprintf(__('Step %1$s',WYSIJA),1)." | ".$this->data['email']['subject'];
+        $this->title=sprintf(__('Step %1$s',WYSIJA),1).' | '.$this->data['email']['subject'];
         $modelCamp=&WYSIJA::get('campaign','model');
-        $this->data['campaign']=$modelCamp->getOne(false,array("campaign_id"=>$this->data['email']['campaign_id']));
+        $this->data['campaign']=$modelCamp->getOne(false,array('campaign_id'=>$this->data['email']['campaign_id']));
 
         $modelCL=&WYSIJA::get('campaign_list','model');
-        $this->data['campaign_list']=$modelCL->get(false,array("campaign_id"=>$this->data['email']['campaign_id']));
+        $this->data['campaign_list']=$modelCL->get(false,array('campaign_id'=>$this->data['email']['campaign_id']));
 
 
 
@@ -465,11 +465,11 @@ $this->data['sections'][]=array(
         /* WJ editor translations */
         $this->jsTrans = array_merge($this->jsTrans, $wjEngine->getTranslations());
 
-        $this->jsTrans['savingnl']=__("Saving newsletter...",WYSIJA);
-        $this->jsTrans['errorsavingnl']=__("Error Saving newsletter...",WYSIJA);
-        $this->jsTrans['savednl']=__("Newsletter has been saved.",WYSIJA);
-        $this->jsTrans['previewemail']=__("Sending preview...",WYSIJA);
-        $this->jsTrans['spamtestresult']=__("Spam test results",WYSIJA);
+        $this->jsTrans['savingnl']=__('Saving newsletter...',WYSIJA);
+        $this->jsTrans['errorsavingnl']=__('Error Saving newsletter...',WYSIJA);
+        $this->jsTrans['savednl']=__('Newsletter has been saved.',WYSIJA);
+        $this->jsTrans['previewemail']=__('Sending preview...',WYSIJA);
+        $this->jsTrans['spamtestresult']=__('Spam test results',WYSIJA);
 
         /* WJ editor JS */
         $this->js[]='wysija-editor';
@@ -478,9 +478,9 @@ $this->data['sections'][]=array(
         $this->js[]='wysija-base-script-64';
         $this->js[]='media-upload';
         $this->js['admin-campaigns-editDetails']='admin-campaigns-editDetails';
-        $modelEmail=&WYSIJA::get("email","model");
+        $modelEmail=&WYSIJA::get('email','model');
         $this->data=array();
-        $this->data['email']=$modelEmail->getOne(false,array("email_id"=>$_REQUEST['id']));
+        $this->data['email']=$modelEmail->getOne(false,array('email_id'=>$_REQUEST['id']));
 
         $this->checkIsEditable();
 
@@ -500,16 +500,16 @@ $this->data['sections'][]=array(
     function pause(){
         /* pause the campaign entry */
         if(isset($_REQUEST['id']) && $_REQUEST['id']){
-            $modelEmail=&WYSIJA::get("email","model");
+            $modelEmail=&WYSIJA::get('email','model');
             $myemail=$modelEmail->getOne(false,array('email_id'=>$_REQUEST['id']));
             $modelEmail->reset();
             $modelEmail->columns['modified_at']['autoup']=1;
-            $modelEmail->update(array("status"=>-1),array("email_id"=>$_REQUEST['id']));
+            $modelEmail->update(array('status'=>-1),array('email_id'=>$_REQUEST['id']));
 
             if($myemail['type']==2){
                 return $this->redirect('admin.php?page=wysija_campaigns&id='.$myemail['email_id'].'&action=edit');
             }else{
-                $this->notice(__("Sending is now paused.",WYSIJA));
+                $this->notice(__('Sending is now paused.',WYSIJA));
             }
         }
 
@@ -519,10 +519,10 @@ $this->data['sections'][]=array(
     function resume(){
         /* pause the campaign entry */
         if(isset($_REQUEST['id']) && $_REQUEST['id']){
-            $modelEmail=&WYSIJA::get("email","model");
+            $modelEmail=&WYSIJA::get('email','model');
             $modelEmail->columns['modified_at']['autoup']=1;
-            $modelEmail->update(array("status"=>99),array("email_id"=>$_REQUEST['id']));
-            $this->notice(__("Sending has resumed.",WYSIJA));
+            $modelEmail->update(array('status'=>99),array('email_id'=>$_REQUEST['id']));
+            $this->notice(__('Sending has resumed.',WYSIJA));
         }
 
         $this->redirect();
@@ -2283,13 +2283,13 @@ $this->data['sections'][]=array(
 
     function special_wysija_browse() {
         $this->_wysija_subaction();
-        $this->jsTrans['deleteimg']=__("Delete image for all newsletters?",WYSIJA);
+        $this->jsTrans['deleteimg']=__('Delete image for all newsletters?',WYSIJA);
         return wp_iframe( array($this->viewObj,'popup_wysija_browse'), array() );
     }
 
     function special_wordp_browse() {
         $this->_wysija_subaction();
-        $this->jsTrans['deleteimg']=__("This image might be in an article. Delete anyway?",WYSIJA);
+        $this->jsTrans['deleteimg']=__('This image might be in an article. Delete anyway?',WYSIJA);
         return wp_iframe( array($this->viewObj,'popup_wp_browse'), array() );
     }
 

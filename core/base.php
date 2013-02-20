@@ -237,8 +237,10 @@ class WYSIJA extends WYSIJA_object{
     public static function load_lang($extendedplugin=false){
         static $extensionloaded = false;
 
+        //we return the entire array of extensions loaded if non is specified
         if(!$extendedplugin) return $extensionloaded;
 
+        //we only need to load this translation loader once on init
         if(!$extensionloaded){
             add_action('init', array('WYSIJA','load_lang_init'));
         }
@@ -269,16 +271,9 @@ class WYSIJA extends WYSIJA_object{
                     $config=&WYSIJA::get('config','model',false,'wysija-newsletters',false);
                     $debugmode=0;
                     if(is_object($config) && method_exists($config, 'getValue'))  $debugmode=(int)$config->getValue('debug_new');
-                    /*
-                    if($debugmode==0 || ($debugmode>0 && !WYSIJA::is_wysija_admin($debugmode))){
-                         load_plugin_textdomain( $transstring, false, $extendedplugin . DS.'languages' );
-                    }*/
                 }
                 $extensionloaded[$extendedplugin] = $transstring;
             }
-
-            //TODO I don't remember why do we load_lang_init twice I think it has to do with qTranslate compatibility ....
-            //WYSIJA::load_lang_init();
         }
     }
 

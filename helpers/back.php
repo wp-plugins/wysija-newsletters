@@ -120,7 +120,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
         }
 
-        $possibleConflictivePlugins=$modelConfig->getValue("conflictivePlugins");
+        $possibleConflictivePlugins=$modelConfig->getValue('conflictivePlugins');
         $conflictingPlugins=array();
         foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
             if(WYSIJA::is_plugin_active($conflictPlug['file'])) {
@@ -129,7 +129,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             }
         }
         if($conflictingPlugins){
-            $helperConflicts=&WYSIJA::get("conflicts","helper");
+            $helperConflicts=&WYSIJA::get('conflicts','helper');
             $helperConflicts->resolve($conflictingPlugins);
         }
     }
@@ -139,7 +139,6 @@ class WYSIJA_help_back extends WYSIJA_help{
         $finds=array('[link]','[/link]');
         $replace=array('<a target="_blank" href="http://support.wysija.com" title="support.wysija.com">','</a>');
         $truelinkhelp='<p>'.str_replace($finds,$replace,$linkcontent).'</p>';
-        
         $extra=__('[link]Request a feature for Wysija[/link] in User Voice.',WYSIJA);
         $finds=array('[link]','[/link]');
         $replace=array('<a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" title="Wysija User Voice">','</a>');
@@ -172,10 +171,7 @@ class WYSIJA_help_back extends WYSIJA_help{
                             array('<a href="http://support.wysija.com/knowledgebase/your-cron-is-disabled/" target="_blank">','</a>'), __('[link]Read more.[/link]',WYSIJA)
                         ).' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
             }
-
         }
-        
-        
         if(WYSIJA_ITF){
             global $wysija_installing;
             if( !$config->getValue('sending_emails_ok')){
@@ -192,10 +188,10 @@ class WYSIJA_help_back extends WYSIJA_help{
     function add_menus(){
         $modelC=&WYSIJA::get('config','model');
         $count=0;
-        
+
         global $menu,$submenu;
 
-        
+
         $position=50;
         $positionplus1=$position+1;
         while(isset($menu[$position]) || isset($menu[$positionplus1])){
@@ -225,13 +221,13 @@ class WYSIJA_help_back extends WYSIJA_help{
                 }else{
                     $hookname=add_submenu_page($parentmenu,$menutemp['title'], $menutemp['subtitle'], $roleformenu, $actionFull , array($this->controller, 'render'));
                 }
-                
+
                 if(WYSIJA_ITF){
-                    
+
                     if(version_compare(get_bloginfo('version'), '3.3.0')>= 0){
                         add_action('load-'.$hookname, array($this,'add_help_tab'));
                     }else{
-                        
+
                         add_contextual_help($hookname, $this->menuHelp);
                     }
                 }
@@ -255,14 +251,14 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
     }
     function add_js($hook) {
-        
+
         $jstrans=array();
         wp_register_script('wysija-charts', 'https://www.google.com/jsapi', array( 'jquery' ), true);
         wp_register_script('wysija-admin-list', WYSIJA_URL.'js/admin-listing.js', array( 'jquery' ), true, WYSIJA::get_version());
         wp_register_script('wysija-base-script-64', WYSIJA_URL.'js/base-script-64.js', array( 'jquery' ), true, WYSIJA::get_version());
 
         wp_enqueue_style('wysija-admin-css-widget', WYSIJA_URL.'css/admin-widget.css',array(),WYSIJA::get_version());
-        
+
         if(WYSIJA_ITF){
             wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL.'css/admin-global.css',array(),WYSIJA::get_version());
             wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL.'js/admin-wysija-global.js',array(),WYSIJA::get_version());
@@ -289,7 +285,7 @@ class WYSIJA_help_back extends WYSIJA_help{
     }
     
     function addCodeToPagePost(){
-        
+
         if(current_user_can('wysija_subscriwidget') &&  get_user_option('rich_editing') == 'true') {
          add_filter("mce_external_plugins", array($this,"addRichPlugin"));
          add_filter('mce_buttons', array($this,'addRichButton1'),999);
@@ -309,7 +305,7 @@ class WYSIJA_help_back extends WYSIJA_help{
        $newButtons=array();
        foreach($buttons as $value) $newButtons[]=$value;
 
-       array_push($newButtons, "|", "wysija_register");
+       array_push($newButtons, '|', 'wysija_register');
 
        return $newButtons;
     }

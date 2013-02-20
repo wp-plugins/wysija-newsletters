@@ -255,7 +255,7 @@ class WYSIJA_view_back extends WYSIJA_view{
             $pagi.= '<span class="total-pages">' . sprintf(__('of %1$s',WYSIJA), $number_of_pages) . '</span>';
 
             // Pagination Next arrows.
-            if($number_of_pages > 2 && $current_page != $number_of_pages){
+            if($number_of_pages > 1 && $current_page != $number_of_pages){
                 if (($number_of_pages - $current_page) >= 2) {
                     $pagi .= '<a class="next page-numbers" href="admin.php?page='.$_REQUEST['page'].'&pagi='.($current_page+1).$paramsurl.'" alt="'.($current_page+1).'" title="'.sprintf(__('Page %1$s',WYSIJA),($current_page+1)).'">&rsaquo;</a>';
                 }

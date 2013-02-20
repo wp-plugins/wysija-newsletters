@@ -2,6 +2,7 @@
 
 /**
  * widget class for user registration
+ * master change
  */
 class WYSIJA_NL_Widget extends WP_Widget {
     var $classid='';
