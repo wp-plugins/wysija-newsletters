@@ -61,7 +61,7 @@ class WYSIJA_help_licence extends WYSIJA_help{
                                 $errormsg=__('\'%1$s\' does not exist!',WYSIJA);
                                 break;
                             case 2: //'Licence (id: %d) does not exist for domain "%s"
-                                $errormsg=__('There\'s no license for "%s". If you\'re Premium, add this domain in your [link]account manager[/link].',WYSIJA);
+                                $errormsg=__('There\'s no license for "%1$s". If you\'re Premium, add this domain in your [link]account manager[/link].',WYSIJA);
                                 break;
                             case 3: //Licence has expired
                                 $errormsg=__('Your Premium licence has expired.',WYSIJA);
@@ -76,8 +76,8 @@ class WYSIJA_help_licence extends WYSIJA_help{
                                 $errormsg=$decoded['error'];
                         }
                         $this->error(str_replace(
-                                array('[link]','[/link]'),
-                                array('<a href="http://www.wysija.com/account/licences/" target="_blank">','</a>'),
+                                array('[link]','[/link]','%1$s'),
+                                array('<a href="http://www.wysija.com/account/licences/" target="_blank">','</a>',$decoded['domain']),
                                 $errormsg), true);
                     }
 

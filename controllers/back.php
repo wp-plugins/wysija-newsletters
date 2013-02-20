@@ -490,11 +490,11 @@ class WYSIJA_control_back extends WYSIJA_control{
             }
 
             $this->iframeTabs['special_wysija_browse']=__('Newsletter Images',WYSIJA);
-            $this->iframeTabs['special_wordp_browse']=__("WordPress Posts' Images",WYSIJA);
+            $this->iframeTabs['special_wordp_browse']=__('WordPress Posts\' Images',WYSIJA);
 
             foreach($this->iframeTabs as $actionKey =>$actionTitle)
-                add_action("media_upload_".$actionKey, array($this,$actionKey));
-        }else   add_action("media_upload_standard", array($this,'popupReturn'));
+                add_action('media_upload_'.$actionKey, array($this,$actionKey));
+        }else   add_action('media_upload_standard', array($this,'popupReturn'));
 
         // upload type: image, video, file, ..?
         if ( isset($_GET['type']) )
@@ -514,7 +514,7 @@ class WYSIJA_control_back extends WYSIJA_control{
             //i'm not so sure we need that line
             do_action("media_upload_$type");
         else{
-            if(strpos($tab, "special_")!==false){
+            if(strpos($tab, 'special_')!==false){
                 do_action("media_upload_$tab");
             }else{
                 do_action('media_upload_standard',$tab);

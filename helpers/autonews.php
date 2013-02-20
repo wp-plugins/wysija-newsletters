@@ -35,46 +35,42 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         return $modelEmail->giveBirth($emailArr);
     }
     
-    function getNextSend($email){
-        $timeNext=-1;
+    function getNextSend($email) {
+        $schedule_at = -1;
 
-        if((int)$email['type']==2 && isset($email["params"]['autonl']['event']) && $email["params"]['autonl']['event']=='new-articles'){
-            
-            $toolboxH=&WYSIJA::get('toolbox','helper');
-            if(!isset($email['params']['autonl']['nextSend']) || time()>$toolboxH->offset_time($email['params']['autonl']['nextSend'])){
-                $timenow=time();
-                switch($email["params"]['autonl']['when-article']){
+        if((int)$email['type'] === 2 && isset($email['params']['autonl']['event']) && $email['params']['autonl']['event'] === 'new-articles') {
+            $hToolbox =& WYSIJA::get('toolbox','helper');
+
+            $now = $hToolbox->offset_time();
+            if(!isset($email['params']['autonl']['nextSend']) || $now > $hToolbox->offset_time($email['params']['autonl']['nextSend'])) {
+                switch($email['params']['autonl']['when-article']) {
                     case 'immediate':
                         break;
                     case 'daily':
-                        $timeNext=date('m/d/y',$timenow);
-                        $timeNext.=' '.$email["params"]['autonl']['time'];
-                        $timeNext=strtotime($timeNext);
-                        $toolboxH=&WYSIJA::get('toolbox','helper');
 
-                        if($timenow>$toolboxH->offset_time($timeNext)){
-                            $timeNext+=3600*24;
+                        $schedule_at = strtotime($email['params']['autonl']['time']);
+
+                        if($schedule_at < $now) {
+
+                            $schedule_at = strtotime('tomorrow '.$email['params']['autonl']['time']);
                         }
-
                         break;
                     case 'weekly':
-                        $timeNext=strtotime("next ".ucfirst($email["params"]['autonl']['dayname']),$timenow);
-                        $timeNext=date('m/d/y',$timeNext);
-                        $timeNext.=' '.$email["params"]['autonl']['time'];
-                        $timeNext=strtotime($timeNext);
-                        $toolboxH=&WYSIJA::get('toolbox','helper');
 
-                        if($timenow>$toolboxH->offset_time($timeNext)){
-                            $timeNext+=3600*24*7;
+                        $schedule_at = strtotime(ucfirst($email['params']['autonl']['dayname']).' '.$email['params']['autonl']['time']);
+
+                        if($schedule_at < $now) {
+
+                            $schedule_at = strtotime('next '.ucfirst($email['params']['autonl']['dayname']).' '.$email['params']['autonl']['time']);
                         }
                         break;
                     case 'monthly':
-                        $timeCurrentDay=date('d',$timenow);
-                        $timeCurrentMonth=date('m',$timenow);
-                        $timeCurrentYear=date('y',$timenow);
+                        $timeCurrentDay=date('d',$now);
+                        $timeCurrentMonth=date('m',$now);
+                        $timeCurrentYear=date('y',$now);
 
-                        if($timeCurrentDay>$email["params"]['autonl']['daynumber']){
-                            if((int)$timeCurrentMonth==12){
+                        if($timeCurrentDay > $email['params']['autonl']['daynumber']) {
+                            if((int)$timeCurrentMonth === 12) {
 
                                $timeCurrentMonth=1;
                                $timeCurrentYear++;
@@ -83,32 +79,45 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                                 $timeCurrentMonth++;
                             }
                         }
-                        $timeNext=strtotime($timeCurrentMonth.'/'.$email["params"]['autonl']['daynumber'].'/'.$timeCurrentYear.' '.$email["params"]['autonl']['time']);
+                        $schedule_at=strtotime($timeCurrentMonth.'/'.$email['params']['autonl']['daynumber'].'/'.$timeCurrentYear.' '.$email['params']['autonl']['time']);
                         break;
-                    case 'monthlyevery': //1st tuesday of the month
-                        $timeCurrentDay=date('d',$timenow);
-                        $timeCurrentMonth=date('m',$timenow);
-                        $timeCurrentYear=date('y',$timenow);
+                    case 'monthlyevery': // monthly every X Day of the week
+                        $currentDay = date('d', $now);
+                        $currentMonth = date('m', $now);
+                        $currentYear = date('y', $now);
 
-                        $timeFirstDayofMonth=strtotime($timeCurrentMonth.'/1/'.$timeCurrentYear.' '.$email["params"]['autonl']['time']);
-                        $timeNext=$this->getNextDay($timeFirstDayofMonth,$email["params"]['autonl']['dayname'],$email["params"]['autonl']['dayevery'],$timenow);
-                        if($toolboxH->offset_time($timeNext)<$timenow){
 
-                            $timeFirstDayofNextMonth=strtotime(($timeCurrentMonth+1).'/1/'.$timeCurrentYear.' '.$email["params"]['autonl']['time']);
-                            $timeNext=$this->getNextDay($timeFirstDayofNextMonth,$email["params"]['autonl']['dayname'],$email["params"]['autonl']['dayevery'],$timenow);
+                        $schedule_at = strtotime(
+                            sprintf('%02d/01/%02d %d %s %s',
+                            $currentMonth,
+                            $currentYear,
+                            $email['params']['autonl']['dayevery'],
+                            ucfirst($email['params']['autonl']['dayname']),
+                            $email['params']['autonl']['time']
+                        ));
+                        if($schedule_at < $now) {
+
+                            $schedule_at = strtotime(
+                                sprintf('+1 month %02d/01/%02d %d %s %s',
+                                $currentMonth,
+                                $currentYear,
+                                $email['params']['autonl']['dayevery'],
+                                ucfirst($email['params']['autonl']['dayname']),
+                                $email['params']['autonl']['time']
+                            ));
                         }
                         break;
                 }
             }
         }
-        return $timeNext;
-    }//endfct
+        return $schedule_at;
+    }
     
     function getNextDay($firstDayOfMonth,$dayname,$whichNumber,$timenow){
-        $nameFirstday=  strtolower(date('l',$firstDayOfMonth));
-        if($nameFirstday==strtolower($dayname)) $whichNumber--;
-        for($i=0;$i<$whichNumber;$i++){
-            $firstDayOfMonth=strtotime('next '.ucfirst($dayname),$firstDayOfMonth);
+        $nameFirstday = strtolower(date('l', $firstDayOfMonth));
+        if($nameFirstday == strtolower($dayname)) $whichNumber--;
+        for($i=0; $i < $whichNumber;$i++){
+            $firstDayOfMonth = strtotime('next '.ucfirst($dayname), $firstDayOfMonth);
         }
         return $firstDayOfMonth;
     }
@@ -119,13 +128,13 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         $modelEmail->reset();
         $allEmails=$modelEmail->get(false,array('type'=>'2','status'=>array('1','3','99')));
         if($allEmails){
-            $toolboxH=&WYSIJA::get('toolbox','helper');
+            $hToolbox=&WYSIJA::get('toolbox','helper');
             
             foreach($allEmails as $email){
                 
                 if($email['params']['autonl']['event']=='new-articles' && $email['params']['autonl']['when-article']!='immediate'){
                     
-                    if(time()>$toolboxH->offset_time($email['params']['autonl']['nextSend']))
+                    if(time()>$hToolbox->offset_time($email['params']['autonl']['nextSend']))
                         $modelEmail->giveBirth($email);
                 }
             }
@@ -138,7 +147,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         $modelEmail->reset();
         $allEmails=$modelEmail->get(false,array('type'=>'1','status'=>'4'));
         if($allEmails){
-            $toolboxH=&WYSIJA::get('toolbox','helper');
+            $hToolbox=&WYSIJA::get('toolbox','helper');
             foreach($allEmails as $email){
                 
                 if(isset($email['params']['schedule']['isscheduled'])){
@@ -146,7 +155,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                     $unixscheduledtime=strtotime($scheduledate);
                     
                     
-                    if($toolboxH->offset_time($unixscheduledtime)<time()){
+                    if($hToolbox->offset_time($unixscheduledtime)<time()){
                         $modelEmail->reset();
                         $modelEmail->send($email,true);
                     }
@@ -154,4 +163,4 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
             }
         }
     }
-}//endclass
+}
