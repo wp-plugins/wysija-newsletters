@@ -104,7 +104,7 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
         else $intrand=rand(5, 1500);
         $widgetdata['widget_id']='wysija-nl-iframe-'.$intrand;
         require_once(WYSIJA_WIDGETS.'wysija_nl.php');
-        $widgetNL=new WYSIJA_NL_Widget(1);
+        $widgetNL=new WYSIJA_NL_Widget(true);
         $widgetNL->iFrame=true;
         $subscriptionForm= $widgetNL->widget($widgetdata,$widgetdata);
 

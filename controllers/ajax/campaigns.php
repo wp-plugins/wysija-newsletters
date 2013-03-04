@@ -224,18 +224,23 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         exit;
     }
 
-    function getarticles(){
+    /**
+     * returns a list of articles to the popup in the visual editor
+     * @global type $wpdb
+     * @return boolean
+     */
+    function get_articles(){
         // fixes issue with pcre functions
         @ini_set('pcre.backtrack_limit', 1000000);
 
         $model=&WYSIJA::get('user','model');
 
-        /*Carefull WordPress global*/
+        //Carefull WordPress global
         global $wpdb;
         $mConfig=&WYSIJA::get('config','model');
         $isFullArticle=$mConfig->getValue('editor_fullarticle');
 
-        /* test to set the default value*/
+        //test to set the default value
         if(!$isFullArticle && isset($_REQUEST['fullarticle'])){
             $mConfig->save(array('editor_fullarticle'=>true));
         }
@@ -275,19 +280,19 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         if(isset($_REQUEST['search']) && strlen(trim($_REQUEST['search'])) > 0) {
-            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
+            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt , $wpdb->posts.post_status
             FROM $wpdb->posts
             WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%'
-            AND $wpdb->posts.post_status = 'publish'";
+            AND $wpdb->posts.post_status IN ('publish', 'private', 'future')";
             $querystr.= $querycpt;
             $querystr.=" ORDER BY $wpdb->posts.post_date DESC";
             $querystr.=$limitquery;
             // query to count total rows
             $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%' AND $wpdb->posts.post_status = 'publish'".$querycpt;
         }else{
-            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
+            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt , $wpdb->posts.post_status
             FROM $wpdb->posts
-            WHERE $wpdb->posts.post_status = 'publish'";
+            WHERE $wpdb->posts.post_status IN ('publish', 'private', 'future')";
             $querystr.= $querycpt;
             $querystr.= " ORDER BY $wpdb->posts.post_date DESC";
             $querystr.=$limitquery;
@@ -306,7 +311,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         // set params for post format
         $params = array('post_content' => 'full');
 
-        /* if excerpt has been requested then we try to provide it */
+        //if excerpt has been requested then we try to provide it */
         if(!isset($_REQUEST['fullarticle'])) {
             $params['post_content'] = 'excerpt';
         }
@@ -329,7 +334,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $res['msg'] = __('There are no posts corresponding to that search.',WYSIJA);
             $res['result'] = false;
         }
-
 
         return $res;
     }
@@ -632,6 +636,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $domain_name=$helperToolbox->_make_domain_name($url);
 
             $request='http://api.wysija.com/download/zip/'.$_REQUEST['theme_id'].'?domain='.$domain_name;
+            
             $ZipfileResult = $httpHelp->request($request);
 
             if(!$ZipfileResult){
@@ -647,10 +652,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             }
         }else{
             $result=false;
-            $this->notice("missing info");
+            $this->notice('missing info');
         }
 
-        return array("result"=>$result, 'themes' => $themes);
+        return array('result'=>$result, 'themes' => $themes);
     }
 
     function refresh_themes() {

@@ -264,14 +264,8 @@ class WYSIJA extends WYSIJA_object{
                     return $extensionloaded;
             }
 
-            //store all the required translations to be loaded
+            //store all the required translations to be loaded in the static variable
             if($transstring !== null) {
-                if(!isset($extensionloaded[$extendedplugin])){
-                    //we need to call the config this way otherwise it will loop
-                    $config=&WYSIJA::get('config','model',false,'wysija-newsletters',false);
-                    $debugmode=0;
-                    if(is_object($config) && method_exists($config, 'getValue'))  $debugmode=(int)$config->getValue('debug_new');
-                }
                 $extensionloaded[$extendedplugin] = $transstring;
             }
         }
@@ -325,7 +319,7 @@ class WYSIJA extends WYSIJA_object{
 
         if($loadlang)  WYSIJA::load_lang($extendedplugin);
 
-        /*store all the objects made so that we can reuse them accross the application*/
+        //store all the objects made so that we can reuse them accross the application
         if(isset($arrayOfObjects[$extendedplugin][$type.$name])) {
             return $arrayOfObjects[$extendedplugin][$type.$name];
         }
@@ -357,14 +351,14 @@ class WYSIJA extends WYSIJA_object{
         $name = preg_replace('#[^a-z0-9_]#i','',$name);
         switch($type){
             case 'controller':
+                require_once(WYSIJA_CORE.'controller.php');//require the common controller file
+                //require the parent class necessary
                 $ctrdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'controllers'.DS;
-                /*require the parent class necessary*/
-                require_once(WYSIJA_CORE.'controller.php');/*require the common controller file*/
                 if(defined('DOING_AJAX')) {
                     $classpath=$ctrdir.'ajax'.DS.$name.'.php';
                 }else {
                     $classpath=$ctrdir.$side.DS.$name.'.php';
-                    require_once(WYSIJA_CTRL.$side.'.php');/*require the side specific controller file*/
+                    require_once(WYSIJA_CTRL.$side.'.php');//require the side specific controller file
                 }
                 $classname = strtoupper($extendedpluginname).'_control_'.$side.'_'.$name;
                 break;
@@ -372,8 +366,8 @@ class WYSIJA extends WYSIJA_object{
                 $viewdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'views'.DS;
                 $classpath=$viewdir.$side.DS.$name.'.php';
                 $classname = strtoupper($extendedpluginname).'_view_'.$side.'_'.$name;
-                require_once(WYSIJA_CORE.'view.php');/*require the common view file*/
-                require_once(WYSIJA_VIEWS.$side.'.php');/*require the side specific view file*/
+                require_once(WYSIJA_CORE.'view.php');//require the common view file
+                require_once(WYSIJA_VIEWS.$side.'.php');//require the side specific view file
                 break;
             case 'helper':
                 $helpdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'helpers'.DS;
@@ -386,7 +380,7 @@ class WYSIJA extends WYSIJA_object{
                 $modeldir=WYSIJA_PLG_DIR.$extendedplugin.DS.'models'.DS;
                 $classpath=$modeldir.$name.'.php';
                 $classname = strtoupper($extendedpluginname).'_model_'.$name;
-                /*require the parent class necessary*/
+                //require the parent class necessary
                 require_once(WYSIJA_CORE.'model.php');
                 break;
             case 'widget':
@@ -394,8 +388,6 @@ class WYSIJA extends WYSIJA_object{
                 $classpath=$modeldir.$name.'.php';
                 if($name=='wysija_nl') $classname='WYSIJA_NL_Widget';
                 else $classname = strtoupper($extendedpluginname).'_widget_'.$name;
-                /*require the parent class necessary*/
-                //require_once(WYSIJA_WIDGETS.'model.php');
                 break;
             default:
                 WYSIJA::setInfo('error','WYSIJA::get does not accept this type of file "'.$type.'" .');
@@ -421,7 +413,8 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function log($key='default',$data='empty',$category='default'){
         $config=&WYSIJA::get('config','model');
-        if((int)$config->getValue('debug_new')>1){
+
+        if(WYSIJA_DBG>1 && $category && (int)$config->getValue('debug_log_'.$category)>1){
 
             $optionlog=get_option('wysija_log');
             if ( false === $optionlog ){
@@ -747,15 +740,17 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
         WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
+        //we run some process only if the status of the post changes from something to publish
         if( $new_status=='publish' && $old_status!=$new_status){
             $modelEmail =& WYSIJA::get('email', 'model');
             $emails = $modelEmail->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
-
             if(!empty($emails)){
+                //we loop through all of the automatic emails
                 foreach($emails as $key => $email) {
+                    //we will try to give birth to a child email only if the automatic newsletter is a post notification email and in immediate mode
                     if(is_array($email) && $email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
                         $modelEmail->reset();
-                        $modelEmail->giveBirth($email, $post->ID);
+                        $modelEmail->give_birth($email, $post->ID);
                     }
                 }
             }
@@ -816,7 +811,6 @@ class WYSIJA extends WYSIJA_object{
                 return true;
             }
         }
-
         return false;
     }
 

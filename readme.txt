@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.3.2
+Stable tag: 2.3.3
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,20 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.3.3 - 2013-03-04 =
+
+* added drag and drop private or scheduled posts in the visual editor
+* fixed more than one post notification going out monthly, weekly or daily
+* fixed warning in MS settings
+* fixed translation issues for comments checkbox for instance
+* fixed little notice when deleting list
+* fixed buddypress multiple checkbox on registration form
+* fixed on duplicate of a post notification reset the articles already sent in the original so that it starts from scratch
+* fixed import ignoring rows with invalid data to avoid import failure
+* fixed missing title and description of widget
+* fixed multisite only you'll see once the update screen as a network admin
+* improved logging options
 
 = 2.3.2 - 2013-02-20 =
 

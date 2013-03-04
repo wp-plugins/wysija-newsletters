@@ -21,63 +21,60 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
 
         $content.='<table class="form-table">
                 <tbody>';
-        /* user details */
+        //user details */
 
-                    //do not show the email input if the subscriber is a wordPress user
-                    $configm=&WYSIJA::get('config','model');
-                    $synchwp=$configm->getValue('importwp_list_id');
-                    $iswpsynched=false;
-                    foreach($data['user']['lists'] as $listdt){
-                        if($listdt['list_id']==$synchwp) $iswpsynched=true;
-                    }
-                    if(!$iswpsynched){
-                        $content.='<tr>
-                            <th scope="row">
-                                <label for="email">'.__('Email',WYSIJA).'</label>
-                            </th>
-                            <td>
-                                <input type="text" size="40" class="validate[required,custom[email]]" id="email" value="'.esc_attr($data['user']['details']['email']).'" name="wysija[user][email]" />
-                            </td>
-                        </tr>';
-                    }
-
-
-                    $content.='<tr>
-                        <th scope="row">
-                            <label for="fname">'.__('First name',WYSIJA).'</label>
-                        </th>
-                        <td>
-                            <input type="text" size="40" id="fname" value="'.esc_attr($data['user']['details']['firstname']).'" name="wysija[user][firstname]" />
-                        </td>
-                    </tr>';
-
-                    $content.='<tr>
-                        <th scope="row">
-                            <label for="lname">'.__('Last name',WYSIJA).'</label>
-                        </th>
-                        <td>
-                            <input type="text" size="40" id="lname" value="'.esc_attr($data['user']['details']['lastname']).'" name="wysija[user][lastname]" />
-                        </td>
-                    </tr>';
-
-                    $content.='<tr>
-                        <th scope="row">
-                            <label for="status">'.__('Status',WYSIJA).'</label>
-                        </th>
-                        <td>
-                            '.$formObj->radios(
-                    array('id'=>'status', 'name'=>'wysija[user][status]'),
-                    array('-1'=>' '.__('Unsubscribed',WYSIJA).' ','1'=>' '.__('Subscribed',WYSIJA).' '),
-                    $data['user']['details']['status'],
-                    ' class="validate[required]" ').'
-                        </td>
-                    </tr>';
+        //do not show the email input if the subscriber is a wordPress user
+        $configm=&WYSIJA::get('config','model');
+        $synchwp=$configm->getValue('importwp_list_id');
+        $iswpsynched=false;
+        foreach($data['user']['lists'] as $listdt){
+            if($listdt['list_id']==$synchwp) $iswpsynched=true;
+        }
+        if(!$iswpsynched){
+            $content.='<tr>
+                <th scope="row">
+                    <label for="email">'.__('Email',WYSIJA).'</label>
+                </th>
+                <td>
+                    <input type="text" size="40" class="validate[required,custom[email]]" id="email" value="'.esc_attr($data['user']['details']['email']).'" name="wysija[user][email]" />
+                </td>
+            </tr>';
+        }
 
 
-        $content.=$this->customFields();
+        $content.='<tr>
+            <th scope="row">
+                <label for="fname">'.__('First name',WYSIJA).'</label>
+            </th>
+            <td>
+                <input type="text" size="40" id="fname" value="'.esc_attr($data['user']['details']['firstname']).'" name="wysija[user][firstname]" />
+            </td>
+        </tr>';
+
+        $content.='<tr>
+            <th scope="row">
+                <label for="lname">'.__('Last name',WYSIJA).'</label>
+            </th>
+            <td>
+                <input type="text" size="40" id="lname" value="'.esc_attr($data['user']['details']['lastname']).'" name="wysija[user][lastname]" />
+            </td>
+        </tr>';
+
+        $content.='<tr>
+            <th scope="row">
+                <label for="status">'.__('Status',WYSIJA).'</label>
+            </th>
+            <td>
+                '.$formObj->radios(
+        array('id'=>'status', 'name'=>'wysija[user][status]'),
+        array('-1'=>' '.__('Unsubscribed',WYSIJA).' ','1'=>' '.__('Subscribed',WYSIJA).' '),
+        $data['user']['details']['status'],
+        ' class="validate[required]" ').'
+            </td>
+        </tr>';
 
 
-        /* list subscriptions */
+        //list subscriptions */
         if($data['list']){
             $content.='<tr></tr><tr>
                 <th scope="row" colspan="2">';
@@ -141,7 +138,21 @@ class WYSIJA_view_front_confirm extends WYSIJA_view_front {
         return $content;
     }
 
-    function customFields(){
-
+    /**
+     *
+     */
+    function resend(){
+        $content.='<form id="wysija-subscriptions" method="post" action="#wysija-subscriptions" class="form-valid">';
+        $content.='
+                        '.$this->secure(array('controller'=>'confirm','action'=>'resendconfirm', 'id'=> (int)$_REQUEST['user_id']),false,false).'
+                        <input type="hidden" name="id" id="id" value="'.(int)$_REQUEST['user_id'].'" />
+                            <input type="hidden" name="email_id" id="id" value="'.(int)$_REQUEST['email_id'].'" />
+                        <input type="hidden" value="resendconfirm" name="action" />
+                        <h3>'.__('We cannot safely say that you clicked that linked.',WYSIJA).'</h3>
+                            <p class="submit">
+                        <input type="submit" value="'.esc_attr(__('Resend the email with safe links!',WYSIJA)).'" class="button-primary wysija">
+                    </p>';
+        $content.='</form>';
+        return $content;
     }
 }

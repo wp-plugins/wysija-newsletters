@@ -62,7 +62,7 @@ class WYSIJA_view_back_tmce extends WYSIJA_view_back{
 
                     <?php
                     require_once(WYSIJA_WIDGETS.'wysija_nl.php');
-                    $widgetNL=new WYSIJA_NL_Widget(1);
+                    $widgetNL=new WYSIJA_NL_Widget(true);
                     $widgetNL->form($datawidget);
                     ?>
                     <input type="hidden" name="widget_id" value="wysija-nl-<?php echo time(); ?>" />
