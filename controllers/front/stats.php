@@ -78,7 +78,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                 //debug message
                 if(isset($_REQUEST['debug']))   echo '<h2>isset urlencoded '.$decodedUrl.'</h2>';
 
-                if($email_id){ //if not email_id that means it is an email preview
+                if($email_id && !isset($_REQUEST['demo'])){ //if not email_id that means it is an email preview
                     //look for url entry and insert if not exists
                     $modelUrl=&WYSIJA::get('url','model');
 
