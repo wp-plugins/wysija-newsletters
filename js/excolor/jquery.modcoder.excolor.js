@@ -40,6 +40,7 @@ jQuery.fn.modcoder_excolor = function (C) {
             huebox = 0,
             wrapper = 0,
             pos_wrap = 0,
+            pos_sbbox = 0,
             pos_huebox = 0,
             hue = 0,
             sbbox = 0,
@@ -822,19 +823,19 @@ jQuery.fn.modcoder_excolor = function (C) {
                 }
                 clearTimeout(hexto);
                 hexto = setTimeout(function () {
-                    draw_rgb()
+                    draw_rgb();
                 }, 100)
             };
             jQuery(ok_but).click(function () {
                 userok = true;
-                action_exit()
+                action_exit();
             }).mouseenter(function () {
                 jQuery(this).css('background-position', '0 -17px');
             }).mouseleave(function () {
                 jQuery(this).css('background-position', '0 0');
             });
             jQuery(close_but).click(function () {
-                action_exit()
+                action_exit();
             }).mouseenter(function () {
                 jQuery(this).css('background-position', '0 -17px');
             }).mouseleave(function () {
@@ -902,27 +903,27 @@ jQuery.fn.modcoder_excolor = function (C) {
                 e.preventDefault();
                 hue = e.pageY - pos_huebox.top - correct_y;
                 if (hue < 0) {
-                    hue = 0
+                    hue = 0;
                 }
                 if (hue > 119) {
-                    hue = 119
+                    hue = 119;
                 }
                 jQuery(moved_slider).css('left', pos_huebox.left + 'px').css('top', (pos_huebox.top + hue) + 'px');
                 init_colors();
-                update_inputs()
+                update_inputs();
             }
         }).keydown(function (a) {
             if (a.keyCode == '27') {
                 a.preventDefault();
-                action_exit()
+                action_exit();
             }
             if (a.keyCode == '13') {
                 a.preventDefault();
-                jQuery(ok_but).click()
+                jQuery(ok_but).click();
             }
         }).click(function () {
             if (!click_flag) {
-                action_exit()
+                action_exit();
             }
         });
 

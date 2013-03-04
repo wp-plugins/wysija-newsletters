@@ -553,5 +553,38 @@ class WYSIJA_control_back extends WYSIJA_control{
         return $location;
     }
 
+     function __get_social_buttons($inline=true){
 
+         if($inline){
+             $class=' class="socials removeme"';
+         }else{
+             $class=' id="socials-block"';
+         }
+         $wysijaversion='<div '.$class.'>
+        <div class="fb" >
+        <div id="fb-root"></div>
+        <script>(function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, \'script\', \'facebook-jssdk\'));</script>
+        <div class="fb-like" data-href="http://www.facebook.com/wysija" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false"></div></div>
+        <div class="twitter">
+        <a href="https://twitter.com/wysija" class="twitter-follow-button" data-show-count="true">Follow @wysija</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </div>
+        <div class="gplus">
+        <!-- Place this tag in your head or just before your close body tag -->
+        <script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
+        <!-- Place this tag where you want the +1 button to render -->
+        <g:plusone href="https://plus.google.com/104749849451537343615" size="medium"></g:plusone></div>
+        ';
+         if($inline) $wysijaversion.='<div id="hidesocials">
+        <a class="linkignore socialfoot" href="javascript:;">'.__('Hide!',WYSIJA).'</a>
+            </div>';
+            $wysijaversion.= "<div style='clear:both;'></div></div><div style='clear:both;'></div>";
+            return $wysijaversion;
+    }
 }

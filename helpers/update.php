@@ -3,8 +3,8 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
-        
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1');
+
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3');
     }
 
     function runUpdate($version){
@@ -12,7 +12,7 @@ class WYSIJA_help_update extends WYSIJA_object{
 
         switch($version){
             case '1.1':
-                
+
                 $modelconfig=&WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'namekey';")){
                     $querys[]='ALTER TABLE `[wysija]list` ADD `namekey` VARCHAR( 255 ) NULL;';
@@ -166,6 +166,10 @@ class WYSIJA_help_update extends WYSIJA_object{
                 $helperU->cleanWordpressUsersList();
                 return true;
                break;
+           case '2.3.3':
+                update_option('wysija_log', $optionlog);
+                return true;
+               break;
             default:
                 return false;
         }
@@ -220,22 +224,42 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
         
         $noredirect=false;
-        $timeInstalled=$config->getValue('installed_time')+3600;
 
-        if(current_user_can('switch_themes') ){
-            if((!$config->getValue('wysija_whats_new') || version_compare($config->getValue('wysija_whats_new'),WYSIJA::get_version()) < 0) && isset($_REQUEST['page']) && in_array($_REQUEST['page'], array('wysija_config','wysija_campaigns','wysija_subscribers'))){
-                if(isset($_REQUEST['action']) && in_array($_REQUEST['action'], array('whats_new','welcome_new','activate-plugin')))  $noredirect=true;
-                if(!$noredirect) {
-                    if(time()>$timeInstalled){
-                        WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
-                    }else{
-                        WYSIJA::redirect('admin.php?page=wysija_campaigns&action=welcome_new');
+
+        if(WYSIJA::current_user_can('switch_themes') ){
+
+
+
+
+
+            if(isset($_REQUEST['page']) && in_array($_REQUEST['page'], array('wysija_config','wysija_campaigns','wysija_subscribers'))){
+
+                $whats_new_option='wysija_whats_new';
+                $is_multisite=is_multisite();
+                $is_network_admin=WYSIJA::current_user_can('manage_network');
+                if($is_multisite){
+                    if($is_network_admin){
+                        $whats_new_option='ms_wysija_whats_new';
+                    }else {
+                        return;
                     }
+                }
 
-                    $mConfig=&WYSIJA::get('config','model');
-                    $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+                if((!$config->getValue($whats_new_option) || version_compare($config->getValue($whats_new_option),WYSIJA::get_version()) < 0)){
+
+                    if(isset($_REQUEST['action']) && in_array($_REQUEST['action'], array('whats_new','welcome_new','activate-plugin')))  $noredirect=true;
+                    if(!$noredirect) {
+                        $timeInstalled=$config->getValue('installed_time')+3600;
+
+                        if(time()>$timeInstalled){
+                            WYSIJA::redirect('admin.php?page=wysija_campaigns&action=whats_new');
+                        }else{
+                            WYSIJA::redirect('admin.php?page=wysija_campaigns&action=welcome_new');
+                        }
+                    }
                 }
             }
+
         }
     }
     function update($version){

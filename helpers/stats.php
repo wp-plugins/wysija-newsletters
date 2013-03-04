@@ -17,6 +17,9 @@ class WYSIJA_help_stats extends WYSIJA_object{
         $total=0;
         foreach($statuscount as &$count){
             switch($count['status']){
+                case '-2':
+                    $count['status']=__('undelivered',WYSIJA);
+                    break;
                 case '-1':
                     $count['status']=__('bounced',WYSIJA);
                     break;

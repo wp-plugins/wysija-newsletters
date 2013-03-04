@@ -139,14 +139,9 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         $sentstatus=array('status'=>99,'sent_at'=>time());
         if((int)$email['type'] === 2){
-            /* post notification make a child newsletter when the timing is immediate otherwise let the cron take care of it */
-            /*I don't see why I did that in the first place. no need to do that.*/
-            /*if($email['params']['autonl']['event']=='new-articles' && $email['params']['autonl']['when-article']=='immediate'){
-                $this->giveBirth($email);
-            }*/
 
         }else{
-            /* insert select all the subscribers from the lists related to that campaign */
+            //insert select all the subscribers from the lists related to that campaign
 
             if($queueemails){
                 $modelQ=&WYSIJA::get('queue','model');
@@ -165,8 +160,8 @@ class WYSIJA_model_email extends WYSIJA_model{
      * @param boolean $immediatePostNotif
      * @return int next send value
      */
-    function giveBirth($email, $immediatePostNotif=false){
-        /* duplicate email with the right body and title set it as type 1*/
+    function give_birth($email, $immediatePostNotif=false){
+        //duplicate email with the right body and title set it as type 1*/
         if(isset($email['params']) && !is_array($email['params']))  $this->getParams($email);
         $emailChild=$email;
         $paramsVal=$email['params'];
@@ -247,7 +242,7 @@ class WYSIJA_model_email extends WYSIJA_model{
         //update the parent email only it has been  sent
         if(!$donotsend){
             $paramsVal['autonl']['nextSend']=$nextSendValue;
-
+            if(isset($paramsVal['autonl']['late_send'])) unset($paramsVal['autonl']['late_send']);
             $this->reset();
 
             //we use to have a filter compared to the first send date, but we should have a filter to the lastSend date instead

@@ -18,6 +18,10 @@ class WYSIJA_model_config extends WYSIJA_object{
         'registerform',
         'ms_allow_admin_sending_method',
         'ms_allow_admin_toggle_signup_confirmation',
+        'debug_log_cron',
+        'debug_log_post_notif',
+        'debug_log_query_errors',
+        'debug_log_queue_process',
     );
     var $defaults=array(
         'limit_listing'=>10,
@@ -61,7 +65,7 @@ class WYSIJA_model_config extends WYSIJA_object{
     var $values=array();
 
     function WYSIJA_model_config(){
-        $this->add_translated_default();
+        //$this->add_translated_default();
 
         $encoded_option=get_option($this->name_option);
         global $wysija_installing;
@@ -98,9 +102,11 @@ class WYSIJA_model_config extends WYSIJA_object{
         }
 
 
+
+
         //install the application because there is no option setup it's safer than the classic activation scheme
         if(defined('WP_ADMIN')){
-            add_action('admin_menu', array($this,'add_translated_default'),96);
+            add_action('plugins_loaded', array($this,'add_translated_default'));
             if($installApp && $wysija_installing!==true){
                 $wysija_installing=true;
                 $installer=&WYSIJA::get('install','helper',false,'wysija-newsletters',false);
@@ -109,6 +115,9 @@ class WYSIJA_model_config extends WYSIJA_object{
                 $updater=&WYSIJA::get('update','helper',false,'wysija-newsletters',false);
                 add_action('admin_menu', array($updater,'check'),103);
             }
+        }else{
+            //wait until the translation files are loaded
+            add_action('init', array($this,'add_translated_default'),96);
         }
     }
     /*
@@ -488,12 +497,14 @@ class WYSIJA_model_config extends WYSIJA_object{
                     //we reset an array to clear the cron of every single site using the multisite method
                     update_site_option('ms_wysija_sending_cron',array());
                 }
+                $data_saved_ms_before= unserialize(base64_decode(get_site_option('ms_'.$this->name_option)));
+                if(!empty($data_saved_ms_before))   $dataMultisite=array_merge($data_saved_ms_before, $dataMultisite);
                 update_site_option('ms_'.$this->name_option,base64_encode(serialize($dataMultisite)));
             }
 
             //let's merge the latest MS modified values with the values of the site's config, this is to avoid a bug after saving
-            $data_ms_saved=get_site_option('ms_'.$this->name_option);
-            $this->values=array_merge($this->values, unserialize(base64_decode($data_ms_saved)));
+            $data_saved_ms_fresh=unserialize(base64_decode(get_site_option('ms_'.$this->name_option)));
+            if(!empty($data_saved_ms_fresh))    $this->values=array_merge($this->values, $data_saved_ms_fresh);
         }
 
         //the sending frequency has changed on that site's settings let's clear the frequency recorded in WP's and wysija's crons
@@ -520,10 +531,12 @@ class WYSIJA_model_config extends WYSIJA_object{
      * @return type
      */
     function getValue($key,$default=false,$type='normal') {
+
         if(is_multisite() && $key=='ms_from_email' && !isset($this->defaults['ms_from_email'])){
             $hToolbox=&WYSIJA::get('toolbox','helper');
             if(is_object($hToolbox))  $this->defaults['ms_from_email']='info@'.$hToolbox->_make_domain_name(network_site_url());
         }
+
         if(isset($this->values[$key])) {
             /*if($type=="trans")  return stripslashes($this->values[$key]);
             else return $this->values[$key]; */

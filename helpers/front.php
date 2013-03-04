@@ -58,9 +58,8 @@ class WYSIJA_help_front extends WYSIJA_help{
                    add_action('register_form', array($this,'register_form_extend'));
                    add_action('register_post',  array($this,'register_posted'), 60,3);
                }
-
                 if(WYSIJA::is_plugin_active('buddypress/bp-loader.php')){
-                    add_action('bp_custom_profile_edit_fields', array($this,'register_form_bp_extend'));
+                    add_action('bp_after_signup_profile_fields', array($this,'register_form_bp_extend'));
                     add_action('bp_signup_validate', array($this,'register_bp'),60,3);
                 }
            }
@@ -77,11 +76,12 @@ class WYSIJA_help_front extends WYSIJA_help{
         }
     }
     function register_form_extend(){
-        echo '<p class="wysija-after-register">';
-        echo '<label for="wysija-box-after-register">';
-        echo '<input type="checkbox" id="wysija-box-after-register" value="1" name="wysija[register_subscribe]">';
+        $checkbox= '<p class="wysija-after-register">';
+        $checkbox.='<label for="wysija-box-after-register">';
+        $checkbox.='<input type="checkbox" id="wysija-box-after-register" value="1" name="wysija[register_subscribe]">';
         $mConfig=&WYSIJA::get('config','model');
-        echo $mConfig->getValue('registerform_linkname').'</label></p>';
+        $checkbox.=$mConfig->getValue('registerform_linkname').'</label></p>';
+        echo '<div class="register-section" id="profile-details-section-wysija"><div class="editfield">'.$checkbox.'</div></div>';
     }
 
     function register_bp(){
@@ -157,7 +157,7 @@ class WYSIJA_help_front extends WYSIJA_help{
         foreach($matches[1] as $key => $mymatch){
             if($mymatch){
                 $widgetdata=unserialize(base64_decode($mymatch));
-                $widgetNL=new WYSIJA_NL_Widget(1);
+                $widgetNL=new WYSIJA_NL_Widget(true);
                 $contentTABLE= $widgetNL->widget($widgetdata,$widgetdata);
                 $content=str_replace($matches[0][$key],$contentTABLE,$content);
             }//endif

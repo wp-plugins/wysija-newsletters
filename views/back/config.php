@@ -155,11 +155,31 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $selected=$this->model->getValue($key);
         if(!$selected)   $selected=0;
         $field='<p><label for="'.$key.'">';
-        $options=array(0=>'off',1=>'SQL queries',2=>'&nbsp+log',3=>'&nbsp&nbsp+safe PHP errors',4=>'&nbsp&nbsp&nbsp+safe PHP errors wp-admin',99=>'&nbsp&nbsp&nbsp&nbsp+PHP errors wp-admin(to use carefully)');
+        $options=array(0=>'off',1=>'SQL queries',2=>'&nbsp+extra data',3=>'&nbsp&nbsp+safe PHP errors');
         $field.=$formsHelp->dropdown(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'),$options,$selected);
         $field.='</label></p>';
 
         return $field;
+    }
+
+    function fieldFormHTML_debuglog($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get('forms','helper');
+
+        $lists=array('cron','post_notif','query_errors','queue_process');
+
+        $fieldHTML='<div id="'.$key.'_linkname'.'" class="linknamecboxes">';
+        foreach($lists as $list){
+            $checked=false;
+            if($this->model->getValue($key.'_'.$list)) $checked=true;
+
+            $fieldHTML.= '<p class="labelcheck"><label for="'.$key.'list-'.$list.'">'.$formsHelp->checkbox( array('id'=>$key.'list-'.$list,
+                        'name'=>'wysija[config]['.$key.'_'.$list.'][]'),
+                            1,$checked).$list.'</label></p>';
+        }
+        $fieldHTML.='</div>';
+
+        return $fieldHTML;
     }
 
     function fieldFormHTML_dkim($key,$value,$model,$paramsex){
@@ -1076,7 +1096,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $resultHTML.='</div>';
         return $resultHTML;
     }
+    function clearlog(){
 
+        echo '<h3>Logs have been cleared</h3>';
+    }
     function log(){
         dbg(get_option('wysija_log'),0);
     }
@@ -1175,11 +1198,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Debug mode',WYSIJA),
             'desc'=>__('Enable this to show Wysija\'s errors. Our support might ask you to enable this if you seek their help.',WYSIJA));
 
+        if(WYSIJA_DBG>1){
+            $step['debug_log']=array(
+            'type'=>'debuglog',
+            'label'=>'Logs',
+            'desc'=>  str_replace(array('[link]','[linkclear]','[/link]','[/linkclear]'),
+                    array('<a href="admin.php?page=wysija_config&action=log">','<a href="admin.php?page=wysija_config&action=clearlog">','</a>','</a>'),
+                    'View them [link]here[/link]. Clear them [linkclear]here[/linkclear]'));
+        }
+
 
         ?>
         <table class="form-table">
             <tbody>
-                <?php echo $this->buildMyForm($step,"","config"); ?>
+                <?php echo $this->buildMyForm($step,'','config'); ?>
                 <?php if (current_user_can('delete_plugins')): ?>
                     <tr><th scope="row">
                         <div class="label"><?php _e('Reinstall from scratch',WYSIJA)?>
