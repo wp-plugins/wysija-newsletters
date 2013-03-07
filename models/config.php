@@ -22,6 +22,8 @@ class WYSIJA_model_config extends WYSIJA_object{
         'debug_log_post_notif',
         'debug_log_query_errors',
         'debug_log_queue_process',
+        'debug_log_manual',
+        'cron_page_hit_trigger',
     );
     var $defaults=array(
         'limit_listing'=>10,
@@ -59,6 +61,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'ms_sending_emails_number'=>'100',
         'ms_allow_admin_sending_method'=>false,
         'ms_allow_admin_toggle_signup_confirmation'=>false,
+        'cron_page_hit_trigger'=>true
     );
 
     var $capabilities=array();

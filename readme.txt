@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.3.3
+Stable tag: 2.3.4
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,16 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.3.4 - 2013-03-07 =
+
+* added default value from WordPress' logged in user in the subscription form
+* added dropdown selection of statuses(publish, private, scheduled, draft) for WordPress' Posts to be dropped into the visual editor
+* added option to Wysija's CRON(tasks scheduler) to deactivate the schedule tasks checks on any page view
+* fixed unsubscribe date in the frontend subscriptions management is now translated with date_i18n (thanks Anna :))
+* fixed unsubscribe link in preview emails
+* fixed subscribers count when double optin is deactivated
+* fixed unsubscribe link with Google Analytics
 
 = 2.3.3 - 2013-03-04 =
 

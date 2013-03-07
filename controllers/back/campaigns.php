@@ -179,7 +179,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'content'=>str_replace(
                             array('[link]','[/link]'),
                             array('<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On wordpress.org">','</a>'),
-                            __('Each time one of our users forgets to write a review, a kitten dies.It\'s sad and breaks our hearts. [link]Add your own review[/link] and save a kitten today.',WYSIJA))
+                            __('Each time one of our users forgets to write a review, a kitten dies. It\'s sad and breaks our hearts. [link]Add your own review[/link] and save a kitten today.',WYSIJA))
 
 
                 ),
@@ -446,7 +446,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
     function __getLists($enabled=true,$count=false,$notgetalllistid=false){
         $modelList=&WYSIJA::get('list','model');
-        /* get lists which have users  and are enabled */
+        //get lists which have users  and are enabled */
         if($enabled) $enabledstrg=' is_enabled>0 and';
         else $enabledstrg='';
 
@@ -601,7 +601,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
             $mEmail->update(array('params'=>$paramsReseted),array('email_id'=>$emailid));
         }
-
+        get_user_by('');
         /* 3 - copy the campaign_list entry */
         $query="INSERT INTO `[wysija]campaign_list` (`campaign_id`,`list_id`,`filter`)
             SELECT $campaignid,`list_id`,`filter` FROM [wysija]campaign_list

@@ -132,7 +132,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function fieldFormHTML_cron($key,$value,$model,$paramsex){
-        /*second part concerning the checkbox*/
+        //second part concerning the checkbox
         $formsHelp=&WYSIJA::get('forms','helper');
         $checked=false;
         if($this->model->getValue($key))   $checked=true;
@@ -140,10 +140,15 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $field.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
         $field.='</label></div>';
 
+
+        $checked=false;
+        if($this->model->getValue('cron_page_hit_trigger'))   $checked=true;
+
         $urlcron=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all';
         $field.='<div class="cronright" id="'.$key.'_linkname">';
         $field.='<p>'.'Almost done! Setup this cron job on your server or ask your host:'.'</p>';
-        $field.='<p>Cron URL : <strong><a href="'.$urlcron.'" target="_blank">'.$urlcron.'</a></strong></p>';
+        $field.='<p>Cron URL : <strong><a href="'.$urlcron.'" target="_blank">'.$urlcron.'</a></strong></p>';//cron_page_hit_trigger
+        $field.='<p>'.$formsHelp->checkbox(array('id'=>'cron_page_hit_trigger','name'=>'wysija['.$model.'][cron_page_hit_trigger]','class'=>'activateInput'),1,$checked).'Scheduled tasks are triggerred by any "page view" frontend/backend/logged in users or visitors.</p>';
         $field.='</div></div>';
 
         return $field;
@@ -166,7 +171,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         /*second part concerning the checkbox*/
         $formsHelp=&WYSIJA::get('forms','helper');
 
-        $lists=array('cron','post_notif','query_errors','queue_process');
+        $lists=array('cron','post_notif','query_errors','queue_process','manual');
 
         $fieldHTML='<div id="'.$key.'_linkname'.'" class="linknamecboxes">';
         foreach($lists as $list){
@@ -1101,7 +1106,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         echo '<h3>Logs have been cleared</h3>';
     }
     function log(){
-        dbg(get_option('wysija_log'),0);
+        $option_log=get_option('wysija_log');
+
+        foreach($option_log as $key => $data){
+            echo '<h3>'.$key.'</h3>';
+            dbg($data,0);
+        }
+
     }
 
     function advanced(){

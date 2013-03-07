@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
 
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4');
     }
 
     function runUpdate($version){
@@ -33,7 +33,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                 return true;
                 break;
             case '2.0':
-                
+
                 $modelconfig=&WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]email` LIKE 'modified_at';")){
                     $querys[]="ALTER TABLE `[wysija]email` ADD `modified_at` INT UNSIGNED NOT NULL DEFAULT '0';";
@@ -58,10 +58,10 @@ class WYSIJA_help_update extends WYSIJA_object{
                     $modelEmails=&WYSIJA::get('email','model');
                     $modelEmails->reset();
                     $emailsLoaded=$modelEmails->get(array('subject','email_id'),array('status'=>2,'type'=>1));
-                    
+
                     $wptools =& WYSIJA::get('wp_tools', 'helper');
                     $wptools->set_default_rolecaps();
-                     
+
 
                     $minimumroles=array('role_campaign'=>'wysija_newsletters','role_subscribers'=>'wysija_subscribers');
                     foreach($minimumroles as $rolename=>$capability){
@@ -170,6 +170,19 @@ class WYSIJA_help_update extends WYSIJA_object{
                 update_option('wysija_log', $optionlog);
                 return true;
                break;
+
+           case '2.3.4':
+                $model_config=&WYSIJA::get('config','model');
+                $dbl_optin=(int)$model_config->getValue('confirm_dbleoptin');
+
+                $querys[]='UPDATE `[wysija]user_list` as A inner join `[wysija]user` as B on (A.user_id = B.user_id) set A.sub_date= '.time().' where A.sub_date=0 and A.unsub_date=0 and B.status>='.$dbl_optin.';';
+                $errors=$this->runUpdateQueries($querys);
+                if($errors){
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
+                return true;
+                break;
             default:
                 return false;
         }

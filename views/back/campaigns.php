@@ -1842,15 +1842,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->popup_themes(false);
     }
 
-    function selectCPT($value = null, $showall = true) {
+    function _dropdown_CPT($value = null, $showall = true) {
         // make sure value is null if it's an empty string
         if($value !== null and strlen(trim($value)) === 0) $value = null;
 
         ?>
-        <p class="clearfix">
+        <span class="cpt">
             <?php
-                $wptools=&WYSIJA::get('wp_tools','helper');
-                $post_types=$wptools->get_post_types();
+                $helper_wptools=&WYSIJA::get('wp_tools','helper');
+                $post_types=$helper_wptools->get_post_types();
             ?>
             <label for="cpt"><?php _e('Select post type', WYSIJA) ?></label>
             <select name="cpt" id="cpt">
@@ -1867,7 +1867,34 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 }
             ?>
             </select>
-        </p>
+        </span>
+        <?php
+    }
+
+    function _dropdown_post_status($value = null, $showall = true) {
+        // make sure value is null if it's an empty string
+        if($value !== null and strlen(trim($value)) === 0) $value = null;
+
+        ?>
+        <span class="statuses">
+            <?php
+                $helper_wptools=&WYSIJA::get('wp_tools','helper');
+                $post_statuses=$helper_wptools->get_post_statuses();
+            ?>
+            <label for="status"><?php _e('Select post status', WYSIJA) ?></label>
+            <select name="status" id="status">
+            <?php
+                if($showall === true) {
+                    echo '<option value="all"'.(($value === 'all') ? ' selected="selected"' : '').'>'.__('All',WYSIJA).'</option>';
+                }
+
+                foreach($post_statuses as $key=> $post_status_name) {
+                    $selected = ($value === $key) ? ' selected="selected"' : '';
+                    echo '<option value="'.$key.'"'.$selected.'>'.$post_status_name.'</option>';
+                }
+            ?>
+            </select>
+        </span>
         <?php
     }
 
@@ -1877,21 +1904,27 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <div class="popup_content articles">
             <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
                 <div class="ml-submit">
-                    <?php $this->selectCPT(); ?>
                     <div class="searchwrap">
                         <input type="text" id="search-box" name="search" autocomplete="off" />
                         <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
-                        <label id="labelfullarticlesget" for="fullarticlesget">
-                            <?php
-                            $modelConfig=&WYSIJA::get('config','model');
-                            $checked='';
-                            if($modelConfig->getValue('editor_fullarticle')) $checked=' checked="checked" ';
-                            ?>
-                            <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
-                            <?php
-                            echo __('Insert entire post, not just excerpt',WYSIJA);
-                            ?>
-                        </label>
+                        <a id="show-advanced-controls" href="javascript:;" title="<?php echo esc_attr(__('Show advanced search',WYSIJA)); ?>"><?php echo __('Show advanced search',WYSIJA); ?></a>
+                    </div>
+                    <div id="search-advanced">
+                        <?php $this->_dropdown_CPT(); ?>
+                        <?php $this->_dropdown_post_status('publish'); ?>
+                        <span class="block">
+                            <label id="get-full-post-label" for="get-full-post">
+                                <?php
+                                $modelConfig=&WYSIJA::get('config','model');
+                                $checked='';
+                                if($modelConfig->getValue('editor_fullarticle')) $checked=' checked="checked" ';
+                                ?>
+                                <input type="checkbox" name="fullarticles" id="get-full-post" <?php echo $checked ?>/>
+                                <?php
+                                echo __('Insert entire post, not just excerpt',WYSIJA);
+                                ?>
+                            </label>
+                        </span>
                     </div>
                 </div>
                 <div id="search-results"></div>
@@ -1956,7 +1989,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input type="hidden" name="category_ids" id="category_ids" value="<?php echo $category_ids ?>" />
 
                 <!-- max number of articles -->
-                <?php $this->selectCPT($data['params']['cpt'], false); ?>
+                <?php $this->_dropdown_CPT($data['params']['cpt'], false); ?>
                 <?php
                     if($data['autopost_type'] === 'single') {
                 ?>

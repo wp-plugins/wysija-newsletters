@@ -64,7 +64,7 @@ class WYSIJA_model_list extends WYSIJA_model{
 
             $total=$this->getResults($qry);
             $subscribed=$this->getResults($qry1);
-            
+
 
             foreach($total as $tot){
                 foreach($listres as $key=>$res){
@@ -72,6 +72,7 @@ class WYSIJA_model_list extends WYSIJA_model{
                 }
             }
 
+            //get the count of the subscribed people per list
             foreach($subscribed as $subscriber){
                 foreach($listres as $key=>$res){
                     if($subscriber['list_id']==$res['list_id']){
@@ -86,17 +87,24 @@ class WYSIJA_model_list extends WYSIJA_model{
                             $listres[$key]['unconfirmed']=$listres[$key]['unconfirmed']+$subscriber['total'];
                         }
                     }
-
                 }
             }
 
-
+            $model_config=&WYSIJA::get('config','model');
             foreach($listres as $key=>$res){
                 if(!isset($listres[$key]['unconfirmed'])) $listres[$key]['unconfirmed']=0;
                 if(!isset($listres[$key]['unsubscribers'])) $listres[$key]['unsubscribers']=0;
                 if(!isset($listres[$key]['subscribers'])) $listres[$key]['subscribers']=0;
                 if(!isset($listres[$key]['totals'])) $listres[$key]['totals']=0;
+                //if the double optin is not activated then we need to make the sum of the subscribed and unconfirmed
+                //this is a rare case but it happens
+                if(!$model_config->getValue('confirm_dbleoptin')){
+                    $listres[$key]['subscribers']+=$listres[$key]['unconfirmed'];
+                }
             }
+
+
+
 
             $this->escapeQuotesFromRes($listres);
             return $listres;

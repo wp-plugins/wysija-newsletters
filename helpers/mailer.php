@@ -723,8 +723,11 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                 $args['urlpassed'] = $urlencoded;
                 $args['controller'] = 'stats';
 
-                if(in_array($urlreuse, array('[unsubscribe_link]','[subscriptions_link]'))){
-                    $args['hash']=md5(AUTH_KEY.$urlreuse.$args['user_id']);
+                if(strpos($urlreuse, '[unsubscribe_link]')!==false){
+                    $args['hash']=md5(AUTH_KEY.'[unsubscribe_link]'.$args['user_id']);
+                }
+                if(strpos($urlreuse, '[subscriptions_link]')!==false){
+                    $args['hash']=md5(AUTH_KEY.'[subscriptions_link]'.$args['user_id']);
                 }
 
                 $forbiddenparams=$modelConf->getValue('params_forbidden');
