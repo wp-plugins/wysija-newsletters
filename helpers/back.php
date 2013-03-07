@@ -310,42 +310,20 @@ class WYSIJA_help_back extends WYSIJA_help{
        return $newButtons;
     }
     function version(){
-        $wysijaversion= "<div class='wysija-version'>";
+        $wysijaversion= '<div class="wysija-version">';
 
         $config=&WYSIJA::get('config','model');
-        $msg=$config->getValue("ignore_msgs");
+        $msg=$config->getValue('ignore_msgs');
         $wysijaversion.='<div class="social-foot">';
         $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Spread da word.',WYSIJA).'</a> </div>';
         $wysijaversion.= '<div class="version">'.__('Wysija Version: ',WYSIJA).'<a href="admin.php?page=wysija_campaigns&action=whats_new">'.WYSIJA::get_version().'</a></div></div>';
         if(!isset($msg['socialfoot'])){
-            $wysijaversion.='<div class="socials removeme">
-<div class="fb" >
-<div id="fb-root"></div>
-<script>(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, \'script\', \'facebook-jssdk\'));</script>
-<div class="fb-like" data-href="http://www.facebook.com/wysija" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false"></div></div>
-<div class="twitter">
-<a href="https://twitter.com/wysija" class="twitter-follow-button" data-show-count="true">Follow @wysija</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-</div>
-<div class="gplus">
-<!-- Place this tag in your head or just before your close body tag -->
-<script type="text/javascript" src="https://apis.google.com/js/plusone.js"></script>
-<!-- Place this tag where you want the +1 button to render -->
-<g:plusone href="https://plus.google.com/104749849451537343615" size="medium"></g:plusone></div>
-<div id="hidesocials">
-<a class="linkignore socialfoot" href="javascript:;">'.__('Hide!',WYSIJA).'</a>
-    </div>';
-            $wysijaversion.= "<div style='clear:both;'></div></div><div style='clear:both;'></div>";
+            $wysijaversion .= $this->controller->__get_social_buttons();
         }
 
-        $wysijaversion.= "</div></div>";
+        $wysijaversion.= '</div></div>';
         echo $wysijaversion;
     }
+
 }
 

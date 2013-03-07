@@ -538,9 +538,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
          * 4 delete the list
          */
         $model=&WYSIJA::get('list','model');
-        $data=$model->getOne(array('name','welcome_mail_id'),array('list_id'=>(int)$_REQUEST['id']));
+        $data=$model->getOne(array('name','namekey','welcome_mail_id'),array('list_id'=>(int)$_REQUEST['id']));
 
-        if($data && ($data['namekey']!='users')){
+        if($data && !empty($data['namekey']) && ($data['namekey']!='users')){
             $modelRECYCLE=&WYSIJA::get('email','model');
             $modelRECYCLE->delete(array('email_id'=>$data['welcome_mail_id']));
 
@@ -552,8 +552,6 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
             $model->reset();
             $model->delete(array("list_id"=>$_REQUEST['id']));
-
-
 
             $this->notice(sprintf(__('List "%1$s" has been deleted.',WYSIJA),$data['name']));
         }else{
@@ -870,12 +868,16 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->requireSecurity();
         $this->_resetGlobMsg();
 
-        /* import the contacts */
-        /* 1-check that a list is selected and that there is a csv file pasted*/
-        /* 2-save the list if necessary*/
-        /* 3-save the contacts and record them for each list selected*/
+        //to avoid timeout when importing a lot of data apparently.
+        global $wpdb;
+        $wpdb->query('set session wait_timeout=600');
 
-        /* we need to save a new list in that situation*/
+        //import the contacts
+        //1-check that a list is selected and that there is a csv file pasted
+        //2-save the list if necessary
+        //3-save the contacts and record them for each list selected
+
+        //we need to save a new list in that situation
         if(isset($_REQUEST['wysija']['list'])){
             $model=&WYSIJA::get('list','model');
             $data=array();
@@ -889,8 +891,8 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             return $this->importmatch();
         }
 
-        /* is it a new list or not */
-        /* try to make a wysija dir */
+        //is it a new list or not
+        //try to make a wysija dir
 
         $csvData=unserialize(base64_decode($_REQUEST['wysija']['dataImport']));
         $csvfilename=$csvData['csv'];
@@ -903,7 +905,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             return $this->import();
         }
 
-        /*get the temp csv file*/
+        //get the temp csv file
         $csvdata=file_get_contents($resultFile);
 
         $csvArr = $this->_csvToArray($csvdata,0,$csvData['fsep'],$csvData['fenc']);
@@ -925,26 +927,35 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $queryStart="INSERT IGNORE INTO [wysija]user (`".implode("` ,`",$datatoinsert)."`,`created_at`) VALUES ";
 
         //$linescount=count($csvArr);
-        /* detect the emails that are duplicate in the import file */
+        //detect the emails that are duplicate in the import file
         $emailsCount=array();
 
 
-        /* we process the sql insertion 200 by 200 so that we are safe with the server */
+        //we process the sql insertion 200 by 200 so that we are safe with the server
         $csvChunks=array_chunk($csvArr, 200);
         $j=0;
         $linescount=0;
         $dataNumbers=array('invalid'=>array(),'inserted'=>0,'outof'=>0,'list_added'=>0,'list_user_ids'=>0,'list_list_ids'=>count($_REQUEST['wysija']['user_list']['list']));
-        $allemailsinvalid=array();
+        $ignored_row_count=0;
         foreach($csvChunks as $keyChunk =>$arra){
 
             foreach($arra as $keyline=> $emailline){
-                if(isset($emailsCount[$emailline[$emailKey]])) {
-                    $emailsCount[$emailline[$emailKey]]++;
-                    //$arra[$keyline]
-                }
-                else $emailsCount[$emailline[$emailKey]]=1;
-            }
 
+
+                if(isset($emailline[$emailKey])){
+                   if(isset($emailsCount[$emailline[$emailKey]])) {
+                        $emailsCount[$emailline[$emailKey]]++;
+                        //$arra[$keyline]
+                    }else{
+                        $emailsCount[$emailline[$emailKey]]=1;
+                    }
+                }else{
+                    //if the record doesn't have the attribute email then we just ignore it
+                    $ignored_row_count++;
+                    unset($arra[$keyline]);
+                }
+
+            }
 
             $result=$this->_importRows($queryStart,$arra,$j,$datatoinsert,$emailKey,$dataNumbers);
 
@@ -959,7 +970,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                     $j++;
                 }else{
 
-                    $this->error(__("There seems to be an error with the list you're trying to import.",WYSIJA),true);
+                    $this->error(__('There seems to be an error with the list you\'re trying to import.',WYSIJA),true);
                     $this->redirect('admin.php?page=wysija_subscribers&action=import');
                     return false;
                 }
@@ -972,7 +983,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         if(!isset($_POST['firstrowisdata'])) {
             //$linescount--;
 
-            /* save the importing fields to be able to match them the next time */
+            //save the importing fields to be able to match them the next time
             $importfields=get_option("wysija_import_fields");
             foreach($_POST['wysija']['match'] as $key=> $val){
                 if($val!='nomatch') {
@@ -982,7 +993,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             WYSIJA::update_option('wysija_import_fields',$importfields);
         }
 
-                /* get a list of list name */
+        //get a list of list name
         $model=&WYSIJA::get('list','model');
         $results=$model->get(array('name'),array('list_id'=>$_REQUEST['wysija']['user_list']['list']));
 
@@ -1003,6 +1014,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $dataNumbers['ignored']=($dataNumbers['outof']-$dataNumbers['inserted']);
         $dataNumbers['ignored_list']=(($dataNumbers['list_user_ids']*$dataNumbers['list_list_ids'])-$dataNumbers['list_added']);
         // $this->notice(sprintf(__('%1$s subscribers have been added to database. (%2$s were ignored)',WYSIJA),$dataNumbers['inserted'],$dataNumbers['ignored']));
+
+
+        $ignored_row_count;//this contain some ignored row because the email attribute was not detected. I say there should be a message for those
 
         $this->notice(sprintf(__('%1$s subscribers added to %2$s. (%3$s were already subscribed.)',WYSIJA),$dataNumbers['list_user_ids'],'"'.implode('", "',$listnames).'"',$dataNumbers['ignored']/*,$dataNumbers['list_user_ids']*$dataNumbers['list_list_ids']*/));
 
@@ -1040,7 +1054,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         $outof=0;
         $j=1;
-        $helperUser=&WYSIJA::get("user","helper");
+        $helperUser=&WYSIJA::get('user','helper');
         global $wpdb;
         foreach($csvArr as $kline=> $line){
             //dbg($csvArr,0);
@@ -1067,14 +1081,14 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                         }
                     }
                     $values.="'".  mysql_real_escape_string($vl,$wpdb->dbh)."'";
-                    if($nbfields>$i) $values.=",";
-                    else $values.=",".$time;
+                    if($nbfields>$i) $values.=',';
+                    else $values.=','.$time;
                     $i++;
                 }
             }
 
             $query.=" ($values) ";
-            if($linescount>$j) $query.=",";
+            if($linescount>$j) $query.=',';
             $j++;
 
         }
@@ -1093,7 +1107,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
 
         if($resultqry===false) {
-            $this->error(__("Error when inserting emails.",WYSIJA),true);
+            $this->error(__('Error when inserting emails.',WYSIJA),true);
             return false;
         }
 

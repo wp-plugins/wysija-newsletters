@@ -27,11 +27,11 @@ class WYSIJA_help_user extends WYSIJA_object{
                 return $result;
             }
             else{
-                $this->error(__("Page is not accessible.",WYSIJA),true);
+                $this->error(__('Page is not accessible.',WYSIJA),true);
                 return false;
             }
         }else{
-            $this->error(__("Page is not accessible.",WYSIJA),true);
+            $this->error(__('Page is not accessible.',WYSIJA),true);
             return false;
         }
     }

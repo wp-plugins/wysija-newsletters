@@ -13,7 +13,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
     }
 
-	/* Welcome page first time install */
+    /**
+     * Welcome page first time install
+     * @return boolean
+     */
     function welcome_new(){
         $this->title=$this->viewObj->title=__('Welcome Page!',WYSIJA);
         $this->jsTrans['instalwjp']=__('Installing Wysija Newsletter Premium plugin',WYSIJA);
@@ -23,7 +26,14 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->data['abouttext']=__('A Brand New Wysija. Let the Fun Begin.',WYSIJA);
 
         $mConfig=&WYSIJA::get('config','model');
-        $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+        $is_multisite=is_multisite();
+        $is_network_admin=WYSIJA::current_user_can('manage_network');
+        if($is_multisite && $is_network_admin){
+            $mConfig->save(array('ms_wysija_whats_new'=>WYSIJA::get_version()));
+        }else{
+            $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+        }
+
 
         $this->data['sections'][]=array(
             'title'=>__('First Time? See it in Action',WYSIJA),
@@ -83,20 +93,38 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         exit;
     }
 
-	/* Welcome page for updaters */
+
+    /**
+     * Welcome page for updaters
+     * @return boolean
+     */
     function whats_new(){
 
         $this->title=$this->viewObj->title=__('What\'s new?',WYSIJA);
-        $this->jsTrans['instalwjp']='Installing Wysija Newsletter Premium plugin';
+        $this->jsTrans['instalwjp']=__('Installing Wysija Newsletter Premium plugin',WYSIJA);
         $hReadme=&WYSIJA::get('readme','helper');
         $hReadme->scan();
         $this->data=array();
-        $this->data['abouttext']='You updated! It\'s like having the next gadget, but better.';
+        $this->data['abouttext']=__('You updated! It\'s like having the next gadget, but better.',WYSIJA);
 
+        $is_multisite=is_multisite();
+        $is_network_admin=WYSIJA::current_user_can('manage_network');
         $mConfig=&WYSIJA::get('config','model');
-        $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
 
-        /*$this->data['sections'][]=array(
+        if($is_multisite){
+            if($is_network_admin){
+                $mConfig->save(array('ms_wysija_whats_new'=>WYSIJA::get_version()));
+            }
+        }else{
+            $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+        }
+
+
+        $major_release=true;
+        if(count(explode('.', WYSIJA::get_version()))>2) $major_release=false;
+
+        if($major_release){
+            /*$this->data['sections'][]=array(
             'title'=>'Say <em>Bonjour</em> to Welcome Screen',
             'format'=>'normal',
             'paragraphs'=>array(
@@ -105,51 +133,65 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             );*/
 
 
-        $this->data['sections'][]=array(
-            'title'=>'Added',
-            'cols'=>array(
-                array(
-                    'title'=>'"Tags" or shortcodes',
-                    'content'=>"In your editor, you can now add more than just the first name and last name. These shortcodes can dynamically add the day of the week, the month, the year, the latest post title automatically, etc."
-            ),
-                array(
-                    'title'=>'Single sending method for Multisite',
-                    'content'=>"Huge time saver. You only need to configure Wysija once for all the sites on your network. Find the MS tab in your settings."
-            ),
-                array(
-                    'title'=>"Custom roles for autoresponders",
-                    'content'=>"You can now send follow up emails or drip campaigns to WordPress users that are in a custom role. Perfect for membership or e-commerce sites."
-            )
-            ),
-            'format'=>'three-col',
-        );
-
-$this->data['sections'][]=array(
-            'title'=>'Improved',
-            'cols'=>array(
-                array(
-                    'title'=>"Getting better at RTL",
-                    'content'=>"We're working on improving support for right-to-left languages. If you see anything wrong, do let us know."
-            ),
-                array(
-                    'title'=>'Dozen of bug fixes',
-                    'content'=>"Thanks to all for your feedback. We're able to improve our plugin for everybody. Keep it coming."
-            ),
-                array(
-                    'title'=>"Love kittens?",
-                    'content'=>"Each time one of our users forgets to write a review, a kitten dies. It's sad and breaks our hearts. "."<a href='http://wordpress.org/support/view/plugin-reviews/wysija-newsletters' target='_blank' title='On wordpress.org'>Add your own review</a> and save a kitten today."
-            )
-            ),
-            'format'=>'three-col',
-        );
-
-        /*$this->data['sections'][]=array(
-            'title'=>'We\'re Hiring a Hacker',
-            'format'=>'normal',
-            'paragraphs'=>array(
-                    "We've busted our HR capacity. We need new muscles.<br /><br />If you're young, girl or guy, and <strong>you want a serious PHP and javascript challenge</strong>, not to mention responsibility, <a href='http://www.wysija.com/contact/' target='_blank' title='Our contact form'>get in touch with us</a>. <br /><br />You could add your own 5000 lines of code to the existing 45 000 by February. About 30 000 users will start appreciating your work."
+            $this->data['sections'][]=array(
+                'title'=>'Added',
+                'cols'=>array(
+                    array(
+                        'title'=>__('"Tags" or shortcodes',WYSIJA),
+                        'content'=>__('In your editor, you can now add more than just the first name and last name. These shortcodes can dynamically add the day of the week, the month, the year, the latest post title automatically, etc.',WYSIJA)
+                ),
+                    array(
+                        'title'=>__('Single sending method for Multisite',WYSIJA),
+                        'content'=>__('Huge time saver. You only need to configure Wysija once for all the sites on your network. Find the MS tab in your settings.',WYSIJA)
+                ),
+                    array(
+                        'title'=>__('Custom roles for autoresponders',WYSIJA),
+                        'content'=>__('You can now send follow up emails or drip campaigns to WordPress users that are in a custom role. Perfect for membership or e-commerce sites.',WYSIJA)
                 )
-        );*/
+                ),
+                'format'=>'three-col',
+            );
+
+            $this->data['sections'][]=array(
+                'title'=>'Improved',
+                'cols'=>array(
+                    array(
+                        'title'=>"Getting better at RTL",
+                        'content'=>"We're working on improving support for right-to-left languages. If you see anything wrong, do let us know."
+                ),
+                    array(
+                        'title'=>'Dozen of bug fixes',
+                        'content'=>"Thanks to all for your feedback. We're able to improve our plugin for everybody. Keep it coming."
+                ),
+                ),
+                'format'=>'three-col',
+            );
+        }
+
+
+
+        $this->data['sections'][]=array(
+            'title'=>__('Spread the word',WYSIJA),
+            'cols'=>array(
+
+                array(
+                    'title'=>__('Love kittens?',WYSIJA),
+                    'content'=>str_replace(
+                            array('[link]','[/link]'),
+                            array('<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On wordpress.org">','</a>'),
+                            __('Each time one of our users forgets to write a review, a kitten dies. It\'s sad and breaks our hearts. [link]Add your own review[/link] and save a kitten today.',WYSIJA))
+
+
+                ),
+                array(
+                    'title'=>__('Follow us and don\'t miss anything!',WYSIJA),
+                    'content'=>$this->__get_social_buttons(false)
+                ),
+            ),
+            'format'=>'three-col',
+        );
+
+
 
         $this->data['sections'][]=array(
             'title'=>'Change log',
@@ -404,7 +446,7 @@ $this->data['sections'][]=array(
 
     function __getLists($enabled=true,$count=false,$notgetalllistid=false){
         $modelList=&WYSIJA::get('list','model');
-        /* get lists which have users  and are enabled */
+        //get lists which have users  and are enabled */
         if($enabled) $enabledstrg=' is_enabled>0 and';
         else $enabledstrg='';
 
@@ -551,9 +593,15 @@ $this->data['sections'][]=array(
         if($emailData['type']==2){
             $paramsReseted=$emailData['params'];
             if(isset($paramsReseted['autonl']['total_child']))  $paramsReseted['autonl']['total_child']=0;
+            if(isset($paramsReseted['autonl']['nextSend']))  $paramsReseted['autonl']['nextSend']=0;
+            if(isset($paramsReseted['autonl']['firstSend']))  unset($paramsReseted['autonl']['firstSend']);
+            if(isset($paramsReseted['autonl']['lastSend']))  unset($paramsReseted['autonl']['lastSend']);
+            if(isset($paramsReseted['autonl']['articles']['ids']))  unset($paramsReseted['autonl']['articles']['ids']);
+
+
             $mEmail->update(array('params'=>$paramsReseted),array('email_id'=>$emailid));
         }
-
+        get_user_by('');
         /* 3 - copy the campaign_list entry */
         $query="INSERT INTO `[wysija]campaign_list` (`campaign_id`,`list_id`,`filter`)
             SELECT $campaignid,`list_id`,`filter` FROM [wysija]campaign_list
@@ -1147,17 +1195,15 @@ $this->data['sections'][]=array(
         $modelEmail=&WYSIJA::get("email","model");
         if(isset($_POST['wysija']['email']['params']))  $updateemail["params"]=$_POST['wysija']['email']['params'];
 
-        /*insert into campaigns lists*/
+        //insert into campaigns lists
         $this->_saveLists($_POST['wysija']['campaign']['campaign_id']);
         $emaildata=$modelEmail->getOne($_POST['wysija']['email']['email_id']);
         if(isset($_POST['submit-draft']) || isset($_POST['submit-pause']) || (isset($_REQUEST['wj_redir']) && $_REQUEST['wj_redir']=='savelastback')){
             if(isset($_POST['wysija']['email']["params"]['schedule']['isscheduled']))   $this->notice(__('Newsletter has been scheduled.',WYSIJA));
             else $this->notice(__('Newsletter has been saved as a draft.',WYSIJA));
         }else{
-            /* we add emails to the queue if it is a standard email or an auto newsletter with the event new-articles*/
+            //we add emails to the queue if it is a standard email or an auto newsletter with the event new-articles
 
-            //if(!is_array($emaildata['params'])) $emaildata['params']=unserialize(base64_decode($emaildata['params']));
-            //dbg($emaildata);
             foreach($updateemail as $ki =>$vi)  {
                 if($ki=='params'){
 
@@ -1168,7 +1214,7 @@ $this->data['sections'][]=array(
                 }else $emaildata[$ki]=$vi;
 
             }
-            /*standard email*/
+            //standard email
             $queueemails=false;
             if((int)$emaildata['type']==1 && !isset($_POST['submit-resume']) && !isset($emaildata['params']['schedule']['isscheduled']))   $queueemails=true;
 
@@ -1184,8 +1230,7 @@ $this->data['sections'][]=array(
             else $this->notice(__('Your auto newsletter has been activated.',WYSIJA));
         }
 
-        /* update email */
-        //$updateemail['type']=$emaildata['type'];
+        //update email
         $updateemail['type']=$emaildata['type'];
 
         if($updateemail['type']==2){
@@ -1197,14 +1242,11 @@ $this->data['sections'][]=array(
         $modelEmail->columns['modified_at']['autoup']=1;
         $modelEmail->update($updateemail);
 
-
-        //$paramsVal['autonl']['nextSend']=$updateemail['params']['autonl']['nextSend'];
-
         $modelCamp=&WYSIJA::get('campaign','model');
         $modelCamp->reset();
         $updatecampaign=array('campaign_id'=>$_REQUEST['id'],'name'=>$_POST['wysija']['email']['subject']);
         $modelCamp->update($updatecampaign);
-        //exit;
+
         if(isset($_REQUEST['wj_redir']) && $_REQUEST['wj_redir']=='savelastback'){
             return $this->redirect('admin.php?page=wysija_campaigns&action=editTemplate&id='.$_POST['wysija']['email']['email_id']);
         }
@@ -1213,7 +1255,7 @@ $this->data['sections'][]=array(
 
 
     function _saveLists($campaignId,$flagup=false){
-        /* record the list that we have in that campaign */
+        //record the list that we have in that campaign
         $modelCampL=&WYSIJA::get("campaign_list","model");
         if($flagup || (int)$campaignId>0){
             $modelCampL->delete(array('equal'=>array('campaign_id'=>$campaignId)));
@@ -1277,11 +1319,13 @@ $this->data['sections'][]=array(
         $this->jsTrans['viewnews']=__('View newsletter',WYSIJA);
         $this->jsTrans['confirmpauseedit']=__('The newsletter will be deactivated, you will need to reactivate it once you\'re over editing it. Do you want to proceed?',WYSIJA);
 
+        //make sure that there is no late scheduled or automatic newsletter
+        $autoNL=&WYSIJA::get('autonews','helper');
+        $autoNL->checkPostNotif();
+        $autoNL->checkScheduled();
 
-        $config=&WYSIJA::get("config","model");
-
-
-        /*get the filters*/
+        $config=&WYSIJA::get('config','model');
+        //get the filters
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
             $this->filters["like"]=array();
             foreach($this->searchable as $field)
@@ -1310,12 +1354,12 @@ $this->data['sections'][]=array(
 
         $this->modelObj->noCheck=true;
 
-        /* 0 - counting request */
+        // 0 - counting request
         $queryCmmonStart="SELECT count(distinct A.campaign_id) as campaigns FROM `[wysija]".$this->modelObj->table_name."` as A";
         $queryCmmonStart.=" LEFT JOIN `[wysija]email` as B on A.campaign_id=B.campaign_id";
         $queryCmmonStart.=" LEFT JOIN `[wysija]campaign_list` as C on A.campaign_id=C.campaign_id";
 
-        /* all the counts query */
+        // all the counts query
         $query="SELECT count(email_id) as campaigns,  status FROM `[wysija]email` WHERE campaign_id > 0 GROUP BY status";
 
         $countss=$this->modelObj->query("get_res",$query,ARRAY_A);
@@ -1324,21 +1368,21 @@ $this->data['sections'][]=array(
 
         foreach($countss as $count){
             switch($count['status']){
-                case "0":
+                case '0':
                     $type='draft';
                     break;
-                case "1":
-                case "3":
-                case "99":
+                case '1':
+                case '3':
+                case '99':
                     $type='sending';
                     break;
-                case "2":
+                case '2':
                     $type='sent';
                     break;
-                case "-1":
+                case '-1':
                     $type='paused';
                     break;
-                case "4":
+                case '4':
                     $type='scheduled';
                     break;
             }
@@ -1347,14 +1391,14 @@ $this->data['sections'][]=array(
         }
 
 
-        $query="SELECT count(email_id) as campaigns, type FROM `[wysija]email` WHERE campaign_id > 0 GROUP BY type";
+        $query='SELECT count(email_id) as campaigns, type FROM `[wysija]email` WHERE campaign_id > 0 GROUP BY type';
         $countss=$this->modelObj->query('get_res',$query,ARRAY_A);
         foreach($countss as $count){
             switch($count['type']){
-                case "1":
+                case '1':
                     $type='regular';
                     break;
-                case "2":
+                case '2':
                     $type='autonl';
                     break;
             }
@@ -1367,20 +1411,20 @@ $this->data['sections'][]=array(
 
         if($this->filters)  $this->modelObj->setConditions($this->filters);
 
-        /* 1 - campaign request */
+        // 1 - campaign request
         $query="SELECT A.campaign_id, B.subject as name, A.description, B.params , B.type , B.number_opened,B.number_clicked,B.number_unsub,B.status,B.status,B.created_at,B.modified_at,B.sent_at,B.email_id FROM `[wysija]".$this->modelObj->table_name."` as A";
         $query.=" LEFT JOIN `[wysija]email` as B on A.campaign_id=B.campaign_id";
         $query.=" LEFT JOIN `[wysija]campaign_list` as C on A.campaign_id=C.campaign_id";
         $queryFinal=$this->modelObj->makeWhere();
 
 
-        /* campaign created the longest ago */
+        //campaign created the longest ago
         $query2="SELECT MIN(B.created_at) as datemin FROM `[wysija]".$this->modelObj->table_name."` as A";
         $query2.=" LEFT JOIN `[wysija]email` as B on A.campaign_id=B.campaign_id";
         $query2.=" LEFT JOIN `[wysija]campaign_list` as C on A.campaign_id=C.campaign_id";
         $queryFinal2=$this->modelObj->makeWhere();
 
-        /* without filter we already have the total number of campaigns */
+        //without filter we already have the total number of campaigns
 
         if($this->filters)  $this->modelObj->countRows=$this->modelObj->count($queryCmmonStart.$queryFinal,'campaigns');
         else $this->modelObj->countRows=$counts['all'];
@@ -1425,7 +1469,7 @@ $this->data['sections'][]=array(
         $this->data['datemin']=$this->modelObj->query('get_row',$query2.$queryFinal2);
         $this->modelObj->reset();
 
-        /* make a loop from the first created to now and increment an array of months */
+        //make a loop from the first created to now and increment an array of months
         $now=time();
         $this->data['dates']=array();
 
@@ -1444,10 +1488,10 @@ $this->data['sections'][]=array(
 
         }
 
-        /*make the data object for the listing view*/
+        //make the data object for the listing view*/
         $modelList=&WYSIJA::get('list','model');
 
-        /* 2 - list request */
+        // 2 - list request */
         $query='SELECT A.list_id, A.name,A.is_enabled, count( B.campaign_id ) AS users FROM `[wysija]'.$modelList->table_name.'` as A';
         $query.=' LEFT JOIN `[wysija]campaign_list` as B on A.list_id = B.list_id';
         $query.=' GROUP BY A.list_id';
@@ -1468,7 +1512,7 @@ $this->data['sections'][]=array(
             if(in_array((int)$campaign['status'],array(-1,1,2,3,99)))  $campaign_ids_sent[]=$campaign['campaign_id'];
         }
 
-        /* 3 - campaign_list request & count request for queue */
+        // 3 - campaign_list request & count request for queue */
         if($campaign_ids){
             $modeluList=&WYSIJA::get('campaign_list','model');
             $userlists=$modeluList->get(array('list_id','campaign_id'),array('campaign_id'=>$campaign_ids));

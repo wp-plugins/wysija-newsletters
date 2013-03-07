@@ -138,8 +138,13 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             if($dataCf){
                 $data.=$dataCf;
             }else{
+                 $user_email=WYSIJA::wp_get_userdata('user_email');
+                 $value_attribute='';
+                if($user_email){
+                    $value_attribute=$user_email;
+                }
                 $classValidate='wysija-email '.$this->getClassValidate($this->model->columns['email'],true);
-                $data.='<p><input type="text" id="'.$formidreal.'-wysija-to" class="'.$classValidate.'" name="wysija[user][email]" />';
+                $data.='<p><input type="text" id="'.$formidreal.'-wysija-to" class="'.$classValidate.'" value="'.$value_attribute.'" name="wysija[user][email]" />';
                 if(!isset($params['preview'])) $data.=$this->honey($params,$formidreal);
                 $data.=$submitbutton.'</p>';
             }
@@ -179,8 +184,24 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             'lastname' => array('req'=>true,'defaultLabel'=>__('Last name',WYSIJA)),
         );
 
+        $wp_user_values=array();
+        if(is_user_logged_in()){
+            $data_user_wp=WYSIJA::wp_get_userdata();
+            if(isset($data_user_wp->user_email))$wp_user_values['email']=$data_user_wp->user_email;
+            if(isset($data_user_wp->user_firstname))$wp_user_values['firstname']=$data_user_wp->user_firstname;
+            if(isset($data_user_wp->user_lastname))$wp_user_values['lastname']=$data_user_wp->user_lastname;
+        }
+
+
         if(isset($params['customfields']) && $params['customfields']){
             foreach($params['customfields'] as $fieldKey=> $field){
+
+                //autofill logged in user data
+                $value_attribute='';
+                if(isset($wp_user_values[$fieldKey])){
+                    $value_attribute=$wp_user_values[$fieldKey];
+                }
+
                 $classField='wysija-'.$fieldKey;
                 $classValidate=$classField." ".$this->getClassValidate($validationsCF[$fieldKey],true);
                 if(!isset($field['label']) || !$field['label']) $field['label']=$validationsCF[$fieldKey]['defaultLabel'];
@@ -191,10 +212,12 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 }else{
                     $titleplaceholder='title="'.$field['label'].'"';
                 }
+
+                $value_attribute=' value="'.$value_attribute.'" ';
                 if(count($params['customfields'])>1){
                     if(isset($params['labelswithin'])){
                          if($params['labelswithin']=='labels_within'){
-                            $fieldstring='<input type="text" id="'.$fieldid.'" '.$titleplaceholder.' class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                            $fieldstring='<input type="text" id="'.$fieldid.'" '.$titleplaceholder.' class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" '.$value_attribute.'/>';
                         }else{
                             $fieldstring='<label for="'.$fieldid.'">'.$field['label'].'</label><input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
                         }
@@ -204,12 +227,12 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 }else{
                     if(isset($params['labelswithin'])){
                          if($params['labelswithin']=='labels_within'){
-                            $fieldstring='<input type="text" id="'.$fieldid.'" '.$titleplaceholder.' class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                            $fieldstring='<input type="text" id="'.$fieldid.'" '.$titleplaceholder.' class="defaultlabels '.$classValidate.'" name="wysija[user]['.$fieldKey.']" '.$value_attribute.'/>';
                         }else{
-                            $fieldstring='<input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                            $fieldstring='<input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" '.$value_attribute.'/>';
                         }
                     }else{
-                        $fieldstring='<input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" />';
+                        $fieldstring='<input type="text" id="'.$fieldid.'" class="'.$classValidate.'" name="wysija[user]['.$fieldKey.']" '.$value_attribute.'/>';
                     }
                 }
 
