@@ -469,7 +469,7 @@ class WYSIJA extends WYSIJA_object{
     public static function log($key='default',$data='empty',$category='default'){
         $config=&WYSIJA::get('config','model');
 
-        if(WYSIJA_DBG>1 && $category && (int)$config->getValue('debug_log_'.$category)>0){
+        if(defined('WYSIJA_DBG') && WYSIJA_DBG>1 && $category && (int)$config->getValue('debug_log_'.$category)>0){
 
             $optionlog=get_option('wysija_log');
             if ( false === $optionlog ){
