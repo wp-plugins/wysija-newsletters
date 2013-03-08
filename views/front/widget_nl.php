@@ -140,7 +140,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             }else{
                  $user_email=WYSIJA::wp_get_userdata('user_email');
                  $value_attribute='';
-                if($user_email && is_string($value_attribute)){
+                if($user_email && is_string($user_email)){
                     $value_attribute=$user_email;
                 }
                 $classValidate='wysija-email '.$this->getClassValidate($this->model->columns['email'],true);
