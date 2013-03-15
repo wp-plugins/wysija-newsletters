@@ -215,7 +215,8 @@ class dBug {
 		array_push($this->arrHistory, $var_ser);
 		$this->makeTableHeader("object","object");
 
-		if(is_object($var)) {
+                //condition modified by BEN used to be : if(is_object($var)) {
+		if(!empty($var)) {
 			$arrObjVars=get_object_vars($var);
 			foreach($arrObjVars as $key=>$value) {
 
@@ -528,4 +529,3 @@ SCRIPTS;
 	}
 
 }
-?>

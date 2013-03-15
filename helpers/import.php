@@ -3,7 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_import extends WYSIJA_object{
     function WYSIJA_help_import(){
     }
-    
+
     function getPluginsInfo($table=false){
         $pluginsTest=array(
             'newsletter'=>array(

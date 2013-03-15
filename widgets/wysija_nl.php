@@ -2,7 +2,6 @@
 
 /**
  * widget class for user registration
- * master change
  */
 class WYSIJA_NL_Widget extends WP_Widget {
     var $classid='';
@@ -74,7 +73,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         }
 
-        if($coreOnly) $this->coreOnly=true;
+        if($coreOnly===true) $this->coreOnly=true;
         $namekey='wysija';
         $title=__('Wysija Subscription',WYSIJA);
         $params=array( 'description' => __('Subscription form for your newsletters.',WYSIJA));
@@ -82,14 +81,18 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
         $this->add_translated_default();
 
+        //wait until the translation files are loaded
         if(defined('WP_ADMIN')){
-            add_action('admin_menu', array($this,'add_translated_default'),96);
+            add_action('admin_init', array($this,'add_translated_default'));
+        }else{
+            add_action('init', array($this,'add_translated_default'));
         }
+
 
         //add_action('init', array($this,'recordWysijaAjax'));
         $this->recordWysijaAjax();
 
-        $this->classid=strtolower(str_replace(__CLASS__."_","",get_class($this)));
+        $this->classid=strtolower(str_replace(__CLASS__.'_','',get_class($this)));
         //parent::__construct( $namekey, $title, $params,$sizeWindow );
         $this->WP_Widget( $namekey, $title, $params,$sizeWindow );
 
@@ -184,7 +187,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         foreach($this->fields as $field => $fieldParams){
             $extrascriptLabel='';
             $valuefield='';
-            if((isset($fieldParams['hidden']) && $fieldParams['hidden']) || (isset($this->coreOnly) && !isset($fieldParams['core']))) continue;
+            if((isset($fieldParams['hidden']) && $fieldParams['hidden']) || (isset($this->coreOnly) && $this->coreOnly && !isset($fieldParams['core']))) continue;
             if(isset($instance[$field]))  {
 
                 if($field=='success' && $instance[$field]==$this->successmsgsub.' '.$this->successmsgconf){
@@ -446,7 +449,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         if(isset($instance2['preview'])) unset($instance2['preview']);
         $instance2['widget_id']=$this->id.'-php';
         $phpcode='$widgetdata='.utf8_decode(var_export($instance2,true)).';'."\n";
-        $phpcode.='$widgetNL=new WYSIJA_NL_Widget(1);'."\n";
+        $phpcode.='$widgetNL=new WYSIJA_NL_Widget(true);'."\n";
         $phpcode.='$subscriptionForm= $widgetNL->widget($widgetdata,$widgetdata);'."\n";
         $phpcode.='echo $subscriptionForm;'."\n";
 
@@ -509,7 +512,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
         $config=&WYSIJA::get('config','model');
         //if(!$config->getValue("sending_emails_ok")) return;
         foreach($this->fields as $field => $fieldParams){
-            if(isset($this->coreOnly) && !isset($fieldParams['core'])) continue;
+            if(isset($this->coreOnly) && $this->coreOnly && !isset($fieldParams['core'])) continue;
             if($field=='success' && $instance[$field]==$this->successmsgsub.' '.$this->successmsgconf){
                 if(!$config->getValue('confirm_dbleoptin')){
                     $instance[$field]=$this->successmsgsub;

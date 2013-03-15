@@ -224,18 +224,23 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         exit;
     }
 
-    function getarticles(){
+    /**
+     * returns a list of articles to the popup in the visual editor
+     * @global type $wpdb
+     * @return boolean
+     */
+    function get_articles(){
         // fixes issue with pcre functions
         @ini_set('pcre.backtrack_limit', 1000000);
 
         $model=&WYSIJA::get('user','model');
 
-        /*Carefull WordPress global*/
+        //Carefull WordPress global
         global $wpdb;
         $mConfig=&WYSIJA::get('config','model');
         $isFullArticle=$mConfig->getValue('editor_fullarticle');
 
-        /* test to set the default value*/
+        //test to set the default value
         if(!$isFullArticle && isset($_REQUEST['fullarticle'])){
             $mConfig->save(array('editor_fullarticle'=>true));
         }
@@ -256,13 +261,33 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 $cpt = $_REQUEST['cpt'];
             }
 
-            $querycpt = '';
+            $query_cpt = '';
             if(is_array($cpt)) {
-                $querycpt = ' AND '.$wpdb->posts.'.post_type IN ("'.  implode('", "', $cpt).'")';
+                $query_cpt = ' '.$wpdb->posts.'.post_type IN ("'.  implode('", "', $cpt).'")';
             } else {
-                $querycpt = ' AND '.$wpdb->posts.'.post_type="'.$cpt.'"';
+                $query_cpt = ' '.$wpdb->posts.'.post_type="'.$cpt.'"';
             }
         }
+        $hWPTools =& WYSIJA::get('wp_tools','helper');
+        $post_statuses = $hWPTools->get_post_statuses();
+        if(isset($_REQUEST['status'])){
+            $statuses = array();
+            if($_REQUEST['status'] === 'all') {
+
+                $statuses = array_keys($post_statuses);
+                $statuses[] = 'future';
+            } else {
+                $statuses = $_REQUEST['status'];
+            }
+
+            $query_statuses = '';
+            if(is_array($statuses)) {
+                $query_statuses = ' AND '.$wpdb->posts.'.post_status IN ("'.  implode('", "', $statuses).'")';
+            } else {
+                $query_statuses = ' AND '.$wpdb->posts.'.post_status="'.$statuses.'"';
+            }
+        }
+
         $limitquery='';
         $res=array();
         $res['append']=false;
@@ -275,25 +300,27 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         if(isset($_REQUEST['search']) && strlen(trim($_REQUEST['search'])) > 0) {
-            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
+            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt , $wpdb->posts.post_status
             FROM $wpdb->posts
-            WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%'
-            AND $wpdb->posts.post_status = 'publish'";
-            $querystr.= $querycpt;
+            WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%'";
+
+            $querystr.= ' AND '.$query_cpt.$query_statuses;
+
             $querystr.=" ORDER BY $wpdb->posts.post_date DESC";
             $querystr.=$limitquery;
             // query to count total rows
-            $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%' AND $wpdb->posts.post_status = 'publish'".$querycpt;
+            $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE $wpdb->posts.post_title like '%".addcslashes(mysql_real_escape_string($_REQUEST['search'],$wpdb->dbh), '%_' )."%' AND ".$query_cpt.$query_statuses;
         }else{
-            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt
-            FROM $wpdb->posts
-            WHERE $wpdb->posts.post_status = 'publish'";
-            $querystr.= $querycpt;
+            $querystr = "SELECT $wpdb->posts.ID , $wpdb->posts.post_type, $wpdb->posts.post_title, $wpdb->posts.post_content, $wpdb->posts.post_excerpt , $wpdb->posts.post_status
+            FROM $wpdb->posts WHERE";
+
+            $querystr.= $query_cpt.$query_statuses;
+
             $querystr.= " ORDER BY $wpdb->posts.post_date DESC";
             $querystr.=$limitquery;
 
             // query to count total rows
-            $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE $wpdb->posts.post_status = 'publish'".$querycpt;
+            $queryCount = "SELECT COUNT(*) as total FROM $wpdb->posts WHERE ".$query_cpt.$query_statuses;
         }
 
         $res['posts']=$model->query('get_res',$querystr);
@@ -306,7 +333,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         // set params for post format
         $params = array('post_content' => 'full');
 
-        /* if excerpt has been requested then we try to provide it */
+        //if excerpt has been requested then we try to provide it */
         if(!isset($_REQUEST['fullarticle'])) {
             $params['post_content'] = 'excerpt';
         }
@@ -315,6 +342,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $res['result'] = true;
             foreach($res['posts'] as $k =>$v){
                 if($mConfig->getValue('interp_shortcode'))    $res['posts'][$k]['post_content']=apply_filters('the_content',$res['posts'][$k]['post_content']);
+
+                $res['posts'][$k]['post_status']=$post_statuses[$res['posts'][$k]['post_status']];
+
 
                 // get thumbnail
                 $res['posts'][$k]['post_image'] = $helper_articles->getImage($v);
@@ -329,7 +359,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $res['msg'] = __('There are no posts corresponding to that search.',WYSIJA);
             $res['result'] = false;
         }
-
 
         return $res;
     }
@@ -389,9 +418,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $dummyReceiver->status = 1;
             $dummyReceiver->lastname = $dummyReceiver->firstname =$langextra='';
             if($spamtest){
-                $dummyReceiver->firstname ='Mail-Tester.com';
+                $dummyReceiver->firstname ='Mail Tester';
                 if(defined('WPLANG') && WPLANG) $langextra='&lang='.WPLANG;
-                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($receivers[$key]).$langextra;
+                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($dummyReceiver->email).$langextra;
             }
 
             $receivers[$key] = $dummyReceiver;
@@ -460,6 +489,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 $res = true;
                 $receiversList[] = $receiver->email;
             }
+            WYSIJA::log('preview_sent', $mailer, 'manual');
         }
 
         if($res === true) {
@@ -632,6 +662,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $domain_name=$helperToolbox->_make_domain_name($url);
 
             $request='http://api.wysija.com/download/zip/'.$_REQUEST['theme_id'].'?domain='.$domain_name;
+
             $ZipfileResult = $httpHelp->request($request);
 
             if(!$ZipfileResult){
@@ -647,10 +678,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             }
         }else{
             $result=false;
-            $this->notice("missing info");
+            $this->notice('missing info');
         }
 
-        return array("result"=>$result, 'themes' => $themes);
+        return array('result'=>$result, 'themes' => $themes);
     }
 
     function refresh_themes() {

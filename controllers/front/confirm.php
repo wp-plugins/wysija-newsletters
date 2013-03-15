@@ -93,25 +93,21 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
                     if($modelConf->getValue('emails_notified') && $modelConf->getValue('emails_notified_when_unsub'))    $this->helperUser->_notify($this->userData['details']['email'],false,$listids);
                 }else{
                     $this->title=__('You are already unsubscribed.',WYSIJA);
-
                     return false;
                 }
-
             }
         }
-
-
         return true;
     }
 
     function subscriptions(){
         $data=array();
 
-        /* get the user_id out of the params passed */
+        //get the user_id out of the params passed
         if($this->_testKeyuser()){
 
             $data['user']=$this->userData;
-            /* get the list of user */
+            //get the list of user
             $modelL=&WYSIJA::get('list','model');
             $modelL->orderBy('ordering','ASC');
             $data['list']=$modelL->get(array('list_id','name','description'),array('is_enabled'=>true,'is_public'=>true));
@@ -128,16 +124,37 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
     }
 
 
+
+    function resend(){
+        $this->title='The link you clicked has expired';
+
+        $this->subtitle=$this->viewObj->resend();
+    }
+
+
+    function resendconfirm(){
+        //make sure the user has the right to access this action
+        if($this->requireSecurity()){
+            //resend email
+            $hMailer=&WYSIJA::get('mailer','helper');
+            $hMailer->sendOne((int)$_REQUEST['email_id'],(int)$_REQUEST['user_id']);
+            $this->title='Please check your inbox!';
+
+            $this->subtitle='<h3>A new email with working links has been sent to you.<h3/>';
+        }
+    }
+
+
     function save(){
 
-        /* get the user_id out of the params passed */
+        //get the user_id out of the params passed */
         if($this->_testKeyuser()){
-            /* update the general details */
+            //update the general details */
             $userid=$_REQUEST['wysija']['user']['user_id'];
             unset($_REQUEST['wysija']['user']['user_id']);
             $modelConf=&WYSIJA::get('config','model');
             $this->helperUser->uid=$userid;
-            /* if the status changed we might need to send notifications */
+            //if the status changed we might need to send notifications */
             if((int)$_REQUEST['wysija']['user']['status'] !=(int)$this->userData['details']['status']){
                 if($_REQUEST['wysija']['user']['status']>0){
                     if($modelConf->getValue('emails_notified_when_sub'))    $this->helperUser->_notify($this->userData['details']['email']);
@@ -163,13 +180,13 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             $id=$userid;
 
             $hUser=&WYSIJA::get('user','helper');
-            /* update the list subscriptions */
+            //update the list subscriptions */
            //run the unsubscribe process if needed
             if((int)$_REQUEST['wysija']['user']['status']==-1){
                 $hUser->unsubscribe($id);
             }
 
-            /* update subscriptions */
+            //update subscriptions */
             $modelUL=&WYSIJA::get('user_list','model');
             $modelUL->backSave=true;
             /* list of core list */

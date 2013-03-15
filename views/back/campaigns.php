@@ -384,19 +384,26 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                                                 //no recording just conversion
                                                 $scheduletimenoffset=strtotime($row['params']['schedule']['day'].' '. $row['params']['schedule']['time']);
-                                                $timeleft=$toolboxH->offset_time($scheduletimenoffset)-time();
+                                                $timeleft=$toolboxH->localtime_to_servertime($scheduletimenoffset)-time();
                                                 if($timeleft<0){
                                                     $autoNL=&WYSIJA::get('autonews','helper');
                                                     $autoNL->checkScheduled();
                                                 }else{
+
+                                                    $scheduled_on=date_i18n(get_option('date_format').' '.get_option('time_format'),$scheduletimenoffset);
                                                     if($timeleft<(3600*24)) {
                                                         $timeleft=$toolboxH->duration($timeleft,true,4);
-                                                        $durationsent=sprintf(__('Scheduled to be sent in %1$s'),$timeleft);
+                                                        $durationsent='<span title="'.$scheduled_on.'">'.sprintf(__('Scheduled to be sent in %1$s'),$timeleft).'</span>';
                                                     }
                                                     else {
-                                                        $timeleft=date_i18n(get_option('date_format').' '.get_option('time_format'),$scheduletimenoffset);
-                                                        $durationsent=sprintf(__('Scheduled to be sent on %1$s'),$timeleft);
+
+                                                        $durationsent=sprintf(__('Scheduled to be sent on %1$s'),$scheduled_on);
                                                     }
+
+//                                                        $durationsent.='<br/>Time server : '.date('l jS \of F Y h:i:s A', time());
+//                                                        $durationsent.='<br/>Next publish server time'.date('l jS \of F Y h:i:s A', $toolboxH->servertime_to_localtime($scheduletimenoffset));
+//                                                        $durationsent.='<br/>Local time '.date('l jS \of F Y h:i:s A', $toolboxH->servertime_to_localtime());
+//                                                        $durationsent.='<br/>Next publish Local time'.date('l jS \of F Y h:i:s A', $scheduletimenoffset);
                                                 }
 
 
@@ -417,16 +424,16 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         <?php
                                         }else{
 
-                                         if(isset($data['sent'][$row["email_id"]]['to']) && $data['sent'][$row["email_id"]]['to']>0){
-                                              ?><a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="row-title"><?php  echo $row["name"]; ?></a><?php
+                                         if(isset($data['sent'][$row['email_id']]['to']) && $data['sent'][$row['email_id']]['to']>0){
+                                              ?><a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=viewstats" class="row-title"><?php  echo $row['name']; ?></a><?php
                                           }else{
                                               if($row["type"]==2){
                                                   ?>
                                               <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=pause" class="row-title pause-edit">
-                                              <?php  echo $row["name"]; ?>
+                                              <?php  echo $row['name']; ?>
                                               </a><?php
                                               }else{
-                                                  echo $row["name"];
+                                                  echo $row['name'];
                                               }
                                           }
 
@@ -442,33 +449,33 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                     <a href="<?php echo $fullurl ?>" target="_blank" class="viewnews" title="<?php _e('Preview in new tab',WYSIJA)?>"><?php _e('Preview',WYSIJA)?></a>
                                                 </span><?php
                                                 $deleteAction='';
-                                                $dupid=$deleteId=$row["campaign_id"];
+                                                $dupid=$deleteId=$row['campaign_id'];
                                                 $dupaction='duplicate';
                                                 if(isset($row['params']['autonl']['parent'])) {
                                                     $deleteAction='Email';
-                                                    $deleteId=$row["email_id"];
+                                                    $deleteId=$row['email_id'];
                                                     //$dupaction='duplicateEmail';
                                                 }
 
                                                 if($row["status"]==0 || $row["status"]==4){
                                                     ?>
                                                    | <span class="edit">
-                                                        <a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=<?php echo $editStep ?>" class="submitedit"><?php _e('Edit',WYSIJA)?></a>
+                                                        <a href="admin.php?page=wysija_campaigns&id=<?php echo $row['email_id'] ?>&action=<?php echo $editStep ?>" class="submitedit"><?php _e('Edit',WYSIJA)?></a>
                                                     </span>
                                                    | <span class="duplicate">
-                                                        <a href="admin.php?page=wysija_campaigns&id=<?php echo $dupid ?>&email_id=<?php echo $row["email_id"] ?>&action=<?php echo $dupaction ?>" class="submitedit"><?php _e('Duplicate',WYSIJA)?></a>
+                                                        <a href="admin.php?page=wysija_campaigns&id=<?php echo $dupid ?>&email_id=<?php echo $row['email_id'] ?>&action=<?php echo $dupaction ?>" class="submitedit"><?php _e('Duplicate',WYSIJA)?></a>
                                                     </span>
                                                   | <span class="delete">
-                                                        <a href="admin.php?page=wysija_campaigns&id=<?php echo $deleteId ?>&action=delete<?php echo $deleteAction ?>&_wpnonce=<?php echo $this->secure(array("action"=>"delete".$deleteAction,"id"=>$deleteId),true); ?>" class="submitdelete"><?php _e('Delete',WYSIJA)?></a>
+                                                        <a href="admin.php?page=wysija_campaigns&id=<?php echo $deleteId ?>&action=delete<?php echo $deleteAction ?>&_wpnonce=<?php echo $this->secure(array('action'=>'delete'.$deleteAction,'id'=>$deleteId),true); ?>" class="submitdelete"><?php _e('Delete',WYSIJA)?></a>
                                                     </span>
                                                         <?php
                                                 }else{
 
                                                     if($row["status"]==-1){
                                                         ?>
-                                                      | <span class="edit"><a href="admin.php?page=wysija_campaigns&id=<?php echo $row["email_id"] ?>&action=<?php echo $editStep ?>" class="submitedit"><?php _e('Edit',WYSIJA)?></a></span>
+                                                      | <span class="edit"><a href="admin.php?page=wysija_campaigns&id=<?php echo $row['email_id'] ?>&action=<?php echo $editStep ?>" class="submitedit"><?php _e('Edit',WYSIJA)?></a></span>
                                                       | <span class="duplicate">
-                                                          <a href="admin.php?page=wysija_campaigns&id=<?php echo $dupid ?>&email_id=<?php echo $row["email_id"] ?>&action=<?php echo $dupaction ?>" class="submitedit"><?php _e('Duplicate',WYSIJA)?></a>
+                                                          <a href="admin.php?page=wysija_campaigns&id=<?php echo $dupid ?>&email_id=<?php echo $row['email_id'] ?>&action=<?php echo $dupaction ?>" class="submitedit"><?php _e('Duplicate',WYSIJA)?></a>
                                                         </span>
                                                       | <span class="delete">
                                                             <a href="admin.php?page=wysija_campaigns&id=<?php echo $deleteId ?>&action=delete<?php echo $deleteAction ?>&_wpnonce=<?php echo $this->secure(array("action"=>"delete".$deleteAction,"id"=>$deleteId),true); ?>" class="submitdelete"><?php _e('Delete',WYSIJA)?></a>
@@ -507,7 +514,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                     </td>
                                     <td><?php
 
-                                        switch((int)$row["status"]){
+                                        switch((int)$row['status']){
                                             case 99:
                                             case 3:
                                             case 2:
@@ -516,50 +523,42 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                 if($row['type']==2) {
                                                     $pause= '';
                                                     if(isset($row['params']['autonl']['event']) && $row['params']['autonl']['event']=='new-articles' && $row['params']['autonl']['when-article']!='immediate'){
-                                                        /*if next send is passed or not set then we just create a new email*/
-//if($row["email_id"]==7)   unset($row["params"]['autonl']['nextSend']);
-//$row["params"]['autonl']['nextSend']=-1;
 
-                                                       /**
-                                                         * IMPORTANT WE COMPARE TO THE OFFSET TIME (time set by the administrator)
-                                                         */
-                                                        $toolboxH=&WYSIJA::get('toolbox','helper');
 
-                                                        if(!isset($row["params"]['autonl']['nextSend']) || (time() > $toolboxH->offset_time((int)$row['params']['autonl']['nextSend']))){
-                                                            $autonH=&WYSIJA::get('autonews','helper');
-
-                                                            $nextSend=$autonH->nextSend($row);
-
+                                                        //if the next send value of the post notification newsletter is not set or
+                                                        if(!isset($row['params']['autonl']['nextSend'])){
+                                                            $nextSend=false;
+                                                            //find a way to update the missing next send without triggerring a give_birth
                                                         }else{
                                                             $nextSend=$row['params']['autonl']['nextSend'];
                                                         }
 
-                                                        $timeleft=$toolboxH->offset_time($nextSend)-time();
                                                         $toolboxH=&WYSIJA::get('toolbox','helper');
                                                         $time=$toolboxH->localtime($row['params']['autonl']['time'],true);
                                                         $dayname=$toolboxH->getday($row['params']['autonl']['dayname']);
                                                         $daynumber=$toolboxH->getdaynumber($row['params']['autonl']['daynumber']);
                                                         $weeknumber=$toolboxH->getweeksnumber($row['params']['autonl']['dayevery']);
+                                                        $durationsent='';
+                                                        if($nextSend){
+                                                            $timeleft=$toolboxH->localtime_to_servertime($nextSend)-time();
 
-                                                        if($timeleft<(3600*24)) {
-                                                            $timeleft=$toolboxH->duration($timeleft,true,2);
-                                                            $durationsent=sprintf(__('Next send out in %1$s',WYSIJA),$timeleft);
-                                                        }
-                                                        else {
-                                                            $timeleft=date_i18n(get_option('date_format').' '.get_option('time_format'),$nextSend);
-                                                            $durationsent=sprintf(__('Next send out on %1$s',WYSIJA),$timeleft);
+                                                            $scheduled_on=date_i18n(get_option('date_format').' '.get_option('time_format'),$nextSend);
+                                                            if($timeleft<(3600*24)){
+                                                                $timeleft=$toolboxH->duration($timeleft,true,2);
+                                                                $durationsent='<span title="'.$scheduled_on.'">'.sprintf(__('Next send out in %1$s',WYSIJA),$timeleft).'</span>';
+                                                            }else{
+                                                                $timeleft=date_i18n(get_option('date_format').' '.get_option('time_format'),$nextSend);
+                                                                $durationsent=sprintf(__('Next send out on %1$s',WYSIJA),$timeleft);
+                                                            }
                                                         }
 
                                                         //extra debug messages that can help in our auto newsletter debugging
 //                                                        $durationsent.='<br/>Time server : '.date('l jS \of F Y h:i:s A', time());
-//                                                        $durationsent.='<br/>Next publish server time'.date('l jS \of F Y h:i:s A', $toolboxH->offset_time($nextSend));
-//                                                        $durationsent.='<br/>Local time '.date('l jS \of F Y h:i:s A', $toolboxH->offset_time());
+//                                                        $durationsent.='<br/>Next publish server time'.date('l jS \of F Y h:i:s A', $toolboxH->servertime_to_localtime($nextSend));
+//                                                        $durationsent.='<br/>Local time '.date('l jS \of F Y h:i:s A', $toolboxH->servertime_to_localtime());
 //                                                        $durationsent.='<br/>Next publish Local time'.date('l jS \of F Y h:i:s A', $nextSend);
 
-
-
-
-                                                        switch($row["params"]['autonl']['when-article']){
+                                                        switch($row['params']['autonl']['when-article']){
                                                             case 'daily':
                                                                 $statussent=sprintf(__('Sent daily at %1$s.',WYSIJA),$time);
                                                                 break;
@@ -577,6 +576,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                         echo '<p>'.$statussent.'</p>';
 
                                                         echo '<p>'.$durationsent.' ('.__('if there\'s new content',WYSIJA).')</p>';
+                                                        if(isset($row['params']['autonl']['late_send']) && WYSIJA_DBG>1){
+                                                            $late_send=date_i18n(get_option('date_format').' '.get_option('time_format'),$row['params']['autonl']['late_send']);
+                                                            $last_send=date_i18n(get_option('date_format').' '.get_option('time_format'),$row['params']['autonl']['lastSend']);
+                                                            echo '<p>'.sprintf('The last scheduled send due on %1$s was late and postponed.',$late_send).'</p>';
+                                                            echo '<p>'.sprintf('The last executed send was on : %1$s ',$last_send).'</p>';
+                                                        }
 
                                                         echo $pause;
                                                     }else{
@@ -602,7 +607,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                                 break;
                                             case -1:
 
-                                                if($row["type"]==2) {
+                                                if($row['type']==2) {
                                                     $resumelink=__('Not active.',WYSIJA).' | <a href="admin.php?page=wysija_campaigns&id='.$row['email_id'].'&action=resume" class="submitedit">'.__('Activate',WYSIJA).'</a>';
                                                     echo $resumelink;
                                                 }else{
@@ -737,7 +742,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                    $return.= '</span>';
                }else{
                    if($data['sent'][$row['email_id']]['running_for']){
-                       $return.= sprintf(__('Current batch has been sent for %1$s',WYSIJA),$data['sent'][$row['email_id']]['running_for']);
+                       $return.= sprintf(__('Latest batch started %1$s',WYSIJA),$data['sent'][$row['email_id']]['running_for']);
                    }else{
                         $time_remaining = trim($helperToolbox->duration($data['sent'][$row['email_id']]['next_batch'],true,4));
                         $return.= sprintf(__('Next batch of %1$s emails will be sent in %2$s. ',WYSIJA), $nextBatchnumber, $time_remaining);
@@ -1837,15 +1842,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->popup_themes(false);
     }
 
-    function selectCPT($value = null, $showall = true) {
+    function _dropdown_CPT($value = null, $showall = true) {
         // make sure value is null if it's an empty string
         if($value !== null and strlen(trim($value)) === 0) $value = null;
 
         ?>
-        <p class="clearfix">
+        <span class="cpt">
             <?php
-                $wptools=&WYSIJA::get('wp_tools','helper');
-                $post_types=$wptools->get_post_types();
+                $helper_wptools=&WYSIJA::get('wp_tools','helper');
+                $post_types=$helper_wptools->get_post_types();
             ?>
             <label for="cpt"><?php _e('Select post type', WYSIJA) ?></label>
             <select name="cpt" id="cpt">
@@ -1862,7 +1867,34 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 }
             ?>
             </select>
-        </p>
+        </span>
+        <?php
+    }
+
+    function _dropdown_post_status($value = null, $showall = true) {
+        // make sure value is null if it's an empty string
+        if($value !== null and strlen(trim($value)) === 0) $value = null;
+
+        ?>
+        <span class="statuses">
+            <?php
+                $helper_wptools=&WYSIJA::get('wp_tools','helper');
+                $post_statuses=$helper_wptools->get_post_statuses();
+            ?>
+            <label for="status"><?php _e('Select post status', WYSIJA) ?></label>
+            <select name="status" id="status">
+            <?php
+                if($showall === true) {
+                    echo '<option value="all"'.(($value === 'all') ? ' selected="selected"' : '').'>'.__('All',WYSIJA).'</option>';
+                }
+
+                foreach($post_statuses as $key=> $post_status_name) {
+                    $selected = ($value === $key) ? ' selected="selected"' : '';
+                    echo '<option value="'.$key.'"'.$selected.'>'.$post_status_name.'</option>';
+                }
+            ?>
+            </select>
+        </span>
         <?php
     }
 
@@ -1872,21 +1904,27 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         <div class="popup_content articles">
             <form enctype="multipart/form-data" method="post" action="" class="media-upload-form validate" id="gallery-form">
                 <div class="ml-submit">
-                    <?php $this->selectCPT(); ?>
                     <div class="searchwrap">
                         <input type="text" id="search-box" name="search" autocomplete="off" />
                         <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
-                        <label id="labelfullarticlesget" for="fullarticlesget">
-                            <?php
-                            $modelConfig=&WYSIJA::get('config','model');
-                            $checked='';
-                            if($modelConfig->getValue('editor_fullarticle')) $checked=' checked="checked" ';
-                            ?>
-                            <input type="checkbox" name="fullarticles" id="fullarticlesget" <?php echo $checked ?>/>
-                            <?php
-                            echo __('Insert entire post, not just excerpt',WYSIJA);
-                            ?>
-                        </label>
+                        <a id="show-advanced-controls" href="javascript:;" title="<?php echo esc_attr(__('Filters and options',WYSIJA)); ?>"><?php echo __('Filters and options',WYSIJA); ?></a>
+                    </div>
+                    <div id="search-advanced">
+                        <?php $this->_dropdown_CPT(); ?>
+                        <?php $this->_dropdown_post_status('publish'); ?>
+                        <span class="block">
+                            <label id="get-full-post-label" for="get-full-post">
+                                <?php
+                                $modelConfig=&WYSIJA::get('config','model');
+                                $checked='';
+                                if($modelConfig->getValue('editor_fullarticle')) $checked=' checked="checked" ';
+                                ?>
+                                <input type="checkbox" name="fullarticles" id="get-full-post" <?php echo $checked ?>/>
+                                <?php
+                                echo __('Insert entire post, not just excerpt',WYSIJA);
+                                ?>
+                            </label>
+                        </span>
                     </div>
                 </div>
                 <div id="search-results"></div>
@@ -1951,7 +1989,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input type="hidden" name="category_ids" id="category_ids" value="<?php echo $category_ids ?>" />
 
                 <!-- max number of articles -->
-                <?php $this->selectCPT($data['params']['cpt'], false); ?>
+                <?php $this->_dropdown_CPT($data['params']['cpt'], false); ?>
                 <?php
                     if($data['autopost_type'] === 'single') {
                 ?>

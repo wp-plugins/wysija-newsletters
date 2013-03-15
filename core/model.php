@@ -27,7 +27,7 @@ class WYSIJA_model extends WYSIJA_object{
     var $comparisonKeys = array('equal', 'notequal', 'like', 'greater', 'less', 'greater_eq', 'less_eq');
 
     function WYSIJA_model($extensions=''){
-        if(defined('WYSIJA_DBG') || defined('WYSIJA_DBG_ALL')) $this->dbg=true;
+        if(defined('WYSIJA_DBG') && WYSIJA_DBG>0) $this->dbg=true;
         global $wpdb;
         $this->wpprefix=$wpdb->prefix;
         if($extensions) $this->table_prefix=$extensions;

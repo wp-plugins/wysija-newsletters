@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.3.2
+Stable tag: 2.3.5
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,40 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.3.5 - 2013-03-15 =
+
+* fixed unsubscribe and subscriptions links lead now to view in browser version if the subscriber doesn't exists in the DB anymore(instead of a white screen)
+* fixed error when trying to delete a duplicated list
+* fixed view in browser link
+* fixed how spammy is your newsletter and Mandrill
+* fixed variable type issue leading in some case scenario to a Fatal Error in the frontend subscription widget
+* fixed removed autofill value in HTML version of subscription form
+* improved memory usage on subscribers import and export processes
+
+= 2.3.4 - 2013-03-07 =
+
+* added default value from WordPress' logged in user in the subscription form
+* added dropdown selection of statuses(publish, private, scheduled, draft) for WordPress' Posts to be dropped into the visual editor
+* added option to Wysija's CRON(tasks scheduler) to deactivate the schedule tasks checks on any page view
+* fixed unsubscribe date in the frontend subscriptions management is now translated with date_i18n (thanks Anna :))
+* fixed unsubscribe link in preview emails
+* fixed subscribers count when double optin is deactivated
+* fixed unsubscribe link with Google Analytics
+
+= 2.3.3 - 2013-03-04 =
+
+* added drag and drop private or scheduled posts in the visual editor
+* fixed more than one post notification going out monthly, weekly or daily
+* fixed warning in MS settings
+* fixed translation issues for comments checkbox for instance
+* fixed little notice when deleting list
+* fixed buddypress multiple checkbox on registration form
+* fixed on duplicate of a post notification reset the articles already sent in the original so that it starts from scratch
+* fixed import ignoring rows with invalid data to avoid import failure
+* fixed missing title and description of widget
+* fixed multisite only you'll see once the update screen as a network admin
+* improved logging options
 
 = 2.3.2 - 2013-02-20 =
 

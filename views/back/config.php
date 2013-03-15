@@ -132,7 +132,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function fieldFormHTML_cron($key,$value,$model,$paramsex){
-        /*second part concerning the checkbox*/
+        //second part concerning the checkbox
         $formsHelp=&WYSIJA::get('forms','helper');
         $checked=false;
         if($this->model->getValue($key))   $checked=true;
@@ -140,10 +140,15 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $field.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
         $field.='</label></div>';
 
+
+        $checked=false;
+        if($this->model->getValue('cron_page_hit_trigger'))   $checked=true;
+
         $urlcron=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all';
         $field.='<div class="cronright" id="'.$key.'_linkname">';
         $field.='<p>'.'Almost done! Setup this cron job on your server or ask your host:'.'</p>';
-        $field.='<p>Cron URL : <strong><a href="'.$urlcron.'" target="_blank">'.$urlcron.'</a></strong></p>';
+        $field.='<p>Cron URL : <strong><a href="'.$urlcron.'" target="_blank">'.$urlcron.'</a></strong></p>';//cron_page_hit_trigger
+        $field.='<p>'.$formsHelp->checkbox(array('id'=>'cron_page_hit_trigger','name'=>'wysija['.$model.'][cron_page_hit_trigger]','class'=>'activateInput'),1,$checked).'Scheduled tasks are triggerred by any "page view" frontend/backend/logged in users or visitors.</p>';
         $field.='</div></div>';
 
         return $field;
@@ -155,11 +160,31 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $selected=$this->model->getValue($key);
         if(!$selected)   $selected=0;
         $field='<p><label for="'.$key.'">';
-        $options=array(0=>'off',1=>'SQL queries',2=>'&nbsp+log',3=>'&nbsp&nbsp+safe PHP errors',4=>'&nbsp&nbsp&nbsp+safe PHP errors wp-admin',99=>'&nbsp&nbsp&nbsp&nbsp+PHP errors wp-admin(to use carefully)');
+        $options=array(0=>'off',1=>'SQL queries',2=>'&nbsp+extra data',3=>'&nbsp&nbsp+safe PHP errors');
         $field.=$formsHelp->dropdown(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'),$options,$selected);
         $field.='</label></p>';
 
         return $field;
+    }
+
+    function fieldFormHTML_debuglog($key,$value,$model,$paramsex){
+        /*second part concerning the checkbox*/
+        $formsHelp=&WYSIJA::get('forms','helper');
+
+        $lists=array('cron','post_notif','query_errors','queue_process','manual');
+
+        $fieldHTML='<div id="'.$key.'_linkname'.'" class="linknamecboxes">';
+        foreach($lists as $list){
+            $checked=false;
+            if($this->model->getValue($key.'_'.$list)) $checked=true;
+
+            $fieldHTML.= '<p class="labelcheck"><label for="'.$key.'list-'.$list.'">'.$formsHelp->checkbox( array('id'=>$key.'list-'.$list,
+                        'name'=>'wysija[config]['.$key.'_'.$list.'][]'),
+                            1,$checked).$list.'</label></p>';
+        }
+        $fieldHTML.='</div>';
+
+        return $fieldHTML;
     }
 
     function fieldFormHTML_dkim($key,$value,$model,$paramsex){
@@ -1076,9 +1101,18 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $resultHTML.='</div>';
         return $resultHTML;
     }
+    function clearlog(){
 
+        echo '<h3>Logs have been cleared</h3>';
+    }
     function log(){
-        dbg(get_option('wysija_log'),0);
+        $option_log=get_option('wysija_log');
+
+        foreach($option_log as $key => $data){
+            echo '<h3>'.$key.'</h3>';
+            dbg($data,0);
+        }
+
     }
 
     function advanced(){
@@ -1175,11 +1209,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Debug mode',WYSIJA),
             'desc'=>__('Enable this to show Wysija\'s errors. Our support might ask you to enable this if you seek their help.',WYSIJA));
 
+        if(WYSIJA_DBG>1){
+            $step['debug_log']=array(
+            'type'=>'debuglog',
+            'label'=>'Logs',
+            'desc'=>  str_replace(array('[link]','[linkclear]','[/link]','[/linkclear]'),
+                    array('<a href="admin.php?page=wysija_config&action=log">','<a href="admin.php?page=wysija_config&action=clearlog">','</a>','</a>'),
+                    'View them [link]here[/link]. Clear them [linkclear]here[/linkclear]'));
+        }
+
 
         ?>
         <table class="form-table">
             <tbody>
-                <?php echo $this->buildMyForm($step,"","config"); ?>
+                <?php echo $this->buildMyForm($step,'','config'); ?>
                 <?php if (current_user_can('delete_plugins')): ?>
                     <tr><th scope="row">
                         <div class="label"><?php _e('Reinstall from scratch',WYSIJA)?>

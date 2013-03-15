@@ -390,8 +390,21 @@ class WYSIJA_view_back extends WYSIJA_view{
          return $wrap;
     }
 
+    /**
+     * central function to return a translated fromated date
+     * @param type $val
+     * @param type $format
+     * @return string
+     */
     function fieldListHTML_created_at($val,$format=''){
         if(!$val) return '---';
+
+        //offset the time to the time of the WP site not the server
+        $hToolbox =& WYSIJA::get('toolbox','helper');
+        // get current time taking timezone into account.
+
+        $val = $hToolbox->servertime_to_localtime($val);
+
         if($format) return date_i18n($format,$val);
         else return date_i18n(get_option('date_format'),$val);
     }
@@ -825,5 +838,7 @@ class WYSIJA_view_back extends WYSIJA_view{
         <?php
     }
 
+
+   
 
 }

@@ -74,6 +74,7 @@ class WYSIJA_help_cron extends WYSIJA_object{
     }
     
     function run_scheduled_task($process='queue'){
+
         $scheduled_times=WYSIJA::get_cron_schedule($process);
         if(isset($scheduled_times['running']) && $scheduled_times['running'] && $scheduled_times['running']+900>time()){
             if($this->report)   echo 'already running : '.$process.'<br/>';

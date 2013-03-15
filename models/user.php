@@ -120,6 +120,7 @@ class WYSIJA_model_user extends WYSIJA_model{
         'controller'=>'confirm',
         );
         if($userObj && isset($userObj->keyuser)){
+            //if the user key doesn exists let's generate it
             if(!$userObj->keyuser){
                 $this->getKeyUser($userObj);
             }
@@ -144,8 +145,21 @@ class WYSIJA_model_user extends WYSIJA_model{
         return $this->getConfirmLink($userObj,'unsubscribe',$modelConf->getValue('unsubscribe_linkname'),$urlOnly);
     }
 
+    function getResendLink($userid,$email_id){
+        $params=array(
+            'wysija-page'=>1,
+            'controller'=>'confirm',
+            'action'=>'resend',
+            'user_id'=>$userid,
+            'email_id'=>$email_id
+        );
+
+        $modelConf=&WYSIJA::get('config','model');
+        return WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$params);
+    }
+
     function getKeyUser($user){
-        /* generate a user key */
+        //generate a user key
         $user->keyuser=$this->generateKeyuser($user->email);
          while($this->exists(array('keyuser'=>$user->keyuser))){
              $user->keyuser=$this->generateKeyuser($user->email);
@@ -197,7 +211,6 @@ class WYSIJA_model_user extends WYSIJA_model{
 
         $helperU=&WYSIJA::get('user','helper');
         $helperU->refreshUsers();
-
         do_action('wysija_subscriber_added', $id);
         return true;
     }
@@ -206,7 +219,4 @@ class WYSIJA_model_user extends WYSIJA_model{
         do_action('wysija_subscriber_modified', $id);
         return true;
     }
-
-
-
 }

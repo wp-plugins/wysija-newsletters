@@ -75,15 +75,15 @@ class WYSIJA_help_file extends WYSIJA_object{
         return $upload_dir['basedir'];
     }
     
-    function temp($content,$key="temp",$format=".tmp"){
+    function temp($content,$key='temp',$format='.tmp'){
         $tempDir=$this->makeDir();
         if(!$tempDir)   return false;
 
-        $filename=$key."-".time().$format;
-        $handle=fopen($tempDir.$filename, "w");
+        $filename=$key.'-'.time().$format;
+        $handle=fopen($tempDir.$filename, 'w');
         fwrite($handle, $content);
         fclose($handle);
-        return array('path'=>$tempDir.$filename,'name'=>$filename, 'url'=>$this->url($filename,"temp"));
+        return array('path'=>$tempDir.$filename,'name'=>$filename, 'url'=>$this->url($filename,'temp'));
     }
     
     function url($filename,$folder='temp'){

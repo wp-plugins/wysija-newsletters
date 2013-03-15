@@ -11,7 +11,13 @@ class WYSIJA_object{
 
     }
 
-    function get_version($pluginName=false) {
+    /**
+     * return a plugin version safely anywhere in any hook and stock it staticaly
+     * @staticvar array $versions
+     * @param string $pluginName
+     * @return array|string
+     */
+    public static function get_version($pluginName=false) {
         static $versions=array();
         if(isset($versions[$pluginName])) return $versions[$pluginName];
         if ( ! function_exists( 'get_plugins' ) )   {
@@ -30,63 +36,107 @@ class WYSIJA_object{
         return $versions[$pluginName];
     }
 
+    /**
+     * get the current_user data in a safe manner making sure a field exists before returning it's value
+     * @global type $current_user
+     * @param string $field
+     * @return mixed
+     */
     function wp_get_userdata($field=false){
-        /*WordPress globals be careful there*/
+        //WordPress globals be careful there
         global $current_user;
         if($field){
+            if(function_exists('get_currentuserinfo')) get_currentuserinfo();
             if(isset($current_user->$field))
                 return $current_user->$field;
             elseif(isset($current_user->data->$field))
                return $current_user->data->$field;
-            else return $current_user;
+            else{
+                return $current_user;
+            }
         }
         return $current_user;
     }
 
+    /**
+     * set a global notice message
+     * @global array $wysija_wpmsg
+     * @param type $msg
+     */
     function wp_notice($msg){
         global $wysija_wpmsg;
 
-        /* add the hook only once */
+        //add the hook only once
         if(!$wysija_wpmsg) add_action('admin_notices', array($this,'wp_msgs'));
 
-        /* record msgs */
+        //record msgs
         $wysija_wpmsg['updated'][]=$msg;
     }
 
+    /**
+     * set a global error message
+     * @global array $wysija_wpmsg
+     * @param type $msg
+     */
     function wp_error($msg){
         global $wysija_wpmsg;
 
-        /* add the hook only once */
+        //add the hook only once
         if(!$wysija_wpmsg) add_action('admin_notices', array($this,'wp_msgs'));
 
-        /* record msgs */
+        //record msgs
         $wysija_wpmsg['error'][]=$msg;
     }
 
+    /**
+     * prints a global message in the WordPress' backend identified as belonging to wysija
+     * we tend to avoid as much as possible printing messages globally, since this is ugly
+     * and make the administrators immune to beige-yellowish messages :/
+     * @global array $wysija_wpmsg
+     */
     function wp_msgs() {
         global $wysija_wpmsg;
         foreach($wysija_wpmsg as $keymsg => $wp2){
-            $msgs= "<div class='".$keymsg." fade'>";
+            $msgs= '<div class="'.$keymsg.' fade">';
             foreach($wp2 as $mymsg)
-                $msgs.= "<p><strong>Wysija</strong> : ".$mymsg."</p>";
-            $msgs.= "</div>";
+                $msgs.= '<p><strong>Wysija</strong> : '.$mymsg.'</p>';
+            $msgs.= '</div>';
         }
 
         echo $msgs;
     }
 
+    /**
+     * returns an error message, it will appear as a red pinkish message in our interfaces
+     * @param string $msg
+     * @param boolean $public if set to true it will appear as a full message, otherwise it will appear behind a "Show more details." link
+     * @param boolean $global if set to true it will appear on all of the backend interfaces, not only wysija's own
+     */
     function error($msg,$public=false,$global=false){
-        $status="error";
-        if($global) $status="g-".$status;
+        $status='error';
+        if($global) $status='g-'.$status;
         $this->setInfo($status,$msg,$public);
     }
 
+    /**
+     * returns a success message, it will appear as a beige yellowish message in our interfaces
+     * @param string $msg
+     * @param boolean $public if set to true it will appear as a full message, otherwise it will appear behind a "Show more details." link
+     * @param boolean $global if set to true it will appear on all of the backend interfaces, not only wysija's own
+     */
     function notice($msg,$public=true,$global=false){
-        $status="updated";
-        if($global) $status="g-".$status;
+        $status='updated';
+        if($global) $status='g-'.$status;
         $this->setInfo($status,$msg,$public);
     }
 
+    /**
+     * store all of the error and success messages in a global variable
+     * @global type $wysija_msg
+     * @param type $status whether this is a success message or an error message
+     * @param type $msg
+     * @param type $public if set to true it will appear as a full message, otherwise it will appear behind a "Show more details." link
+     */
     function setInfo($status,$msg,$public=false){
         global $wysija_msg;
         if(!$public) {
@@ -103,21 +153,26 @@ class WYSIJA_object{
 
     }
 
+    /**
+     * read the global function containing all of the error messages and print them
+     * @global type $wysija_msg
+     * @return type
+     */
     function getMsgs(){
         global $wysija_msg;
 
-        if(isset($wysija_msg["private"]["error"])){
-            $wysija_msg["error"][]=str_replace(array("[link]","[/link]"),array('<a class="showerrors" href="javascript:;">',"</a>"),__("An error occured. [link]Show more details.[/link]",WYSIJA));
+        if(isset($wysija_msg['private']['error'])){
+            $wysija_msg['error'][]=str_replace(array('[link]','[/link]'),array('<a class="showerrors" href="javascript:;">','</a>'),__('An error occured. [link]Show more details.[/link]',WYSIJA));
         }
 
-        if(isset($wysija_msg["private"]["updated"])){
-            $wysija_msg["updated"][]=str_replace(array("[link]","[/link]"),array('<a class="shownotices" href="javascript:;">',"</a>"),__("[link]Show more details.[/link]",WYSIJA));
+        if(isset($wysija_msg['private']['updated'])){
+            $wysija_msg['updated'][]=str_replace(array('[link]','[/link]'),array('<a class="shownotices" href="javascript:;">','</a>'),__('[link]Show more details.[/link]',WYSIJA));
         }
-        if(isset($wysija_msg["private"])){
-            $prv=$wysija_msg["private"];
-            unset($wysija_msg["private"]);
-            if(isset($prv['error']))    $wysija_msg["xdetailed-errors"]=$prv['error'];
-            if(isset($prv['updated']))    $wysija_msg["xdetailed-updated"]=$prv['updated'];
+        if(isset($wysija_msg['private'])){
+            $prv=$wysija_msg['private'];
+            unset($wysija_msg['private']);
+            if(isset($prv['error']))    $wysija_msg['xdetailed-errors']=$prv['error'];
+            if(isset($prv['updated']))    $wysija_msg['xdetailed-updated']=$prv['updated'];
         }
         return $wysija_msg;
     }
@@ -168,7 +223,7 @@ class WYSIJA_help extends WYSIJA_object{
 
 
     /**
-     * when doing an ajax request in admin this is the first place where we come
+     * when doing an ajax request in admin this is the first place we come to
      */
     function ajax() {
 
@@ -182,9 +237,9 @@ class WYSIJA_help extends WYSIJA_object{
             $this->controller=&WYSIJA::get($_REQUEST['controller'],'controller', false, $wysijapp);
 
             if(method_exists($this->controller, $_REQUEST['task'])){
-                $resultArray["result"]=$this->controller->$_REQUEST['task']();
+                $resultArray['result']=$this->controller->$_REQUEST['task']();
             }else{
-                $this->error("Method '".$_REQUEST['task']."' doesn't exist for controller:'".$_REQUEST['controller']."'.");
+                $this->error('Method "'.$_REQUEST['task'].'" doesn\'t exist for controller : "'.$_REQUEST['controller']);
             }
         }
 
@@ -200,7 +255,7 @@ class WYSIJA_help extends WYSIJA_object{
         if(isset($_REQUEST['callback'])) {
             $hJSONP =& WYSIJA::get('jsonp', 'helper');
             if($hJSONP->isValidCallback($_REQUEST['callback'])) {
-                print $_REQUEST['callback'] . "($jsonData);";
+                print $_REQUEST['callback'] . '('.$jsonData.');';
             }
         } else {
             print $jsonData;
@@ -218,9 +273,9 @@ class WYSIJA extends WYSIJA_object{
 
     /**
      * function created at the beginning to handle particular cases with WP get_permalink it got much smaller recently
-     * @param type $pageid
-     * @param type $params
-     * @param type $simple
+     * @param int $pageid
+     * @param array $params
+     * @param boolean $simple
      * @return type
      */
     public static function get_permalink($pageid,$params=array(),$simple=false){
@@ -264,14 +319,8 @@ class WYSIJA extends WYSIJA_object{
                     return $extensionloaded;
             }
 
-            //store all the required translations to be loaded
+            //store all the required translations to be loaded in the static variable
             if($transstring !== null) {
-                if(!isset($extensionloaded[$extendedplugin])){
-                    //we need to call the config this way otherwise it will loop
-                    $config=&WYSIJA::get('config','model',false,'wysija-newsletters',false);
-                    $debugmode=0;
-                    if(is_object($config) && method_exists($config, 'getValue'))  $debugmode=(int)$config->getValue('debug_new');
-                }
                 $extensionloaded[$extendedplugin] = $transstring;
             }
         }
@@ -325,7 +374,7 @@ class WYSIJA extends WYSIJA_object{
 
         if($loadlang)  WYSIJA::load_lang($extendedplugin);
 
-        /*store all the objects made so that we can reuse them accross the application*/
+        //store all the objects made so that we can reuse them accross the application
         if(isset($arrayOfObjects[$extendedplugin][$type.$name])) {
             return $arrayOfObjects[$extendedplugin][$type.$name];
         }
@@ -357,14 +406,14 @@ class WYSIJA extends WYSIJA_object{
         $name = preg_replace('#[^a-z0-9_]#i','',$name);
         switch($type){
             case 'controller':
+                require_once(WYSIJA_CORE.'controller.php');//require the common controller file
+                //require the parent class necessary
                 $ctrdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'controllers'.DS;
-                /*require the parent class necessary*/
-                require_once(WYSIJA_CORE.'controller.php');/*require the common controller file*/
                 if(defined('DOING_AJAX')) {
                     $classpath=$ctrdir.'ajax'.DS.$name.'.php';
                 }else {
                     $classpath=$ctrdir.$side.DS.$name.'.php';
-                    require_once(WYSIJA_CTRL.$side.'.php');/*require the side specific controller file*/
+                    require_once(WYSIJA_CTRL.$side.'.php');//require the side specific controller file
                 }
                 $classname = strtoupper($extendedpluginname).'_control_'.$side.'_'.$name;
                 break;
@@ -372,8 +421,8 @@ class WYSIJA extends WYSIJA_object{
                 $viewdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'views'.DS;
                 $classpath=$viewdir.$side.DS.$name.'.php';
                 $classname = strtoupper($extendedpluginname).'_view_'.$side.'_'.$name;
-                require_once(WYSIJA_CORE.'view.php');/*require the common view file*/
-                require_once(WYSIJA_VIEWS.$side.'.php');/*require the side specific view file*/
+                require_once(WYSIJA_CORE.'view.php');//require the common view file
+                require_once(WYSIJA_VIEWS.$side.'.php');//require the side specific view file
                 break;
             case 'helper':
                 $helpdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'helpers'.DS;
@@ -386,7 +435,7 @@ class WYSIJA extends WYSIJA_object{
                 $modeldir=WYSIJA_PLG_DIR.$extendedplugin.DS.'models'.DS;
                 $classpath=$modeldir.$name.'.php';
                 $classname = strtoupper($extendedpluginname).'_model_'.$name;
-                /*require the parent class necessary*/
+                //require the parent class necessary
                 require_once(WYSIJA_CORE.'model.php');
                 break;
             case 'widget':
@@ -394,8 +443,6 @@ class WYSIJA extends WYSIJA_object{
                 $classpath=$modeldir.$name.'.php';
                 if($name=='wysija_nl') $classname='WYSIJA_NL_Widget';
                 else $classname = strtoupper($extendedpluginname).'_widget_'.$name;
-                /*require the parent class necessary*/
-                //require_once(WYSIJA_WIDGETS.'model.php');
                 break;
             default:
                 WYSIJA::setInfo('error','WYSIJA::get does not accept this type of file "'.$type.'" .');
@@ -421,7 +468,8 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function log($key='default',$data='empty',$category='default'){
         $config=&WYSIJA::get('config','model');
-        if((int)$config->getValue('debug_new')>1){
+
+        if(defined('WYSIJA_DBG') && WYSIJA_DBG>1 && $category && (int)$config->getValue('debug_log_'.$category)>0){
 
             $optionlog=get_option('wysija_log');
             if ( false === $optionlog ){
@@ -564,7 +612,7 @@ class WYSIJA extends WYSIJA_object{
      * @param type $redirectTo
      */
     public static function redirect($redirectTo){
-         /* save the messages */
+        //save the messages
         global $wysija_msg,$wysija_queries,$wysija_queries_errors;
         WYSIJA::update_option('wysija_msg',$wysija_msg);
         WYSIJA::update_option('wysija_queries',$wysija_queries);
@@ -581,8 +629,8 @@ class WYSIJA extends WYSIJA_object{
         //by default there is url rewriteing on wysijap custom post, though in one client case I had to deactivate it.
         //as this is rare we just need to set this setting to activate it
         //by default let's deactivate the url rewriting of the wysijap confirmation page because it is breaking in some case.
-        $rewritewysijap=false;
-
+        $show_interface=false;
+        if(defined('WYSIJA_DBG') && WYSIJA_DBG>1) $show_interface=true;
         register_post_type( 'wysijap',
             array(
                     'labels' => array(
@@ -591,9 +639,9 @@ class WYSIJA extends WYSIJA_object{
                     ),
             'public' => true,
             'has_archive' => false,
-            'show_ui' =>false,
-            'show_in_menu' =>false,
-            'rewrite' => $rewritewysijap,
+            'show_ui' =>$show_interface,
+            'show_in_menu' =>$show_interface,
+            'rewrite' => false,
             'show_in_nav_menus'=>false,
             'can_export'=>false,
             'publicly_queryable'=>true,
@@ -704,7 +752,7 @@ class WYSIJA extends WYSIJA_object{
             if(!$result)
                 $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
         }else{
-            /*chck that we didnt update the email*/
+            //chck that we didnt update the email
             $subscriber_exists=$modelUser->getOne(false,array('wpuser_id'=>$data->ID));
 
             if($subscriber_exists){
@@ -747,15 +795,17 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
         WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
+        //we run some process only if the status of the post changes from something to publish
         if( $new_status=='publish' && $old_status!=$new_status){
             $modelEmail =& WYSIJA::get('email', 'model');
             $emails = $modelEmail->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
-
             if(!empty($emails)){
+                //we loop through all of the automatic emails
                 foreach($emails as $key => $email) {
+                    //we will try to give birth to a child email only if the automatic newsletter is a post notification email and in immediate mode
                     if(is_array($email) && $email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
                         $modelEmail->reset();
-                        $modelEmail->giveBirth($email, $post->ID);
+                        $modelEmail->give_birth($email, $post->ID);
                     }
                 }
             }
@@ -816,7 +866,6 @@ class WYSIJA extends WYSIJA_object{
                 return true;
             }
         }
-
         return false;
     }
 
@@ -1137,8 +1186,8 @@ if($modelConf->getValue('wp_notifications')){
     $hWPnotif=&WYSIJA::get('wp_notifications','helper');
 }
 
-//check that there is no late cron schedules if we are using wysija's cron option
-if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process'])){
+//check that there is no late cron schedules if we are using wysija's cron option and that the cron option is triggerred by any page view
+if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process']) && $modelConf->getValue('cron_page_hit_trigger')){
     WYSIJA::cron_check();
 }
 

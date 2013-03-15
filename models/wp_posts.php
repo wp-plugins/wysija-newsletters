@@ -80,7 +80,7 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
                     $conditionsIn[]=array('col'=>'A.post_status','sign'=>'IN','val' =>$val);
                     break;
                 case 'post_date':
-                    //convert the date
+                    //convert the date to WordPress format
                     $toob=&WYSIJA::get('toolbox','helper');
                     $val= $toob->time_tzed($val);
 
