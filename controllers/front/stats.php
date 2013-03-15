@@ -97,7 +97,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     $emailUserUrlObj=$modelEmailUserUrl->getOne(false,$dataEmailUserUrl);
                     $uniqueclick=false;
                     if(!$emailUserUrlObj){
-                        /* we need to insert in email_user_url */
+                        //we need to insert in email_user_url
                         $modelEmailUserUrl->reset();
                         $modelEmailUserUrl->insert($dataEmailUserUrl);
                         $uniqueclick=true;
@@ -124,24 +124,19 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     $modelUrlMail->update($dataUpdate,$dataUrlEmail);
                     $modelUrlMail=null;
 
-                    //increment email_stat  clicked
-                    //$modelEmail=&WYSIJA::get("email","model");
-                    //$modelEmail->update(array('number_clicked'=>"[increment]"),array("email_id"=>$email_id));
-
                     $statusEmailUserStat=2;
                     if(in_array($recordedUrl,array('[unsubscribe_link]','[subscriptions_link]','[view_in_browser_link]'))){
                         $this->subscriberClass = &WYSIJA::get('user','model');
                         $this->subscriberClass->getFormat=OBJECT;
 
                         //check if the security hash is passed to insure privacy
-                        $receiver=false;
+                        $receiver=$link=false;
                         if(isset($_REQUEST['hash'])){
                             if($_REQUEST['hash']==md5(AUTH_KEY.$recordedUrl.$user_id)){
                                 $receiver = $this->subscriberClass->getOne(array('user_id'=>$user_id));
                             }else{
                                 die('Security check failure.');
                             }
-
                         }else{
                             //link is not valid anymore
                             //propose to resend the newsletter with good links ?
@@ -156,24 +151,29 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                                     $link=$this->subscriberClass->getUnsubLink($receiver,true);
                                     $statusEmailUserStat=3;
                                 }
-
                                 break;
                             case '[subscriptions_link]':
                                 if($receiver){
                                     $link=$this->subscriberClass->getEditsubLink($receiver,true);
                                 }
-
                                 break;
                             case '[view_in_browser_link]':
                                 $modelEmail=&WYSIJA::get('email','model');
                                 $dataEmail=$modelEmail->getOne(false,array('email_id'=>$email_id));
                                 $emailH=&WYSIJA::get('email','helper');
                                 $link=$emailH->getVIB($dataEmail);
-
                                 break;
                         }
 
-                        $decodedUrl=$link;
+                        //if the subscriber still exists in the DB we will have a link
+                        if($link){
+                            $decodedUrl=$link;
+                        }else{
+                            //the subscriber doesn't appear in the DB we can redirect to the web version
+                            $decodedUrl=$this->_get_browser_link($email_id);
+
+                            return $this->redirect($decodedUrl);
+                        }
 
                     }else{
 
@@ -187,15 +187,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                         }
 
                         if(strpos($decodedUrl, '[view_in_browser_link]')!==false){
-                            $paramsurl=array(
-                                    'wysija-page'=>1,
-                                    'controller'=>'email',
-                                    'action'=>'view',
-                                    'email_id'=>$email_id,
-                                    'user_id'=>0
-                                    );
-                                $config=&WYSIJA::get('config','model');
-                                $link=WYSIJA::get_permalink($config->getValue('confirm_email_link'),$paramsurl);
+                            $link=$this->_get_browser_link($email_id);
                             $decodedUrl=$link;
                         }
 
@@ -231,17 +223,10 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                                 //$link=$this->subscriberClass->getEditsubLink($receiver,true);
                                 break;
                             case 'view_in_browser_link':
+                            case '[view_in_browser_link]':
                                 if(!$email_id) $email_id=$_REQUEST['id'];
-                                $paramsurl=array(
-                                    'wysija-page'=>1,
-                                    'controller'=>'email',
-                                    'action'=>'view',
-                                    'email_id'=>$email_id,
-                                    'user_id'=>0,
-                                    'demo'=>1
-                                    );
-                                $config=&WYSIJA::get('config','model');
-                                $link=WYSIJA::get_permalink($config->getValue('confirm_email_link'),$paramsurl);
+
+                                $link=$this->_get_browser_link($email_id);
                                 break;
                         }
                         $decodedUrl=$link;
@@ -261,6 +246,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     exit;
                 }
                 $this->redirect($decodedUrl);
+
 
             }else{
                 //opened stat */
@@ -292,6 +278,18 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
         }
 
         return true;
+    }
+
+    function _get_browser_link($email_id){
+        $paramsurl=array(
+            'wysija-page'=>1,
+            'controller'=>'email',
+            'action'=>'view',
+            'email_id'=>$email_id,
+            'user_id'=>0
+            );
+        $config=&WYSIJA::get('config','model');
+        return WYSIJA::get_permalink($config->getValue('confirm_email_link'),$paramsurl);
     }
 
 }

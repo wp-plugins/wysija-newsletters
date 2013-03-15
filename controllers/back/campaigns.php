@@ -34,13 +34,25 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
         }
 
+        //add a new language code with a new video
+        $video_language=array();
+        $video_language['en_EN']='http://www.youtube.com/embed/pYzaHDTg5Jk';
+        $video_language['fr_FR']='http://www.youtube.com/embed/W5EyW5w7aWQ';
+        $video_language['sv_SE']='http://www.youtube.com/embed/O8_t_dekx74';
+        $video_language['ar']='http://www.youtube.com/embed/cyDHlX_qgOo';
+
+        if(defined('WPLANG') && WPLANG!='' && isset($video_language[WPLANG])){
+            $welcome_video_link=$video_language[WPLANG];
+        }else{
+            $welcome_video_link=$video_language['en_EN'];
+        }
 
         $this->data['sections'][]=array(
             'title'=>__('First Time? See it in Action',WYSIJA),
             'format'=>'normal',
             'paragraphs'=>array(
                     __('Watch this 6 minute demo by one of our users (with a soothing voice too).',WYSIJA),
-                    '<iframe width="853" height="480" src="http://www.youtube.com/embed/pYzaHDTg5Jk" frameborder="0" allowfullscreen></iframe>'
+                    '<iframe width="853" height="480" src="'.$welcome_video_link.'" frameborder="0" allowfullscreen></iframe>'
                 )
             );
 
@@ -262,6 +274,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         exit;
     }
 
+    /**
+     * test the bounce handling maybe this should move somewhere else like config controller
+     * @return boolean
+     */
     function test(){
         @ini_set('max_execution_time',0);
 
@@ -318,7 +334,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
     }
 
-
+    /**
+     * get the fields and fields value necessary when dealing with automatic newsletters
+     */
     function dataAutoNl(){
         $dataFrequencyNoImmediate=$dataFrequency=array('daily'=>__('once a day at...',WYSIJA),
                     'weekly'=>__('weekly on...',WYSIJA),
@@ -444,6 +462,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
     }
 
+
+
     function __getLists($enabled=true,$count=false,$notgetalllistid=false){
         $modelList=&WYSIJA::get('list','model');
         //get lists which have users  and are enabled */
@@ -496,6 +516,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
     }
+
 
     function editTemplate(){
         if(!$this->_checkEmailExists($_REQUEST['id'])) return;

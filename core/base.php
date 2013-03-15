@@ -17,7 +17,7 @@ class WYSIJA_object{
      * @param string $pluginName
      * @return array|string
      */
-    function get_version($pluginName=false) {
+    public static function get_version($pluginName=false) {
         static $versions=array();
         if(isset($versions[$pluginName])) return $versions[$pluginName];
         if ( ! function_exists( 'get_plugins' ) )   {
@@ -629,8 +629,8 @@ class WYSIJA extends WYSIJA_object{
         //by default there is url rewriteing on wysijap custom post, though in one client case I had to deactivate it.
         //as this is rare we just need to set this setting to activate it
         //by default let's deactivate the url rewriting of the wysijap confirmation page because it is breaking in some case.
-        $rewritewysijap=false;
-
+        $show_interface=false;
+        if(defined('WYSIJA_DBG') && WYSIJA_DBG>1) $show_interface=true;
         register_post_type( 'wysijap',
             array(
                     'labels' => array(
@@ -639,9 +639,9 @@ class WYSIJA extends WYSIJA_object{
                     ),
             'public' => true,
             'has_archive' => false,
-            'show_ui' =>false,
-            'show_in_menu' =>false,
-            'rewrite' => $rewritewysijap,
+            'show_ui' =>$show_interface,
+            'show_in_menu' =>$show_interface,
+            'rewrite' => false,
             'show_in_nav_menus'=>false,
             'can_export'=>false,
             'publicly_queryable'=>true,

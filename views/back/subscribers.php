@@ -158,18 +158,18 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
             <table cellspacing="0" class="widefat fixed">
                     <thead>
                         <?php
-                            $statussorting=$fnamesorting=$lnamesorting=$usrsorting=$datesorting=" sortable desc";
-                            $hiddenOrder="";
-                            if(isset($_REQUEST["orderby"])){
-                                switch($_REQUEST["orderby"]){
-                                    case "email":
-                                        $usrsorting=" sorted ".$_REQUEST["ordert"];
+                            $statussorting=$fnamesorting=$lnamesorting=$usrsorting=$datesorting=' sortable desc';
+                            $hiddenOrder='';
+                            if(isset($_REQUEST['orderby'])){
+                                switch($_REQUEST['orderby']){
+                                    case 'email':
+                                        $usrsorting=' sorted '.$_REQUEST['ordert'];
                                         break;
-                                    case "created_at":
-                                        $datesorting=" sorted ".$_REQUEST["ordert"];
+                                    case 'created_at':
+                                        $datesorting=' sorted '.$_REQUEST['ordert'];
                                         break;
-                                    case "status":
-                                        $statussorting=" sorted ".$_REQUEST["ordert"];
+                                    case 'status':
+                                        $statussorting=' sorted '.$_REQUEST['ordert'];
                                         break;
                                     /*case "firstname":
                                         $fnamesorting=" sorted ".$_REQUEST["ordert"];
@@ -211,12 +211,12 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
                             $statuses=array('-1'=>__('Unsubscribed',WYSIJA),'0'=>__('Unconfirmed',WYSIJA),'1'=>__('Subscribed',WYSIJA));
 
-                            $config=&WYSIJA::get("config","model");
-                            if(!$config->getValue("confirm_dbleoptin"))  $statuses["0"]=$statuses["1"];
+                            $config=&WYSIJA::get('config','model');
+                            if(!$config->getValue('confirm_dbleoptin'))  $statuses['0']=$statuses['1'];
 
                             //dbg($data,false);
                             foreach($data['subscribers'] as $row){
-                                $classRow="";
+                                $classRow='';
                                 if($alt) $classRow=' class="alternate" ';
 
                                 ?>
@@ -251,11 +251,11 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
 
                                     ?></td>
-                                    <td><?php  echo $statuses[$row["status"]]; ?></td>
+                                    <td><?php  echo $statuses[$row['status']]; ?></td>
                                     <?php /*<td><?php echo $row["emails"] ?></td>
                                     <td><?php echo $row["opened"] ?></td>
                                     <td><?php echo $row["clicked"] ?></td> */?>
-                                    <td><?php echo $this->fieldListHTML_created_at($row["created_at"]) ?></td>
+                                    <td><?php echo $this->fieldListHTML_created_at($row['created_at']) ?></td>
 
                                 </tr><?php
                                 $alt=!$alt;
@@ -338,7 +338,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
             </table>
             <p class="submit">
                 <input type="hidden" name="wysija[export][user_ids]" id="user_ids" value="<?php if(isset($data['subscribers']))   echo base64_encode(serialize($data['subscribers'])) ?>" />
-                <input type="hidden" value="exportget" name="action" />
+                <input type="hidden" value="export_get" name="action" />
                 <input type="submit" value="<?php echo esc_attr(__('Export',WYSIJA)) ?>" class="button-primary wysija">
             </p>
         </form>
@@ -912,10 +912,10 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                     </tbody>
                  </table>
                 <p class="submit">
-                    <?php $this->secure(array('action'=>"importsave")); ?>
+                    <?php $this->secure(array('action'=>'import_save')); ?>
                     <input type="hidden" value="<?php echo esc_attr($data['dataImport']) ?>" name="wysija[dataImport]" />
 
-                    <input type="hidden" value="importsave" name="action" />
+                    <input type="hidden" value="import_save" name="action" />
                     <input type="submit" value="<?php echo esc_attr(__('Import',WYSIJA)) ?>" class="button-primary wysija">
                 </p>
                 <?php
@@ -927,7 +927,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
         <?php
     }
 
-    function importsave($data){
+    function import_save($data){
         return false;
     }
 

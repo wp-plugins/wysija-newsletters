@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.2
 Tested up to: 3.5
-Stable tag: 2.3.4
+Stable tag: 2.3.5
 Send your post notifications or newsletters from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,16 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.3.5 - 2013-03-15 =
+
+* fixed unsubscribe and subscriptions links lead now to view in browser version if the subscriber doesn't exists in the DB anymore(instead of a white screen)
+* fixed error when trying to delete a duplicated list
+* fixed view in browser link
+* fixed how spammy is your newsletter and Mandrill
+* fixed variable type issue leading in some case scenario to a Fatal Error in the frontend subscription widget
+* fixed removed autofill value in HTML version of subscription form
+* improved memory usage on subscribers import and export processes
 
 = 2.3.4 - 2013-03-07 =
 

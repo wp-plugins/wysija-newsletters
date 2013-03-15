@@ -137,12 +137,14 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
 
             if($dataCf){
                 $data.=$dataCf;
+
             }else{
                  $user_email=WYSIJA::wp_get_userdata('user_email');
                  $value_attribute='';
-                if($user_email && is_string($user_email)){
+                if(!is_admin() && $user_email && is_string($user_email)){
                     $value_attribute=$user_email;
                 }
+
                 $classValidate='wysija-email '.$this->getClassValidate($this->model->columns['email'],true);
                 $data.='<p><input type="text" id="'.$formidreal.'-wysija-to" class="'.$classValidate.'" value="'.$value_attribute.'" name="wysija[user][email]" />';
                 if(!isset($params['preview'])) $data.=$this->honey($params,$formidreal);
@@ -185,7 +187,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         );
 
         $wp_user_values=array();
-        if(is_user_logged_in()){
+        if(is_user_logged_in() && !is_admin()){
             $data_user_wp=WYSIJA::wp_get_userdata();
             if(isset($data_user_wp->user_email))$wp_user_values['email']=$data_user_wp->user_email;
             if(isset($data_user_wp->user_firstname))$wp_user_values['firstname']=$data_user_wp->user_firstname;
@@ -255,7 +257,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
             'email'=>array('label'=>__('Email',WYSIJA),'type'=>'email')
 
             );
-        $html="";
+        $html='';
         foreach($arrayhoney as $fieldKey=> $field){
             $fieldid=$formidreal.'-abs-'.$fieldKey;
 

@@ -268,13 +268,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 $query_cpt = ' '.$wpdb->posts.'.post_type="'.$cpt.'"';
             }
         }
-
+        $hWPTools =& WYSIJA::get('wp_tools','helper');
+        $post_statuses = $hWPTools->get_post_statuses();
         if(isset($_REQUEST['status'])){
             $statuses = array();
             if($_REQUEST['status'] === 'all') {
-                $hWPTools =& WYSIJA::get('wp_tools','helper');
-                $post_types = $hWPTools->get_post_statuses();
-                $statuses = array_keys($post_types);
+
+                $statuses = array_keys($post_statuses);
                 $statuses[] = 'future';
             } else {
                 $statuses = $_REQUEST['status'];
@@ -342,6 +342,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $res['result'] = true;
             foreach($res['posts'] as $k =>$v){
                 if($mConfig->getValue('interp_shortcode'))    $res['posts'][$k]['post_content']=apply_filters('the_content',$res['posts'][$k]['post_content']);
+
+                $res['posts'][$k]['post_status']=$post_statuses[$res['posts'][$k]['post_status']];
+
 
                 // get thumbnail
                 $res['posts'][$k]['post_image'] = $helper_articles->getImage($v);
@@ -415,7 +418,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $dummyReceiver->status = 1;
             $dummyReceiver->lastname = $dummyReceiver->firstname =$langextra='';
             if($spamtest){
-                $dummyReceiver->firstname ='Mail-Tester.com';
+                $dummyReceiver->firstname ='Mail Tester';
                 if(defined('WPLANG') && WPLANG) $langextra='&lang='.WPLANG;
                 $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($dummyReceiver->email).$langextra;
             }

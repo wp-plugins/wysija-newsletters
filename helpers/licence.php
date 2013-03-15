@@ -70,7 +70,7 @@ class WYSIJA_help_licence extends WYSIJA_help{
                                 $errormsg=__('You can add this domain to your [link]account manager[/link].',WYSIJA);
                                 break;
                             case 5: //Your licence does not allow more domains, please upgrade your licence in your [link]account manager[/link]
-                                $errormsg=__('Your licence does\'t allow more domains. Upgrade from your [link]account manager[/link].',WYSIJA);
+                                $errormsg=__('Your licence doesn\'t allow more domains. Upgrade from your [link]account manager[/link].',WYSIJA);
                                 break;
                             default:
                                 $errormsg=$decoded['error'];

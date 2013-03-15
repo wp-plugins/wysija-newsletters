@@ -1907,7 +1907,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <div class="searchwrap">
                         <input type="text" id="search-box" name="search" autocomplete="off" />
                         <input type="submit" id="sub-search-box" name="submit" value="<?php echo esc_attr(__('Search',WYSIJA));?>" />
-                        <a id="show-advanced-controls" href="javascript:;" title="<?php echo esc_attr(__('Show advanced search',WYSIJA)); ?>"><?php echo __('Show advanced search',WYSIJA); ?></a>
+                        <a id="show-advanced-controls" href="javascript:;" title="<?php echo esc_attr(__('Filters and options',WYSIJA)); ?>"><?php echo __('Filters and options',WYSIJA); ?></a>
                     </div>
                     <div id="search-advanced">
                         <?php $this->_dropdown_CPT(); ?>
