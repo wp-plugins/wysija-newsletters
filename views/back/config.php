@@ -192,46 +192,46 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $field='';
         $keypublickey=$key.'_pubk';
 
+        //there is no public key, this is the first time we load that function so we need to generate the dkim
         if(!$this->model->getValue($keypublickey)){
             //refresh the public key private key generation
             $helpersLi=&WYSIJA::get('licence','helper');
             $helpersLi->dkim_config();
-        }else{
-            WYSIJA::update_option('dkim_autosetup',false);
-            $formsHelp=&WYSIJA::get('forms','helper');
-
-
-            $realkey=$key.'_active';
-            $checked=false;
-            if($this->model->getValue($realkey))   $checked=true;
-
-            $field.='<p>';
-            $field.=$formsHelp->checkbox(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']','style'=>'margin-left:0px;','class'=>'activateInput'),1,$checked);
-            $field.='</p>';
-
-            $field.='<div id="'.$realkey.'_linkname" >';
-            //$titlelink=str_replace(array('[link]','[\link]'), array('<a href="">','</a>'),'');
-            $titlelink= __('Configure your DNS by adding a key/value record in TXT as shown below.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/guide-to-dkim-in-wysija/?utm_source=wpadmin&utm_campaign=settings" target="_blank">'.__('Read more',WYSIJA).'</a>';
-            $field.='<fieldset style=" border: 1px solid #ccc;margin: 0;padding: 10px;"><legend>'.$titlelink.'</legend>';
-
-            $field.='<label id="drlab" for="domainrecord">'.__('Key',WYSIJA).' <input readonly="readonly" id="domainrecord" style="margin-right:10px;" type="text" value="wys._domainkey"/></label><label id="drpub" for="dkimpub">'.__('Value',WYSIJA).' <input readonly="readonly" id="dkimpub" type="text" size="70" value="v=DKIM1;k=rsa;g=*;s=email;h=sha1;t=s;p='.$this->model->getValue($keypublickey).'"/></label>';
-
-            //the DKIM key is not a 1024 bits it is therefore obsolete
-            if(!$this->model->getValue('dkim_1024')){
-                $stringRegenerate= __('You\'re using an older DKIM key which is unsupported by Gmail.',WYSIJA).' '. __('You\'ll need to update your DNS if you upgrade.',WYSIJA);
-                $field.='<p><strong>'.$stringRegenerate.'</strong></p>';
-                $field.='<p><input type="hidden" id="dkim_regenerate" value="0" name="wysija[config][dkim_regenerate]"><a id="button-regenerate-dkim" class="button-secondary" href="javascript:;">'.__('Upgrade DKIM key',WYSIJA).'</a></p>';
-            }
-
-            $field.='</fieldset>';
-            $realkey=$key.'_domain';
-            $field.='<p><label class="dkim" for="'.$realkey.'">'.__('Domain',WYSIJA).'</label>';
-
-            $field.=$formsHelp->input(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']'),$this->model->getValue($realkey));
-            $field.='</p>';
-
-            $field.='</div>';
         }
+
+        WYSIJA::update_option('dkim_autosetup',false);
+        $formsHelp=&WYSIJA::get('forms','helper');
+
+        $realkey=$key.'_active';
+        $checked=false;
+        if($this->model->getValue($realkey))   $checked=true;
+
+        $field.='<p>';
+        $field.=$formsHelp->checkbox(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']','style'=>'margin-left:0px;','class'=>'activateInput'),1,$checked);
+        $field.='</p>';
+
+        $field.='<div id="'.$realkey.'_linkname" >';
+        //$titlelink=str_replace(array('[link]','[\link]'), array('<a href="">','</a>'),'');
+        $titlelink= __('Configure your DNS by adding a key/value record in TXT as shown below.',WYSIJA).' <a href="http://support.wysija.com/knowledgebase/guide-to-dkim-in-wysija/?utm_source=wpadmin&utm_campaign=settings" target="_blank">'.__('Read more',WYSIJA).'</a>';
+        $field.='<fieldset style=" border: 1px solid #ccc;margin: 0;padding: 10px;"><legend>'.$titlelink.'</legend>';
+
+        $field.='<label id="drlab" for="domainrecord">'.__('Key',WYSIJA).' <input readonly="readonly" id="domainrecord" style="margin-right:10px;" type="text" value="wys._domainkey"/></label><label id="drpub" for="dkimpub">'.__('Value',WYSIJA).' <input readonly="readonly" id="dkimpub" type="text" size="70" value="v=DKIM1;s=email;t=s;p='.$this->model->getValue($keypublickey).'"/></label>';
+
+        //the DKIM key is not a 1024 bits it is therefore obsolete
+        if(!$this->model->getValue('dkim_1024')){
+            $stringRegenerate= __('You\'re using an older DKIM key which is unsupported by Gmail.',WYSIJA).' '. __('You\'ll need to update your DNS if you upgrade.',WYSIJA);
+            $field.='<p><strong>'.$stringRegenerate.'</strong></p>';
+            $field.='<p><input type="hidden" id="dkim_regenerate" value="0" name="wysija[config][dkim_regenerate]"><a id="button-regenerate-dkim" class="button-secondary" href="javascript:;">'.__('Upgrade DKIM key',WYSIJA).'</a></p>';
+        }
+
+        $field.='</fieldset>';
+        $realkey=$key.'_domain';
+        $field.='<p><label class="dkim" for="'.$realkey.'">'.__('Domain',WYSIJA).'</label>';
+
+        $field.=$formsHelp->input(array('id'=>$realkey,'name'=>'wysija['.$model.']['.$realkey.']'),$this->model->getValue($realkey));
+        $field.='</p>';
+
+        $field.='</div>';
 
         return $field;
     }
@@ -358,7 +358,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     function tabs($current = 'basics') {
         $tabs = array(
             'basics' => __('Basics', WYSIJA),
-            'subforms' => __('Subscription Form', WYSIJAFUTURE),
+            'forms' => __('Subscription Form', WYSIJA),
             'emailactiv' => __('Signup Confirmation', WYSIJA),
             'sendingmethod' => __('Send With...', WYSIJA),
             'advanced' => __('Advanced', WYSIJA),
@@ -367,7 +367,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         if(!$this->_user_can('change_sending_method')) unset($tabs['sendingmethod']);
 
-        if(!WYSIJA::is_wysija_admin()) unset($tabs['subforms']);
+
+        // TO REMOVE once the form editor is finished
+        //if(!WYSIJA::is_wysija_admin()) unset($tabs['forms']);
 
         $tabs=apply_filters('wysija_extend_settings', $tabs);
 
@@ -421,16 +423,16 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     }
 
-    function main(){
-
-        $is_multisite=is_multisite();
-        $is_network_admin=WYSIJA::current_user_can('manage_network');
+    function main() {
+        $is_multisite = is_multisite();
+        $is_network_admin = WYSIJA::current_user_can('manage_network');
         //$is_network_admin=$is_multisite=true;//PROD comment that line
 
         if($is_multisite && $is_network_admin) {
             add_filter('wysija_extend_settings',array($this,'ms_tab_name'),12);
             add_filter('wysija_extend_settings_content',array($this,'ms_tab_content'),12,2);
         }
+
         // check for debug
         if(isset($_REQUEST['wysija_debug'])) {
             switch((int)$_REQUEST['wysija_debug']) {
@@ -463,8 +465,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <input type="submit" value="<?php echo esc_attr(__('Save settings',WYSIJA)); ?>" class="button-primary wysija" />
                     </p>
                 </div>
-                <div id="subforms" class="wysija-panel">
-                    <?php if(WYSIJA::is_wysija_admin()) $this->subforms(); ?>
+                <div id="forms" class="wysija-panel">
+                    <?php /*if(WYSIJA::is_wysija_admin())*/ $this->form_list(); ?>
                 </div>
 
                     <div id="emailactiv" class="wysija-panel">
@@ -534,7 +536,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Sender of notifications',WYSIJA),
             'desc'=>__('Choose a FROM name and email address for notifications emails.',WYSIJA));
 
-
         $modelC=&WYSIJA::get('config','model');
 
         ?>
@@ -548,175 +549,19 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         <?php
     }
 
-    function subforms() {
-        $mUserField =& WYSIJA::get('user_field','model');
-        $mUserField->orderBy('field_id');
-        $customFields = $mUserField->getRows(false);
-
-        // get form editor rendering engine
-        $hFormEngine =& WYSIJA::get('wj_form_engine', 'helper');
-
-        ?>
-        <a id="wj-create-new-form" class="button-secondary"><?php echo __('New form',WYSIJAFUTURE);?></a>
-        <?php
-        // get all forms
-        $wysija_forms = json_decode(get_option('wysija_forms'), true);
-        $wysija_forms = array();
-        if(empty($wysija_forms)) {
-            /*$wysija_forms = array();
-            $defaultForm=array(
-                'id'=>'default-form',
-                'name'=>__('Default form',WYSIJA),
-                'blocks'=>array(
-                    0=>array('fields'=> array(
-                                0=>array('type'=>'email', 'params'=>array('label'=>__('Email',WYSIJA)))
-                            )
-                        ),
-                    1=>array('fields'=> array(
-                                0=>array('type'=>'submit', 'params'=>array('label'=>__('Subscribe!',WYSIJA)))
-                            )
-                        ),
-                    )
-                );
-            $wysija_forms['default-form']=$defaultForm;*/
-            $wysija_forms = array('default' => $hFormEngine->getDefaultData());
-            WYSIJA::update_option('wysija_forms',json_encode($wysija_forms));
-        }
-        ?>
-
-        <select id="wysija_form_list" name="wysija[profiles][forms]">
-            <option value=""><?php echo __('Edit a form...',WYSIJAFUTURE) ?></option>
-            <?php
-            foreach($wysija_forms as $key => $form) {
-                echo '<option value="'.$key.'">'.$form['name'].'</option>';
-            }
-            ?>
-        </select>
-
-        <hr/>
-
-        <div id="wysija_wrapper" class="clearfix">
-            <div id="wj-form-edit-drag">
-                <div id="wj-form-name">Edit <span id="wj-edit-form-name">
-                        <span id="wj-form-name-label"></span>
-                        <input type="text" id="wj-form-name-value" name="wysija[profiles][form][name]" value=""/>
-                        <input type="hidden" id="wj-form-id-value" name="wysija[profiles][form][id]" value=""/>
-                    </span>
-                </div>
-                <div id="wysija_form_editor">
-                    <?php
-                        $hFormEngine->setData($wysija_forms['default']);
-//                        print '<pre>';
-//                        print_r($wysija_forms['default']);
-//                        exit;
-                        echo $hFormEngine->renderEditor();
-                    ?>
-                </div>
-                <div id="general-part">
-                    <div class="list-selection"><p><?php _e('Add subscribers to these lists:',WYSIJAFUTURE) ?></p><?php
-                    $fieldHTML= '';
-
-                    $modelList=&WYSIJA::get('list','model');
-                    $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
-                    foreach($lists as $list){
-                        $checked=false;
-                        //if(in_array($list['list_id'], $valuefield)) $checked=true;
-                        $formObj=&WYSIJA::get('forms','helper');
-                        $fieldHTML.= '<p class="labelcheck listcheck"><label for="listid-'.$list['list_id'].'">'.$formObj->checkbox( array('id'=>'listid-'.$list['list_id'],
-                                    'name'=>'wysija[profiles][form][lists][]', 'class'=>''),
-                                        $list['list_id'],$checked).$list['name'].'</label></p>';
-                        $fieldHTML.='<input type="hidden" name="wysija[profiles][form][list_name]['.$list['list_id'].']'.'" value="'.$list['name'].'" />';
-                    }
-                    echo $fieldHTML;
-
-                    ?></div>
-                </div>
-                <p class="submit">
-                    <a href="javascript:;" id="forms-save" class="button-primary wysija" ><?php echo esc_attr(__('Save',WYSIJAFUTURE)); ?></a>
-                    <a href="javascript:;" id="form-delete"><?php echo esc_attr(__('Delete',WYSIJAFUTURE)); ?></a>
-                </p>
-            </div>
-            <div id="wysija_form_toolbar">
-                <ul class="wysija_form_toolbar_tabs">
-                    <li class="wjt-content">
-                        <a class="selected" href="javascript:;" rel="wj_content"><?php _e('Content',WYSIJAFUTURE)?></a>
-                    </li>
-                </ul>
-
-                <!-- WIDGET TEMPLATES -->
-                <div id="wysija_widget_templates">
-                <?php
-                    $hParser =& WYSIJA::get('wj_parser', 'helper');
-                    $hParser->setTemplatePath(WYSIJA_EDITOR_TOOLS);
-                    $fields = array();
-
-                    foreach($customFields as $customField) {
-                        $fieldData = array(
-                            'field' => $customField['column_name'],
-                            'type' => 'input',
-                            'unique' => true,
-                            'static' => (in_array($customField, array('email', 'submit'))),
-                            'params' => array(
-                                'label' => $customField['name']
-                            )
-                        );
-                        // render field JS template
-                        $fieldData['template'] = $hParser->renderForJS($fieldData, 'templates/form/widgets/input.html');
-                        // add field data
-                        $fields[] = $fieldData;
-                    }
-
-                    // render widget templates
-                    echo $hParser->render(array('fields' => $fields), 'templates/form/widgets/template.html');
-                ?>
-                </div>
-                <!-- CONTENT BAR -->
-                <ul class="wj_content">
-                    <?php
-
-                    $fieldTemplates = array();
-
-                    // custom fields that can only be inserted once per form
-                    foreach($customFields as $customField) {
-                        echo '<li>'.
-                                '<a class="wysija_form_item" id="'.$customField['column_name'].'" wysija_field="'.$customField['column_name'].'" wysija_unique="1" wysija_type="input">'.$customField['name'].'</a>'.
-                            '</li>';
-                    }
-
-                    // extra widgets that can be added more than once
-                    $extraTypes = array(
-                        'list-selection' => array('label'=>__('List selection',WYSIJAFUTURE), 'type'=>'list'),
-                        'text-instructions' => array('label' => __('Random text or instructions', WYSIJAFUTURE), 'type' => 'text'),
-                        'divider' => array('label' => __('Divider', WYSIJAFUTURE), 'type' => 'divider')
-                    );
-                    foreach($extraTypes as $key=>$data){
-                        echo '<li><a class="wysija_form_item" id="'.$key.'" wysija_type="'.$data['type'].'">'.$data['label'].'</a></li>';
-                    }
-
-                    // premium widgets
-                    add_filter('wysija_premium_fields_soon', array($this, 'premiumSoonFields'), 1);
-                    echo apply_filters('wysija_premium_fields_soon', '');
-                    ?>
-                </ul>
-
-                <div id="wysija_notices" style="display:none;"><span id="wysija_notice_msg"></span><img alt="loader" style="display:none;" id="ajax-loading" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
-            </div>
-        </div>
-        <?php
-    }
     function premiumSoonFields(){
         $html='';
-        $html.='<li class="notice">'.str_replace(array('[link]','[/link]'), array('<a href="javascript:;" class="premium-tab">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJAFUTURE)).'</li>';
+        $html.='<li class="notice">'.str_replace(array('[link]','[/link]'), array('<a href="javascript:;" class="premium-tab">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJA)).'</li>';
         $extraTypes=array(
-                        'new-text'=>array('label'=>__('Text or number',WYSIJAFUTURE),'type'=>'text'),
-                        'new-textarea'=>array('label'=>__('Paragraph text',WYSIJAFUTURE),'type'=>'textarea'),
-                        'new-date'=>array('label'=>__('Date or birthday',WYSIJAFUTURE),'type'=>'date'),
-                        'new-radio'=>array('label'=>__('Radio buttons',WYSIJAFUTURE),'type'=>'radio'),
-                        'new-checkbox'=>array('label'=>__('Checkboxes',WYSIJAFUTURE),'type'=>'checkbox'),
-                        'new-dropdown'=>array('label'=>__('Dropdown list',WYSIJAFUTURE),'type'=>'dropdown'),
-                        'new-image'=>array('label'=>__('Image',WYSIJAFUTURE),'type'=>'image'),
-                        'new-file'=>array('label'=>__('File',WYSIJAFUTURE),'type'=>'file'),
-                        'new-country'=>array('label'=>__('Country, State or Province',WYSIJAFUTURE),'type'=>'country'));
+                        'new-text'=>array('label'=>__('Text or number',WYSIJA),'type'=>'text'),
+                        'new-textarea'=>array('label'=>__('Paragraph text',WYSIJA),'type'=>'textarea'),
+                        'new-date'=>array('label'=>__('Date or birthday',WYSIJA),'type'=>'date'),
+                        'new-radio'=>array('label'=>__('Radio buttons',WYSIJA),'type'=>'radio'),
+                        'new-checkbox'=>array('label'=>__('Checkboxes',WYSIJA),'type'=>'checkbox'),
+                        'new-dropdown'=>array('label'=>__('Dropdown list',WYSIJA),'type'=>'dropdown'),
+                        'new-image'=>array('label'=>__('Image',WYSIJA),'type'=>'image'),
+                        'new-file'=>array('label'=>__('File',WYSIJA),'type'=>'file'),
+                        'new-country'=>array('label'=>__('Country, State or Province',WYSIJA),'type'=>'country'));
         foreach($extraTypes as $key=>$data){
             $html.='<li><a class="wysija_form_item disabled" id="'.$key.'" wysija_type="'.$data['label'].'">'.$data['label'].'</a></li>';
         }
@@ -768,7 +613,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             <tbody>
                 <?php
                 echo $this->buildMyForm($step,'','config');
-
                 ?>
             </tbody>
         </table>
@@ -1187,6 +1031,46 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         'desc'=>__('Add a link in the footer of all your newsletters so subscribers can edit their profile and lists. [link]See your own subscriber profile page.[/link]',WYSIJA),
         'link'=>'<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('Preview page',WYSIJA).'">',);
 
+        $step['analytics']=array(
+            'rowclass'=>'analytics',
+            'type'=>'radio',
+            'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
+            'label'=>__('Share anonymous data',WYSIJA),
+            'desc'=>__('Share anonymous data and help us improve the plugin. [link]Read more[/link].',WYSIJA),
+            'link' => '<a target="_blank" href="http://support.wysija.com/knowledgebase/share-your-data/">'
+            );
+
+        $step['industry']=array(
+            'rowclass'=>'industry',
+            'type'=>'dropdown_keyval',
+            'values'=>array(
+                __('other',WYSIJA),
+                __('art',WYSIJA),
+                __('business',WYSIJA),
+                __('education',WYSIJA),
+                __('e-commerce',WYSIJA),
+                __('food',WYSIJA),
+                __('insurance',WYSIJA),
+                __('government',WYSIJA),
+                __('health and sports',WYSIJA),
+                __('manufacturing',WYSIJA),
+                __('marketing and media',WYSIJA),
+                __('non profit',WYSIJA),
+                __('photography',WYSIJA),
+                __('travel',WYSIJA),
+                __('real estate',WYSIJA),
+                __('religious',WYSIJA),
+                __('technology',WYSIJA)
+            ),
+            'label'=>__('Industry',WYSIJA),
+            'desc'=>__('Select your industry.',WYSIJA));
+
+        $step['html_source'] = array(
+            'label' => __('Allow HTML edits', WYSIJA),
+            'type' => 'radio',
+            'values' => array(true => __('Yes', WYSIJA), false => __('No', WYSIJA)),
+            'desc' => __('This allows you to modify the HTML of text blocks in the visual editor.', WYSIJA)
+        );
 
         $step['advanced_charset']=array(
             'type'=>'dropdown_keyval',
@@ -1689,4 +1573,427 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         return $htmlContent;
     }
 
+    // WYSIJA Form Editor
+    function form_list() {
+        $model_forms =& WYSIJA::get('forms', 'model');
+
+        $forms = $model_forms->getRows();
+
+        // get available lists which users can subscribe to
+        $model_list =& WYSIJA::get('list','model');
+
+        // get lists users can subscribe to (aka "enabled list")
+        $lists = $model_list->get(array('name', 'list_id', 'is_public'), array('is_enabled' => 1));
+
+        // generate table header/footer
+        $table_headers = '
+            <th class="manage-column" scope="col"><span>'.__('Name', WYSIJA).'</span></th>
+            <th class="manage-column" scope="col"><span>'.__('Lists', WYSIJA).'</span></th>
+            <th class="manage-column" scope="col"><span>'.__('Subscribed with...', WYSIJA).'</span></th>
+        ';
+        ?>
+
+        <!-- Create a new form -->
+        <p>
+            <a class="button-secondary2" href="admin.php?page=wysija_config&action=form_add"><?php _e('Create a new form', WYSIJA); ?></a>
+        </p>
+
+        <!-- List of forms -->
+        <div class="list">
+            <table cellspacing="0" class="widefat fixed">
+                    <thead>
+                        <tr>
+                            <?php echo $table_headers; ?>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <?php echo $table_headers; ?>
+                        </tr>
+                    </tfoot>
+
+                    <tbody>
+                        <?php
+                            for($i = 0, $count = count($forms); $i < $count; $i++) {
+                                // set current row
+                                $row = $forms[$i];
+
+                                // get lists in settings and build list of lists (separated by "," for display only)
+                                $form_data = unserialize(base64_decode($row['data']));
+
+                                $form_lists = array();
+                                if(isset($form_data['settings']['lists']) && !empty($form_data['settings']['lists'])) {
+                                    for($j = 0, $list_count = count($lists); $j < $list_count; $j++) {
+                                        if(in_array($lists[$j]['list_id'], $form_data['settings']['lists'])) {
+                                            $form_lists[] = $lists[$j]['name'];
+                                        }
+                                    }
+                                }
+
+                                // format list of lists depending on who's choosing the list to subscribe to (admin OR user)
+                                if(empty($form_lists)) {
+                                    $form_lists_display = '<strong>'.__('No list specified', WYSIJA).'</strong>';
+                                } else {
+                                    if($form_data['settings']['lists_selected_by'] === 'user') {
+                                        // user can select his own lists
+                                        $form_lists_display = sprintf(__('User choice: %s', WYSIJA), join(', ', $form_lists));
+                                    } else {
+                                        // admin has selected which lists the user subscribes to
+                                        $form_lists_display = join(', ', $form_lists);
+                                    }
+                                }
+
+                                ?>
+                                <tr class="<?php echo (($i % 2) ? 'alternate' : ''); ?>">
+                                    <td>
+                                        <?php echo $row['name']; ?>
+                                        <div class="row-actions">
+                                            <span class="edit">
+                                                <a href="admin.php?page=wysija_config&action=form_edit&id=<?php echo $row['form_id'] ?>"><?php _e('Edit',WYSIJA); ?></a>
+                                            </span> |
+                                            <span class="duplicate">
+                                                <a href="admin.php?page=wysija_config&action=form_duplicate&id=<?php echo $row['form_id'] ?>"><?php _e('Duplicate', WYSIJA)?></a>
+                                            </span> |
+                                            <span class="delete">
+                                                <a href="admin.php?page=wysija_config&action=form_delete&id=<?php echo $row['form_id'] ?>&_wpnonce=<?php echo $this->secure(array('action' => 'form_delete', 'id' => $row['form_id']), true); ?>" class="submitdelete"><?php _e('Delete', WYSIJA)?></a>
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <?php echo $form_lists_display ?>
+                                    </td>
+                                    <td><?php echo (int)$row['subscribed']; ?></td>
+                                </tr><?php
+                            }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php
+    }
+
+    function form_edit($data) {
+        // get form editor rendering engine
+        $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
+        $helper_form_engine->set_lists($data['lists']);
+        $helper_form_engine->set_data($data['form']['data'], true);
+        ?>
+        <div class="icon32"><img src="<?php echo WYSIJA_URL ?>img/form-icon.png" alt="" /></div>
+        <h2 class="title clearfix">
+            <?php
+                echo '<span>'.__('Edit', WYSIJA).'</span>';
+                echo '<span id="form-name">'.$data['form']['name'].'</span>';
+                echo '<span id="form-name-default">'.$data['form']['name'].'</span>';
+            ?>
+            <span>
+                <a id="edit-form-name" class="button" href="javascript:;"><?php echo __('Edit name', WYSIJA); ?></a>
+                <a class="button-secondary2" href="admin.php?page=wysija_config#tab-forms"><?php echo __('List of forms', WYSIJA); ?></a>
+            </span>
+        </h2>
+
+        <div class="clearfix">
+            <!-- Form Editor Container -->
+            <div id="wysija_form_container">
+                <!-- Form Editor -->
+                <div id="wysija_form_editor">
+                    <?php
+                        // render form editor
+                        echo $helper_form_engine->render_editor();
+                    ?>
+                </div>
+
+                <!-- Form settings -->
+                <form id="wysija-form-settings" action="" method="POST">
+                    <input type="hidden" name="form_id" value="<?php echo (int)$data['form_id']; ?>" />
+
+                    <!-- Form settings: list selection -->
+                    <div id="list-selection" class="clearfix">
+                        <p>
+                            <strong><?php _e('This form adds subscribers to these lists:', WYSIJA) ?></strong>
+                        </p>
+                        <?php
+                        if(!empty($data['lists'])) {
+                            $form_lists = $helper_form_engine->get_setting('lists');
+                            // make sure that form_lists is an array
+                            if($form_lists === null or is_array($form_lists) === false) $form_lists = array();
+
+                            for($i = 0, $count = count($data['lists']); $i < $count; $i++) {
+                                $list = $data['lists'][$i];
+                                $is_checked = (in_array($list['list_id'], $form_lists)) ? 'checked="checked"' : '';
+                                print '<label><input type="checkbox" class="checkbox" name="lists" value="'.$list['list_id'].'" '.$is_checked.' />'.$list['name'].'</label>';
+                            }
+                        }
+                        ?>
+                    </div>
+
+                    <!-- Form settings: after submit -->
+                    <div id="after-submit">
+                        <p>
+                            <strong><?php _e('After submit...', WYSIJA) ?></strong>
+                            <input type="hidden" name="on_success" value="message" />
+                            <!--<label><input type="radio" name="on_success" value="message" checked="checked"  /><?php _e('show message', WYSIJA); ?></label>
+                            <label><input type="radio" name="on_success" value="page" /><?php _e('go to page', WYSIJA); ?></label>-->
+                        </p>
+                        <textarea name="success_message"><?php echo $helper_form_engine->get_setting('success_message'); ?></textarea>
+                    </div>
+
+                    <p id="form-error" style="display:none;"></p>
+
+                    <p class="submit">
+                        <a href="javascript:;" id="form-save" class="button-primary wysija" ><?php echo esc_attr(__('Save', WYSIJA)); ?></a>
+                    </p>
+
+                    <p id="form-notice" style="display:none;"></p>
+                </form>
+
+                <!-- Form export -->
+                <div id="form-export">
+                    <?php echo $helper_form_engine->render_editor_export($data['form_id']); ?>
+                </div>
+            </div>
+            <!-- Form Editor: Toolbar -->
+            <div id="wysija_form_toolbar">
+                <ul class="wysija_form_toolbar_tabs">
+                    <li class="wjt-content">
+                        <a class="selected" href="javascript:;" rel="wj_content"><?php _e('Content', WYSIJA)?></a>
+                    </li>
+                </ul>
+
+                <!-- CONTENT BAR -->
+                <ul class="wj_content">
+                <?php
+                    // generate toolbar
+                    echo $helper_form_engine->render_editor_toolbar($data['custom_fields']);
+                ?>
+                </ul>
+
+                <!-- WIDGET TEMPLATES -->
+                <div id="wysija_widget_templates">
+                <?php
+                    echo $helper_form_engine->render_editor_templates($data['custom_fields']);
+                ?>
+                </div>
+
+                <div id="wysija_notices" style="display:none;"><span id="wysija_notice_msg"></span><img alt="loader" style="display:none;" id="ajax-loading" src="<?php echo WYSIJA_URL ?>img/wpspin_light.gif" /></div>
+            </div>
+        </div>
+        <script type="text/javascript" charset="utf-8">
+            wysijaAJAX.form_id = <?php echo (int)$_REQUEST['id'] ?>;
+
+            function formEditorSave(callback) {
+                wysijaAJAX.task = 'form_save';
+                wysijaAJAX.wysijaData = WysijaForm.save();
+                WYSIJA_SYNC_AJAX({ success: callback });
+            }
+
+            $('form-save').observe('click', function() {
+                // hide any previous error
+                $('form-error').hide();
+                // hide any previous notice
+                $('form-notice').hide();
+
+                // make sure a list has been selected or that we have a list selection widget inserted
+                if($$('input[name="lists"]:checked').length === 0 && $$('#wysija_form_body div[wysija_field="list"]').length === 0) {
+                    $('form-error').update(wysijatrans.list_cannot_be_empty).show();
+                } else {
+                    // hide export options while saving
+                    WysijaForm.hideExport();
+
+                    formEditorSave(function(response) {
+                        // regenerate export methods and show
+                        $('form-export').innerHTML=Base64.decode(response.responseJSON.result.exports);
+
+                        // display save message
+                        $('form-notice').update(Base64.decode(response.responseJSON.result.save_message));
+                        $('form-notice').show();
+
+                        WysijaForm.showExport();
+                    });
+                }
+                return false;
+            });
+
+            $(document).observe('dom:loaded', function() {
+                new Ajax.InPlaceEditor('form-name', wysijaAJAX.ajaxurl, {
+                    okControl: false, //okText: wysijatrans.save,
+                    cancelControl: false,
+                    clickToEditText: '',
+                    submitOnBlur: true,
+                    highlightColor: '#f9f9f9',
+                    externalControl: 'edit-form-name',
+                    callback: function(form, value) {
+                        wysijaAJAX.task = 'form_name_save';
+                        return Object.toQueryString(wysijaAJAX) + '&id=' + wysijaAJAX.form_id + '&name=' + encodeURIComponent(value);
+                    },
+                    onComplete: function(response, element) {
+                        if(response.responseJSON.result.name.length === 0) {
+                            $(element).innerHTML = $('form-name-default').innerHTML;
+                        } else {
+                            $(element).innerHTML = response.responseJSON.result.name;
+                            $('form-name-default').innerHTML = response.responseJSON.result.name;
+                        }
+                    }
+                });
+            });
+
+            // make sure we save the editor when leaving the page
+            /*Event.observe(window, 'beforeunload', function() {
+                // save the editor in a synchronous way
+                formEditorSave();
+                return false;
+            });*/
+        </script>
+        <?php
+    }
+
+    // Wysija Form Editor: Widget Settings
+    function popup_form_widget_settings($data = array()) {
+        if(method_exists($this, 'form_widget_'.$data['type']) === false) {
+            // display warning because the widget has no form built in
+            print 'missing method "'.'form_widget_'.$data['type'].'"';
+        } else {
+            // get widget form
+            $widget_form = $this->{'form_widget_'.$data['type']}($data);
+            ?>
+            <div class="popup_content form_widget_settings widget_<?php echo $data['type']; ?>">
+                <!-- this is to display error messages -->
+                <p id="widget-settings-error" style="display:none;"></p>
+                <!-- common form for every wysija form widget -->
+                <form enctype="multipart/form-data" method="post" action="" class="" id="widget-settings-form">
+                    <input type="hidden" name="name" value="<?php echo $data['name']; ?>" />
+                    <input type="hidden" name="type" value="<?php echo $data['type']; ?>" />
+                    <input type="hidden" name="field" value="<?php echo $data['field']; ?>" />
+                    <?php echo $widget_form; ?>
+                    <p class="align-right">
+                        <input id="widget-settings-submit" type="submit" name="submit" value="<?php echo esc_attr(__('Done', WYSIJA)) ?>" class="button-primary" />
+                    </p>
+                </form>
+            </div>
+            <?php
+        }
+    }
+
+    function form_widget_submit($data = array()) {
+        $output = '';
+
+        // get widget params from data, this will contain all user editable parameters
+        $params = $data['params'];
+
+        // label
+        $output .= '<h3>'.__('Label:', WYSIJA).'</h3>';
+        $output .= '<input type="text" name="label" value="'.$params['label'].'" />';
+
+        return $output;
+    }
+
+    function form_widget_text($data = array()) {
+        $output = '';
+
+        // get widget params from data, this will contain all user editable parameters
+        $params = $data['params'];
+
+        // text
+        $text = isset($params['text']) ? base64_decode($params['text']) : '';
+        $output .= '<textarea name="text">'.$text.'</textarea>';
+
+        return $output;
+    }
+
+    function form_widget_input($data = array()) {
+        $output = '';
+
+        // get widget params from data, this will contain all user editable parameters
+        $params = $data['params'];
+
+        // label
+        $output .= '<h3>'.__('Label:', WYSIJA).'</h3>';
+        $output .= '<input type="text" name="label" value="'.$params['label'].'" />';
+
+        // inline
+        $is_label_within = (bool)(isset($params['label_within']) && (int)$params['label_within'] > 0);
+        $output .= '<h3>'.__('Display label within input:', WYSIJA).'</h3>';
+        $output .= '<label><input type="radio" name="label_within" value="1" '.(($is_label_within === true) ? 'checked="checked"' : '').' />'.__('Yes', WYSIJA).'</label>';
+        $output .= '<label><input type="radio" name="label_within" value="0" '.(($is_label_within === false) ? 'checked="checked"' : '').' />'.__('No', WYSIJA).'</label>';
+
+        // validation
+
+        if($data['field'] === 'email') {
+            // the email field is always mandatory, no questions asked
+            $output .= '<input type="hidden" name="required" value="1" />';
+        } else {
+            // is the field mandatory?
+            $is_required = (bool)(isset($params['required']) && (int)$params['required'] > 0);
+            $output .= '<h3>'.__('Is this field mandatory?', WYSIJA).'</h3>';
+            $output .= '<label><input type="radio" name="required" value="1" '.(($is_required === true) ? 'checked="checked"' : '').' />'.__('Yes', WYSIJA).'</label>';
+            $output .= '<label><input type="radio" name="required" value="0" '.(($is_required === false) ? 'checked="checked"' : '').' />'.__('No', WYSIJA).'</label>';
+        }
+
+        return $output;
+    }
+
+    function form_widget_list($data = array()) {
+        $output = '';
+
+        // get widget params from data, this will contain all user editable parameters
+        $params = $data['params'];
+
+        // get widget extra data, this will contain all the available lists
+        $extra = $data['extra'];
+
+        // list selection label
+        $output .= '<input type="text" name="label" value="'.$params['label'].'" />';
+
+        $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
+        // get list names
+        $list_names = $helper_form_engine->get_formatted_lists();
+
+        // display select lists
+        $output .= '<ul id="lists-selection" class="sortable">';
+
+        if(!empty($params['values'])) {
+            for($i = 0, $count = count($params['values']); $i < $count; $i++) {
+                $list = $params['values'][$i];
+                $is_checked = ((int)$list['is_checked'] > 0) ? 'checked="checked"' : '';
+                if(isset($list_names[$list['list_id']])) {
+                    $output .= '<li class="clearfix">';
+                    $output .= '    <input type="checkbox" data-list="'.$list['list_id'].'" value="1" '.$is_checked.' />';
+                    $output .= '    <label>'.$list_names[$list['list_id']].'</label>';
+                    $output .= '    <a class="icon remove" href="javascript:;"><span></span></a>';
+                    $output .= '    <a class="icon handle" href="javascript:;"><span></span></a>';
+                    $output .= '</li>';
+                }
+            }
+        }
+
+        $output .= '</ul>';
+
+        // available lists container
+        $output .= '<div id="lists-add-container" class="clearfix">';
+        $output .= '<h3>'.__('Select the list you want to add:', WYSIJA).'</h3>';
+
+        // available lists select
+        $output .= '<select id="lists-available">';
+        for($j = 0, $count = count($extra['lists']); $j < $count; $j++) {
+            // set current list
+            $list = $extra['lists'][$j];
+            // generate select option
+            $output .= '<option value="'.$list['list_id'].'">'.$list['name'].'</option>';
+        }
+        $output .= '</select>';
+
+        // add button to add currently selected list to selected lists
+        $output .= '<a href="javascript:;" class="icon add"><span></span></a>';
+        $output .= '</div>';
+
+        // generate prototypeJS template for list selection so we can dynamically add/remove elements
+        $output .= '<div id="list-selection-template">';
+        $output .= '<li class="clearfix">';
+        $output .=      '<input type="checkbox" data-list="#{list_id}" value="1" /><label>#{name}</label>';
+        $output .=      '<a class="icon remove" href="javascript:;"><span></span></a>';
+        $output .=      '<a class="icon handle" href="javascript:;"><span></span></a>';
+        $output .= '</li>';
+        $output .= '</div>';
+
+        return $output;
+    }
 }

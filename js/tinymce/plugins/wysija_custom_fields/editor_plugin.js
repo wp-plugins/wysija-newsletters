@@ -1,4 +1,5 @@
 (function() {
+
         // Load plugin specific language pack
         //tinymce.PluginManager.requireLangPack('example');
         tinymce.create('tinymce.plugins.WYSIJA_custom_fields', {
@@ -10,7 +11,7 @@
                  * @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
                  * @param {string} url Absolute URL to where the plugin is located.
                  */
-                 
+                
                 init : function(ed, url) {
                         // Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mceExample');
                         ed.addCommand('wysijaCustomFieldsInsert', function() {
@@ -22,7 +23,8 @@
                                     width : 500 + parseInt(ed.getLang('button.delta_width', 0)), // size of our window
                                     height : 300 + parseInt(ed.getLang('button.delta_height', 0)), // size of our window
                                     inline : 1,
-                                    resizable: false
+                                    resizable: false,
+                                    custom_value: wysijatrans.customFieldsLabel
                                 }, {
                                     plugin_url : url
                                 });
@@ -69,4 +71,5 @@
 
         // Register plugin
         tinymce.PluginManager.add('wysija_custom_fields', tinymce.plugins.WYSIJA_custom_fields);
+
 })();

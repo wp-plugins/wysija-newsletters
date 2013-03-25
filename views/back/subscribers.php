@@ -134,7 +134,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             $orphaned_selected =' selected="selected" ';
                         }
                     ?>
-                    <option <?php echo $orphaned_selected; ?> value="orphaned">Subscribers in no list</option>
+                    <option <?php echo $orphaned_selected; ?> value="orphaned"><?php _e('Subscribers in no list', WYSIJA); ?></option>
                 </select>
                 <input type="submit" class="filtersubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Filter', WYSIJA)); ?>">
             </div>
@@ -850,9 +850,9 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                            <tr class="alternate" >
                            <?php
 
-                                echo "<td>...</td>";
+                                echo '<td>...</td>';
                                 foreach($data['csv'][0] as $col){
-                                    echo "<td>...</td>";
+                                    echo '<td>...</td>';
                                 }
 
                            ?>
@@ -887,23 +887,46 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             </th>
                             <td>
                                 <?php
-                                    $formObj=&WYSIJA::get("forms","helper");
-                                    $field="list";
-                                    $modelList=&WYSIJA::get("list","model");
-                                    $lists=$modelList->get(array('name','list_id'),array('is_enabled'=>1));
-                                    $fieldHTML= '<div>';
-                                    $lists[]=array("name"=>__('New list',WYSIJA),'list_id'=>0);
-                                    foreach($lists as $list){
 
+                                    //create an array of existing lists to import within
+                                    $model_list=&WYSIJA::get('list','model');
+                                    $lists=$model_list->get(array('name','list_id'),array('is_enabled'=>1));
+                                    //first value is to create new list
+                                    $lists[]=array('name'=>__('New list',WYSIJA),'list_id'=>0);
+
+                                    //create an array of active(status 99) follow_up emails aossicated to a list_id
+                                    $helper_email=&WYSIJA::get('email','helper');
+                                    $follow_ups_per_list=$helper_email->get_active_follow_ups(array('subject','params'));
+
+                                    $follow_up_name_per_list=array();
+                                    foreach($follow_ups_per_list as $list_id => $follow_ups){
+                                        if(!isset($follow_up_name_per_list[$list_id])) $follow_up_name_per_list[$list_id]=array();
+                                        foreach($follow_ups as $follow_up){
+                                            $follow_up_name_per_list[$list_id][]=$follow_up['subject'];
+                                        }
+
+                                    }
+
+                                    $formObj=&WYSIJA::get('forms','helper');
+                                    //field name for processing
+                                    $field='list';
+                                    $fieldHTML= '<div>';
+                                    foreach($lists as $list){
                                         if($list['list_id']==0){
                                             $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">';
                                             $fieldHTML.=$formObj->checkbox( array('class'=>'validate[minCheckbox[1]] checkbox','id'=>$field.$list['list_id'],'name'=>"wysija[user_list][$field][]"),$list['list_id']). '<span>' . $list['name'] . '</span>';
                                             $fieldHTML.='</label> ';
-                                            $fieldHTML.='<span id="blocknewlist">'.$formObj->input( array('class'=>'validate[required]','id'=>"namenewlist",'size'=>30,'name'=>"wysija[list][newlistname]", 'value'=>'Type name of your new list')).'</span></p>';
+                                            $fieldHTML.='<span id="blocknewlist">'.$formObj->input( array('class'=>'validate[required]','id'=>"namenewlist",'size'=>30,'name'=>'wysija[list][newlistname]', 'value'=>'Type name of your new list')).'</span></p>';
                                         }else{
-                                            $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">'.$formObj->checkbox( array('class'=>'validate[minCheckbox[1]] checkbox','id'=>$field.$list['list_id'],'name'=>"wysija[user_list][$field][]"),$list['list_id']).$list['name'].'</label></p>';
+                                            $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">'.$formObj->checkbox( array('class'=>'validate[minCheckbox[1]] checkbox','id'=>$field.$list['list_id'],'name'=>"wysija[user_list][$field][]"),$list['list_id']).$list['name'];
+
+                                            if(isset($follow_up_name_per_list[$list['list_id']])){
+                                                $fieldHTML.=' <span style="margin-left:10px;"><strong>'.__('Note:',WYSIJA).' </strong>'.sprintf(__('subscribers will receive "%1$s" after import.',WYSIJA),  implode(', ', $follow_up_name_per_list[$list['list_id']])).'</span>';
+                                            }
+                                            $fieldHTML.='</label></p>';
                                         }
                                     }
+
                                     $fieldHTML .= '</div>';
                                     echo $fieldHTML;
                                 ?>
@@ -933,18 +956,18 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
     function importplugins($data){
         echo '<form class="form-valid" action="admin.php?page=wysija_subscribers&action=lists" id="wysija-edit" method="post"  name="wysija-edit">';
-        echo "<ul>";
-        $config=&WYSIJA::get('config',"model");
-        $importedalready=$config->getValue("pluginsImportedEgg");
+        echo '<ul>';
+        $config=&WYSIJA::get('config','model');
+        $importedalready=$config->getValue('pluginsImportedEgg');
         foreach($data['plugins'] as $tablename => $pluginInfos){
             if(is_array($importedalready) && in_array($tablename,$importedalready)) continue;
             echo '<li><label for="import-'.$tablename.'1">';
             echo sprintf(__('Import the %1$s subscribers from the plugin: %2$s ',WYSIJA),"<strong>".$pluginInfos['total']."</strong>","<strong>".$pluginInfos['name']."</strong>").'</label>';
-            echo '<label for="import-'.$tablename.'1"><input checked="checked" type="radio" id="import-'.$tablename.'1" name="wysija[import]['.$tablename.']" value="1" />'.__("Yes",WYSIJA).'</label>';
-            echo '<label for="import-'.$tablename.'0"><input type="radio" id="import-'.$tablename.'0" name="wysija[import]['.$tablename.']" value="0" />'.__("No",WYSIJA).'</label>';
+            echo '<label for="import-'.$tablename.'1"><input checked="checked" type="radio" id="import-'.$tablename.'1" name="wysija[import]['.$tablename.']" value="1" />'.__('Yes',WYSIJA).'</label>';
+            echo '<label for="import-'.$tablename.'0"><input type="radio" id="import-'.$tablename.'0" name="wysija[import]['.$tablename.']" value="0" />'.__('No',WYSIJA).'</label>';
             echo '</li>';
         }
-        echo "</ul>";
+        echo '</ul>';
 
 
         ?>

@@ -6,43 +6,47 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
     function install(){
         $values=array();
-        
+
         if(!$this->testSystem()) return false;
-        
+
         if(!$this->createTables()) return false;
-        
+
         $this->moveData('themes');
         $this->moveData('dividers');
         $this->moveData('bookmarks');
-        
+
         $this->recordDefaultUserField();
-        
+
         $this->defaultSettings($values);
-        
+
         $this->defaultList($values);
-        
+
         $this->defaultCampaign($values);
-        
-        $helpImport=&WYSIJA::get('import','helper');
-        $values['importwp_list_id']=$helpImport->importWP();
-        
+
+        $helper_import=&WYSIJA::get('import','helper');
+        $values['importwp_list_id']=$helper_import->importWP();
+
         $this->createPage($values);
-        
+
         $this->createWYSIJAdir($values);
         
-        $modelConf=&WYSIJA::get('config','model');
-        $mailModel=&WYSIJA::get('email','model');
-        $mailModel->blockMe=true;
-        $values['confirm_email_id']=$mailModel->insert(
+        $this->create_default_subscription_form();
+
+        $model_config=&WYSIJA::get('config','model');
+
+        $model_config->add_translated_default();
+        $model_email=&WYSIJA::get('email','model');
+        $model_email->blockMe=true;
+        $values['confirm_email_id']=$model_email->insert(
                 array('type'=>'0',
                     'from_email'=>$values['from_email'],
                     'from_name'=>$values['from_name'],
                     'replyto_email'=>$values['from_email'],
                     'replyto_name'=>$values['from_name'],
-                    'subject'=>$modelConf->getValue('confirm_email_title'),
-                    'body'=>$modelConf->getValue('confirm_email_body'),
+                    'subject'=>$model_config->getValue('confirm_email_title'),
+                    'body'=>$model_config->getValue('confirm_email_body'),
                     'status'=>99));
-        
+
         $values['installed']=true;
         $values['manage_subscriptions']=true;
         $values['installed_time']=time();
@@ -50,12 +54,12 @@ class WYSIJA_help_install extends WYSIJA_object{
         $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
         $values['dkim_domain']=$wptoolboxs->_make_domain_name();
         if(get_option('wysija_reinstall',0)) $values['wysija_whats_new']=WYSIJA::get_version();
-        $modelConf->save($values);
-        
+        $model_config->save($values);
+
         $this->testNLplugins();
-        
-        $wptools =& WYSIJA::get('wp_tools', 'helper');
-        $wptools->set_default_rolecaps();
+
+        $helper_wp_tools =& WYSIJA::get('wp_tools', 'helper');
+        $helper_wp_tools->set_default_rolecaps();
         global $wysija_installing;
         $wysija_installing=false;
         WYSIJA::update_option('wysija_reinstall',0);
@@ -66,8 +70,8 @@ class WYSIJA_help_install extends WYSIJA_object{
     function testSystem(){
 
         
-        $modelObj=&WYSIJA::get('user','model');
-        $query='CREATE TABLE IF NOT EXISTS `'.$modelObj->getPrefix().'user_list` (
+        $model_user=&WYSIJA::get('user','model');
+        $query='CREATE TABLE IF NOT EXISTS `'.$model_user->getPrefix().'user_list` (
   `list_id` INT unsigned NOT NULL,
   `user_id` INT unsigned NOT NULL,
   `sub_date` INT unsigned DEFAULT 0,
@@ -79,7 +83,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         
 
         $wpdb->query($query);
-        $query="SHOW TABLES like '".$modelObj->getPrefix()."user_list';";
+        $query="SHOW TABLES like '".$model_user->getPrefix()."user_list';";
         $res=$wpdb->get_var($query);
         $haserrors=false;
         if(!$res){
@@ -106,19 +110,19 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
 
     function defaultList(&$values){
-        $model=&WYSIJA::get('list','model');
+        $model_list=&WYSIJA::get('list','model');
         $listname=__('My first list',WYSIJA);
-        $defaultListId=$model->insert(array(
+        $defaultListId=$model_list->insert(array(
             'name'=>$listname,
             'description'=>__('The list created automatically on install of the Wysija.',WYSIJA),
             'is_public'=>1,
             'is_enabled'=>1));
         $values['default_list_id']=$defaultListId;
 
-        $helperUser=&WYSIJA::get('user','helper');
+        $helper_user=&WYSIJA::get('user','helper');
         $current_user=WYSIJA::wp_get_userdata();
         $user_ids = array($current_user->ID);
-        $id=$helperUser->addToList($values['default_list_id'],$user_ids);
+        $id=$helper_user->addToList($values['default_list_id'],$user_ids);
     }
     function defaultCampaign($valuesconfig){
         $modelCampaign=&WYSIJA::get('campaign','model');
@@ -500,5 +504,23 @@ class WYSIJA_help_install extends WYSIJA_object{
     function testNLplugins(){
         $importHelp=&WYSIJA::get('import','helper');
         $importHelp->testPlugins();
+    }
+    function create_default_subscription_form() {
+
+        $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
+
+        $helper_form_engine->set_data();
+
+        $model_forms =& WYSIJA::get('forms', 'model');
+        $model_forms->reset();
+
+        $form_id = $model_forms->insert(array('name' => __('Subscribe to our Newsletter', WYSIJA)));
+        if((int)$form_id > 0) {
+
+            $helper_form_engine->set_data(array_merge($helper_form_engine->get_data(), array('form_id' => (int)$form_id)));
+
+            $model_forms->reset();
+            $model_forms->update(array('data' => $helper_form_engine->get_encoded('data')), array('form_id' => $form_id));
+        }
     }
 }

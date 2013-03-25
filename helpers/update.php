@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
 
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4');
     }
 
     function runUpdate($version){
@@ -183,6 +183,35 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
                 break;
+            case '2.4':
+                $queries = array();
+                $queries[] = 'CREATE TABLE IF NOT EXISTS `[wysija]form` ('.
+                    '`form_id` INT unsigned AUTO_INCREMENT NOT NULL,'.
+                    '`name` tinytext COLLATE utf8_bin,'.
+                    '`data` longtext COLLATE utf8_bin,'.
+                    '`styles` longtext COLLATE utf8_bin,'.
+                    '`subscribed` int(10) unsigned NOT NULL DEFAULT "0",'.
+                    'PRIMARY KEY (`form_id`)'.
+                ') ENGINE=MyISAM ';
+                $errors = $this->runUpdateQueries($queries);
+                if($errors) {
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                } else {
+
+                    if((bool)$this->modelWysija->query('SHOW TABLES LIKE "[wysija]form";') === false) {
+                        return false;
+                    } else {
+
+                        $widgets_converted = $this->convert_widgets_to_forms();
+                        if($widgets_converted === 0) {
+                            $helper_install =& WYSIJA::get('install', 'helper');
+                            $helper_install->create_default_subscription_form();
+                        }
+                    }
+                }
+                return true;
+                break;
             default:
                 return false;
         }
@@ -301,5 +330,162 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
         if($failed) return $failed;
         else return false;
+    }
+
+    
+    function convert_widget_to_form($values = array()) {
+
+        if(!is_array($values)) return false;
+
+        if(isset($values['form']) && (int)$values['form'] > 0) return false;
+        $settings = $body = array();
+
+
+        if($values['autoregister'] === 'not_auto_register') {
+            $settings['lists_selected_by'] = 'admin';
+        } else {
+
+            $settings['lists_selected_by'] = 'user';
+        }
+
+        $settings['lists'] = $values['lists'];
+
+        $settings['on_success'] = 'message';
+        $settings['success_message'] = $values['success'];
+
+        if($values['labelswithin'] === 'labels_within') {
+            $label_within = true;
+        } else {
+            $label_within = false;
+        }
+
+        $blocks = array();
+
+        if(isset($values['instruction']) && strlen(trim($values['instruction'])) > 0) {
+            $blocks[] = array(
+                'params' => array(
+                    'text' => base64_encode($values['instruction']),
+                ),
+                'type' => 'text',
+                'field' => 'text',
+                'name' => __('Random text or instructions', WYSIJA)
+            );
+        }
+
+        $has_email_field = false;
+        foreach($values['customfields'] as $field => $params) {
+            switch($field) {
+                case 'firstname':
+                    $name = __('First name', WYSIJA);
+                    break;
+                case 'lastname':
+                    $name = __('Last name', WYSIJA);
+                    break;
+                case 'email':
+                    $has_email_field = true;
+                    $name = __('Email', WYSIJA);
+                    break;
+            }
+            $blocks[] = array(
+                'name' => $name,
+                'type' => 'input',
+                'field' => $field,
+                'params' => array(
+                    'label' => $params['label'],
+                    'required' => 1,
+                    'label_within' => (int)$label_within
+                )
+            );
+        }
+
+        if($has_email_field === false) {
+            $blocks[] = array(
+                'name' => __('Email', WYSIJA),
+                'type' => 'input',
+                'field' => 'email',
+                'params' => array(
+                    'label' => __('Email', WYSIJA),
+                    'required' => 1,
+                    'label_within' => (int)$label_within
+                )
+            );
+        }
+
+        if($settings['lists_selected_by'] === 'user') {
+            $list_values = array();
+            foreach($settings['lists'] as $list_id) {
+                $list_values[] = array(
+                    'list_id' => $list_id,
+                    'is_checked' => 1
+                );
+            }
+            $blocks[] = array(
+                'name' => __('List selection', WYSIJA),
+                'type' => 'list',
+                'field' => 'list',
+                'params' => array(
+                    'label' => __('Select a list:', WYSIJA),
+                    'values' => $list_values
+                )
+            );
+        }
+
+        $submit_label = __('Subscribe!', WYSIJA);
+        if(isset($values['submit']) && strlen(trim($values['submit'])) > 0) {
+            $submit_label = $values['submit'];
+        }
+        $blocks[] = array(
+            'name' => __('Submit', WYSIJA),
+            'type' => 'submit',
+            'field' => 'submit',
+            'params' => array(
+                'label' => $submit_label
+            )
+        );
+
+        for($i = 0, $count = count($blocks); $i < $count; $i++) {
+            $body['block-'.($i + 1)] = array_merge($blocks[$i], array('position' => ($i + 1)));
+        }
+
+        $form_name = __('New Form', WYSIJA);
+
+        if(isset($values['title']) && strlen(trim($values['title'])) > 0) {
+            $form_name = $values['title'];
+        }
+
+        $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
+
+        $model_forms =& WYSIJA::get('forms', 'model');
+        $model_forms->reset();
+
+        $form_id = $model_forms->insert(array('name' => $form_name));
+        if((int)$form_id > 0) {
+            $model_forms->reset();
+
+            $helper_form_engine->set_data(array(
+                'form_id' => (int)$form_id,
+                'settings' => $settings,
+                'body' => $body
+            ));
+
+            $model_forms->update(array('data' => $helper_form_engine->get_encoded('data')), array('form_id' => $form_id));
+            return $form_id;
+        } else {
+            return false;
+        }
+    }
+    function convert_widgets_to_forms() {
+        $widgets_converted = 0;
+
+        $widgets = get_option('widget_wysija');
+        foreach($widgets as $key => &$values) {
+            $form_id = $this->convert_widget_to_form($values);
+            if($form_id!==false) {
+                $values['default_form'] = $form_id;
+                $widgets_converted++;
+            }
+        }
+        update_option('widget_wysija',$widgets);
+        return $widgets_converted;
     }
 }

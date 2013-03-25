@@ -3,7 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_autonews  extends WYSIJA_object {
     function WYSIJA_help_autonews() {
     }
-    function events($key=false,$get=true,$valueSet=array()){
+    function events($key=false,$get=true,$value_set=array()){
         static $events=array();
         if($get){
             if(!$key){
@@ -14,32 +14,32 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
             }
         }else{
             if(isset($events[$key])) return false;
-            $events[$key]=$valueSet;
+            $events[$key]=$value_set;
         }
     }
-    function register($keyevent,$event=array()){
-        $this->events($keyevent,false,$event);
+    function register($key_event,$event=array()){
+        $this->events($key_event,false,$event);
     }
     function get($fieldKey){
          return $this->events($fieldKey);
     }
     
-    function nextSend($email=false){
+    function _deprecated_nextSend($email=false){
         if(!$email) return;
-        $modelEmail=&WYSIJA::get('email','model');
+        $model_email=&WYSIJA::get('email','model');
         if(is_array($email)){
-            $emailArr=$modelEmail->getOne(false,array('email_id'=>$email['email_id']));
+            $email_data=$model_email->getOne(false,array('email_id'=>$email['email_id']));
         }else{
-            $emailArr=$modelEmail->getOne(false,array('email_id'=>$email));
+            $email_data=$model_email->getOne(false,array('email_id'=>$email));
         }
-        return $modelEmail->give_birth($emailArr);
+        return $model_email->give_birth($email_data);
     }
     
     function getNextSend($email) {
         $schedule_at = -1;
 
         if((int)$email['type'] === 2 && isset($email['params']['autonl']['event']) && $email['params']['autonl']['event'] === 'new-articles') {
-            $hToolbox =& WYSIJA::get('toolbox','helper');
+            $helper_toolbox =& WYSIJA::get('toolbox','helper');
 
             $now = time();
 
@@ -48,7 +48,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
 
 
 
-            if(!isset($email['params']['autonl']['nextSend']) || $now > $hToolbox->localtime_to_servertime($email['params']['autonl']['nextSend'])) {
+            if(!isset($email['params']['autonl']['nextSend']) || $now > $helper_toolbox->localtime_to_servertime($email['params']['autonl']['nextSend'])) {
                 switch($email['params']['autonl']['when-article']) {
                     case 'immediate':
                         break;
@@ -56,7 +56,7 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
 
                         $schedule_at = strtotime($email['params']['autonl']['time']);
 
-                        if($hToolbox->localtime_to_servertime($schedule_at) < $now) {
+                        if($helper_toolbox->localtime_to_servertime($schedule_at) < $now) {
 
                             $schedule_at = strtotime('tomorrow '.$email['params']['autonl']['time']);
                         }
@@ -65,48 +65,48 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
 
                         $schedule_at = strtotime(ucfirst($email['params']['autonl']['dayname']).' '.$email['params']['autonl']['time']);
 
-                        if($hToolbox->localtime_to_servertime($schedule_at) < $now) {
+                        if($helper_toolbox->localtime_to_servertime($schedule_at) < $now) {
 
                             $schedule_at = strtotime('next '.ucfirst($email['params']['autonl']['dayname']).' '.$email['params']['autonl']['time']);
                         }
                         break;
                     case 'monthly':
-                        $timeCurrentDay=date('d',$now);
-                        $timeCurrentMonth=date('m',$now);
-                        $timeCurrentYear=date('y',$now);
+                        $time_current_day=date('d',$now);
+                        $time_current_month=date('m',$now);
+                        $time_current_year=date('y',$now);
 
-                        if($timeCurrentDay > $email['params']['autonl']['daynumber']) {
-                            if((int)$timeCurrentMonth === 12) {
+                        if($time_current_day > $email['params']['autonl']['daynumber']) {
+                            if((int)$time_current_month === 12) {
 
-                               $timeCurrentMonth=1;
-                               $timeCurrentYear++;
+                               $time_current_month=1;
+                               $time_current_year++;
                             }else{
 
-                                $timeCurrentMonth++;
+                                $time_current_month++;
                             }
                         }
-                        $schedule_at=strtotime($timeCurrentMonth.'/'.$email['params']['autonl']['daynumber'].'/'.$timeCurrentYear.' '.$email['params']['autonl']['time']);
+                        $schedule_at=strtotime($time_current_month.'/'.$email['params']['autonl']['daynumber'].'/'.$time_current_year.' '.$email['params']['autonl']['time']);
                         break;
                     case 'monthlyevery': // monthly every X Day of the week
-                        $currentDay = date('d', $now);
-                        $currentMonth = date('m', $now);
-                        $currentYear = date('y', $now);
+                        $current_day = date('d', $now);
+                        $current_month = date('m', $now);
+                        $current_year = date('y', $now);
 
 
                         $schedule_at = strtotime(
                             sprintf('%02d/01/%02d %d %s %s',
-                            $currentMonth,
-                            $currentYear,
+                            $current_month,
+                            $current_year,
                             $email['params']['autonl']['dayevery'],
                             ucfirst($email['params']['autonl']['dayname']),
                             $email['params']['autonl']['time']
                         ));
-                        if($hToolbox->localtime_to_servertime($schedule_at) < $now) {
+                        if($helper_toolbox->localtime_to_servertime($schedule_at) < $now) {
 
                             $schedule_at = strtotime(
                                 sprintf('+1 month %02d/01/%02d %d %s %s',
-                                $currentMonth,
-                                $currentYear,
+                                $current_month,
+                                $current_year,
                                 $email['params']['autonl']['dayevery'],
                                 ucfirst($email['params']['autonl']['dayname']),
                                 $email['params']['autonl']['time']
@@ -119,39 +119,53 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         return $schedule_at;
     }
     
-    function getNextDay($firstDayOfMonth,$dayname,$whichNumber,$timenow){
-        $nameFirstday = strtolower(date('l', $firstDayOfMonth));
-        if($nameFirstday == strtolower($dayname)) $whichNumber--;
-        for($i=0; $i < $whichNumber;$i++){
-            $firstDayOfMonth = strtotime('next '.ucfirst($dayname), $firstDayOfMonth);
+    function getNextDay($first_day_of_month,$day_name,$which_number,$time_now){
+        $name_first_day = strtolower(date('l', $first_day_of_month));
+        if($name_first_day == strtolower($day_name)) $which_number--;
+        for($i=0; $i < $which_number;$i++){
+            $first_day_of_month = strtotime('next '.ucfirst($day_name), $first_day_of_month);
         }
-        return $firstDayOfMonth;
+        return $first_day_of_month;
     }
 
     
     function checkPostNotif(){
-        $modelEmail=&WYSIJA::get('email','model');
-        $modelEmail->reset();
-        $allEmails=$modelEmail->get(false,array('type'=>'2','status'=>array('1','3','99')));
-        if($allEmails){
-            $hToolbox=&WYSIJA::get('toolbox','helper');
-            foreach($allEmails as $email){
+
+        $current_check = (int)get_option('wysija_check_pn');
+
+        if(time() < ($current_check+60)){
+            WYSIJA::log('already_running_checkPN', $current_check, 'post_notif');
+            return false;
+        }
+
+        $current_check=time();
+        WYSIJA::update_option('wysija_check_pn',$current_check);
+
+        WYSIJA::log('check_post_notif_starts', $current_check , 'post_notif');
+        $model_email=&WYSIJA::get('email','model');
+        $model_email->reset();
+        $all_emails=$model_email->get(false,array('type'=>'2','status'=>array('1','3','99')));
+        if($all_emails){
+            $helper_toolbox=&WYSIJA::get('toolbox','helper');
+            foreach($all_emails as $email){
 
                 if($email['params']['autonl']['event']=='new-articles' && $email['params']['autonl']['when-article']!='immediate'){
 
 
 
                     if(!isset($email['params']['autonl']['nextSend'])){
+                        WYSIJA::log('check_post_notif_next_send_not_set', $current_check , 'post_notif');
                     }else {
 
                         $time_now_server=time();
-                        if($time_now_server>$hToolbox->localtime_to_servertime($email['params']['autonl']['nextSend'])){
-                            $how_late=$time_now_server-$hToolbox->localtime_to_servertime($email['params']['autonl']['nextSend']);
+                        if($time_now_server > $helper_toolbox->localtime_to_servertime($email['params']['autonl']['nextSend'])){
+                            $how_late=$time_now_server-$helper_toolbox->localtime_to_servertime($email['params']['autonl']['nextSend']);
 
 
                             if(!$this->cancel_late_post_notification($email,$how_late)){
+                                 WYSIJA::log('check_post_notif_before_give_birth', $current_check, 'post_notif');
 
-                                $modelEmail->give_birth($email);
+                                $model_email->give_birth($email);
                             }
                         }
                     }
@@ -191,34 +205,35 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
 
         if($cancel_it){
             $late_send=$email['params']['autonl']['nextSend'];
+            WYSIJA::log('cancel_late_post_notification_late_send', $late_send, 'post_notif');
             $next_send=$this->getNextSend($email);
             $email['params']['autonl']['nextSend']=$next_send;
             $email['params']['autonl']['late_send']=$late_send;
-            $modelEmail=&WYSIJA::get('email','model');
-            $modelEmail->reset();
-            $modelEmail->update(array('params'=>$email['params']), array('email_id' => $email['email_id']));
+            $model_email=&WYSIJA::get('email','model');
+            $model_email->reset();
+            $model_email->update(array('params'=>$email['params']), array('email_id' => $email['email_id']));
             return true;
         }
         return false;
     }
     
     function checkScheduled(){
-        $modelEmail=&WYSIJA::get('email','model');
-        $modelEmail->reset();
+        $model_email=&WYSIJA::get('email','model');
+        $model_email->reset();
 
-        $allEmails=$modelEmail->get(false,array('type'=>'1','status'=>'4'));
-        if($allEmails){
-            $hToolbox=&WYSIJA::get('toolbox','helper');
-            foreach($allEmails as $email){
+        $all_emails=$model_email->get(false,array('type'=>'1','status'=>'4'));
+        if($all_emails){
+            $helper_toolbox=&WYSIJA::get('toolbox','helper');
+            foreach($all_emails as $email){
 
                 if(isset($email['params']['schedule']['isscheduled'])){
-                    $scheduledate=$email['params']['schedule']['day'].' '.$email['params']['schedule']['time'];
-                    $unixscheduledtime=strtotime($scheduledate);
+                    $schedule_date=$email['params']['schedule']['day'].' '.$email['params']['schedule']['time'];
+                    $unix_scheduled_time=strtotime($schedule_date);
 
 
-                    if($hToolbox->localtime_to_servertime($unixscheduledtime)<time()){
-                        $modelEmail->reset();
-                        $modelEmail->send($email,true);
+                    if($helper_toolbox->localtime_to_servertime($unix_scheduled_time)<time()){
+                        $model_email->reset();
+                        $model_email->send($email,true);
                     }
                 }
             }
