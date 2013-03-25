@@ -42,7 +42,7 @@ class WYSIJA_object{
      * @param string $field
      * @return mixed
      */
-    function wp_get_userdata($field=false){
+    public static function wp_get_userdata($field=false){
         //WordPress globals be careful there
         global $current_user;
         if($field){
@@ -520,11 +520,11 @@ class WYSIJA extends WYSIJA_object{
                 'display' => __( 'Once every two hours',WYSIJA)
                 ),
             'eachweek' => array(
-                'interval' => 2419200,
+                'interval' => 604800,
                 'display' => __( 'Once a week',WYSIJA)
                 ),
             'each28days' => array(
-                'interval' => 604800,
+                'interval' => 2419200,
                 'display' => __( 'Once every 28 days',WYSIJA)
                 ),
             );
@@ -557,39 +557,58 @@ class WYSIJA extends WYSIJA_object{
      * remove temporary files
      */
     public static function croned_daily() {
+
         @ini_set('max_execution_time',0);
+
         /*user refresh count total*/
-        $helperU=&WYSIJA::get('user','helper');
-        $helperU->refreshUsers();
+        $helper_user =& WYSIJA::get('user','helper');
+        $helper_user->refreshUsers();
 
         /*clear temporary folders*/
-        $helperF=&WYSIJA::get('file','helper');
-        $helperF->clear();
+        $helper_file =& WYSIJA::get('file','helper');
+        $helper_file->clear();
 
         /*clear queue from unsubscribed*/
-        $helperQ=&WYSIJA::get('queue','helper');
-        $helperQ->clear();
+        $helper_queue =& WYSIJA::get('queue','helper');
+        $helper_queue->clear();
+
+        $model_config =& WYSIJA::get('config','model');
 
         /* send daily report about emails sent */
-        $modelC=&WYSIJA::get('config','model');
-        if($modelC->getValue('emails_notified_when_dailysummary')){
-            $helperS=&WYSIJA::get('stats','helper');
-            $helperS->sendDailyReport();
+        if($model_config->getValue('emails_notified_when_dailysummary')){
+            $helper_stats =& WYSIJA::get('stats','helper');
+            $helper_stats->sendDailyReport();
         }
+
     }
 
-    /**
-     * monthly cron not active yet
-     */
-    public static function croned_monthly() {
+    // Weekly cron
+    public static function croned_weekly() {
+
         @ini_set('max_execution_time',0);
 
-        /* send daily report about emails sent */
-        $modelC=&WYSIJA::get('config','model');
-        if($modelC->getValue('sharedata')){
-            $helperS=&WYSIJA::get('stats','helper');
-            $helperS->share();
+        $model_config =& WYSIJA::get('config','model');
+
+        // If enabled, flag MixPanel sending on next page load.
+        if ($model_config->getValue('analytics') == 1) {
+            $model_config->save(array('send_analytics_now' => 1));
         }
+
+    }
+
+    // Monthly cron
+    public static function croned_monthly() {
+
+        @ini_set('max_execution_time',0);
+
+        $model_config =& WYSIJA::get('config','model');
+
+        /* send daily report about emails sent */
+        if ($model_config->getValue('sharedata')) {
+            $helper_stats =& WYSIJA::get('stats','helper');
+            $helper_stats->share();
+        }
+
     }
 
     /**
@@ -794,7 +813,6 @@ class WYSIJA extends WYSIJA_object{
      * @return type
      */
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
-        WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
         //we run some process only if the status of the post changes from something to publish
         if( $new_status=='publish' && $old_status!=$new_status){
             $modelEmail =& WYSIJA::get('email', 'model');
@@ -804,6 +822,7 @@ class WYSIJA extends WYSIJA_object{
                 foreach($emails as $key => $email) {
                     //we will try to give birth to a child email only if the automatic newsletter is a post notification email and in immediate mode
                     if(is_array($email) && $email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
+                        WYSIJA::log('post_transition_hook_give_birth',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
                         $modelEmail->reset();
                         $modelEmail->give_birth($email, $post->ID);
                     }
@@ -836,12 +855,12 @@ class WYSIJA extends WYSIJA_object{
 
         //test again for plugins on reactivation
         if($installApp){
-            $importHelp=&WYSIJA::get('import','helper');
-            $importHelp->testPlugins();
+            $helper_import=&WYSIJA::get('import','helper');
+            $helper_import->testPlugins();
 
             //resynch wordpress list
-            $helperU=&WYSIJA::get('user','helper');
-            $helperU->synchList($values['importwp_list_id']);
+            $helper_user=&WYSIJA::get('user','helper');
+            $helper_user->synchList($values['importwp_list_id']);
         }
     }
 
@@ -1036,7 +1055,8 @@ class WYSIJA extends WYSIJA_object{
             }
         }
 
-        if(!empty($processesToRun)){
+        $model_config=&WYSIJA::get('config','model');
+        if(!empty($processesToRun) && $model_config->getValue('cron_page_hit_trigger')){
             //call the cron url
 
             $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
@@ -1125,6 +1145,7 @@ if($modelConf->getValue('installed_time')){
         //action to handle the scheduled tasks in wysija
         add_action( 'wysija_cron_queue', array( 'WYSIJA', 'croned_queue' ) );
         add_action( 'wysija_cron_daily', array( 'WYSIJA', 'croned_daily' ) );
+        add_action( 'wysija_cron_weekly', array( 'WYSIJA', 'croned_weekly' ) );
         add_action( 'wysija_cron_monthly', array( 'WYSIJA', 'croned_monthly' ) );
 
         //same with the weekly task
@@ -1187,7 +1208,7 @@ if($modelConf->getValue('wp_notifications')){
 }
 
 //check that there is no late cron schedules if we are using wysija's cron option and that the cron option is triggerred by any page view
-if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process']) && $modelConf->getValue('cron_page_hit_trigger')){
+if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process'])){
     WYSIJA::cron_check();
 }
 

@@ -182,6 +182,21 @@ class WYSIJA_help_user extends WYSIJA_object{
         $user_id=$modelUser->insert($dataInsert);
 
         if($user_id ){
+
+            if(isset($data['form_id']) && (int)$data['form_id'] > 0) {
+
+                $model_forms =& WYSIJA::get('forms', 'model');
+                $form = $model_forms->getOne(array('form_id', 'subscribed'), array('form_id' => (int)$data['form_id']));
+                if(isset($form['form_id']) && (int)$form['form_id'] === (int)$data['form_id']) {
+
+                    $model_forms->update(array(
+                        'subscribed' => $form['subscribed'] + 1
+                    ), array(
+                        'form_id' => (int)$form['form_id']
+                    ));
+                }
+            }
+
             if(isset($data['message_success'])) $this->notice($data['message_success']);
         }else{
             $this->notice(__('Subscriber has not been saved.',WYSIJA));
@@ -289,40 +304,22 @@ class WYSIJA_help_user extends WYSIJA_object{
         }
     }
     
-    function insertAutoQueue($user_id,$email_id,$emailparams){
-        $modelQueue=&WYSIJA::get('queue','model');
+    function insertAutoQueue($user_id,$email_id,$email_params){
+        $model_queue=&WYSIJA::get('queue','model');
         $queueData=array('priority'=>'-1','email_id'=>$email_id,'user_id'=>$user_id);
-        $delay=0;
-        
-        if(isset($emailparams['numberafter']) && (int)$emailparams['numberafter']>0){
-            switch($emailparams['numberofwhat']){
-                case 'immediate':
-                    $delay=0;
-                    break;
-                case 'hours':
-                    $delay=(int)$emailparams['numberafter']*3600;
-                    break;
-                case 'days':
-                    $delay=(int)$emailparams['numberafter']*3600*24;
-                    break;
-                case 'weeks':
-                    $delay=(int)$emailparams['numberafter']*3600*24*7;
-                    break;
-            }
-            $queueData['send_at']=time()+$delay;
-        }
-        if(!$modelQueue->exists(array('email_id'=>$email_id,'user_id'=>$user_id))){
-            
-            if(isset($emailparams['unique_send']) && $emailparams['unique_send']){
-                
+        $delay=$model_queue->calculate_delay($email_params);
+        $queueData['send_at']=time()+$delay;
+        if(!$model_queue->exists(array('email_id'=>$email_id,'user_id'=>$user_id))){
+
+            if(isset($email_params['unique_send']) && $email_params['unique_send']){
+
                 $modelEUS=&WYSIJA::get('email_user_stat','model');
                 if(!$modelEUS->exists(array('email_id'=>$email_id,'user_id'=>$user_id)))
-                        $modelQueue->insert($queueData,true);
+                        $model_queue->insert($queueData,true);
             }else{
-                $modelQueue->insert($queueData,true);
+                $model_queue->insert($queueData,true);
             }
         }
-
 
         if($delay==0){
             $queueH=&WYSIJA::get('queue','helper');
@@ -330,7 +327,6 @@ class WYSIJA_help_user extends WYSIJA_object{
             WYSIJA::log('insertAutoQueue queue process',array('email_id'=>$email_id,'user_id'=>$user_id),'queue_process');
             $queueH->process($email_id,$user_id);
         }
-        return true;
     }
     function unsubscribe($user_id,$auto=false){
         return $this->subscribe($user_id,false,$auto);
@@ -382,6 +378,21 @@ class WYSIJA_help_user extends WYSIJA_object{
         if(!$sendone)   $this->notice(sprintf(__('%1$d emails have been sent to unconfirmed subscribers.',WYSIJA),count($users)));
         else    return $resultsend;
         return true;
+    }
+    
+    function get_unconfirmed_subscribers() {
+
+        $model_user =& WYSIJA::get('user','model');
+        $query = 'SELECT user_id
+                  FROM ' . '[wysija]' . $model_user->table_name. '
+                  WHERE  status = 0';
+        $result = $model_user->query('get_res', $query);
+
+        $unconfirmed_subscribers = array();
+        foreach($result as $unconfirmed_user){
+            $unconfirmed_subscribers[] = $unconfirmed_user['user_id'];
+        }
+        return $unconfirmed_subscribers;
     }
 
     function delete($user_ids,$sendone=false){

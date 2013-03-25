@@ -202,20 +202,23 @@ class WYSIJA_model_user extends WYSIJA_model{
     }
 
     function afterDelete(){
-        $helperU=&WYSIJA::get('user','helper');
-        $helperU->refreshUsers();
+        $helper_user=&WYSIJA::get('user','helper');
+        $helper_user->refreshUsers();
         return true;
     }
 
     function afterInsert($id){
+        $helper_user=&WYSIJA::get('user','helper');
+        $helper_user->refreshUsers();
 
-        $helperU=&WYSIJA::get('user','helper');
-        $helperU->refreshUsers();
         do_action('wysija_subscriber_added', $id);
         return true;
     }
 
     function afterUpdate($id){
+        $helper_user=&WYSIJA::get('user','helper');
+        $helper_user->refreshUsers();
+        
         do_action('wysija_subscriber_modified', $id);
         return true;
     }

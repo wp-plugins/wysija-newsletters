@@ -9,6 +9,9 @@ class WYSIJA_model_config extends WYSIJA_object{
         'emails_notified_when_dailysummary',
         'bounce_process_auto',
         'sharedata',
+        'analytics',
+        'send_analytics_now',
+        'industry',
         'manage_subscriptions',
         'viewinbrowser',
         'dkim_active',
@@ -47,6 +50,9 @@ class WYSIJA_model_config extends WYSIJA_object{
         'sending_emails_each'=>'hourly',
         'bounce_max'=>8,
         'debug_new'=>false,
+        'analytics' => 0,
+        'send_analytics_now' => 0,
+        'industry' => 'other',
         'manage_subscriptions'=>false,
         'editor_fullarticle'=>false,
         'allow_no_js'=>true,
@@ -68,8 +74,6 @@ class WYSIJA_model_config extends WYSIJA_object{
     var $values=array();
 
     function WYSIJA_model_config(){
-        //$this->add_translated_default();
-
         $encoded_option=get_option($this->name_option);
         global $wysija_installing;
         $installApp=false;
@@ -80,8 +84,8 @@ class WYSIJA_model_config extends WYSIJA_object{
 
         //dkim_is not active that means the dkim_keys are not used so we can reinitialize them as 1024 if they are not already 1024
         if(!isset($this->values['dkim_active']) && !empty($this->values['dkim_pubk']) && !isset($this->values['dkim_1024'])){
-                unset($this->values['dkim_pubk']);
-                unset($this->values['dkim_privk']);
+            unset($this->values['dkim_pubk']);
+            unset($this->values['dkim_privk']);
         }
 
         $is_multisite=is_multisite();
@@ -104,12 +108,9 @@ class WYSIJA_model_config extends WYSIJA_object{
             $this->defaults['sending_method']='network';
         }
 
-
-
-
         //install the application because there is no option setup it's safer than the classic activation scheme
         if(defined('WP_ADMIN')){
-            add_action('plugins_loaded', array($this,'add_translated_default'));
+            add_action('admin_menu', array($this,'add_translated_default'));
             if($installApp && $wysija_installing!==true){
                 $wysija_installing=true;
                 $installer=&WYSIJA::get('install','helper',false,'wysija-newsletters',false);
@@ -118,6 +119,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 $updater=&WYSIJA::get('update','helper',false,'wysija-newsletters',false);
                 add_action('admin_menu', array($updater,'check'),103);
             }
+
         }else{
             //wait until the translation files are loaded
             add_action('init', array($this,'add_translated_default'),96);
@@ -130,7 +132,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         return str_replace(array('[ link]','[link ]','[ link ]','[/ link]','[/link ]','[/ link ]'), array('[link]','[link]','[link]','[/link]','[/link]','[/link]'), trim($string));
     }
     function add_translated_default(){
-        /* definition of extra translated defaults fields */
+        // definition of extra translated defaults fields
         $this->defaults['confirm_email_title']=sprintf(__('Confirm your subscription to %1$s',WYSIJA),get_option('blogname'));
         $this->defaults['confirm_email_body']=__("Hello!\n\nHurray! You've subscribed to our site.\nWe need you to activate your subscription to the list(s): [lists_to_confirm] by clicking the link below: \n\n[activation_link]Click here to confirm your subscription.[/activation_link]\n\nThank you,\n\n The team!\n",WYSIJA);
         $this->defaults['subscribed_title']=__('You\'ve subscribed to: %1$s',WYSIJA);
@@ -141,154 +143,6 @@ class WYSIJA_model_config extends WYSIJA_object{
         $this->defaults['manage_subscriptions_linkname']=__('Edit your subscription',WYSIJA);
         $this->defaults['viewinbrowser_linkname']=$this->cleanTrans(__('Display problems? [link]View this newsletter in your browser.[/link]',WYSIJA));
         $this->defaults['registerform_linkname']=$this->defaults['commentform_linkname']=__('Yes, add me to your mailing list.',WYSIJA);
-
-
-        /**
-         * List of all the conflictive extensions which invite themselves on our interfaces and break some of our js:
-         * tribulant newsletter
-         */
-
-
-
-        $this->defaults['conflictivePlugins'] = array(
-            'tribulant-wp-mailinglist' => array(
-                'file' => 'wp-mailinglist/wp-mailinglist.php',
-                'version' => '3.8.7',
-                'clean' => array(
-                    'admin_head' => array(
-                        '10' => array(
-                            'objects' => array('wpMail')
-                        )
-                    )
-                )
-            ),
-            'wp-events' => array(
-                'file' => 'wp-events/wp-events.php',
-                'version' => '',
-                'clean' => array(
-                    'admin_head' => array(
-                        '10' => array(
-                            'function' => 'events_editor_admin_head'
-                        )
-                    )
-                )
-            ),
-            'email-users' => array(
-                'file' => 'email-users/email-users.php',
-                'version' => '',
-                'clean' => array(
-                    'admin_head' => array(
-                        '10' => array(
-                            'function' => 'editor_admin_head'
-                        )
-                    )
-                )
-            ),
-            'acf' => array(
-                'file' => 'advanced-custom-fields/acf.php',
-                'version' => '3.1.7',
-                'clean' => array(
-                    'init' => array(
-                        '10' => array(
-                            'objects' => array('Acf')
-                        )
-                    )
-                )
-            ),
-            'wptofacebook' => array(
-                'file' => 'wptofacebook/index.php',
-                'version' => '1.2.3',
-                'clean' => array(
-                    'admin_head' => array(
-                        '10' => array(
-                            'function' => 'WpToFb::wptofb_editor_admin_head'
-                        )
-                    )
-                )
-            ),
-            'mindvalley-pagemash' => array(
-                'file' => 'mindvalley-pagemash/pagemash.php',
-                'version' => '1.1',
-                'clean' => array(
-                    'admin_print_scripts' => array(
-                        '10' => array(
-                            'function' => 'pageMash_head'
-                        )
-                    )
-                )
-            ),
-            'wp-polls' => array(
-                'file' => 'wp-polls/wp-polls.php',
-                'version' => '2.63',
-                'clean' => array(
-                    'wp_enqueue_scripts' => array(
-                        '10' => array(
-                            'function' => 'poll_scripts'
-                        )
-                    )
-                )
-            ),
-            'wp_rokajaxsearch' => array(
-                'file' => 'wp_rokajaxsearch/rokajaxsearch.php',
-                'version' => '',
-                'clean' => array(
-                    'init' => array(
-                        '-50' => array(
-                            'function' => 'rokajaxsearch_mootools_init'
-                        )
-                    )
-                )
-            ),
-            'wp_rokstories' => array(
-                'file' => 'wp_rokstories/rokstories.php',
-                'version' => '',
-                'clean' => array(
-                    'init' => array(
-                        '-50' => array(
-                            'function' => 'rokstories_mootools_init'
-                        )
-                    )
-                )
-            ),
-            'simple-links' => array(
-                'file' => 'simple-links/simple-links.php',
-                'version' => '1.5',
-                'clean' => array(
-                    'admin_print_scripts' => array(
-                        '10' => array(
-                            'objects' => array('simple_links_admin')
-                        )
-                    )
-                )
-            )
-        );
-
-        $this->defaults['conflictiveThemes'] = array(
-            'smallbiz' => array(
-                'clean' => array(
-                    'admin_head' => array(
-                        '10' => array(
-                            'function' => 'smallbiz_on_admin_head'
-                        )
-                    )
-                )
-            ),
-            'balance' => array(
-                'clean' => array(
-                    'admin_enqueue_scripts' => array(
-                        '10' => array(
-                            'functions' => array('al_admin_scripts', 'al_adminpanel_scripts', 'al_pricing_tables_scripts')
-                        )
-                    ),
-                    'admin_head' => array(
-                        '10' => array(
-                            'function' => 'al_admin_head'
-                        )
-                    )
-                )
-            )
-        );
-
 
         $this->capabilities['newsletters']=array(
             'label'=>__('Who can create newsletters?',WYSIJA));
@@ -380,10 +234,6 @@ class WYSIJA_model_config extends WYSIJA_object{
                     $bouncing_freq_has_changed=true;
                     $data['last_save']=time();
                 }
-
-
-
-
 
                 //if saved with gmail then we set up the smtp settings
                 if(isset($data['sending_method'])){
@@ -581,7 +431,7 @@ class WYSIJA_model_config extends WYSIJA_object{
     }
 
     /**
-     *
+     * TODO should this method really be here? It is used when rendering an email or when sending one
      * @param type $editor
      */
     function emailFooterLinks($editor=false){
@@ -619,6 +469,11 @@ class WYSIJA_model_config extends WYSIJA_object{
         return $unsubscribe;
     }
 
+    /**
+     * TODO should this method really be here? It is used when rendering an email or when sending one
+     * @param type $editor
+     * @return type
+     */
     function viewInBrowserLink($editor=false){
         $data=array();
 
