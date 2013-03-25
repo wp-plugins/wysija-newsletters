@@ -321,7 +321,12 @@ class WYSIJA_help_back extends WYSIJA_help{
     function version(){
         $wysijaversion= '<div class="wysija-version">';
         $wysijaversion.='<div class="social-foot">';
-        $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Spread da word.',WYSIJA).'</a> </div>';
+        $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | ';
+        $wysijaversion.=str_replace(
+                array('[stars]','[link]','[/link]'),
+                array('<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >★★★★★</a>','<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >','</a>'),
+                __('Add your [stars] on [link]wordpress.org[/link] and keep this plugin essentially free.',WYSIJA)
+                );
         $wysijaversion.= '<div class="version">'.__('Wysija Version: ',WYSIJA).'<a href="admin.php?page=wysija_campaigns&action=whats_new">'.WYSIJA::get_version().'</a></div></div>';
         
         $wysijaversion.= '</div></div>';
