@@ -116,8 +116,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $this->title=$this->viewObj->title=__('What\'s new?',WYSIJA);
         $this->jsTrans['instalwjp']=__('Installing Wysija Newsletter Premium plugin',WYSIJA);
-        $hReadme=&WYSIJA::get('readme','helper');
-        $hReadme->scan();
+        $helper_readme=&WYSIJA::get('readme','helper');
+        $helper_readme->scan();
         $this->data=array();
         $this->data['abouttext']=__('You updated! It\'s like having the next gadget, but better.',WYSIJA);
 
@@ -135,7 +135,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
         $major_release=true;
-        if(count(explode('.', WYSIJA::get_version()))>2) $major_release=false;
+        $except_version=array('2.4.1');
+        $wysija_version=WYSIJA::get_version();
+        if(!in_array($wysija_version,$except_version) && count(explode('.', $wysija_version))>2) $major_release=false;
 
         if($major_release){
            $this->data['sections'][]=array(
@@ -209,7 +211,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->data['sections'][]=array(
             'title'=>'Change log',
             'format'=>'bullets',
-            'paragraphs'=>$hReadme->changelog[WYSIJA::get_version()]
+            'paragraphs'=>$helper_readme->changelog[WYSIJA::get_version()]
             );
 
 
@@ -1241,9 +1243,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
             //standard email
             $queueemails=false;
+            $do_send=true;
             if((int)$emaildata['type']==1 && !isset($_POST['submit-resume']) && !isset($emaildata['params']['schedule']['isscheduled']))   $queueemails=true;
 
-            $modelEmail->send($emaildata,$queueemails);
+            // do not send for post notification
+            if((int)$emaildata['type']==2 && isset($emaildata['params']['autonl']['event']) && $emaildata['params']['autonl']['event']=='new-articles' )  $do_send=false;
+
+            if($do_send===true)   $modelEmail->send($emaildata,$queueemails);
 
             if((int)$emaildata['type']==1)  {
                 if(isset($emaildata['params']['schedule']['isscheduled'])){

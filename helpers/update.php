@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
 
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1');
     }
 
     function runUpdate($version){
@@ -212,6 +212,20 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
                 break;
+            case '2.4.1':
+                $model_email=&WYSIJA::get('email','model');
+                $model_email->setConditions(array('type'=>'2'));
+                $emails = $model_email->getRows(array('email_id','params'));
+
+                foreach($emails as $email){
+                    $model_email->getParams($email);
+                    if(isset($email['params']) && $email['params']['autonl']['event']=='new-articles'){
+                        $model_queue=&WYSIJA::get('queue','model');
+                        $model_queue->delete(array('email_id'=>$email['email_id']));
+                    }
+                }
+                return true;
+            break;
             default:
                 return false;
         }
