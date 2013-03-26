@@ -4,7 +4,7 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_front extends WYSIJA_help{
     function WYSIJA_help_front(){
         parent::WYSIJA_help();
-        
+
         
         
         
@@ -42,7 +42,8 @@ class WYSIJA_help_front extends WYSIJA_help{
                 }
             }
         }else{
-           add_filter('the_content', array($this,'scan_content_NLform'),99 );
+            add_filter('the_content', array($this,'scan_content_NLform'),99 );
+            add_shortcode('wysija_form', array($this,'scan_form_shortcode'));
 
            $mConfig=&WYSIJA::get('config','model');
            if($mConfig->getValue('commentform')){
@@ -150,7 +151,17 @@ class WYSIJA_help_front extends WYSIJA_help{
         if(isset($this->controller->subtitle) && !empty($this->controller->subtitle))  $wysija_content=$this->controller->subtitle;
         return str_replace('[wysija_page]',$wysija_content,$content);
     }
-
+    
+    function scan_form_shortcode($attributes) {
+        if(isset($attributes['id']) && (int)$attributes['id']>0){
+            $widget_data=array();
+            $widget_data['form']=(int)$attributes['id'];
+            $widget_data['form_type']='post';
+            $widget_NL=new WYSIJA_NL_Widget(true);
+            return $widget_NL->widget($widget_data);
+        }
+        return '';
+    }
     function scan_content_NLform($content){
         preg_match_all('/\<div class="wysija-register">(.*?)\<\/div>/i',$content,$matches);
         if(!empty($matches[1]) && count($matches[1])>0)   require_once(WYSIJA_WIDGETS.'wysija_nl.php');

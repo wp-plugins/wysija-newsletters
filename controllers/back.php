@@ -587,4 +587,157 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysijaversion.= "<div style='clear:both;'></div></div><div style='clear:both;'></div>";
             return $wysijaversion;
     }
+
+    /**
+     * to remove the conflicts in wysija's interfaces
+     * @param boolean $themes
+     */
+    function get_conflictive_plugins($themes=false){
+
+        /**
+         * List of all the conflictive extensions which invite themselves on our interfaces and break some of our js:
+         * tribulant newsletter
+         */
+        $conflictivePlugins = array(
+            'tribulant-wp-mailinglist' => array(
+                'file' => 'wp-mailinglist/wp-mailinglist.php',
+                'version' => '3.8.7',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'objects' => array('wpMail')
+                        )
+                    )
+                )
+            ),
+            'wp-events' => array(
+                'file' => 'wp-events/wp-events.php',
+                'version' => '',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'events_editor_admin_head'
+                        )
+                    )
+                )
+            ),
+            'email-users' => array(
+                'file' => 'email-users/email-users.php',
+                'version' => '',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'editor_admin_head'
+                        )
+                    )
+                )
+            ),
+            'acf' => array(
+                'file' => 'advanced-custom-fields/acf.php',
+                'version' => '3.1.7',
+                'clean' => array(
+                    'init' => array(
+                        '10' => array(
+                            'objects' => array('Acf')
+                        )
+                    )
+                )
+            ),
+            'wptofacebook' => array(
+                'file' => 'wptofacebook/index.php',
+                'version' => '1.2.3',
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'WpToFb::wptofb_editor_admin_head'
+                        )
+                    )
+                )
+            ),
+            'mindvalley-pagemash' => array(
+                'file' => 'mindvalley-pagemash/pagemash.php',
+                'version' => '1.1',
+                'clean' => array(
+                    'admin_print_scripts' => array(
+                        '10' => array(
+                            'function' => 'pageMash_head'
+                        )
+                    )
+                )
+            ),
+            'wp-polls' => array(
+                'file' => 'wp-polls/wp-polls.php',
+                'version' => '2.63',
+                'clean' => array(
+                    'wp_enqueue_scripts' => array(
+                        '10' => array(
+                            'function' => 'poll_scripts'
+                        )
+                    )
+                )
+            ),
+            'wp_rokajaxsearch' => array(
+                'file' => 'wp_rokajaxsearch/rokajaxsearch.php',
+                'version' => '',
+                'clean' => array(
+                    'init' => array(
+                        '-50' => array(
+                            'function' => 'rokajaxsearch_mootools_init'
+                        )
+                    )
+                )
+            ),
+            'wp_rokstories' => array(
+                'file' => 'wp_rokstories/rokstories.php',
+                'version' => '',
+                'clean' => array(
+                    'init' => array(
+                        '-50' => array(
+                            'function' => 'rokstories_mootools_init'
+                        )
+                    )
+                )
+            ),
+            'simple-links' => array(
+                'file' => 'simple-links/simple-links.php',
+                'version' => '1.5',
+                'clean' => array(
+                    'admin_print_scripts' => array(
+                        '10' => array(
+                            'objects' => array('simple_links_admin')
+                        )
+                    )
+                )
+            )
+        );
+
+        $conflictiveThemes = array(
+            'smallbiz' => array(
+                'clean' => array(
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'smallbiz_on_admin_head'
+                        )
+                    )
+                )
+            ),
+            'balance' => array(
+                'clean' => array(
+                    'admin_enqueue_scripts' => array(
+                        '10' => array(
+                            'functions' => array('al_admin_scripts', 'al_adminpanel_scripts', 'al_pricing_tables_scripts')
+                        )
+                    ),
+                    'admin_head' => array(
+                        '10' => array(
+                            'function' => 'al_admin_head'
+                        )
+                    )
+                )
+            )
+        );
+
+        if($themes) return $conflictiveThemes;
+        return $conflictivePlugins;
+    }
 }

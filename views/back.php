@@ -348,26 +348,27 @@ class WYSIJA_view_back extends WYSIJA_view{
      */
     function fieldListHTML($key,$val,$params=array()){
         /*get the params of that field if there is*/
+        $field_type = (isset($params['type']) ? $params['type'] : '');
 
-        switch($params['type']){
-            case "pk":
+        switch($field_type) {
+            case 'pk':
                 return '<th class="check-column" scope="col"><input class="checkboxselec" type="checkbox" value="'.$val.'" id="'.$key.'_'.$val.'" name="wysija['.$this->model->table_name.']['.$key.'][]"></th>';
                 break;
-            case "boolean":
+            case 'boolean':
 
                 $wrap='<td class="'.$key.' column-'.$key.'">';
                 $wrap.=$params['values'][$val];
                 $wrap.='</td>';
 
                 break;
-            case "date":
+            case 'date':
 
                 $wrap='<td class="'.$key.' column-'.$key.'">';
                 $wrap.=$this->fieldListHTML_created_at($val);
                 $wrap.='</td>';
 
                 break;
-            case "time":
+            case 'time':
 
                 if(!isset($params['format']))$params['format']='';
 
@@ -779,8 +780,9 @@ class WYSIJA_view_back extends WYSIJA_view{
         if($key=='from_name')   $keyemail='from_email';
         else    $keyemail='replyto_email';
 
-        $dataInputEmail=array('class'=>'validate[required]', 'id'=>$keyemail,'name'=>"wysija[$model][$keyemail]", 'size'=>40);
-
+        //$dataInputEmail=array('class'=>'validate[required]', 'id'=>$keyemail,'name'=>"wysija[$model][$keyemail]", 'size'=>40);
+        $dataInputEmail=array('class'=>'validate[required,custom[email]]', 'id'=>$keyemail,'name'=>"wysija[$model][$keyemail]", 'size'=>40);
+        
         if(isset($this->data['email'][$key])){
             $valname=$this->data['email'][$key];
             $valemail=$this->data['email'][$keyemail];
@@ -839,6 +841,6 @@ class WYSIJA_view_back extends WYSIJA_view{
     }
 
 
-   
+
 
 }

@@ -16,20 +16,20 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
         header('Content-type:text/html; charset=utf-8');
 
         // Get email model as object.
-        $emailM = &WYSIJA::get('email','model');
+        $emailM =& WYSIJA::get('email','model');
         $emailM->getFormat = OBJECT;
         // Get config model
-        $configM = &WYSIJA::get('config','model');
+        $configM =& WYSIJA::get('config','model');
 
         // Helpers
-        $emailH = &WYSIJA::get('email','helper');
-        $mailerH = &WYSIJA::get('mailer','helper');
+        $emailH =& WYSIJA::get('email','helper');
+        $mailerH =& WYSIJA::get('mailer','helper');
 
         // Get current email object.
         $current_email = $emailM->getOne((int)$_REQUEST['email_id']);
 
         // Get current user object if possible
-        $current_user=null;
+        $current_user = null;
         if(isset($_REQUEST['user_id'])){
             // Get User Model
             $userM = &WYSIJA::get('user','model');
@@ -42,26 +42,36 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
         $mailerH->parseSubjectUserTags($current_email);
         $mailerH->replaceusertags($current_email, $current_user);
 
-        // Set Title
-        $this->title = sprintf(__('Online version of newsletter: %1$s', WYSIJA), $current_email->subject);
+        // Parse and replace old shortcodes.
+        // $emailObject->subject = str_replace(
+        //         array('[total]','[number]','[post_title]'),
+        //         array($itemCount, $totalCount, $firstSubject),
+        //         $emailChild['subject']);
 
         // Set Body
         $email_render = $current_email->body;
 
-        // Parse unsubscribe label.
-        $find=array();
-        $replace=array();
-        $find[]='[unsubscribe_linklabel]';
-        $replace[]=$configM->getValue('unsubscribe_linkname');
+        // Parse old shortcodes that we are parsing in the queue.
+        $find = array(
+            '[unsubscribe_linklabel]',
+            '[post_title]',
+            '[total]',
+            '[number]'
+        );
+        $replace = array(
+            $configM->getValue('unsubscribe_linkname'),
+            $current_email->params['autonl']['articles']['first_subject'],
+            $current_email->params['autonl']['articles']['total'],
+            $current_email->params['autonl']['articles']['ids']
+        );
         $email_render = str_replace($find, $replace, $email_render);
 
         // Strip unsubscribe links.
         $email_render = $emailH->stripPersonalLinks($email_render);
 
-        $this->subtitle = $email_render;
         do_action( 'wysija_preview', array(&$this));
 
-        echo $this->subtitle;
+        echo $email_render;
 
         exit;
     }

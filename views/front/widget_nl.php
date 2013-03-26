@@ -62,7 +62,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         ob_end_clean();
 
         $html.='</head><body>';
-        if(isset($_REQUEST['external_site'])){
+        if(isset($_REQUEST['external_site'])) {
             $classform='';
         }else{
             $classform=' iframe-hidden';
@@ -73,35 +73,60 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
     }
 
     function display($title='',$params,$echo=true,$iframe=false){
-        if(!$iframe)    $this->addScripts();
-        $data=$labelemail='';
-        $formidreal='form-'.$params['id_form'];
+
+        if(!$iframe) $this->addScripts();
+        $data = '';
+        $label_email = '';
+        $form_id_real = 'form-'.$params['id_form'];
 
         $data.= $title;
-        $listfieldshidden=$listfields='';
-        $disabledSubmit=$msgsuccesspreview='';
-        if(isset($params['preview'])){
-            $disabledSubmit='disabled="disabled"';
-            $msgsuccesspreview='<div class="allmsgs"><div class="updated">'.$params['success'].'</div></div>';
-        }
-
-        //a subscription form needs to have lists associated to itself, otherwise it's no good
-        if(!isset($params['lists']) || !$params['lists'])   return;
+        $list_fields_hidden=$list_fields='';
+        $disabled_submit=$msg_success_preview='';
 
         $data.='<div class="widget_wysija_cont">';
-        if(isset($_POST['wysija']['user']['email']) && isset($_POST['formid']) && $formidreal==$_POST['formid']){
-            $data.= str_replace ('class="wysija-msg', 'id="msg-'.$formidreal.'" class="wysija-msg', $this->messages());
+
+        //if data has been posted the classique php/HTML way we display the result straight in good old HTML
+        if(isset($_POST['wysija']['user']['email']) && isset($_POST['formid']) && $form_id_real==$_POST['formid']){
+            $data.= str_replace ('class="wysija-msg', 'id="msg-'.$form_id_real.'" class="wysija-msg', $this->messages());
         }else{
-            $data.='<div id="msg-'.$formidreal.'" class="wysija-msg ajax">'.$msgsuccesspreview.'</div>';
+            $data.='<div id="msg-'.$form_id_real.'" class="wysija-msg ajax">'.$msg_success_preview.'</div>';
         }
 
-        // add form unless it's a preview
-        if(!isset($params['preview']) or (isset($params['preview']) && $params['preview'] === false)) {
-            $data .= '<form id="'.$formidreal.'" method="post" action="#wysija" class="widget_wysija form-valid-sub">';
-        }
+        // A form built with the form editor has been selected
+        if(isset($params['form']) && (int)$params['form'] > 0) {
+
+            // get form data
+            $model_forms =& WYSIJA::get('forms', 'model');
+            $form = $model_forms->getOne(array('form_id' => (int)$params['form']));
+
+            // if the form exists
+            if(!empty($form)) {
+                // load form data into form engine
+                $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
+                $helper_form_engine->set_data($form['data'], true);
+
+                // get html rendering of form
+                $form_html = $helper_form_engine->render_web();
+
+                // replace shortcodes
+                if(strpos($form_html, '[total_subscribers]') !== FALSE) {
+                    $model_config =& WYSIJA::get('config', 'model');
+                    // replace total subscribers shortcode by actual value
+                    $form_html = str_replace('[total_subscribers]', number_format($model_config->getValue('total_subscribers'), 0, '.', ' '), $form_html);
+                }
+
+                $data .= '<form id="'.$form_id_real.'" method="post" data-version="2" action="#wysija" class="widget_wysija">';
+                $data .= $form_html;
+                $data .= '</form>';
+            }
+        } else {
+
+            // What is included in this Else condition is only for retrocompatibility we should move it maybe to another file at some point as deprecated
+
+            $data .= '<form id="'.$form_id_real.'" method="post" data-version="1" action="#wysija" class="widget_wysija form-valid-sub">';
 
             if(isset($params['instruction']) && $params['instruction'])   {
-                if(strpos($params['instruction'], '[total_subscribers')!==false){
+                if(strpos($params['instruction'], '[total_subscribers') !== false){
                     $modelC=&WYSIJA::get('config','model');
                     $totalsubscribers=  str_replace(',', ' ', number_format($modelC->getValue('total_subscribers')));
 
@@ -112,65 +137,54 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
 
 
             if(isset($params['autoregister']) && $params['autoregister']=='auto_register'){
-                $listfields='<div class="wysija_lists">';
+                $list_fields='<div class="wysija_lists">';
                 $i=0;
-                foreach($params['lists'] as $listid){
-                    $listfields.='<p class="wysija_list_check">
-                        <label for="'.$formidreal.'_list_id_'.$listid.'"><input id="'.$formidreal.'_list_id_'.$listid.'" class="validate[minCheckbox[1]] checkbox checklists" type="checkbox" name="wysija[user_list][list_id][]" value="'.$listid.'" checked="checked" /> '.$params['lists_name'][$listid].' </label>
+                foreach($params['lists'] as $list_id){
+                    $list_fields.='<p class="wysija_list_check">
+                        <label for="'.$form_id_real.'_list_id_'.$list_id.'"><input id="'.$form_id_real.'_list_id_'.$list_id.'" class="validate[minCheckbox[1]] checkbox checklists" type="checkbox" name="wysija[user_list][list_id][]" value="'.$list_id.'" checked="checked" /> '.$params['lists_name'][$list_id].' </label>
                             </p>';
                     $i++;
                 }
-                $listfields.='</div>';
+                $list_fields.='</div>';
 
             }else{
 
-                if(isset($params['lists'])) $listexploded=esc_attr(implode(',',$params['lists']));
-                else $listexploded='';
+                if(isset($params['lists'])) $list_exploded=esc_attr(implode(',',$params['lists']));
+                else $list_exploded='';
 
-                $listfieldshidden='<input type="hidden" name="wysija[user_list][list_ids]" value="'.$listexploded.'" />';
+                $list_fields_hidden='<input type="hidden" name="wysija[user_list][list_ids]" value="'.$list_exploded.'" />';
             }
 
-            $submitbutton=$listfields.'<input type="submit" '.$disabledSubmit.' class="wysija-submit wysija-submit-field" name="submit" value="'.esc_attr($params['submit']).'"/>';
-            $dataCf=$this->customFields($params,$formidreal,$submitbutton);
-
-
+            $submitbutton=$list_fields.'<input type="submit" '.$disabled_submit.' class="wysija-submit wysija-submit-field" name="submit" value="'.esc_attr($params['submit']).'"/>';
+            $dataCf=$this->customFields($params,$form_id_real,$submitbutton);
 
             if($dataCf){
                 $data.=$dataCf;
 
             }else{
-                 $user_email=WYSIJA::wp_get_userdata('user_email');
-                 $value_attribute='';
-                if(!is_admin() && $user_email && is_string($user_email)){
+                $user_email=WYSIJA::wp_get_userdata('user_email');
+                $value_attribute='';
+                if(is_user_logged_in() && !current_user_can('switch_themes') && !is_admin() && $user_email && is_string($user_email)){
                     $value_attribute=$user_email;
                 }
 
                 $classValidate='wysija-email '.$this->getClassValidate($this->model->columns['email'],true);
-                $data.='<p><input type="text" id="'.$formidreal.'-wysija-to" class="'.$classValidate.'" value="'.$value_attribute.'" name="wysija[user][email]" />';
-                if(!isset($params['preview'])) $data.=$this->honey($params,$formidreal);
+                $data.='<p><input type="text" id="'.$form_id_real.'-wysija-to" class="'.$classValidate.'" value="'.$value_attribute.'" name="wysija[user][email]" />';
+                $data.=$this->honey($params,$form_id_real);
                 $data.=$submitbutton.'</p>';
             }
 
-
-
-
-            if(!isset($params['preview'])){
-                $data.='<input type="hidden" name="formid" value="'.esc_attr($formidreal).'" />
+                // few hiddn field
+                $data.='<input type="hidden" name="formid" value="'.esc_attr($form_id_real).'" />
                     <input type="hidden" name="action" value="save" />
-                '.$listfieldshidden.'
+                '.$list_fields_hidden.'
                 <input type="hidden" name="message_success" value="'.esc_attr($params["success"]).'" />
                 <input type="hidden" name="controller" value="subscribers" />';
-                //$data.=$this->secure(array('action'=>'save','controller'=>'subscribers'),false,false);
-
                 $data.='<input type="hidden" value="1" name="wysija-page" />';
-                //$data.='<input type="hidden" value="'.wp_create_nonce("wysija_ajax").'" id="wysijax" />';
-            }
 
-        // add form unless it's a preview
-        if(!isset($params['preview']) or (isset($params['preview']) && $params['preview'] === false)) {
-            $data.='</form>';
+                $data.='</form>';
+
         }
-
         //hook to let plugins modify our html the way they want
         $data = apply_filters('wysija_subscription_form', $data);
         $data.='</div>';
@@ -187,7 +201,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
         );
 
         $wp_user_values=array();
-        if(is_user_logged_in() && !is_admin()){
+        if(is_user_logged_in() && !is_admin() && !current_user_can('switch_themes')){
             $data_user_wp=WYSIJA::wp_get_userdata();
             if(isset($data_user_wp->user_email))$wp_user_values['email']=$data_user_wp->user_email;
             if(isset($data_user_wp->user_firstname))$wp_user_values['firstname']=$data_user_wp->user_firstname;
@@ -209,7 +223,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 if(!isset($field['label']) || !$field['label']) $field['label']=$validationsCF[$fieldKey]['defaultLabel'];
                 if($fieldKey=='email') $fieldid=$formidreal.'-wysija-to';
                 else $fieldid=$formidreal.'-'.$fieldKey;
-                if(isset($params['getHtml'])){
+                if(isset($params['form_type']) && $params['form_type']=='html'){
                     $titleplaceholder='placeholder="'.$field['label'].'" title="'.$field['label'].'"';
                 }else{
                     $titleplaceholder='title="'.$field['label'].'"';
@@ -242,7 +256,7 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                 $html.='<p class="wysija-p-'.$fieldKey.'">'.$fieldstring.'</p>';
             }
 
-            if(!isset($params['preview'])) $html.=$this->honey($params,$formidreal);
+            $html.=$this->honey($params,$formidreal);
 
             if($html) $html.=$submitbutton;
         }

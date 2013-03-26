@@ -5,6 +5,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     var $view="subscribers";
     var $list_columns=array("user_id","firstname", "lastname","email","created_at");
     var $searchable=array('email',"firstname", "lastname");
+    var $_export_batch = 2000; //set batch of records, useful when retrieving the list of user Ids to export
 
     function WYSIJA_control_back_subscribers(){
 
@@ -1008,7 +1009,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         $ignored_row_count;//this contain some ignored row because the email attribute was not detected. I say there should be a message for those
 
-        $this->notice(sprintf(__('%1$s subscribers added to %2$s. (%3$s were already subscribed.)',WYSIJA),$dataNumbers['list_user_ids'],'"'.implode('", "',$listnames).'"',$dataNumbers['ignored']/*,$dataNumbers['list_user_ids']*$dataNumbers['list_list_ids']*/));
+        $this->notice(sprintf(__('%1$s subscribers added to %2$s.', WYSIJA),
+                    $dataNumbers['list_user_ids'],
+                    '"'.implode('", "',$listnames).'"'
+                    ));
 
         if(count($emailsCount)>0){
             $listemails='';
@@ -1192,26 +1196,46 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                 if(isset($_POST['wysija']['export']['filter']['confirmed'])){
                     $where=' AND B.status>0 ';
                 }
-                $qry='SELECT A.user_id FROM `[wysija]user_list` as A
-                    JOIN `[wysija]user` as B on A.user_id=B.user_id
-                        WHERE A.list_id = '.(int)$_POST['wysija']['export']['filter']['list'].$where;
+                $from = ' `[wysija]user_list` as A
+                    JOIN `[wysija]user` as B on A.user_id=B.user_id';
+                $where = ' A.list_id = '.(int)$_POST['wysija']['export']['filter']['list'].$where;
+                $qry='SELECT B.user_id FROM '.$from . ' WHERE ' .$where;
+                $qry_count='SELECT COUNT(A.user_id) FROM '.$from . ' WHERE ' .$where;
             }else{
-                $qry='SELECT A.user_id FROM `[wysija]user` as A';
+                $from = '`[wysija]user` as A';
+                $where = '1';
                 if(isset($_POST['wysija']['export']['filter']['confirmed'])){
-                    $qry.=' WHERE A.status>0';
+                    $where ='A.status>0';
+                }
+                $qry='SELECT A.user_id FROM '. $from . ' WHERE '. $where;
+                $qry_count='SELECT COUNT(A.user_id) FROM '. $from . ' WHERE '. $where . ' ';
+            }
+
+            $user_ids_chunks = array(); // chunk rows into separated batchs, limit by $this->_export_batch
+            $qry_batchs = array(); // store all batched queries
+            $useridsrows=$this->modelObj->getResults($qry_count, ARRAY_N);
+            $useridsrows = (int)$useridsrows[0][0];
+
+            if($useridsrows <= $this->_export_batch){
+                $useridsdb=$this->modelObj->getResults($qry,ARRAY_N);
+                foreach($useridsdb as $uarr){
+                    $userids[]=$uarr[0];
                 }
             }
-            $useridsdb=$this->modelObj->getResults($qry,ARRAY_N);
-
-            foreach($useridsdb as $uarr){
-                $userids[]=$uarr[0];
+            else{
+                $pages = ceil($useridsrows / $this->_export_batch);//pagination
+                for ($i = 0; $i < $pages; $i++) {
+                    $qrybatch = $qry. 'LIMIT '.($i*$this->_export_batch) . ',' . $this->_export_batch;
+                    $useridsdb=$this->modelObj->getResults($qrybatch,ARRAY_N);
+                    foreach($useridsdb as $uarr){
+                        $userids[]=$uarr[0];
+                    }
+                    $useridsdb=null;//free memory
+                }
             }
-            $useridsdb=null;//free memory
         }
-
         $user_ids_chunks=array_chunk($userids, 200);
-        $userids=null;//free memory
-
+	$userids = null;// free memory
 
         //prepare the columns that need to be exported
         $model=&WYSIJA::get('user_field','model');

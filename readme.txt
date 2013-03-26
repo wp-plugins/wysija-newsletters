@@ -1,10 +1,10 @@
 === Wysija Newsletters ===
 Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
-Requires at least: 3.2
+Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.3.5
-Send your post notifications or newsletters from WordPress easily, and beautifully.
+Stable tag: 2.4.1
+Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
 
@@ -143,9 +143,28 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.4.1 - 2013-03-26 =
+
+* fixed post notification being queued immediately after changes being saved on step3 related to retroactive autoresponders.
+
+= 2.4 - 2013-03-25 =
+
+* added ability to edit HTML in text blocks of visual editor (beta)
+* added a form manager in settings, with a drag and drop interface
+* added ability for users to share their usage data with Wysija's team
+* added a dozen newsletter themes
+* added image resizing of images uploaded in previous versions
+* added autosave on browser back button. No more lost changes
+* improved sending status with progress bar
+* improved translations
+* improved autoresponders: now retroactive and will be sent to newly imported subscribers too
+* fixed when sending directly a newsletter which was set as scheduled in step 3
+* fixed dozens of small bugs
+* impressed by your determination in reading the full change log
+
 = 2.3.5 - 2013-03-15 =
 
-* fixed unsubscribe and subscriptions links lead now to view in browser version if the subscriber doesn't exists in the DB anymore(instead of a white screen)
+* fixed unsubscribe and subscriptions links lead now to view in browser version if the subscriber doesn't exists in the DB anymore (instead of a white screen)
 * fixed error when trying to delete a duplicated list
 * fixed view in browser link
 * fixed how spammy is your newsletter and Mandrill
@@ -156,8 +175,8 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 = 2.3.4 - 2013-03-07 =
 
 * added default value from WordPress' logged in user in the subscription form
-* added dropdown selection of statuses(publish, private, scheduled, draft) for WordPress' Posts to be dropped into the visual editor
-* added option to Wysija's CRON(tasks scheduler) to deactivate the schedule tasks checks on any page view
+* added dropdown selection of statuses (publish, private, scheduled, draft) for WordPress' Posts to be dropped into the visual editor
+* added option to Wysija's CRON (task scheduler) to deactivate the schedule tasks checks on any page view
 * fixed unsubscribe date in the frontend subscriptions management is now translated with date_i18n (thanks Anna :))
 * fixed unsubscribe link in preview emails
 * fixed subscribers count when double optin is deactivated

@@ -89,7 +89,7 @@ class acymailingSendgrid {
 
             //If the ID is correct and we have no Errors
             $this->error='';
-            if($result->message=='error'){
+            if(isset($result->message) && $result->message=='error'){
                 foreach($result->errors as $msgError)
                     $this->error .= $msgError."\n\r";
                 return false;

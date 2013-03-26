@@ -10,10 +10,10 @@ class WYSIJA_help_stats extends WYSIJA_object{
             WHERE sent_at>'.$onedayago.'
                 GROUP BY status';
         $statuscount=$modelEUS->query('get_res',$query);
-        $modelUH=&WYSIJA::get('user_history','model');
-        $query='SELECT B.user_id,B.email FROM `[wysija]'.$modelUH->table_name.'`  as A JOIN `[wysija]user` as B on A.user_id=B.user_id
-            WHERE A.executed_at>'.$onedayago." AND A.type='bounce'";
-        $details=$modelUH->query('get_res',$query);
+
+        $query='SELECT B.user_id,B.email FROM `[wysija]'.$modelEUS->table_name.'` as A JOIN `[wysija]user` as B on A.user_id=B.user_id
+            WHERE A.sent_at>'.$onedayago." AND A.status='-1'";
+        $details=$modelEUS->query('get_res',$query);
         $total=0;
         foreach($statuscount as &$count){
             switch($count['status']){

@@ -24,6 +24,7 @@ jQuery.fn.modcoder_excolor = function (C) {
         effect: 'none',
         z_index: 'none',
         hide_on_scroll: false,
+        color_has_changed: false,
         ok_on_exit: true, // closing the popup in any way will trigger the ok (maybe remove ok/cancel buttons if set to TRUE)
         callback_on_select: function() { }, // callback when the user selects a color
         callback_on_init: function() { }, // callback when the colorpicker is initialized
@@ -173,7 +174,7 @@ jQuery.fn.modcoder_excolor = function (C) {
         jQuery(aitem).clone().show().addClass('mds' + A).css('position', 'absolute').css('visibility', 'hidden').appendTo('body');
         setTimeout(function () {
             var a = jQuery('body > .mds' + A);
-            jQuery(aitem).parent().find('#' + A).css('width', (jQuery(a).outerHeight() - 2) + 'px');
+            //jQuery(aitem).parent().find('#' + A).css('width', (jQuery(a).outerHeight() - 2) + 'px');
             jQuery(a).remove()
         }, 300);
         isample = jQuery(aitem).parent().find('#' + A).mouseenter(function () {
@@ -316,7 +317,8 @@ jQuery.fn.modcoder_excolor = function (C) {
                     jQuery(aitem).val(color);
                 }
                 userok = false;
-                C.callback_on_ok(color);
+
+                C.callback_on_ok(color, C.color_has_changed);
             }
         };
 
@@ -399,6 +401,9 @@ jQuery.fn.modcoder_excolor = function (C) {
         };
 
         function update_inputs() {
+            // set color_has_changed to true
+            C.color_has_changed = true;
+
             var a = hsb2rgb_hex(-1 * (hue - 119) * 3, saturation, brightness, 'rgb');
             jQuery(inp_r).val(Math.round(a['r']) * 1);
             jQuery(inp_g).val(Math.round(a['g']) * 1);
@@ -574,6 +579,9 @@ jQuery.fn.modcoder_excolor = function (C) {
         }, 200);
 
         function run_modcoder_colorpicker() {
+            // set color_has_changed to false
+            C.color_has_changed = false;
+
             C.callback_on_init();
             var b = -1 * C.hue_bar * 20,
                 cz_index = C.z_index,

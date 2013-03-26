@@ -3,7 +3,6 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
     function WYSIJA_control_back_campaigns(){
-        $modelC=&WYSIJA::get("config","model");
         if(!WYSIJA::current_user_can('wysija_newsletters'))  die("Action is forbidden.");
         parent::WYSIJA_control();
     }
@@ -827,9 +826,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 }
             }
 
-            // TODO - set color dynamically
-            //$params['bgcolor1'] = '990000';
-            //$params['bgcolor2'] = '99CC00';
             return base64_encode($wjEngine->renderEditorAutoPost($posts, $params));
         }
     }

@@ -52,98 +52,148 @@ a {
 var ButtonDialog = {
   local_ed : 'ed',
   init : function(ed) {
+
     ButtonDialog.local_ed = ed;
     tinyMCEPopup.resizeToInnerSize();
+
+    // Hide Auto Newsletters shortcodes if current newsletter is normal.
+    // Normal Newsletter: newsletter_type = 1.
+    // Auto Newsletter: newsletter_type = 2.
+    var newsletter_type = parseInt(window.parent.$('email_id').dataset.type);
+    var autonl_shortcodes = document.getElementById('autonl_shortcodes');
+    if (newsletter_type === 1) {
+      autonl_shortcodes.style.display = 'none';
+    };
+
   },
   insert : function insertButton(ed, content) {
- 
+
     // Try and remove existing style / blockquote
     tinyMCEPopup.execCommand('mceRemoveNode', false, null);
- 
+
     var output = '';
- 
+
     // setup the output of our shortcode
     output = '[';
       output += content;
       output += ']';
- 
+
     tinyMCEPopup.execCommand('mceReplaceContent', false, output);
- 
+
     // Return
     tinyMCEPopup.close();
   }
 };
 tinyMCEPopup.onInit.add(ButtonDialog.init, ButtonDialog);
- 
+
+// Get translations.
+var wysijatrans = window.parent.wysijatrans;
+
 </script>
 
 </head>
 
 <body class="shortcodes">
-    <h4>Subscriber:</h4>
+    <h4><script>document.write(wysijatrans.tags_user);</script>:</h4>
     <ul>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:firstname | default:subscriber')">First Name</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:firstname | default:subscriber')">
+          <script>document.write(wysijatrans.tags_user_firstname);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:lastname | default:subscriber')">Last Name</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:lastname | default:subscriber')">
+          <script>document.write(wysijatrans.tags_user_lastname);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:email')">Email Address</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:email')">
+          <script>document.write(wysijatrans.tags_user_email);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:displayname | default:member')">WordPress user display name</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'user:displayname | default:member')">
+          <script>document.write(wysijatrans.tags_user_displayname);</script>
+        </a>
       </li>
     </ul>
-    <h4>Newsletter:</h4>
+    <h4><script>document.write(wysijatrans.tags_newsletter);</script>:</h4>
     <ul>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:subject')">Newsletter Subject</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:subject')">
+          <script>document.write(wysijatrans.tags_newsletter_subject);</script>
+        </a>
       </li>
     </ul>
-    <h4>Post Notifications:</h4>
+    <div id="autonl_shortcodes">
+      <h4><script>document.write(wysijatrans.tags_newsletter_autonl);</script>:</h4>
+      <ul>
+        <li>
+          <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:total')">
+            <script>document.write(wysijatrans.tags_newsletter_total);</script>
+          </a>
+        </li>
+        <li>
+          <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:post_title')">
+            <script>document.write(wysijatrans.tags_newsletter_post_title);</script>
+          </a>
+        </li>
+        <li>
+          <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:number')">
+            <script>document.write(wysijatrans.tags_newsletter_number);</script>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <h4><script>document.write(wysijatrans.tags_date);</script>:</h4>
     <ul>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:total')">Total number of posts or pages</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:d')">
+          <script>document.write(wysijatrans.tags_date_d);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:post_title')">Latest post title</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:dordinal')">
+          <script>document.write(wysijatrans.tags_date_dordinal);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'newsletter:number')">Issue number</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:dtext')">
+          <script>document.write(wysijatrans.tags_date_dtext);</script>
+        </a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:m')">
+          <script>document.write(wysijatrans.tags_date_m);</script>
+        </a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:mtext')">
+          <script>document.write(wysijatrans.tags_date_mtext);</script>
+        </a>
+      </li>
+      <li>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:y')">
+          <script>document.write(wysijatrans.tags_date_y);</script>
+        </a>
       </li>
     </ul>
-    <h4>Date:</h4>
+    <h4><script>document.write(wysijatrans.tags_global);</script>:</h4>
     <ul>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:d')">Current day of the month number</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:unsubscribe')">
+          <script>document.write(wysijatrans.tags_global_unsubscribe);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:dordinal')">Current day of the month in ordinal, ie. 2nd, 3rd, etc.</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:manage')">
+          <script>document.write(wysijatrans.tags_global_manage);</script>
+        </a>
       </li>
       <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:dtext')">Full name of current day</a>
-      </li>
-      <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:m')">Current month number</a>
-      </li>
-      <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:mtext')">Full name of current month</a>
-      </li>
-      <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'date:y')">Year</a>
-      </li>
-    </ul>
-    <h4>Links :</h4>
-    <ul>
-      <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:unsubscribe')">Unsubscribe link</a>
-      </li>
-      <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:manage')">Edit subscription page link</a>
-      </li>
-      <li>
-        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:browser')">View in browser link</a>
+        <a class="button" href="javascript:ButtonDialog.insert(ButtonDialog.local_ed, 'global:browser')">
+          <script>document.write(wysijatrans.tags_global_browser);</script>
+        </a>
       </li>
     </ul>
 </body>
