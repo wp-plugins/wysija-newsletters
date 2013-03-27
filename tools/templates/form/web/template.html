@@ -1,0 +1,13 @@
+{#body}
+{if ! #preview}
+    <input type="hidden" name="form_id" value="{#form_id}" />
+    <input type="hidden" name="action" value="save" />
+    <input type="hidden" name="controller" value="subscribers" />
+    <input type="hidden" value="1" name="wysija-page" />
+
+    {if #settings.lists_selected_by != 'user'}
+        <input type="hidden" name="wysija[user_list][list_ids]" value="{#settings.lists|join:','}" />
+    {/if}
+    <input type="hidden" name="on_success" value="{#settings.on_success}" />
+    <input type="hidden" name="success_message" value="{#settings.success_message|base64_encode}" />
+{/if}

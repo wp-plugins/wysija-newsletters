@@ -1,7 +1,7 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 
-class WYSIJA_help_wj_parser extends WYSIJA_object {
+class WYSIJA_help_render_engine extends WYSIJA_object {
     private $_template = null;
     private $_template_path = array();
     private $_data_path = null;
@@ -76,7 +76,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
             $output = $this->_parseForJS($string);
             return $output;
         } else {
-            throw new Exception('wysija parser needs a template');
+            throw new Exception('wysija rendering engine needs a template');
         }
     }
     public function render($vars, $template)
@@ -97,11 +97,11 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
             if ($this->_render_time) {
                 $time_end = microtime();
                 $time = $time_end - $time_start;
-                $output .= "<div>wysija parser rendering took : $time second(s)</div>";
+                $output .= "<div>wysija rendering engine rendering took : $time second(s)</div>";
             }
             return $output;
         } else {
-            throw new Exception('wysija parser needs a template');
+            throw new Exception('wysija rendering engine needs a template');
         }
     }
 
@@ -259,7 +259,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                 $loop_name = $this->_getProperty ('name', $tag_properties);
                 $loop_as = $this->_getProperty ('value', $tag_properties);
                 $loop_key = $this->_getProperty ('key', $tag_properties);
-                $loop_row_size = $this->_getProperty ('row_size', $tag_properties);
+                $loop_row_size = (int)$this->_getProperty ('row_size', $tag_properties);
                 $reverse = $this->_getProperty ('reverse', $tag_properties);
                 # define loop string and replace pattern
                 $loop_replace_pattern = $this->_getEncapsuledPattern ($string, $tag_type, $tag_mask);
@@ -268,30 +268,30 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                 # loop on array
                 preg_match ("`^".self::_VAR."`", $loop_name, $preg);
                 $loop_array = $this->_getValue ($preg, $vars);
-				if ($reverse) {
-					$loop_array = array_reverse ($loop_array);
-				}
-                if (is_array ($loop_array)) {
+                if($reverse) {
+                    $loop_array = array_reverse ($loop_array);
+                }
+                if(is_array($loop_array)) {
                     $count = count ($loop_array);
                     $loop = array ();
                     $i = 0;
-                    foreach ($loop_array as $line) {
+                    foreach ($loop_array as $key => $line) {
 						# meta values
                         if (is_array($line)) {
                             # is pair ?
                             $line[self::_PAIR] = ($i+1)%2 ;
                             # position in list
                             $i < $count-1 ? $line[self::_LAST] = false : $line[self::_LAST] = true;
-                            $i == 0 ? $line[self::_FIRST] = true : $line[self::_FIRST] = false;
+                            $i === 0 ? $line[self::_FIRST] = true : $line[self::_FIRST] = false;
                             # rows and columns infos
                             if ($loop_row_size) {
                                 # col position
-                                ($i+1)%$loop_row_size ? $line[self::_LAST_COL] = false : $line[self::_LAST_COL] = true;
-                                ($i+1)%$loop_row_size==1 ? $line[self::_FIRST_COL] = true : $line[self::_FIRST_COL] = false;
+                                (($i+1) % $loop_row_size) ? $line[self::_LAST_COL] = false : $line[self::_LAST_COL] = true;
+                                (($i+1) % $loop_row_size === 1) ? $line[self::_FIRST_COL] = true : $line[self::_FIRST_COL] = false;
                                 # row position
-                                $i<$loop_row_size ? $line[self::_FIRST_ROW] = true : $line[self::_FIRST_ROW] = false;
-                                $modulo = $count%$loop_row_size;
-                                if (($modulo && $i>=$count-$modulo) || (!$modulo && $i>=$count-$loop_row_size)) {
+                                ($i < $loop_row_size) ? $line[self::_FIRST_ROW] = true : $line[self::_FIRST_ROW] = false;
+                                $modulo = $count % $loop_row_size;
+                                if(($modulo && $i>=$count-$modulo) || (!$modulo && $i>=$count-$loop_row_size)) {
                                     $line[self::_LAST_ROW] = true;
                                 } else {
                                     $line[self::_LAST_ROW] = false;
@@ -299,13 +299,15 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                             }
                         }
                         # switch case
-                        if ($tag_type == self::_LOOP) {
+                        if($tag_type == self::_LOOP) {
                             $loop_key ? $line[$loop_key] = $i : $line[self::_COUNTER] = $i;
-                            $loop[] = $this->_parse ($loop_string, $line);
+                            $loop[] = $this->_parse($loop_string, $line);
                         } else {
-                            $loop_key ? $vars[$loop_key] = $i : $vars[self::_COUNTER] = $i;
+
+                            $vars[self::_COUNTER] = $i;
+                            $vars[$loop_key] = $key;
                             $vars[$loop_as] = $line;
-                            $loop[] = $this->_parse ($loop_string, $vars);
+                            $loop[] = $this->_parse($loop_string, $vars);
                         }
                         $i++;
                     }
@@ -800,11 +802,14 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'nl2br':
-                    $value = nl2br ($value);
+                    $value = nl2br($value);
+                break;
+                case 'replace_nl_br':
+                    $value = str_replace('\n', '<br />', $value);
                 break;
                 case 'delnl':
-                    $value = str_replace ("\n", '', $value);
-                    $value = str_replace ("\r", '', $value);
+                    $value = str_replace ('\n', '', $value);
+                    $value = str_replace ('\r', '', $value);
                 break;
                 case 'addslashes':
                     $value = addslashes ($value);
@@ -864,6 +869,14 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                     $value = $result;
                 break;
+                case 'index':
+                    $index = (int)$arguments[0];
+                    if(isset($value[$index])) {
+                        $value = $value[$index];
+                    } else {
+                        $value = '';
+                    }
+                break;
                 case 'html_entity_decode':
                     $value = html_entity_decode ($value, ENT_QUOTES);
                 break;
@@ -873,13 +886,30 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                 case 'json_encode':
                     $value = json_encode($value);
                 break;
+                case 'maybe_serialize':
+                    if(is_array($value) or is_object($value)) {
+
+                        if(array_key_exists(self::_PAIR, $value)) unset($value[self::_PAIR]);
+                        if(array_key_exists(self::_FIRST, $value)) unset($value[self::_FIRST]);
+                        if(array_key_exists(self::_LAST, $value)) unset($value[self::_LAST]);
+
+                        $value = serialize($value);
+                    }
+                break;
                 case 'base64_decode':
-                    if($this->is_base64_encoded($value)) {
+                    if($this->is_base64_encoded($value) === true) {
                         $value = base64_decode($value);
                     }
                 break;
                 case 'base64_encode':
-                    $value = base64_encode($value);
+                    if($this->is_base64_encoded($value) === false) {
+                        $value = base64_encode($value);
+                    }
+                break;
+                case 'join':
+                    if(isset($arguments[0])) {
+                        $value = join($value, $arguments[0]);
+                    }
                 break;
                 case 'wordwrap' :
                     if ($arguments) {
@@ -887,7 +917,7 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'img_size_limit':
-                    if (isset ($arguments[2]) && $arguments[2]) {
+                    if (isset($arguments[2]) && $arguments[2]) {
                             $data_path = $arguments[2];
                     } else {
                             $data_path = $this->_data_path;
@@ -923,9 +953,9 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
                     }
                 break;
                 case 'highlight':
-					if ($arguments[0]) {
-                		$value = preg_replace ("{(".$arguments[0].")}si", "<".$arguments[1]." class='".$arguments[2]."'>\\1</".$arguments[1].">", $value);
-					}
+                    if($arguments[0]) {
+                        $value = preg_replace ("{(".$arguments[0].")}si", "<".$arguments[1]." class='".$arguments[2]."'>\\1</".$arguments[1].">", $value);
+                    }
                 break;
                 case 'password':
                     $value = preg_replace ("'.'", '*', $value);
@@ -974,12 +1004,13 @@ class WYSIJA_help_wj_parser extends WYSIJA_object {
         }
         return $value;
     }
-    function is_base64_encoded($data)
-    {
-        if (preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
-            return TRUE;
+    function is_base64_encoded($data) {
+
+        if(strlen($data) % 4 !== 0) return false;
+        if(preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
     

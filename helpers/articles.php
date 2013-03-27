@@ -74,7 +74,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                 $content = $post['post_excerpt'];
             } else {
 
-                $post['post_content'] = preg_replace('/\[.*\]/', '', $post['post_content']);
+                $post['post_content'] = preg_replace('/\[[^\[\]]*\]/', '', $post['post_content']);
 
                 $excerpts = explode('<!--more-->', $post['post_content']);
                 if(count($excerpts) > 1){
@@ -93,7 +93,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
         $content = preg_replace('/<img[^>]+./','', $content);
 
-        $content = preg_replace('/\[.*\]/', '', $content);
+        $content = preg_replace('/\[[^\[\]]*\]/', '', $content);
 
         $content= preg_replace('/\<div class="wysija-register">(.*?)\<\/div>/','',$content);
 

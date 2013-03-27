@@ -101,4 +101,21 @@ class WYSIJA_help_email extends WYSIJA_object{
             return WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$paramsurl);
         }
     }
+    
+    function get_active_follow_ups($data=array('subject','params'),$delay=false){
+        if($delay)  $model_queue=&WYSIJA::get('queue','model');
+        $model_email=&WYSIJA::get('email','model');
+        $model_email->setConditions(array('type'=>2,'status'=>99));
+        $automatic_emails=$model_email->getRows($data);
+        $follow_ups_per_list=array();
+        foreach($automatic_emails as &$auto_email){
+            $model_email->getParams($auto_email);
+            if($delay)  $auto_email['delay']=$model_queue->calculate_delay($auto_email['params']);
+            if(isset($auto_email['params']['autonl']['event']) && $auto_email['params']['autonl']['event']=='subs-2-nl'){
+                if(!isset($follow_ups_per_list[$auto_email['params']['autonl']['subscribetolist']]))    $follow_ups_per_list[$auto_email['params']['autonl']['subscribetolist']]=array();
+                $follow_ups_per_list[$auto_email['params']['autonl']['subscribetolist']][]=$auto_email;
+            }
+        }
+        return $follow_ups_per_list;
+    }
 }

@@ -127,30 +127,40 @@ class WYSIJA_model_email extends WYSIJA_model{
 
     /**
      * what to do when starting to send a newsletter based on the type and other parameters
-     * @param type $email
-     * @return type
+     * @param mixed $email
+     * @param boolean $queue_emails
+     * @return boolean
      */
-    function send($email,$queueemails=false){
+    function send($email,$queue_emails=false){
         if(!is_array($email)){
             if(is_numeric($email)){
-                $email=$this->getOne($email);
+                $email=$this->getOne(false,array('email_id'=>$email));
             }else return false;
         }
 
-        $sentstatus=array('status'=>99,'sent_at'=>time());
+        $sent_status=array('status'=>99,'sent_at'=>time());
         if((int)$email['type'] === 2){
+            //if we are in a subscriber follow-up case then we just queue emails of the list
+            //subs-2-nl
+            if(isset($email['params']) && $email['params']['autonl']['event']=='subs-2-nl' && (int)$email['sent_at']===0){
+                $model_queue=&WYSIJA::get('queue','model');
+                $email_were_queued=$model_queue->queue_email($email,true);
+            }else{
+                // we haven't queued the emails but we want to update the email status
+                $email_were_queued = true;
+            }
 
         }else{
             //insert select all the subscribers from the lists related to that campaign
-
-            if($queueemails){
-                $modelQ=&WYSIJA::get('queue','model');
-                $modelQ->queueCampaign($email['email_id']);
+            if($queue_emails){
+                $model_queue=&WYSIJA::get('queue','model');
+                $email_were_queued=$model_queue->queue_email($email);
             }
         }
 
         $this->reset();
-        $this->update($sentstatus,array('email_id'=>$email['email_id']));
+        if($email_were_queued)  $this->update($sent_status,array('email_id'=>$email['email_id']));
+        else $this->error (__('There was an error putting emails in the queue.',WYSIJA),1);
     }
 
 
@@ -161,7 +171,8 @@ class WYSIJA_model_email extends WYSIJA_model{
      * @return int next send value
      */
     function give_birth($email, $immediatePostNotif=false){
-        //duplicate email with the right body and title set it as type 1*/
+        WYSIJA::log('give_birth_starts', $email['params']['autonl']['nextSend'], 'post_notif');
+        //duplicate email with the right body and title set it as type 1
         if(isset($email['params']) && !is_array($email['params']))  $this->getParams($email);
         $emailChild=$email;
         $paramsVal=$email['params'];
@@ -216,7 +227,7 @@ class WYSIJA_model_email extends WYSIJA_model{
         // we send if not told to not do it
         if(!$donotsend){
 
-            // scan title for tags [number] [total] [post_title]
+            // Parse old subject shortcodes.
             $emailChild['subject'] = str_replace(
                     array('[total]','[number]','[post_title]'),
                     array((int)$emailChild['params']['autonl']['articles']['count'],
@@ -224,21 +235,32 @@ class WYSIJA_model_email extends WYSIJA_model{
                         $emailChild['params']['autonl']['articles']['first_subject']),
                     $emailChild['subject']);
 
+            // Get the email object, needed for the shortcode class.
+            $current_email_object = (object) $emailChild;
+
+            // Parse subject shortcodes.
+            $helper_mailer =& WYSIJA::get('mailer','helper');
+            $helper_mailer->parseSubjectUserTags($current_email_object);
+
+            // Replace subject shortcodes.
+            $helper_shortcodes =& WYSIJA::get('shortcodes','helper');
+            $emailChild['subject'] = $helper_shortcodes->replace_subject($current_email_object);
+
             // save the child email
             $emailChild['params']['autonl']['parent']=$email['email_id'];
 
             $this->dbg=false;//this line is to correct the crazy color so that it doesn't use the keepQry function.
             $emailChild['email_id']=$this->insert($emailChild);
             $this->reset();
-
+            WYSIJA::log('check_post_notif_give_birth_before_send', $emailChild, 'post_notif');
             $this->send($emailChild,true);
         }
-
+        WYSIJA::log('prev_send_value_give_birth', $email['params']['autonl']['nextSend'], 'post_notif');
         // update the parent with the new nextSend date
         $auton=&WYSIJA::get('autonews','helper');
         $nextSendValue=$auton->getNextSend($email);
 
-
+        WYSIJA::log('next_send_value_give_birth', $nextSendValue, 'post_notif');
         //update the parent email only it has been  sent
         if(!$donotsend){
             $paramsVal['autonl']['nextSend']=$nextSendValue;
@@ -343,5 +365,4 @@ class WYSIJA_model_email extends WYSIJA_model{
             }
         }
     }
-
 }

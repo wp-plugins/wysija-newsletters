@@ -108,6 +108,7 @@ class WYSIJA_help_cron extends WYSIJA_object{
                     $hPremium =& WYSIJA::get('premium', 'helper', false, WYSIJANLP);
                     $hPremium->croned_weekly();
                 }
+                WYSIJA::croned_weekly();
                 break;
             case 'monthly':
                 WYSIJA::croned_monthly();

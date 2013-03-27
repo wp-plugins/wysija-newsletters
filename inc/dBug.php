@@ -162,10 +162,26 @@ class dBug {
 				break;
 			default:
 				$var=($var=="") ? "[empty string]" : $var;
+                                $var=$this->convertTimeStampToDate($var);
 				echo "<table cellspacing=0><tr>\n<td>".$var."</td>\n</tr>\n</table>\n";
 				break;
 		}
 	}
+
+        function convertTimeStampToDate($var){
+            if($this->varIsValidTimeStamp((string)$var)){
+                $helper_toolbox=&WYSIJA::get('toolbox','helper');
+                $var=date('d-m-y h:i:s A', $helper_toolbox->servertime_to_localtime($var)).' <small>('.$var.')</small>';
+            }
+            return $var;
+        }
+
+        function varIsValidTimeStamp($timestamp){
+            return ((string) (int) $timestamp === $timestamp)
+                && ($timestamp <= PHP_INT_MAX)
+                && ($timestamp > 100000000)
+                && ($timestamp >= ~PHP_INT_MAX);
+        }
 
 	//if variable is a NULL type
 	function varIsNULL() {
@@ -199,6 +215,8 @@ class dBug {
 					$this->checkType($value);
 				else {
 					$value=(trim($value)=="") ? "[empty string]" : $value;
+                                        $value=$this->convertTimeStampToDate($value);
+
 					echo $value;
 				}
 				echo $this->closeTDRow();

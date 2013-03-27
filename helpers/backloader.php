@@ -14,6 +14,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
         
         wp_enqueue_script('wysija-admin-if', WYSIJA_URL.'js/admin-wysija.js', array( 'jquery' ),WYSIJA::get_version());
 
+
         if(!$controller->jsTrans){
             $controller->jsTrans["selecmiss"]=__('Please make a selection first!',WYSIJA);
             $controller->jsTrans["suredelete"]=__('Deleting a list will not delete any subscribers.',WYSIJA);
@@ -95,6 +96,12 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                         case 'wysija-edit-autonl':
                             wp_enqueue_script('wysija-edit-autonl', WYSIJA_URL.'js/admin-campaigns-editAutonl.js',array('jquery'),WYSIJA::get_version());
                             break;
+                        case 'wysija-form-widget-settings':
+                            wp_enqueue_script('wysija-prototype', WYSIJA_URL.'js/prototype/prototype.js',array(),WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-scriptaculous', WYSIJA_URL.'js/prototype/scriptaculous.js',array('wysija-prototype'),WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-dragdrop', WYSIJA_URL.'js/prototype/dragdrop.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-controls', WYSIJA_URL.'js/prototype/controls.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
+                        break;
                         case 'wysija-form-editor':
                             wp_enqueue_script('wysija-prototype', WYSIJA_URL.'js/prototype/prototype.js',array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-proto-scriptaculous', WYSIJA_URL.'js/prototype/scriptaculous.js',array('wysija-prototype'),WYSIJA::get_version());
@@ -102,10 +109,10 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_enqueue_script('wysija-proto-controls', WYSIJA_URL.'js/prototype/controls.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
 
                             wp_enqueue_script($js, WYSIJA_URL.'js/'.$js.'.js', array(), WYSIJA::get_version());
+                            
+                            wp_localize_script('wysija-form-editor', 'Wysija_i18n', $controller->jsTrans);
 
                             wp_enqueue_style('wysija-form-editor-css', WYSIJA_URL."css/wysija-form-editor.css",array(),WYSIJA::get_version());
-
-                            wp_enqueue_script('wysija-colorpicker', WYSIJA_URL.'js/excolor/jquery.modcoder.excolor.js', array('jquery'), WYSIJA::get_version());
                             break;
                         case 'wysija-editor':
                             wp_enqueue_script("wysija-prototype", WYSIJA_URL."js/prototype/prototype.js",array(),WYSIJA::get_version());

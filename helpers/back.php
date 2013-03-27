@@ -101,12 +101,10 @@ class WYSIJA_help_back extends WYSIJA_help{
         if(isset($value->response['wysija-newsletters/index.php'])) unset($value->response['wysija-newsletters/index.php']);
         return $value;
     }
-
+    
     function resolveConflicts(){
-        
-        $modelConfig=&WYSIJA::get('config','model');
 
-        $possibleConflictiveThemes = $modelConfig->getValue('conflictiveThemes');
+        $possibleConflictiveThemes = $this->controller->get_conflictive_plugins(true);
         $conflictingTheme = null;
         $currentTheme = strtolower(function_exists( 'wp_get_theme' ) ? wp_get_theme() : get_current_theme());
         foreach($possibleConflictiveThemes as $keyTheme => $conflictTheme) {
@@ -120,7 +118,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             $helperConflicts->resolve(array($possibleConflictiveThemes[$conflictingTheme]));
         }
 
-        $possibleConflictivePlugins=$modelConfig->getValue('conflictivePlugins');
+        $possibleConflictivePlugins=$this->controller->get_conflictive_plugins();
         $conflictingPlugins=array();
         foreach($possibleConflictivePlugins as $keyPlg => $conflictPlug){
             if(WYSIJA::is_plugin_active($conflictPlug['file'])) {
@@ -133,6 +131,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             $helperConflicts->resolve($conflictingPlugins);
         }
     }
+    
     function define_translated_strings(){
         $config=&WYSIJA::get('config','model');
         $linkcontent=__("It doesn't always work the way we want it to, doesn't it? We have a [link]dedicated support website[/link] with documentation and a ticketing system.",WYSIJA);
@@ -181,7 +180,6 @@ class WYSIJA_help_back extends WYSIJA_help{
                     $urlsendingmethod='#tab-sendingmethod';
                 }
             }
-            
         }
     }
 
@@ -259,6 +257,17 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         wp_enqueue_style('wysija-admin-css-widget', WYSIJA_URL.'css/admin-widget.css',array(),WYSIJA::get_version());
 
+        $model_config =& WYSIJA::get('config', 'model');
+        if ($model_config->getValue('send_analytics_now') == 1) {
+            require_once WYSIJA_CLASSES . 'autoloader.php';
+            $analytics = new WJ_Analytics();
+            $analytics->generate_data();
+            $analytics->send();
+
+            $model_config->save(array('send_analytics_now' => 0));
+        }
+
+
         if(WYSIJA_ITF){
             wp_enqueue_style('wysija-admin-css-global', WYSIJA_URL.'css/admin-global.css',array(),WYSIJA::get_version());
             wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL.'js/admin-wysija-global.js',array(),WYSIJA::get_version());
@@ -311,16 +320,15 @@ class WYSIJA_help_back extends WYSIJA_help{
     }
     function version(){
         $wysijaversion= '<div class="wysija-version">';
-
-        $config=&WYSIJA::get('config','model');
-        $msg=$config->getValue('ignore_msgs');
         $wysijaversion.='<div class="social-foot">';
-        $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | <a target="_blank" href="http://www.wysija.com/you-want-to-help-us-out/?utm_source=wpadmin&utm_campaign=footer">'.__('Spread da word.',WYSIJA).'</a> </div>';
+        $wysijaversion.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support & documentation',WYSIJA).'</a> | <a target="_blank" href="http://wysija.uservoice.com/forums/150107-feature-request" >'.__('Request feature',WYSIJA).'</a> | ';
+        $wysijaversion.=str_replace(
+                array('[stars]','[link]','[/link]'),
+                array('<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >★★★★★</a>','<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >','</a>'),
+                __('Add your [stars] on [link]wordpress.org[/link] and keep this plugin essentially free.',WYSIJA)
+                );
         $wysijaversion.= '<div class="version">'.__('Wysija Version: ',WYSIJA).'<a href="admin.php?page=wysija_campaigns&action=whats_new">'.WYSIJA::get_version().'</a></div></div>';
-        if(!isset($msg['socialfoot'])){
-            $wysijaversion .= $this->controller->__get_social_buttons();
-        }
-
+        
         $wysijaversion.= '</div></div>';
         echo $wysijaversion;
     }

@@ -42,7 +42,7 @@ class WYSIJA_object{
      * @param string $field
      * @return mixed
      */
-    function wp_get_userdata($field=false){
+    public static function wp_get_userdata($field=false){
         //WordPress globals be careful there
         global $current_user;
         if($field){
@@ -365,97 +365,117 @@ class WYSIJA extends WYSIJA_object{
     /**
      * function to generate objects of different types, managing file requiring in order to be the most efficient
      * @staticvar array $arrayOfObjects
-     * @param type $name
-     * @param type $type
-     * @return type
+     * @param string $name
+     * @param string $type : in which folder do we go and pick the class
+     * @param boolean $force_side : this parameter is almost never set to true,
+     *                              it will be useful for instance if you want to get a back controller
+     *                              from the frontend, it was used maybe in the shop but it can be ignored for wysija-newsletters
+     * @param type $extended_plugin : used only when calling the url from a different plugin it is used watch those files :
+     *                              -core/controller.php line 21, 23 ,24
+     * @param type $load_lang : the load lang is in the get  to be sure we don't forget to load the language file for each plugin at least once
+     *                          the way I see it it could be moved to the index.php of each plugin. for now only wysija-newsletters is translated anyway
+     * @return boolean
      */
-    public static function get($name,$type,$forceside=false,$extendedplugin='wysija-newsletters',$loadlang=true){
-        static $arrayOfObjects;
+    public static function get($name,$type,$force_side=false,$extended_plugin='wysija-newsletters',$load_lang=true){
+        static $array_of_objects;
 
-        if($loadlang)  WYSIJA::load_lang($extendedplugin);
+        if($load_lang)  WYSIJA::load_lang($extended_plugin);
 
-        //store all the objects made so that we can reuse them accross the application
-        if(isset($arrayOfObjects[$extendedplugin][$type.$name])) {
-            return $arrayOfObjects[$extendedplugin][$type.$name];
+        // store all the objects made so that we can reuse them accross the application if the object is already set we return it immediately
+        if(isset($array_of_objects[$extended_plugin][$type.$name])) {
+            return $array_of_objects[$extended_plugin][$type.$name];
         }
 
-        if($forceside) {
-            $side=$forceside;
+        // which folder do we pick for controllersand views ? back or front ?
+        if($force_side) {
+            $side=$force_side;
         } else {
             $side=WYSIJA_SIDE;
         }
 
-        switch($extendedplugin){
+        // for each plugin we will define the $extended_constant variable if it's not defined already
+        // also we will defined the $extended_plugin_name which corresponds to the folder name and also will be used to build the class to be called
+        switch($extended_plugin){
             case 'wysija-newsletters-premium':
-                $extendeconstant='WYSIJANLP';
-                if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
-                $extendedpluginname='wysijanlp';
+                $extended_constant='WYSIJANLP';
+                if(!defined($extended_constant)) define($extended_constant,$extended_constant);
+                $extended_plugin_name='wysijanlp';
                 break;
             case 'wysija-newsletters':
-                $extendeconstant='WYSIJA';
-                if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
-                $extendedpluginname='wysija';
+                $extended_constant='WYSIJA';
+                if(!defined($extended_constant)) define($extended_constant,$extended_constant);
+                $extended_plugin_name='wysija';
                 break;
             default :
-                $extendeconstant=strtoupper($extendedplugin);
-                if(!defined($extendeconstant)) define($extendeconstant,$extendeconstant);
-                $extendedpluginname=$extendedplugin;
+                $extended_constant=strtoupper($extended_plugin);
+                if(!defined($extended_constant)) define($extended_constant,$extended_constant);
+                $extended_plugin_name=$extended_plugin;
         }
 
-        //security to protect against ./../ includes
+        // security to protect against dangerous ./../ includes
         $name = preg_replace('#[^a-z0-9_]#i','',$name);
+
+        // this switch will require_once the file needed and build a the class name depending on the parameters passed to the function
         switch($type){
             case 'controller':
-                require_once(WYSIJA_CORE.'controller.php');//require the common controller file
-                //require the parent class necessary
-                $ctrdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'controllers'.DS;
+                // require the parent class necessary
+                require_once(WYSIJA_CORE.'controller.php');
+
+                $ctrdir=WYSIJA_PLG_DIR.$extended_plugin.DS.'controllers'.DS;
+
+                // if we are doing ajax we don't go to one side, ajax is for frontend or backend in the same folder
                 if(defined('DOING_AJAX')) {
-                    $classpath=$ctrdir.'ajax'.DS.$name.'.php';
+                    $class_path=$ctrdir.'ajax'.DS.$name.'.php';
                 }else {
-                    $classpath=$ctrdir.$side.DS.$name.'.php';
-                    require_once(WYSIJA_CTRL.$side.'.php');//require the side specific controller file
+                    // the other controllers are called in a side folder back or front
+                    $class_path=$ctrdir.$side.DS.$name.'.php';
+                    // require the side specific controller file
+                    require_once(WYSIJA_CTRL.$side.'.php');
                 }
-                $classname = strtoupper($extendedpluginname).'_control_'.$side.'_'.$name;
+                $class_name = strtoupper($extended_plugin_name).'_control_'.$side.'_'.$name;
                 break;
             case 'view':
-                $viewdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'views'.DS;
-                $classpath=$viewdir.$side.DS.$name.'.php';
-                $classname = strtoupper($extendedpluginname).'_view_'.$side.'_'.$name;
-                require_once(WYSIJA_CORE.'view.php');//require the common view file
-                require_once(WYSIJA_VIEWS.$side.'.php');//require the side specific view file
+                $viewdir=WYSIJA_PLG_DIR.$extended_plugin.DS.'views'.DS;
+                // let's get the right path for the view front or back and the right class_name
+                $class_path=$viewdir.$side.DS.$name.'.php';
+                $class_name = strtoupper($extended_plugin_name).'_view_'.$side.'_'.$name;
+
+                // require the common view file and the side view file
+                require_once(WYSIJA_CORE.'view.php');
+                require_once(WYSIJA_VIEWS.$side.'.php');
                 break;
             case 'helper':
-                $helpdir=WYSIJA_PLG_DIR.$extendedplugin.DS.'helpers'.DS;
-
-                $classpath=$helpdir.$name.'.php';
-                $classname = strtoupper($extendedpluginname).'_help_'.$name;
+                $helpdir=WYSIJA_PLG_DIR.$extended_plugin.DS.'helpers'.DS;
+                $class_path=$helpdir.$name.'.php';
+                $class_name = strtoupper($extended_plugin_name).'_help_'.$name;
 
                 break;
             case 'model':
-                $modeldir=WYSIJA_PLG_DIR.$extendedplugin.DS.'models'.DS;
-                $classpath=$modeldir.$name.'.php';
-                $classname = strtoupper($extendedpluginname).'_model_'.$name;
-                //require the parent class necessary
+                $modeldir=WYSIJA_PLG_DIR.$extended_plugin.DS.'models'.DS;
+                $class_path=$modeldir.$name.'.php';
+                $class_name = strtoupper($extended_plugin_name).'_model_'.$name;
+                // require the parent class necessary
                 require_once(WYSIJA_CORE.'model.php');
                 break;
             case 'widget':
-                $modeldir=WYSIJA_PLG_DIR.$extendedplugin.DS.'widgets'.DS;
-                $classpath=$modeldir.$name.'.php';
-                if($name=='wysija_nl') $classname='WYSIJA_NL_Widget';
-                else $classname = strtoupper($extendedpluginname).'_widget_'.$name;
+                $modeldir=WYSIJA_PLG_DIR.$extended_plugin.DS.'widgets'.DS;
+                $class_path=$modeldir.$name.'.php';
+                if($name=='wysija_nl') $class_name='WYSIJA_NL_Widget';
+                else $class_name = strtoupper($extended_plugin_name).'_widget_'.$name;
                 break;
             default:
                 WYSIJA::setInfo('error','WYSIJA::get does not accept this type of file "'.$type.'" .');
                 return false;
         }
 
-        if(!file_exists($classpath)) {
-            WYSIJA::setInfo('error','file has not been recognised '.$classpath);
+        if(!file_exists($class_path)) {
+            WYSIJA::setInfo('error','file has not been recognised '.$class_path);
             return;
         }
 
-        require_once($classpath);
-        return $arrayOfObjects[$extendedplugin][$type.$name]=new $classname($extendedpluginname);
+        // require the file needed once and store & return the object needed
+        require_once($class_path);
+        return $array_of_objects[$extended_plugin][$type.$name]=new $class_name($extended_plugin_name);
 
     }
 
@@ -520,11 +540,11 @@ class WYSIJA extends WYSIJA_object{
                 'display' => __( 'Once every two hours',WYSIJA)
                 ),
             'eachweek' => array(
-                'interval' => 2419200,
+                'interval' => 604800,
                 'display' => __( 'Once a week',WYSIJA)
                 ),
             'each28days' => array(
-                'interval' => 604800,
+                'interval' => 2419200,
                 'display' => __( 'Once every 28 days',WYSIJA)
                 ),
             );
@@ -557,39 +577,58 @@ class WYSIJA extends WYSIJA_object{
      * remove temporary files
      */
     public static function croned_daily() {
+
         @ini_set('max_execution_time',0);
+
         /*user refresh count total*/
-        $helperU=&WYSIJA::get('user','helper');
-        $helperU->refreshUsers();
+        $helper_user =& WYSIJA::get('user','helper');
+        $helper_user->refreshUsers();
 
         /*clear temporary folders*/
-        $helperF=&WYSIJA::get('file','helper');
-        $helperF->clear();
+        $helper_file =& WYSIJA::get('file','helper');
+        $helper_file->clear();
 
         /*clear queue from unsubscribed*/
-        $helperQ=&WYSIJA::get('queue','helper');
-        $helperQ->clear();
+        $helper_queue =& WYSIJA::get('queue','helper');
+        $helper_queue->clear();
+
+        $model_config =& WYSIJA::get('config','model');
 
         /* send daily report about emails sent */
-        $modelC=&WYSIJA::get('config','model');
-        if($modelC->getValue('emails_notified_when_dailysummary')){
-            $helperS=&WYSIJA::get('stats','helper');
-            $helperS->sendDailyReport();
+        if($model_config->getValue('emails_notified_when_dailysummary')){
+            $helper_stats =& WYSIJA::get('stats','helper');
+            $helper_stats->sendDailyReport();
         }
+
     }
 
-    /**
-     * monthly cron not active yet
-     */
-    public static function croned_monthly() {
+    // Weekly cron
+    public static function croned_weekly() {
+
         @ini_set('max_execution_time',0);
 
-        /* send daily report about emails sent */
-        $modelC=&WYSIJA::get('config','model');
-        if($modelC->getValue('sharedata')){
-            $helperS=&WYSIJA::get('stats','helper');
-            $helperS->share();
+        $model_config =& WYSIJA::get('config','model');
+
+        // If enabled, flag MixPanel sending on next page load.
+        if ($model_config->getValue('analytics') == 1) {
+            $model_config->save(array('send_analytics_now' => 1));
         }
+
+    }
+
+    // Monthly cron
+    public static function croned_monthly() {
+
+        @ini_set('max_execution_time',0);
+
+        $model_config =& WYSIJA::get('config','model');
+
+        /* send daily report about emails sent */
+        if ($model_config->getValue('sharedata')) {
+            $helper_stats =& WYSIJA::get('stats','helper');
+            $helper_stats->share();
+        }
+
     }
 
     /**
@@ -794,7 +833,6 @@ class WYSIJA extends WYSIJA_object{
      * @return type
      */
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
-        WYSIJA::log('pn_transition_post',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
         //we run some process only if the status of the post changes from something to publish
         if( $new_status=='publish' && $old_status!=$new_status){
             $modelEmail =& WYSIJA::get('email', 'model');
@@ -804,6 +842,7 @@ class WYSIJA extends WYSIJA_object{
                 foreach($emails as $key => $email) {
                     //we will try to give birth to a child email only if the automatic newsletter is a post notification email and in immediate mode
                     if(is_array($email) && $email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
+                        WYSIJA::log('post_transition_hook_give_birth',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
                         $modelEmail->reset();
                         $modelEmail->give_birth($email, $post->ID);
                     }
@@ -836,12 +875,12 @@ class WYSIJA extends WYSIJA_object{
 
         //test again for plugins on reactivation
         if($installApp){
-            $importHelp=&WYSIJA::get('import','helper');
-            $importHelp->testPlugins();
+            $helper_import=&WYSIJA::get('import','helper');
+            $helper_import->testPlugins();
 
             //resynch wordpress list
-            $helperU=&WYSIJA::get('user','helper');
-            $helperU->synchList($values['importwp_list_id']);
+            $helper_user=&WYSIJA::get('user','helper');
+            $helper_user->synchList($values['importwp_list_id']);
         }
     }
 
@@ -1036,7 +1075,8 @@ class WYSIJA extends WYSIJA_object{
             }
         }
 
-        if(!empty($processesToRun)){
+        $model_config=&WYSIJA::get('config','model');
+        if(!empty($processesToRun) && $model_config->getValue('cron_page_hit_trigger')){
             //call the cron url
 
             $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
@@ -1125,6 +1165,7 @@ if($modelConf->getValue('installed_time')){
         //action to handle the scheduled tasks in wysija
         add_action( 'wysija_cron_queue', array( 'WYSIJA', 'croned_queue' ) );
         add_action( 'wysija_cron_daily', array( 'WYSIJA', 'croned_daily' ) );
+        add_action( 'wysija_cron_weekly', array( 'WYSIJA', 'croned_weekly' ) );
         add_action( 'wysija_cron_monthly', array( 'WYSIJA', 'croned_monthly' ) );
 
         //same with the weekly task
@@ -1187,7 +1228,7 @@ if($modelConf->getValue('wp_notifications')){
 }
 
 //check that there is no late cron schedules if we are using wysija's cron option and that the cron option is triggerred by any page view
-if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process']) && $modelConf->getValue('cron_page_hit_trigger')){
+if($modelConf->getValue('cron_manual') && !isset($_REQUEST['process'])){
     WYSIJA::cron_check();
 }
 

@@ -35,6 +35,7 @@ define('WYSIJA_CORE',WYSIJA_DIR.'core'.DS);
 define('WYSIJA_VIEWS',WYSIJA_DIR.'views'.DS);
 define('WYSIJA_MODELS',WYSIJA_DIR.'models'.DS);
 define('WYSIJA_HELPERS',WYSIJA_DIR.'helpers'.DS);
+define('WYSIJA_CLASSES',WYSIJA_DIR.'classes'.DS);
 define('WYSIJA_CTRL',WYSIJA_DIR.'controllers'.DS);
 define('WYSIJA_WIDGETS',WYSIJA_DIR.'widgets'.DS);
 
