@@ -1783,7 +1783,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             function formEditorSave(callback) {
                 wysijaAJAX.task = 'form_save';
                 wysijaAJAX.wysijaData = WysijaForm.save();
-                WYSIJA_SYNC_AJAX({ success: callback });
+                WYSIJA_SYNC_AJAX({
+                    success: callback
+                });
             }
 
             $('form-save').observe('click', function() {

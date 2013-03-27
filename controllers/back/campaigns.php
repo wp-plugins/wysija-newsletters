@@ -135,7 +135,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
 
         $major_release=true;
-        $except_version=array('2.4.1');
+        $except_version=array('2.4.1', '2.4.2');
         $wysija_version=WYSIJA::get_version();
         if(!in_array($wysija_version,$except_version) && count(explode('.', $wysija_version))>2) $major_release=false;
 
@@ -1193,6 +1193,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
     function savelast(){
         $this->redirectAfterSave=false;
+        $post_notification=false;
         $this->requireSecurity();
 
         if(!isset($_POST['wysija']['email']['from_name'])|| !isset($_POST['wysija']['email']['from_email']) || !isset($_POST['wysija']['email']['replyto_name']) || !isset($_POST['wysija']['email']['replyto_email'])){
@@ -1210,7 +1211,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             return $this->editDetails();
         }
 
-        $updateemail=array(
+        $update_email=array(
             'email_id'=>$_POST['wysija']['email']['email_id'],
             'from_name'=>$_POST['wysija']['email']['from_name'],
             'from_email'=>$_POST['wysija']['email']['from_email'],
@@ -1218,42 +1219,44 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'replyto_email'=>$_POST['wysija']['email']['replyto_email'],
             'subject'=>$_POST['wysija']['email']['subject'],
         );
-        $modelEmail=&WYSIJA::get('email','model');
-        if(isset($_POST['wysija']['email']['params']))  $updateemail['params']=$_POST['wysija']['email']['params'];
+        $model_email=&WYSIJA::get('email','model');
+        if(isset($_POST['wysija']['email']['params']))  $update_email['params']=$_POST['wysija']['email']['params'];
 
         //insert into campaigns lists
         $this->_saveLists($_POST['wysija']['campaign']['campaign_id']);
-        $emaildata=$modelEmail->getOne($_POST['wysija']['email']['email_id']);
+        $email_data=$model_email->getOne($_POST['wysija']['email']['email_id']);
         if(isset($_POST['submit-draft']) || isset($_POST['submit-pause']) || (isset($_REQUEST['wj_redir']) && $_REQUEST['wj_redir']=='savelastback')){
             if(isset($_POST['wysija']['email']['params']['schedule']['isscheduled']))   $this->notice(__('Newsletter has been scheduled.',WYSIJA));
             else $this->notice(__('Newsletter has been saved as a draft.',WYSIJA));
         }else{
             //we add emails to the queue if it is a standard email or an auto newsletter with the event new-articles
-            foreach($updateemail as $ki =>$vi)  {
+            foreach($update_email as $ki =>$vi)  {
                 if($ki=='params'){
 
                     foreach($vi as $parake=>$paraval){
-                        $emaildata['params'][$parake]=$paraval;
+                        $email_data['params'][$parake]=$paraval;
                     }
-                    $updateemail[$ki]=$emaildata[$ki];
-                }else $emaildata[$ki]=$vi;
+                    $update_email[$ki]=$email_data[$ki];
+                }else $email_data[$ki]=$vi;
 
             }
 
 
             //standard email
-            $queueemails=false;
+            $queue_emails=false;
             $do_send=true;
-            if((int)$emaildata['type']==1 && !isset($_POST['submit-resume']) && !isset($emaildata['params']['schedule']['isscheduled']))   $queueemails=true;
+
+            if((int)$email_data['type']==2 && isset($email_data['params']['autonl']['event']) && $email_data['params']['autonl']['event']=='new-articles' )  $post_notification=true;
+            if((int)$email_data['type']==1 && !isset($_POST['submit-resume']) && !isset($email_data['params']['schedule']['isscheduled']))   $queue_emails=true;
 
             // do not send for post notification
-            if((int)$emaildata['type']==2 && isset($emaildata['params']['autonl']['event']) && $emaildata['params']['autonl']['event']=='new-articles' )  $do_send=false;
+            if($post_notification)  $do_send=false;
 
-            if($do_send===true)   $modelEmail->send($emaildata,$queueemails);
+            if($do_send===true)   $model_email->send($email_data,$queue_emails);
 
-            if((int)$emaildata['type']==1)  {
-                if(isset($emaildata['params']['schedule']['isscheduled'])){
-                    $updateemail['status']=4;
+            if((int)$email_data['type']==1)  {
+                if(isset($email_data['params']['schedule']['isscheduled'])){
+                    $update_email['status']=4;
                     $this->notice(__('Newsletter has been scheduled.',WYSIJA));
                 }
                 else $this->notice(__('Your latest newsletter is being sent.',WYSIJA));
@@ -1262,21 +1265,21 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }
 
         //update email
-        $updateemail['type']=$emaildata['type'];
+        $update_email['type']=$email_data['type'];
 
-        if($updateemail['type']==2){
-            $autonH=&WYSIJA::get('autonews','helper');
-            $updateemail['params']['autonl']['nextSend']=$autonH->getNextSend($updateemail);
+        if($post_notification){
+            $helper_autonews=&WYSIJA::get('autonews','helper');
+            $update_email['params']['autonl']['nextSend']=$helper_autonews->getNextSend($update_email);
         }
 
-        $modelEmail->reset();
-        $modelEmail->columns['modified_at']['autoup']=1;
-        $modelEmail->update($updateemail);
+        $model_email->reset();
+        $model_email->columns['modified_at']['autoup']=1;
+        $model_email->update($update_email);
 
-        $modelCamp=&WYSIJA::get('campaign','model');
-        $modelCamp->reset();
-        $updatecampaign=array('campaign_id'=>$_REQUEST['id'],'name'=>$_POST['wysija']['email']['subject']);
-        $modelCamp->update($updatecampaign);
+        $model_campaign=&WYSIJA::get('campaign','model');
+        $model_campaign->reset();
+        $update_campaign=array('campaign_id'=>$_REQUEST['id'],'name'=>$_POST['wysija']['email']['subject']);
+        $model_campaign->update($update_campaign);
 
         if(isset($_REQUEST['wj_redir']) && $_REQUEST['wj_redir']=='savelastback'){
             return $this->redirect('admin.php?page=wysija_campaigns&action=editTemplate&id='.$_POST['wysija']['email']['email_id']);

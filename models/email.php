@@ -142,9 +142,12 @@ class WYSIJA_model_email extends WYSIJA_model{
         if((int)$email['type'] === 2){
             //if we are in a subscriber follow-up case then we just queue emails of the list
             //subs-2-nl
-            if(isset($email['params']) && $email['params']['autonl']['event']=='subs-2-nl'){
+            if(isset($email['params']) && $email['params']['autonl']['event']=='subs-2-nl' && (int)$email['sent_at']===0){
                 $model_queue=&WYSIJA::get('queue','model');
                 $email_were_queued=$model_queue->queue_email($email,true);
+            }else{
+                // we haven't queued the emails but we want to update the email status
+                $email_were_queued = true;
             }
 
         }else{

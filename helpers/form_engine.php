@@ -130,10 +130,26 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
         if($this->is_data_valid() === true) {
             $settings = $this->get_data('settings');
             if(array_key_exists($key, $settings)) {
-                return $settings[$key];
+
+                if($this->is_base64_encoded($settings[$key])) {
+
+                    return base64_decode($settings[$key]);
+                } else {
+
+                    return $settings[$key];
+                }
             } else {
                 return null;
             }
+        }
+    }
+    public function is_base64_encoded($data) {
+
+        if(strlen($data) % 4 !== 0) return false;
+        if(preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
+            return true;
+        } else {
+            return false;
         }
     }
 

@@ -289,21 +289,6 @@ class WYSIJA_control_back_config extends WYSIJA_control{
             $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
             $helper_form_engine->set_data($raw_data);
 
-            // generate web output and store it within the wysija_forms option
-            /*$forms_option = get_option('wysija_forms');
-            // if the option does not exist, let's add it
-            if($forms_option === false) {
-                $forms_option = array();
-                add_option('wysija_forms', $forms_option, '', 'yes');
-            }
-            // generate form key
-            $form_key = 'form-'.$form_id;
-
-            // update form html
-            $forms_option[$form_key] = base64_encode($helper_form_engine->render_web());
-            // forms option
-            update_option('wysija_forms', $forms_option);
-*/
             // check if the form has already been inserted in a widget and therefore display different success message
             $widgets = get_option('widget_wysija');
             $is_form_added_as_widget = false;

@@ -522,9 +522,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                             case 3:
                                             case 2:
                                             case 1:
-
+                                                // automatic newsletters
                                                 if($row['type']==2) {
                                                     $pause= '';
+                                                    // non immediate post notifications
                                                     if(isset($row['params']['autonl']['event']) && $row['params']['autonl']['event']=='new-articles' && $row['params']['autonl']['when-article']!='immediate'){
 
 
@@ -588,6 +589,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                                                         echo $pause;
                                                     }else{
+                                                        // autoresponders and immediate post notifications
                                                         $delay='';
                                                         if(!isset($row['params']['autonl']['numberafter'])) $numberafter=0;
                                                         else {
@@ -597,12 +599,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
 
                                                         $statustext=$this->getSendingStatus($row,$data,$numberafter,$delay);
-                                                        echo $statustext.$pause;
-                                                        if(!$numberafter) echo $this->dataBatches($data,$row,$pause,$statuses);
-                                                        else  echo $this->dataBatches($data,$row,$pause,$statuses,true);
+                                                        echo $statustext.$pause.$this->dataBatches($data,$row,$pause,$statuses,true);
                                                     }
 
                                                 }else{
+                                                    // standard emails
                                                     $pause= ' <a href="admin.php?page=wysija_campaigns&id='.$row['email_id'].'&action=pause" class="submitedit button">'.__("Pause",WYSIJA).'</a>';
                                                     echo $this->dataBatches($data,$row,$pause,$statuses);
                                                 }

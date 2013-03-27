@@ -897,17 +897,19 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
                     }
                 break;
                 case 'base64_decode':
-                    if($this->is_base64_encoded($value)) {
+                    if($this->is_base64_encoded($value) === true) {
                         $value = base64_decode($value);
+                    }
+                break;
+                case 'base64_encode':
+                    if($this->is_base64_encoded($value) === false) {
+                        $value = base64_encode($value);
                     }
                 break;
                 case 'join':
                     if(isset($arguments[0])) {
                         $value = join($value, $arguments[0]);
                     }
-                break;
-                case 'base64_encode':
-                    $value = base64_encode($value);
                 break;
                 case 'wordwrap' :
                     if ($arguments) {

@@ -137,6 +137,7 @@ class WYSIJA_help_user extends WYSIJA_object{
                     $this->sendAutoNl($userGet['user_id'],$lists);
                 }
                 if(isset($data['message_success'])) $this->notice($data['message_success']);
+                if(isset($data['success_message'])) $this->notice(nl2br(base64_decode($data['success_message'])));
                 return true;
             }
             $mUserList=&WYSIJA::get('user_list','model');
@@ -163,6 +164,7 @@ class WYSIJA_help_user extends WYSIJA_object{
                     $emailsent=$this->sendConfirmationEmail((object)$userGet,true,$sendConfForIds);
                 }
                 if(isset($data['message_success'])) $this->notice($data['message_success']);
+                if(isset($data['success_message'])) $this->notice(nl2br(base64_decode($data['success_message'])));
 
                 if(!$dbloptin &&(!empty($sendConfForIds))){
                     $lists=$this->getUserLists($userGet['user_id'],$data['user_list']['list_ids']);
@@ -225,7 +227,6 @@ class WYSIJA_help_user extends WYSIJA_object{
                 $sendAutonl=true;
                 if($config->getValue('emails_notified') && $config->getValue('emails_notified_when_sub')){
 
-                    $this->uid=$user_id;
                     if(!$backend) $this->_notify($data['user']['email'],true,$data['user_list']['list_ids']);
                 }
             }
