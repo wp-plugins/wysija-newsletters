@@ -937,7 +937,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $csvArr=null;
         $j=0;
         $linescount=0;
-        $dataNumbers=array('invalid'=>array(),'inserted'=>0,'outof'=>0,'list_added'=>0,'list_user_ids'=>0,'list_list_ids'=>count($_REQUEST['wysija']['user_list']['list']));
+        $dataNumbers=array('invalid'=>array(),'inserted'=>0,'outof'=>0,'list_added'=>0,'list_user_ids'=>0,'list_list_ids'=>count($_REQUEST['wysija']['user_list']['list']),'emails_queued'=>0);
         $ignored_row_count=0;
         foreach($csvChunks as $keyChunk =>$arra){
             foreach($arra as $keyline=> $emailline){
@@ -1088,7 +1088,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         }
 
-        /*replace query to import the subscribers*/
+        //replace query to import the subscribers
         $modelWysija=new WYSIJA_model();
         $resultqry=$modelWysija->query($query);
 
@@ -1099,38 +1099,80 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $dataNumbers['inserted']+=$wpdb->rows_affected;
         $dataNumbers['outof']+=$outof;
 
-
-
         if($resultqry===false) {
             $this->error(__('Error when inserting emails.',WYSIJA),true);
             return false;
         }
 
 
-        /* select query to get all of there ids */
+        //select query to get all of there ids
         $user_ids=$this->modelObj->get(array('user_id'),array('email'=>$allEmails));
         $wpdb->rows_affected=0;
         $modelUL=&WYSIJA::get('user_list','model');
+
+        //insert query per list
         $query='INSERT IGNORE INTO [wysija]user_list (`list_id` ,`user_id`,`sub_date`) VALUES ';
-        $timenow=time();
-        foreach($_REQUEST['wysija']['user_list']['list'] as $keyl=> $listid){
+
+        $helper_email=&WYSIJA::get('email','helper');
+        $follow_ups_per_list=$helper_email->get_active_follow_ups(array('email_id','params'),true);
+
+        if(!empty($follow_ups_per_list)){
+            //insert query per active followup
+            $query_queue='INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) VALUES ';
+        }
+
+        $time_now=time();
+        foreach($_REQUEST['wysija']['user_list']['list'] as $keyl=> $list_id){
+
+            //for each list pre selected go through that process
             foreach($user_ids as $key=> $userid){
-                $query.="($listid,".$userid['user_id'].", ".$timenow.")";
-                if(count($user_ids)>($key+1)) $query.=",";
+
+                //inserting each user id to this list
+                $query.="($list_id,".$userid['user_id'].', '.$time_now.')';
+
+                //checking if this list has a list of follow ups
+                if(isset($follow_ups_per_list[$list_id])){
+
+                    //for each follow up of that list we queu an email
+                    foreach($follow_ups_per_list[$list_id] as $key_queue=>$follow_up){
+                        $query_queue.='('.$follow_up['email_id'].' ,'.$userid['user_id'].', '.($time_now+$follow_up['delay']).')';
+
+                        //if this is not the last row we put a comma for the next row
+                        if(count($follow_ups_per_list[$list_id])>($key_queue+1)){
+                            $query_queue.=',';
+                        }
+                    }
+                }
+
+                //if this is not the last row we put a comma for the next row
+                if(count($user_ids)>($key+1)){
+                    $query.=',';
+                    $query_queue.=',';
+                }
             }
-            if(count($_REQUEST['wysija']['user_list']['list'])>($keyl+1)) $query.=",";
+
+            //if this is not the last row we put a comma for the next row
+            if(count($_REQUEST['wysija']['user_list']['list'])>($keyl+1)){
+                $query.=',';
+                $query_queue.=',';
+            }
         }
         $resultqry2=$modelWysija->query($query);
 
         $dataNumbers['list_added']+=$wpdb->rows_affected;
         $dataNumbers['list_user_ids']+=count($user_ids);
 
+        if(!empty($follow_ups_per_list)){
+            $resultqry3=$modelWysija->query($query_queue);
+
+            $dataNumbers['emails_queued']+=$wpdb->rows_affected;
+        }
 
         if($resultqry2===false) {
             $this->error(__('Error when inserting list.',WYSIJA),true);
             return false;
         }
-        if($resultqry==0) return "0";
+        if($resultqry==0) return '0';
         return $linescount;
     }
 
@@ -1187,7 +1229,8 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     function export_get(){
         @ini_set('max_execution_time',0);
         //get a list of user_ids to export
-        if(isset($_POST['wysija']['export']['user_ids']) && $_POST['wysija']['export']['user_ids']) $userids=unserialize(base64_decode($_POST['wysija']['export']['user_ids']));
+        if(isset($_POST['wysija']['export']['user_ids']) && $_POST['wysija']['export']['user_ids'])
+            $userids=unserialize(base64_decode($_POST['wysija']['export']['user_ids']));
         else{
             //based on filters get a list of user_ids
             $userids=array();
@@ -1225,7 +1268,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             else{
                 $pages = ceil($useridsrows / $this->_export_batch);//pagination
                 for ($i = 0; $i < $pages; $i++) {
-                    $qrybatch = $qry. 'LIMIT '.($i*$this->_export_batch) . ',' . $this->_export_batch;
+                    $qrybatch = $qry. ' LIMIT '.($i*$this->_export_batch) . ',' . $this->_export_batch;
                     $useridsdb=$this->modelObj->getResults($qrybatch,ARRAY_N);
                     foreach($useridsdb as $uarr){
                         $userids[]=$uarr[0];

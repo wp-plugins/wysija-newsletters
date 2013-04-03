@@ -6,5 +6,5 @@
     {/foreach}
 </p>
 {foreach name="#types" key="type" value="output"}
-    <textarea id="export-{#type}" onClick="this.focus();this.select();" readonly="readonly">{#output}</textarea>
+    <textarea id="export-{#type}" onClick="this.focus();this.select();" readonly="readonly">{#output|htmlentities}</textarea>
 {/foreach}

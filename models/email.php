@@ -128,39 +128,34 @@ class WYSIJA_model_email extends WYSIJA_model{
     /**
      * what to do when starting to send a newsletter based on the type and other parameters
      * @param mixed $email
-     * @param boolean $queue_emails
      * @return boolean
      */
-    function send($email,$queue_emails=false){
+    function send_activate($email){
         if(!is_array($email)){
             if(is_numeric($email)){
                 $email=$this->getOne(false,array('email_id'=>$email));
             }else return false;
         }
 
-        $sent_status=array('status'=>99,'sent_at'=>time());
-        if((int)$email['type'] === 2){
-            //if we are in a subscriber follow-up case then we just queue emails of the list
-            //subs-2-nl
-            if(isset($email['params']) && $email['params']['autonl']['event']=='subs-2-nl' && (int)$email['sent_at']===0){
-                $model_queue=&WYSIJA::get('queue','model');
-                $email_were_queued=$model_queue->queue_email($email,true);
-            }else{
-                // we haven't queued the emails but we want to update the email status
-                $email_were_queued = true;
-            }
+        // we go through that queuing function which will check if it is necessary to queue the email
+        // depending on the type of email we're dealing with there will be no queuing
+        $model_queue=&WYSIJA::get('queue','model');
+        $email_have_been_queued = $model_queue->queue_email($email);
 
-        }else{
-            //insert select all the subscribers from the lists related to that campaign
-            if($queue_emails){
-                $model_queue=&WYSIJA::get('queue','model');
-                $email_were_queued=$model_queue->queue_email($email);
-            }
-        }
+        //set the email status based on parameters and also return a message
+        $email_status=99;
+        if((int)$email['type']===1)  {
+            if(isset($email['params']['schedule']['isscheduled']) && !$email_have_been_queued){
+                $email_status=4;
+                $this->notice(__('Newsletter has been scheduled.',WYSIJA));
+            } else $this->notice(__('Your latest newsletter is being sent.',WYSIJA));
+        } else $this->notice(__('Your auto newsletter has been activated.',WYSIJA));
+
+        $sent_status=array('status'=>$email_status,'sent_at'=>time());
 
         $this->reset();
-        if($email_were_queued)  $this->update($sent_status,array('email_id'=>$email['email_id']));
-        else $this->error (__('There was an error putting emails in the queue.',WYSIJA),1);
+        $this->update($sent_status,array('email_id'=>$email['email_id']));
+        return true;
     }
 
 
@@ -253,7 +248,7 @@ class WYSIJA_model_email extends WYSIJA_model{
             $emailChild['email_id']=$this->insert($emailChild);
             $this->reset();
             WYSIJA::log('check_post_notif_give_birth_before_send', $emailChild, 'post_notif');
-            $this->send($emailChild,true);
+            $this->send_activate($emailChild);
         }
         WYSIJA::log('prev_send_value_give_birth', $email['params']['autonl']['nextSend'], 'post_notif');
         // update the parent with the new nextSend date

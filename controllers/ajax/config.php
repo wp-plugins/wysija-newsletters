@@ -194,9 +194,12 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         $field = array();
 
         if(isset($_POST['wysijaData'])) {
+            // decode the data string
+            $decoded_data = base64_decode($_POST['wysijaData']);
+
             // avoid using stripslashes as it's not reliable depending on the magic quotes settings
-            $raw_data = str_replace('\"', '"', $_POST['wysijaData']);
-            $field = json_decode($raw_data, true);
+            $json_data = str_replace('\"', '"', $decoded_data);
+            $field = json_decode($json_data, true);
 
             $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
             return base64_encode($helper_form_engine->render_editor_template($field));
@@ -227,11 +230,13 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         // decode json data and convert to array
         $raw_data = null;
         if(isset($_POST['wysijaData'])) {
-            $raw_data = $_POST['wysijaData'];
+            // decode the data string
+            $decoded_data = base64_decode($_POST['wysijaData']);
+
             // avoid using stripslashes as it's not reliable depending on the magic quotes settings
-            $raw_data = str_replace('\"', '"', $raw_data);
+            $json_data = str_replace('\"', '"', $decoded_data);
             // decode JSON data
-            $raw_data = json_decode($raw_data, true);
+            $raw_data = json_decode($json_data, true);
         }
 
         if($form_id === null or $raw_data === null) {

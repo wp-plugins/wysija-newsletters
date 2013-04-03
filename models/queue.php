@@ -20,24 +20,51 @@ class WYSIJA_model_queue extends WYSIJA_model{
 
     /**
      * used to put emails in the queue when starting to send or adding user to a follow_up email
-     * @param mixed $email
-     * @param boolean $follow_up
+     * @param array $email
      * @return boolean
      */
-    function queue_email($email, $follow_up=false){
-        // check if $email contains the email_id or not
-        $email_id=false;
-        if(is_numeric($email))  $email_id= $email;
-        if(isset($email['email_id']))   $email_id= $email['email_id'];
-        if($email_id===false) {
-            $this->error('Missing email id in queue_email()');
+    function queue_email($email){
+        // make sure that the email array has at least those 3 important parameters set
+        if(!isset($email['email_id']) || !isset($email['type']) || !isset($email['params'])) {
+            $this->error('Missing data to queue email');
             return false;
         }
+
+        $follow_up = $emails_need_to_be_queued = false;
+        // we cannot queue all kinds of emails make sure this email can be queued
+        if((int)$email['type'] === 2){
+            // if we are in a subscriber follow-up case then we can queue emails of the list
+            // only if it's the first time that we hit the send button
+            if(isset($email['params']) && $email['params']['autonl']['event']=='subs-2-nl' && (int)$email['sent_at']===0){
+                $emails_need_to_be_queued=true;
+                $follow_up=true;
+            }
+
+        }else{
+            // queue emails only if it is not a scheduled email
+            if(!isset($email['params']['schedule']['isscheduled'])){
+                $emails_need_to_be_queued = true;
+            }else{
+                $helper_toolbox = &WYSIJA::get('toolbox','helper');
+                $schedule_date = $email['params']['schedule']['day'].' '.$email['params']['schedule']['time'];
+                $unix_scheduled_time = strtotime($schedule_date);
+
+                // if the scheduled time is passed let's send the email
+                // we don't compare to the time recorded but to the offset time which is the time set by the user in his time
+                if($helper_toolbox->localtime_to_servertime($unix_scheduled_time) < time()){
+                    $emails_need_to_be_queued = true;
+                }
+            }
+        }
+
+        // we're not supposed to queue any email here probably because it is an automatic newsletter or a scheduled email
+        if(!$emails_need_to_be_queued) return false;
+
 
         // if it is a standard email we get the campaign list
         if(!$follow_up){
             $model_campaign = &WYSIJA::get('campaign','model');
-            $data = $model_campaign->getDetails($email_id);
+            $data = $model_campaign->getDetails($email['email_id']);
 
             $lists_to_send_to = $data['campaign']['lists']['ids'];
             $to_be_sent=time();
@@ -59,14 +86,19 @@ class WYSIJA_model_queue extends WYSIJA_model{
         }
         // insert into the queue
         $query='INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ';
-        $query.='SELECT '.$email_id.', A.user_id,'.$to_be_sent.'
+        $query.='SELECT '.$email['email_id'].', A.user_id,'.$to_be_sent.'
             FROM [wysija]user_list as A
                 JOIN [wysija]user as B on A.user_id=B.user_id
                     WHERE B.status>'.$status_min.' AND A.list_id IN ('.implode(',',$lists_to_send_to).') AND A.sub_date>'.$status_min.' AND A.unsub_date=0;';
         $this->query($query);
 
         // rows were inserted
-        if((int) $this->getAffectedRows() > 0) return true;
+        $nb_emails=$this->getAffectedRows();
+        if((int)$nb_emails  > 0){
+            $this->notice($nb_emails.' email(s) queued',false);
+            return true;
+        }
+
         $this->error('Queue failure : '.$query);
         return false;
     }
@@ -123,25 +155,26 @@ class WYSIJA_model_queue extends WYSIJA_model{
 
     /**
      * calculate the delay of the follow up based on the email parameters that have been setup
-     * @param array $email_params
+     * @param array $email_params_autonl
      * @return int
      */
-    function calculate_delay($email_params){
+    function calculate_delay($email_params_autonl){
         $delay=0;
+
         //check if there is a delay, if so we just set a send_at params
-        if(isset($email_params['numberafter']) && (int)$email_params['numberafter']>0){
-            switch($email_params['numberofwhat']){
+        if(isset($email_params_autonl['numberafter']) && (int)$email_params_autonl['numberafter']>0){
+            switch($email_params_autonl['numberofwhat']){
                 case 'immediate':
                     $delay=0;
                     break;
                 case 'hours':
-                    $delay=(int)$email_params['numberafter']*3600;
+                    $delay=(int)$email_params_autonl['numberafter']*3600;
                     break;
                 case 'days':
-                    $delay=(int)$email_params['numberafter']*3600*24;
+                    $delay=(int)$email_params_autonl['numberafter']*3600*24;
                     break;
                 case 'weeks':
-                    $delay=(int)$email_params['numberafter']*3600*24*7;
+                    $delay=(int)$email_params_autonl['numberafter']*3600*24*7;
                     break;
             }
         }

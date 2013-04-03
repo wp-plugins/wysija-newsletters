@@ -110,7 +110,7 @@ class WYSIJA_help_email extends WYSIJA_object{
         $follow_ups_per_list=array();
         foreach($automatic_emails as &$auto_email){
             $model_email->getParams($auto_email);
-            if($delay)  $auto_email['delay']=$model_queue->calculate_delay($auto_email['params']);
+            if($delay)  $auto_email['delay']=$model_queue->calculate_delay($auto_email['params']['autonl']);
             if(isset($auto_email['params']['autonl']['event']) && $auto_email['params']['autonl']['event']=='subs-2-nl'){
                 if(!isset($follow_ups_per_list[$auto_email['params']['autonl']['subscribetolist']]))    $follow_ups_per_list[$auto_email['params']['autonl']['subscribetolist']]=array();
                 $follow_ups_per_list[$auto_email['params']['autonl']['subscribetolist']][]=$auto_email;

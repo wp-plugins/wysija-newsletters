@@ -295,7 +295,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
                 'column_name' => 'text',
                 'column_type' => 'text',
                 'params' => array(
-                    'text' => base64_encode(__('Random text or instructions', WYSIJA))
+                    'text' => __('Random text or instructions', WYSIJA)
                 )
             ),
             array(

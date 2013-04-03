@@ -8,6 +8,4 @@
     {if #settings.lists_selected_by != 'user'}
         <input type="hidden" name="wysija[user_list][list_ids]" value="{#settings.lists|join:','}" />
     {/if}
-    <input type="hidden" name="on_success" value="{#settings.on_success}" />
-    <input type="hidden" name="success_message" value="{#settings.success_message|base64_encode}" />
-{/if}
+ {/if}
