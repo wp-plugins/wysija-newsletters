@@ -123,45 +123,11 @@ class WYSIJA_NL_Widget extends WP_Widget {
     }
 
 
-    function update( $new_instance, $old_instance ) {
+    function update($new_instance, $old_instance) {
         $instance = $old_instance;
 
         // keep all of the fields passed from the new instance
         foreach($new_instance as $key => $value) $instance[$key]=$value;
-
-        // get form data from database
-        $model_forms =& WYSIJA::get('forms', 'model');
-        $form = $model_forms->getOne(array('form_id' => (int)$new_instance['form']));
-        if(empty($form)) {
-            // in case the form does not exist or has just been deleted, simply return old values
-            return $old_instance;
-        } else {
-            $helper_form_engine =& WYSIJA::get('form_engine', 'helper');
-            // load form data into form engine
-            $helper_form_engine->set_data($form['data'], true);
-
-            // save html version in a WP option (this will
-            $forms_option = get_option('wysija_forms');
-
-            // check if the option already exists
-            if($forms_option === false) {
-                $forms_option = array();
-                // the option does not exist so let's add it, and make sure it's autoloaded
-                add_option('wysija_forms', $forms_option, '', 'yes');
-            }
-
-            // generate form key
-            $form_key = 'form-'.$form['form_id'];
-
-            // set forms option
-            $forms_option[$form_key] = base64_encode($helper_form_engine->render_web());
-
-            // save forms option
-            update_option('wysija_forms', $forms_option);
-
-            // set form id within instance
-            $instance['form'] = $form['form_id'];
-        }
 
         return $instance;
     }
@@ -194,7 +160,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
 
             if(isset($instance[$field]))  {
 
-                if($field=='success' && $instance[$field]==$this->successmsgsub.' '.$this->successmsgconf){
+                if($field === 'success' && $instance[$field]==$this->successmsgsub.' '.$this->successmsgconf){
                     $config=&WYSIJA::get('config','model');
                     if(!$config->getValue('confirm_dbleoptin')){
                         $value_field=$this->successmsgsub;
@@ -203,9 +169,7 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     }
                 }else   $value_field=$instance[$field];
             } elseif(isset($field_params['default'])) {
-                // TOFIX: title is always set to default, it should be done only if a new value has not been set
-                // CAREFUL: People should be allowed to remove the title completely
-                $value_field=$field_params['default'];
+                $value_field = $field_params['default'];
             }
 
             $class_div_label=$field_html='';

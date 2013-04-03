@@ -645,7 +645,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                     <td><?php if(isset($row['stats'])) echo $row['stats'];
                                               else echo $row['number_opened'].' - '.$row['number_clicked'].' - '.$row['number_unsub']; ?></td>
                                     <td title='<?php echo $this->fieldListHTML_created_at($row['modified_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['modified_at']); ?></td>
-                                    <td title='<?php echo $this->fieldListHTML_created_at($row['sent_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['sent_at']); ?></td>
+                                    <td title='<?php echo $this->fieldListHTML_created_at($row['sent_at'],get_option('date_format').' '.get_option('time_format')); ?>'><?php echo $this->fieldListHTML_created_at($row['sent_at']); ?>
+                                        <?php
+                                    if(WYSIJA_DBG>1){
+                                        echo '<p>'.$row['sent_at'].'</p>';
+                                    }
+                                    ?></td>
+
 
                                 </tr><?php
                                 $alt=!$alt;
@@ -768,7 +774,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
                //Next batch of xx emails will be sent in xx minutes. Don't wait & send right now.
                if($pending){
-                   $return.= '<span style="color:#555"><a href="admin.php?page=wysija_campaigns&action=manual_send&emailid='.$row['email_id'].'&pending=1" title="view pending" class="action-send-test-editor" >'.sprintf(__(' %1$s email(s) scheduled.',WYSIJA).'</a>',$nextBatchnumber);
+                   $return.= '<span style="color:#555"><a href="admin.php?page=wysija_campaigns&action=manual_send&emailid='.$row['email_id'].'&pending=1" title="view pending" class="action-send-test-editor" >'.sprintf(__(' %1$s email(s) scheduled.',WYSIJA).'</a>',$sentleft);
                    $return.= '</span>';
                }else{
                    if($data['sent'][$row['email_id']]['running_for']){

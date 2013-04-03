@@ -55,8 +55,14 @@ class WYSIJA_help_stats extends WYSIJA_object{
         $modelC=&WYSIJA::get('config','model');
         $mailer=&WYSIJA::get('mailer','helper');
         $mailer->testemail=true;
+        $notifieds=$modelC->getValue('emails_notified');
 
-        $res=$mailer->sendSimple($modelC->getValue('emails_notified'),__('Your daily newsletter stats',WYSIJA),$html);
+        $notifieds=explode(',',$notifieds);
+        $body=nl2br($body);
+        foreach($notifieds as $receiver){
+            $mailer->sendSimple(trim($receiver),__('Your daily newsletter stats',WYSIJA),$html);
+        }
+
    }
 
    function getDomainStats(){

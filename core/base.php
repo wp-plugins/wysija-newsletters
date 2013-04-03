@@ -497,7 +497,7 @@ class WYSIJA extends WYSIJA_object{
                 $optionlog=array();
             }
 
-            $optionlog[$category][microtime()][$key]=$data;
+            $optionlog[$category][(string)microtime(true)][$key]=$data;
             update_option('wysija_log', $optionlog);
         }
         return false;

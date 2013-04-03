@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
 
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3');
     }
 
     function runUpdate($version){
@@ -222,6 +222,43 @@ class WYSIJA_help_update extends WYSIJA_object{
                     if(isset($email['params']) && $email['params']['autonl']['event']=='new-articles'){
                         $model_queue=&WYSIJA::get('queue','model');
                         $model_queue->delete(array('email_id'=>$email['email_id']));
+                    }
+                }
+                return true;
+            break;
+            case '2.4.3':
+
+                
+                $model_forms =& WYSIJA::get('forms', 'model');
+                $forms = $model_forms->getRows();
+                if(is_array($forms) && count($forms) > 0) {
+                    foreach ($forms as $i => $form) {
+                        $requires_update = false;
+
+                        $data = unserialize(base64_decode($form['data']));
+
+                        if(strlen($data['settings']['success_message']) % 4 === 0 && preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data['settings']['success_message'])) {
+
+                            $data['settings']['success_message'] = base64_decode($data['settings']['success_message']);
+                            $requires_update = true;
+                        }
+
+                        foreach ($data['body'] as $j => $block) {
+
+                            if($block['type'] === 'text') {
+
+                                if(strlen($block['params']['text']) % 4 === 0 && preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $block['params']['text'])) {
+
+                                    $data['body'][$j]['params']['text'] = base64_decode($block['params']['text']);
+                                    $requires_update = true;
+                                }
+                            }
+                        }
+
+                        if($requires_update === true) {
+                            $model_forms->reset();
+                            $model_forms->update(array('data' => base64_encode(serialize($data))), array('form_id' => (int)$form['form_id']));
+                        }
                     }
                 }
                 return true;

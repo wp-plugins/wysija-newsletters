@@ -102,46 +102,61 @@ class WYSIJA_help_user extends WYSIJA_object{
         if(!$backend){
             $validEmail=apply_filters( 'wysija_beforeAddSubscriber', true ,$data['user']['email']);
             if(!$validEmail){
-                $this->error(sprintf(__('The email %1$s is not valid!',WYSIJA),'<strong>'.$data['user']['email'].'</strong>'),true);
+                $this->error(__('The email is not valid!',WYSIJA),true);
                 return false;
             }
         }
 
-        $userHelper=&WYSIJA::get('user','helper');
         if(!$this->validEmail($data['user']['email'])){
-            $this->error(sprintf(__('The email %1$s is not valid!',WYSIJA),'<strong>'.$data['user']['email'].'</strong>'),true);
+            $this->error(__('The email is not valid!',WYSIJA),true);
             return false;
         }
 
-        $modelUser=&WYSIJA::get('user','model');
-        $userGet=$modelUser->getOne(false,array('email'=>trim($data['user']['email'])));
+        $model_user=&WYSIJA::get('user','model');
+        $user_get=$model_user->getOne(false,array('email'=>trim($data['user']['email'])));
         $config=&WYSIJA::get('config','model');
         $dbloptin=$config->getValue('confirm_dbleoptin');
-        if($userGet){
+
+        $message_success='';
+        if(isset($data['message_success'])) {
+            $message_success = strip_tags($data['message_success'], '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li><br>');
+        } else if(isset($data['success_message'])) {
+            $message_success = strip_tags(nl2br(base64_decode($data['success_message'])), '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li><br>');
+        } else if(isset($data['form_id'])) {
+
+            $model_forms =& WYSIJA::get('forms', 'model');
+            $form = $model_forms->getOne(array('data'), array('form_id' => (int)$data['form_id']));
+            $form_data = unserialize(base64_decode($form['data']));
+
+            if($form_data['settings']['on_success'] === 'message') {
+                $message_success = nl2br($form_data['settings']['success_message']);
+            }
+        }
+        if($user_get){
 
             if($backend){
-                $this->error(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$userGet['user_id'].'" >',"</a>"),__('Subscriber already exists. [link]Click to edit[/link].',WYSIJA)),true);
+                $this->error(str_replace(array('[link]','[/link]'),array('<a href="admin.php?page=wysija_subscribers&action=edit&id='.$user_get['user_id'].'" >',"</a>"),__('Subscriber already exists. [link]Click to edit[/link].',WYSIJA)),true);
                 return false;
             }
 
-            if((int)$userGet['status']<1){
-                $modelUser->reset();
-                $modelUser->update(array('status'=>0),array('user_id'=>$userGet['user_id']));
+            if((int)$user_get['status']<1){
+                $model_user->reset();
+                $model_user->update(array('status'=>0),array('user_id'=>$user_get['user_id']));
                 $subscribetolist=0;
                 if(!$dbloptin)  $subscribetolist=time();
-                $this->addToLists($data['user_list']['list_ids'], $userGet['user_id'],$subscribetolist);
+                $this->addToLists($data['user_list']['list_ids'], $user_get['user_id'],$subscribetolist);
                 if($dbloptin){
-                    $emailsent=$this->sendConfirmationEmail((object)$userGet,true,$data['user_list']['list_ids']);
+                    $emailsent=$this->sendConfirmationEmail((object)$user_get,true,$data['user_list']['list_ids']);
                 }else{
-                    $lists=$this->getUserLists($userGet['user_id'],$data['user_list']['list_ids']);
-                    $this->sendAutoNl($userGet['user_id'],$lists);
+                    $lists=$this->getUserLists($user_get['user_id'],$data['user_list']['list_ids']);
+                    $this->sendAutoNl($user_get['user_id'],$lists);
                 }
-                if(isset($data['message_success'])) $this->notice($data['message_success']);
-                if(isset($data['success_message'])) $this->notice(nl2br(base64_decode($data['success_message'])));
+
+                if(!empty($message_success))    $this->notice($message_success);
                 return true;
             }
             $mUserList=&WYSIJA::get('user_list','model');
-            $userListsSub=$mUserList->get(array('list_id'),array('greater'=>array('sub_date'=>0),'equal'=>array('user_id'=>$userGet['user_id'])));
+            $userListsSub=$mUserList->get(array('list_id'),array('greater'=>array('sub_date'=>0),'equal'=>array('user_id'=>$user_get['user_id'])));
             $arrayListids=array();
             foreach($userListsSub as $userlistdetail){
                 $arrayListids[]=$userlistdetail['list_id'];
@@ -158,17 +173,16 @@ class WYSIJA_help_user extends WYSIJA_object{
                 if(isset($data['user']['status'])) $subscriber_status=$data['user']['status'];
                 if(($dbloptin && $subscriber_status) || !$dbloptin) $subscribetolist=time();
 
-                $this->addToLists($data['user_list']['list_ids'], $userGet['user_id'],$subscribetolist);
+                $this->addToLists($data['user_list']['list_ids'], $user_get['user_id'],$subscribetolist);
                 if($dbloptin){
 
-                    $emailsent=$this->sendConfirmationEmail((object)$userGet,true,$sendConfForIds);
+                    $emailsent=$this->sendConfirmationEmail((object)$user_get,true,$sendConfForIds);
                 }
-                if(isset($data['message_success'])) $this->notice($data['message_success']);
-                if(isset($data['success_message'])) $this->notice(nl2br(base64_decode($data['success_message'])));
+                if(!empty($message_success))    $this->notice($message_success);
 
                 if(!$dbloptin &&(!empty($sendConfForIds))){
-                    $lists=$this->getUserLists($userGet['user_id'],$data['user_list']['list_ids']);
-                    $this->sendAutoNl($userGet['user_id'],$lists);
+                    $lists=$this->getUserLists($user_get['user_id'],$data['user_list']['list_ids']);
+                    $this->sendAutoNl($user_get['user_id'],$lists);
                 }
             }else{
 
@@ -180,8 +194,8 @@ class WYSIJA_help_user extends WYSIJA_object{
 
         $dataInsert=$data['user'];
         $dataInsert['ip']=$this->getIP();
-        $modelUser->reset();
-        $user_id=$modelUser->insert($dataInsert);
+        $model_user->reset();
+        $user_id=$model_user->insert($dataInsert);
 
         if($user_id ){
 
@@ -199,7 +213,7 @@ class WYSIJA_help_user extends WYSIJA_object{
                 }
             }
 
-            if(isset($data['message_success'])) $this->notice($data['message_success']);
+            if(!empty($message_success))    $this->notice($message_success);
         }else{
             $this->notice(__('Subscriber has not been saved.',WYSIJA));
             if($backend) return false;
@@ -214,9 +228,9 @@ class WYSIJA_help_user extends WYSIJA_object{
         if($subscriber_status>-1){
             if($dbloptin){
                 if($subscriber_status==0){
-                    $modelUser->reset();
-                    $modelUser->getFormat=OBJECT;
-                    $receiver=$modelUser->getOne(false,array('email'=>trim($data['user']['email'])));
+                    $model_user->reset();
+                    $model_user->getFormat=OBJECT;
+                    $receiver=$model_user->getOne(false,array('email'=>trim($data['user']['email'])));
                     $this->sendConfirmationEmail($receiver,true,$data['user_list']['list_ids']);
                 }else{
 
@@ -305,14 +319,14 @@ class WYSIJA_help_user extends WYSIJA_object{
         }
     }
     
-    function insertAutoQueue($user_id,$email_id,$email_params){
+    function insertAutoQueue($user_id,$email_id,$email_params_autonl){
         $model_queue=&WYSIJA::get('queue','model');
         $queueData=array('priority'=>'-1','email_id'=>$email_id,'user_id'=>$user_id);
-        $delay=$model_queue->calculate_delay($email_params);
+        $delay=$model_queue->calculate_delay($email_params_autonl);
         $queueData['send_at']=time()+$delay;
         if(!$model_queue->exists(array('email_id'=>$email_id,'user_id'=>$user_id))){
 
-            if(isset($email_params['unique_send']) && $email_params['unique_send']){
+            if(isset($email_params_autonl['unique_send']) && $email_params_autonl['unique_send']){
 
                 $modelEUS=&WYSIJA::get('email_user_stat','model');
                 if(!$modelEUS->exists(array('email_id'=>$email_id,'user_id'=>$user_id)))

@@ -10,8 +10,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     function reinstall(){
         ?>
         <form name="wysija-settings" method="post" id="wysija-settings" action="" class="form-valid" autocomplete="off">
-            <input type="hidden" value="doreinstall" name="action"/>
-            <input type="hidden" value="reinstall" name="postedfrom"/>
+            <input type="hidden" value="doreinstall" name="action" />
+            <input type="hidden" value="reinstall" name="postedfrom" />
             <h3><?php _e('If you confirm this, all your current Wysija data will be erased (newsletters, themes, statistics, lists, subscribers, etc.)',WYSIJA); ?></h3>
             <p class="submit">
                 <input type="submit" value="<?php _e('Confirm Reinstallation',WYSIJA)?>" class="button-secondary" id="submit" name="submit" />
@@ -1895,7 +1895,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $params = $data['params'];
 
         // text
-        $text = isset($params['text']) ? base64_decode($params['text']) : '';
+        $text = isset($params['text']) ? $params['text'] : '';
         $output .= '<textarea name="text">'.$text.'</textarea>';
 
         return $output;

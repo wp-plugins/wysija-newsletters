@@ -877,6 +877,12 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
                         $value = '';
                     }
                 break;
+                case 'html_value':
+                    $value = str_replace('"', '&#34;', $value);
+                    $value = str_replace("'", '&#39;', $value);
+                    $value = str_replace('<', '&lt;', $value);
+                    $value = str_replace('>', '&gt;', $value);
+                break;
                 case 'html_entity_decode':
                     $value = html_entity_decode ($value, ENT_QUOTES);
                 break;
@@ -897,14 +903,12 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
                     }
                 break;
                 case 'base64_decode':
-                    if($this->is_base64_encoded($value) === true) {
+                    if($this->is_valid_base64($value) === true) {
                         $value = base64_decode($value);
                     }
                 break;
                 case 'base64_encode':
-                    if($this->is_base64_encoded($value) === false) {
-                        $value = base64_encode($value);
-                    }
+                    $value = base64_encode($value);
                 break;
                 case 'join':
                     if(isset($arguments[0])) {
@@ -1004,9 +1008,12 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
         }
         return $value;
     }
-    function is_base64_encoded($data) {
+
+
+    function is_valid_base64($data) {
 
         if(strlen($data) % 4 !== 0) return false;
+
         if(preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
             return true;
         } else {

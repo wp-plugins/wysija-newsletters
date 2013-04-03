@@ -103,20 +103,33 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                         ));
                         if($helper_toolbox->localtime_to_servertime($schedule_at) < $now) {
 
+                            $first_day_of_next_month = $this->get_first_day_of_month($schedule_at, 1);
+
                             $schedule_at = strtotime(
-                                sprintf('+1 month %02d/01/%02d %d %s %s',
-                                $current_month,
-                                $current_year,
-                                $email['params']['autonl']['dayevery'],
-                                ucfirst($email['params']['autonl']['dayname']),
-                                $email['params']['autonl']['time']
-                            ));
+                                sprintf('%02d/01/%02d %d %s %s',
+                                    date('m', $first_day_of_next_month),
+                                    date('y', $first_day_of_next_month),
+                                    $email['params']['autonl']['dayevery'],
+                                    ucfirst($email['params']['autonl']['dayname']),
+                                    $email['params']['autonl']['time']
+                                )
+                            );
                         }
                         break;
                 }
             }
         }
         return $schedule_at;
+    }
+    function get_first_day_of_month($time_stamp, $months_to_add = 0) {
+
+        $date = getdate($time_stamp); // Covert to Array
+
+        $date['mon'] = $date['mon'] + (int)$months_to_add;
+
+        $date['mday'] = 1;
+
+        return mktime($date['hours'], $date['minutes'], $date['seconds'], $date['mon'], $date['mday'], $date['year']);
     }
     
     function getNextDay($first_day_of_month,$day_name,$which_number,$time_now){
@@ -133,12 +146,12 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
 
         $current_check = (int)get_option('wysija_check_pn');
 
-        if(time() < ($current_check+60)){
+        if(microtime(true) < ($current_check+60)){
             WYSIJA::log('already_running_checkPN', $current_check, 'post_notif');
             return false;
         }
 
-        $current_check=time();
+        $current_check=microtime(true);
         WYSIJA::update_option('wysija_check_pn',$current_check);
 
         WYSIJA::log('check_post_notif_starts', $current_check , 'post_notif');
@@ -219,11 +232,11 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
     
     function checkScheduled(){
         $model_email=&WYSIJA::get('email','model');
+        $helper_toolbox=&WYSIJA::get('toolbox','helper');
         $model_email->reset();
 
         $all_emails=$model_email->get(false,array('type'=>'1','status'=>'4'));
         if($all_emails){
-            $helper_toolbox=&WYSIJA::get('toolbox','helper');
             foreach($all_emails as $email){
 
                 if(isset($email['params']['schedule']['isscheduled'])){
@@ -231,9 +244,9 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
                     $unix_scheduled_time=strtotime($schedule_date);
 
 
-                    if($helper_toolbox->localtime_to_servertime($unix_scheduled_time)<time()){
+                    if($helper_toolbox->localtime_to_servertime($unix_scheduled_time) < time()){
                         $model_email->reset();
-                        $model_email->send($email,true);
+                        $model_email->send_activate($email);
                     }
                 }
             }

@@ -98,6 +98,7 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
             $default_list[] = $lists[0]['list_id'];
         }
         return array(
+            'version' => '0.2',
             'settings' => array(
                 'on_success' => 'message',
                 'success_message' => __('Check your inbox now to confirm your subscription.', WYSIJA),
@@ -131,25 +132,10 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
             $settings = $this->get_data('settings');
             if(array_key_exists($key, $settings)) {
 
-                if($this->is_base64_encoded($settings[$key])) {
-
-                    return base64_decode($settings[$key]);
-                } else {
-
-                    return $settings[$key];
-                }
+                return $settings[$key];
             } else {
                 return null;
             }
-        }
-    }
-    public function is_base64_encoded($data) {
-
-        if(strlen($data) % 4 !== 0) return false;
-        if(preg_match('%^[a-zA-Z0-9/+]*={0,2}$%', $data)) {
-            return true;
-        } else {
-            return false;
         }
     }
 
@@ -307,8 +293,6 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
             }
             $helper_render_engine =& WYSIJA::get('render_engine', 'helper');
             $helper_render_engine->setTemplatePath(WYSIJA_EDITOR_TOOLS);
-
-
             try {
                 $template = $helper_render_engine->render($data, 'templates/form/web/template.html');
                 return $template;
@@ -420,7 +404,7 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
                 }
                 $wysija_version=WYSIJA::get_version();
                 $scripts_to_include='<!--START Scripts : this is the script part you can add to the header of your theme-->'."\n";
-                $scripts_to_include.='<script type="text/javascript" src="'.includes_url().'/js/jquery/jquery.js'.'?ver='.$wysija_version.'"></script>'."\n";
+                $scripts_to_include.='<script type="text/javascript" src="'.includes_url().'js/jquery/jquery.js'.'?ver='.$wysija_version.'"></script>'."\n";
                 if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wp_lang.'.js')){
                     $scripts_to_include.='<script type="text/javascript" src="'.WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wp_lang.'.js'.'?ver='.$wysija_version.'"></script>'."\n";
                 }else{
@@ -440,8 +424,7 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
 
                 $widget_NL = new WYSIJA_NL_Widget(true);
                 $html_result.= $widget_NL->widget(array('form' => (int)$form_id, 'form_type' => 'html'));
-
-                return utf8_decode($html_result);
+                return $html_result;
             break;
             case 'shortcode':
                 return '[wysija_form id="'.(int)$form_id.'"]';

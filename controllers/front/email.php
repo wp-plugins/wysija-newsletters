@@ -51,19 +51,22 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
         // Set Body
         $email_render = $current_email->body;
 
-        // Parse old shortcodes that we are parsing in the queue.
-        $find = array(
-            '[unsubscribe_linklabel]',
-            '[post_title]',
-            '[total]',
-            '[number]'
-        );
-        $replace = array(
-            $configM->getValue('unsubscribe_linkname'),
-            $current_email->params['autonl']['articles']['first_subject'],
-            $current_email->params['autonl']['articles']['total'],
-            $current_email->params['autonl']['articles']['ids']
-        );
+        // Parse old shortcodes that we are parsing in the queue.        
+        $find = array('[unsubscribe_linklabel]');
+        $replace = array($configM->getValue('unsubscribe_linkname'));
+        if (isset($current_email->params['autonl']['articles']['first_subject'])){
+            $find[] = '[post_title]';
+            $replace[] = $current_email->params['autonl']['articles']['first_subject'];
+        }
+        if (isset($current_email->params['autonl']['articles']['total'])){
+            $find[] = '[total]';
+            $replace[] = $current_email->params['autonl']['articles']['total'];
+        }
+        if (isset($current_email->params['autonl']['articles']['ids'])){
+            $find[] = '[number]';
+            $replace[] = $current_email->params['autonl']['articles']['ids'];
+        }        
+        
         $email_render = str_replace($find, $replace, $email_render);
 
         // Strip unsubscribe links.
