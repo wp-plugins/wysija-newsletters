@@ -167,7 +167,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                 return true;
                break;
            case '2.3.3':
-                update_option('wysija_log', $optionlog);
+                update_option('wysija_log', '');
                 return true;
                break;
 
@@ -228,7 +228,7 @@ class WYSIJA_help_update extends WYSIJA_object{
             break;
             case '2.4.3':
 
-                
+
                 $model_forms =& WYSIJA::get('forms', 'model');
                 $forms = $model_forms->getRows();
                 if(is_array($forms) && count($forms) > 0) {
@@ -277,7 +277,7 @@ class WYSIJA_help_update extends WYSIJA_object{
             return false;
         }
     }
-    
+
     function checkForNewVersion($file='wysija-newsletters/index.php'){
         $current = get_site_transient( 'update_plugins' );
 	if ( !isset( $current->response[ $file ] ) )
@@ -310,12 +310,12 @@ class WYSIJA_help_update extends WYSIJA_object{
         }
     }
     function check(){
-        
+
         $config=&WYSIJA::get('config','model');
         if(!$config->getValue('wysija_db_version') || version_compare($config->getValue('wysija_db_version'),WYSIJA::get_version()) < 0){
             $this->update(WYSIJA::get_version());
         }
-        
+
         $noredirect=false;
 
 
@@ -369,7 +369,7 @@ class WYSIJA_help_update extends WYSIJA_object{
             }
         }
     }
-    
+
     function runUpdateQueries($queries){
         $failed=array();
 
@@ -383,7 +383,7 @@ class WYSIJA_help_update extends WYSIJA_object{
         else return false;
     }
 
-    
+
     function convert_widget_to_form($values = array()) {
 
         if(!is_array($values)) return false;
