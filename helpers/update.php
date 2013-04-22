@@ -4,7 +4,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
 
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3','2.4.4');
     }
 
     function runUpdate($version){
@@ -167,7 +167,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                 return true;
                break;
            case '2.3.3':
-                update_option('wysija_log', '');
+                update_option('wysija_log', $optionlog);
                 return true;
                break;
 
@@ -263,6 +263,11 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
             break;
+            case '2.4.4':
+
+                WYSIJA::update_option('installation_step', '16');
+                return true;
+                break;
             default:
                 return false;
         }

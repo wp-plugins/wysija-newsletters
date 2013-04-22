@@ -115,6 +115,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 $wysija_installing=true;
                 $installer=&WYSIJA::get('install','helper',false,'wysija-newsletters',false);
                 add_action('admin_menu', array($installer,'install'),97);
+                
             }else{
                 $updater=&WYSIJA::get('update','helper',false,'wysija-newsletters',false);
                 add_action('admin_menu', array($updater,'check'),103);

@@ -50,7 +50,7 @@ class WYSIJA_view_back extends WYSIJA_view{
      * to help reproduce the standard view of wordpress admin view here is the header part
      * @param type $methodView
      */
-    function header($data){
+    function header($data=''){
         echo '<div id="wysija-app" class="wrap">';/*start div class wrap*/
 
         if($this->skip_header === true) return;
@@ -782,7 +782,7 @@ class WYSIJA_view_back extends WYSIJA_view{
 
         //$dataInputEmail=array('class'=>'validate[required]', 'id'=>$keyemail,'name'=>"wysija[$model][$keyemail]", 'size'=>40);
         $dataInputEmail=array('class'=>'validate[required,custom[email]]', 'id'=>$keyemail,'name'=>"wysija[$model][$keyemail]", 'size'=>40);
-        
+
         if(isset($this->data['email'][$key])){
             $valname=$this->data['email'][$key];
             $valemail=$this->data['email'][$keyemail];

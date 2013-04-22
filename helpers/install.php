@@ -6,108 +6,144 @@ class WYSIJA_help_install extends WYSIJA_object{
     }
     function install(){
         $values=array();
-
-        if(!$this->testSystem()) return false;
-
-        if(!$this->createTables()) return false;
-
-        $this->moveData('themes');
-        $this->moveData('dividers');
-        $this->moveData('bookmarks');
-
-        $this->recordDefaultUserField();
-
-        $this->defaultSettings($values);
-
-        $this->defaultList($values);
-
-        $this->defaultCampaign($values);
-
-        $helper_import=&WYSIJA::get('import','helper');
-        $values['importwp_list_id']=$helper_import->importWP();
-
-        $this->createPage($values);
-
-        $this->createWYSIJAdir($values);
-        
-        $this->create_default_subscription_form();
-
         $model_config=&WYSIJA::get('config','model');
 
-        $model_config->add_translated_default();
-        $model_email=&WYSIJA::get('email','model');
-        $model_email->blockMe=true;
-        $values['confirm_email_id']=$model_email->insert(
-                array('type'=>'0',
-                    'from_email'=>$values['from_email'],
-                    'from_name'=>$values['from_name'],
-                    'replyto_email'=>$values['from_email'],
-                    'replyto_name'=>$values['from_name'],
-                    'subject'=>$model_config->getValue('confirm_email_title'),
-                    'body'=>$model_config->getValue('confirm_email_body'),
-                    'status'=>99));
+        $helper_server=&WYSIJA::get('server','helper');
+        $missing_capabilities=$helper_server->unhealthy();
 
-        $values['installed']=true;
-        $values['manage_subscriptions']=true;
-        $values['installed_time']=time();
-        $values['wysija_db_version']=WYSIJA::get_version();
-        $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
-        $values['dkim_domain']=$wptoolboxs->_make_domain_name();
-        if(get_option('wysija_reinstall',0)) $values['wysija_whats_new']=WYSIJA::get_version();
-        $model_config->save($values);
+        if($missing_capabilities!==false){
 
-        $this->testNLplugins();
+            if(count($missing_capabilities) > 1 ||
+                    (count($missing_capabilities)==1 && (!isset($missing_capabilities['functions']) || isset($missing_capabilities['functions']['required']))) ){
 
-        $helper_wp_tools =& WYSIJA::get('wp_tools', 'helper');
-        $helper_wp_tools->set_default_rolecaps();
+                $this->error(__('Your server cannot run Wysija.',WYSIJA),1);
+                if(isset($missing_capabilities['functions']['required'])){
+                    $this->error(sprintf(__('Your server is missing one or many important PHP functions to run properly :  %1$s',WYSIJA),'<strong>'.implode(', ',  array_keys($missing_capabilities['functions']['required'])).'</strong>').' '.__('Please contact your host or server administrator to fix this.',WYSIJA));
+                }
+                return false;
+            }else{
+
+            }
+        }
+
+        if((int)get_option('installation_step')<1){
+             if(!$this->createTables()) return false;
+            WYSIJA::update_option('installation_step', '1');
+        }
+
+
+        if((int)get_option('installation_step')<4){
+            $this->moveData('themes');
+            $this->moveData('dividers');
+            $this->moveData('bookmarks');
+            WYSIJA::update_option('installation_step', '4');
+        }
+
+
+        if((int)get_option('installation_step')<5){
+            $this->recordDefaultUserField();
+            WYSIJA::update_option('installation_step', '5');
+        }
+
+        if((int)get_option('installation_step')<6){
+            $this->defaultSettings($values);
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '6');
+        }
+
+
+        if((int)get_option('installation_step')<7){
+            $this->defaultList($values);
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '7');
+        }
+
+
+        if((int)get_option('installation_step')<8){
+            $this->defaultCampaign($values);
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '8');
+        }
+
+
+        if((int)get_option('installation_step')<9){
+            $helper_import=&WYSIJA::get('import','helper');
+            $values['importwp_list_id']=$helper_import->importWP();
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '9');
+        }
+
+        if((int)get_option('installation_step')<10){
+            $this->createPage($values);
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '10');
+        }
+
+
+        if((int)get_option('installation_step')<11){
+            $this->createWYSIJAdir($values);
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '11');
+        }
+
+
+        if((int)get_option('installation_step')<12){
+            $this->create_default_subscription_form();
+            WYSIJA::update_option('installation_step', '12');
+        }
+
+
+
+        if((int)get_option('installation_step')<13){
+
+            $model_config->add_translated_default();
+            WYSIJA::update_option('installation_step', '13');
+        }
+        if((int)get_option('installation_step')<14){
+            $model_email=&WYSIJA::get('email','model');
+            $model_email->blockMe=true;
+            $values['confirm_email_id']=$model_email->insert(
+                    array('type'=>'0',
+                        'from_email'=>$values['from_email'],
+                        'from_name'=>$values['from_name'],
+                        'replyto_email'=>$values['from_email'],
+                        'replyto_name'=>$values['from_name'],
+                        'subject'=>$model_config->getValue('confirm_email_title'),
+                        'body'=>$model_config->getValue('confirm_email_body'),
+                        'status'=>99));
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '14');
+        }
+
+
+        if((int)get_option('installation_step')<15){
+            $this->testNLplugins();
+
+            $helper_wp_tools =& WYSIJA::get('wp_tools', 'helper');
+            $helper_wp_tools->set_default_rolecaps();
+            WYSIJA::update_option('installation_step', '15');
+        }
+
+
+        if((int)get_option('installation_step')<16){
+            $values['installed']=true;
+            $values['manage_subscriptions']=true;
+            $values['installed_time']=time();
+            $values['wysija_db_version']=WYSIJA::get_version();
+            $wptoolboxs =& WYSIJA::get('toolbox', 'helper');
+            $values['dkim_domain']=$wptoolboxs->_make_domain_name();
+            if(get_option('wysija_reinstall',0)) $values['wysija_whats_new']=WYSIJA::get_version();
+            $model_config->save($values);
+            WYSIJA::update_option('installation_step', '16');
+        }
+
+
         global $wysija_installing;
         $wysija_installing=false;
         WYSIJA::update_option('wysija_reinstall',0);
         return true;
     }
 
-    
-    function testSystem(){
-
-        
-        $model_user=&WYSIJA::get('user','model');
-        $query='CREATE TABLE IF NOT EXISTS `'.$model_user->getPrefix().'user_list` (
-  `list_id` INT unsigned NOT NULL,
-  `user_id` INT unsigned NOT NULL,
-  `sub_date` INT unsigned DEFAULT 0,
-  `unsub_date` INT unsigned DEFAULT 0,
-  PRIMARY KEY (`list_id`,`user_id`)
-) ENGINE=MyISAM';
-        global $wpdb;
-
-        
-
-        $wpdb->query($query);
-        $query="SHOW TABLES like '".$model_user->getPrefix()."user_list';";
-        $res=$wpdb->get_var($query);
-        $haserrors=false;
-        if(!$res){
-            $this->wp_error(sprintf(
-                    __('The MySQL user you have setup on your Wordpress site (wp-config.php) doesn\'t have enough privileges to CREATE MySQL tables. Please change this user yourself or contact the administrator of your site in order to complete Wysija\'s installation. mysql errors:(%1$s)',WYSIJA),  mysql_error()));
-            $haserrors=true;
-        }
-        
-
-
-        $hFile = &WYSIJA::get('file','helper');
-        $upload_dir = wp_upload_dir();
-        $temp_dir = $hFile->makeDir();
-        if (!$temp_dir) {
-            $this->wp_error(sprintf(__('The folder "%1$s" is not writable, please change the access rights to this folder so that Wysija can setup itself properly.',WYSIJA),$upload_dir['basedir']).'<a target="_blank" href="http://codex.wordpress.org/Changing_File_Permissions">'.__('Read documentation',WYSIJA).'</a>');
-            $haserrors = true;
-        } else {
-
-            $index_file = 'index.html';
-            fclose(fopen($temp_dir.$index_file, "w"));
-        }
-        if ($haserrors) return false;
-        return true;
-    }
 
     function defaultList(&$values){
         $model_list=&WYSIJA::get('list','model');

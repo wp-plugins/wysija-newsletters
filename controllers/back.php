@@ -19,8 +19,6 @@ class WYSIJA_control_back extends WYSIJA_control{
             $wysija_msg=$wysija_msgTemp;
         }
 
-        $modelEmail =& WYSIJA::get('email', 'model');
-        $campaign = $modelEmail->getOne('params', array('email_id' => 12));
         $wysija_qryTemp=get_option('wysija_queries');
         $wysija_qryErrors=get_option('wysija_queries_errors');
         if(is_array($wysija_qryTemp) && count($wysija_qryTemp)>0){
@@ -34,6 +32,8 @@ class WYSIJA_control_back extends WYSIJA_control{
         WYSIJA::update_option('wysija_queries','');
         WYSIJA::update_option('wysija_queries_errors','');
         WYSIJA::update_option('wysija_msg','');
+        global $wysija_installing;
+        if($wysija_installing===true) return;
         $this->pref=get_user_meta(WYSIJA::wp_get_userdata('ID'),'wysija_pref',true);
 
         $prefupdate=false;
@@ -180,8 +180,13 @@ class WYSIJA_control_back extends WYSIJA_control{
      * by default this is the first method called from a controller this is from where we route to other methods
      */
     function main(){
+        global $wysija_installing;
+        if($wysija_installing===true){
+            $_REQUEST['action']='installation';
+        }
 
         $this->WYSIJA_control_back();
+
         if($this->model){
             if(isset($_REQUEST['action']))  $action=$_REQUEST['action'];
             else  $action='defaultDisplay';

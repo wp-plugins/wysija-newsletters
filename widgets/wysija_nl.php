@@ -62,7 +62,6 @@ class WYSIJA_NL_Widget extends WP_Widget {
                     'action' => 'wysija_ajax',
                     'controller' => $controller,
                     'ajaxurl'=>$ajaxurl,
-                    'loadingTrans'  =>__('Loading...',WYSIJA)
                 );
 
                 if($model_config->getValue('no_js_val')) $this->params_ajax['noajax']=1;
@@ -87,11 +86,6 @@ class WYSIJA_NL_Widget extends WP_Widget {
             add_action('init', array($this,'add_translated_default'));
         }
 
-        //if the js array for the ajax request is set we declare it
-        if(isset($this->params_ajax)){
-            wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$this->params_ajax );
-        }
-
         $this->classid=strtolower(str_replace(__CLASS__.'_','',get_class($this)));
         $this->WP_Widget( $namekey, $title, $params,$sizeWindow );
 
@@ -100,6 +94,13 @@ class WYSIJA_NL_Widget extends WP_Widget {
     function add_translated_default(){
         $this->name=__('Wysija Subscription',WYSIJA);
         $this->widget_options['description']=__('Subscription form for your newsletters.',WYSIJA);
+
+
+        //if the js array for the ajax request is set we declare it
+        if(isset($this->params_ajax)){
+            $this->params_ajax['loadingTrans']  =__('Loading...',WYSIJA);
+            wp_localize_script( 'wysija-front-subscribers', 'wysijaAJAX',$this->params_ajax );
+        }
 
         $config=&WYSIJA::get('config','model');
         $this->successmsgconf=__('Check your inbox now to confirm your subscription.',WYSIJA);

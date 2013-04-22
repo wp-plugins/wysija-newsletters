@@ -95,12 +95,16 @@ class WYSIJA_model_queue extends WYSIJA_model{
         // rows were inserted
         $nb_emails=$this->getAffectedRows();
         if((int)$nb_emails  > 0){
-            $this->notice($nb_emails.' email(s) queued',false);
+            //$this->notice($nb_emails.' email(s) queued',false);
             return true;
         }
+        
+        if(!$result){
+           $this->error('Queue failure : '.$query);
+            return false;
+        }
 
-        $this->error('Queue failure : '.$query);
-        return false;
+        return true;
     }
 
 

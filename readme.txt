@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.4.3
+Stable tag: 2.4.4
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,13 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.4.4 - 2013-04-22 =
+* added translations of the "loading..." message in forms
+* added download link to theme's .zip file in theme detail pages
+* added possibility to hide our update page's kitten. It hurt some feelings
+* added protection on looping install process resulting in duplication of default list or newsletter
+* fixed sending autoresponders twice after importing same csv file
 
 = 2.4.3 - 2013-04-03 =
 * improved subscription form rendering and support of unicode/special characters
