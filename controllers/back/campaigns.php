@@ -12,7 +12,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     function WYSIJA_control_back_campaigns(){
 
     }
-
+    function installation(){
+        return '';
+    }
     /**
      * Welcome page first time install
      * @return boolean
@@ -123,14 +125,14 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         $is_multisite=is_multisite();
         $is_network_admin=WYSIJA::current_user_can('manage_network');
-        $mConfig=&WYSIJA::get('config','model');
+        $model_config=&WYSIJA::get('config','model');
 
         if($is_multisite){
             if($is_network_admin){
-                $mConfig->save(array('ms_wysija_whats_new'=>WYSIJA::get_version()));
+                $model_config->save(array('ms_wysija_whats_new'=>WYSIJA::get_version()));
             }
         }else{
-            $mConfig->save(array('wysija_whats_new'=>WYSIJA::get_version()));
+            $model_config->save(array('wysija_whats_new'=>WYSIJA::get_version()));
         }
 
 
@@ -186,25 +188,30 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             );
         }
 
+        $msg=$model_config->getValue('ignore_msgs');
+        if(!isset($msg['ctaupdate'])){
+            $this->data['sections'][]=array(
+                'title'=>__('Keep this plugin essentially free',WYSIJA),
+                'review'=>array(
+                        'title'=>'1. '.__('Love kittens?',WYSIJA).' '.__('We love stars...',WYSIJA),
+                        'content'=>str_replace(
+                                array('[link]','[/link]'),
+                                array('<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On wordpress.org">','</a>'),
+                                __('Each time one of our users forgets to write a review, a kitten dies. It\'s sad and breaks our hearts. [link]Add your own review[/link] and save a kitten today.',WYSIJA))
 
 
-        $this->data['sections'][]=array(
-            'title'=>__('Keep this plugin essentially free',WYSIJA),
-            'review'=>array(
-                    'title'=>'1. '.__('Love kittens?',WYSIJA).' '.__('We love stars...',WYSIJA),
-                    'content'=>str_replace(
-                            array('[link]','[/link]'),
-                            array('<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On wordpress.org">','</a>'),
-                            __('Each time one of our users forgets to write a review, a kitten dies. It\'s sad and breaks our hearts. [link]Add your own review[/link] and save a kitten today.',WYSIJA))
+                    ),
+                'follow'=> array(
+                        'title'=>'2. '.__('Follow us and don\'t miss anything!',WYSIJA),
+                        'content'=>$this->__get_social_buttons(false)
+                    ),
+                'hidelink'=>'<a class="linkignore ctaupdate" href="javascript:;">'.__('Hide!',WYSIJA).'</a>',
+                'format'=>'review-follow',
+            );
+
+        }
 
 
-                ),
-            'follow'=> array(
-                    'title'=>'2. '.__('Follow us and don\'t miss anything!',WYSIJA),
-                    'content'=>$this->__get_social_buttons(false)
-                ),
-            'format'=>'review-follow',
-        );
 
 
 

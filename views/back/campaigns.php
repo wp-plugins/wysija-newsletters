@@ -14,6 +14,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $this->column_actions=array('editlist'=>__('Edit',WYSIJA),'duplicatelist'=>__('Duplicate',WYSIJA),'deletelist'=>__('Delete',WYSIJA));
     }
 
+    function installation(){
+        return '';
+    }
+
     function main($data){
         $this->menuTop($this->action);
 
@@ -2697,9 +2701,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
             <?php
                 foreach($data['sections'] as $section){
+                    $link_hide=$class_added='';
+                    if(isset($section['hidelink'])){
+                        $link_hide=' <span class="ctaupdate">-</span> '.$section['hidelink'];
+                        $class_added=' removeme';
+                    }
                     ?>
-                     <div class="changelog">
-                            <h3><?php echo $section['title'] ?></h3>
+                     <div class="changelog <?php echo $class_added ?>">
+                            <h3><?php echo $section['title'].$link_hide ?></h3>
 
                             <div class="feature-section <?php echo $section['format'] ?>">
                                 <?php switch($section['format']){

@@ -13,8 +13,8 @@ class WYSIJA_help_uninstall extends WYSIJA_object{
     }
     function uninstall(){
         if(current_user_can('delete_plugins') && $this->removeProcess()) {
-            $this->wp_notice(__("Wysija has been uninstalled. Your site is now cleared of Wysija.",WYSIJA));  
-        } 
+            $this->wp_notice(__("Wysija has been uninstalled. Your site is now cleared of Wysija.",WYSIJA));
+        }
     }
     function removeProcess(){
 
@@ -38,7 +38,8 @@ class WYSIJA_help_uninstall extends WYSIJA_object{
             foreach($queries as $query)
                 $modelWysija->query($query);
             delete_option('wysija');
-            WYSIJA::update_option('wysija_reinstall',1);
+            delete_option('installation_step');
+            wysija::update_option('wysija_reinstall',1);
             global $wp_roles;
             foreach($wp_roles->roles as $rolek=>$roled){
                 if($rolek=='administrator') continue;

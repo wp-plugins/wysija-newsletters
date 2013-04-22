@@ -542,8 +542,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $data=$model->getOne(array('name','namekey','welcome_mail_id'),array('list_id'=>(int)$_REQUEST['id']));
 
         if($data && isset($data['namekey']) && ($data['namekey']!='users')){
-            $modelRECYCLE=&WYSIJA::get('email','model');
-            $modelRECYCLE->delete(array('email_id'=>$data['welcome_mail_id']));
+
+            //there is no welcome email per list that's old stuff
+            //$modelRECYCLE=&WYSIJA::get('email','model');
+            //$modelRECYCLE->delete(array('email_id'=>$data['welcome_mail_id']));
 
             $modelRECYCLE=&WYSIJA::get('user_list','model');
             $modelRECYCLE->delete(array('list_id'=>$_REQUEST['id']));
@@ -1108,19 +1110,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         //select query to get all of there ids
         $user_ids=$this->modelObj->get(array('user_id'),array('email'=>$allEmails));
         $wpdb->rows_affected=0;
-        $modelUL=&WYSIJA::get('user_list','model');
 
         //insert query per list
         $query='INSERT IGNORE INTO [wysija]user_list (`list_id` ,`user_id`,`sub_date`) VALUES ';
-
-        $helper_email=&WYSIJA::get('email','helper');
-        $follow_ups_per_list=$helper_email->get_active_follow_ups(array('email_id','params'),true);
-
-        if(!empty($follow_ups_per_list)){
-            //insert query per active followup
-            $query_queue='INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) VALUES ';
-        }
-
         $time_now=time();
         foreach($_REQUEST['wysija']['user_list']['list'] as $keyl=> $list_id){
 
@@ -1130,24 +1122,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                 //inserting each user id to this list
                 $query.="($list_id,".$userid['user_id'].', '.$time_now.')';
 
-                //checking if this list has a list of follow ups
-                if(isset($follow_ups_per_list[$list_id])){
-
-                    //for each follow up of that list we queu an email
-                    foreach($follow_ups_per_list[$list_id] as $key_queue=>$follow_up){
-                        $query_queue.='('.$follow_up['email_id'].' ,'.$userid['user_id'].', '.($time_now+$follow_up['delay']).')';
-
-                        //if this is not the last row we put a comma for the next row
-                        if(count($follow_ups_per_list[$list_id])>($key_queue+1)){
-                            $query_queue.=',';
-                        }
-                    }
-                }
-
                 //if this is not the last row we put a comma for the next row
                 if(count($user_ids)>($key+1)){
                     $query.=',';
-                    $query_queue.=',';
                 }
             }
 
@@ -1162,10 +1139,29 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $dataNumbers['list_added']+=$wpdb->rows_affected;
         $dataNumbers['list_user_ids']+=count($user_ids);
 
-        if(!empty($follow_ups_per_list)){
-            $resultqry3=$modelWysija->query($query_queue);
+        // take care of active follow ups retro-activity
+        $helper_email=&WYSIJA::get('email','helper');
+        $follow_ups_per_list=$helper_email->get_active_follow_ups(array('email_id','params'),true);
 
-            $dataNumbers['emails_queued']+=$wpdb->rows_affected;
+        if(!empty($follow_ups_per_list)){
+            foreach($_REQUEST['wysija']['user_list']['list'] as $list_id){
+                //checking if this list has a list of follow ups
+                if(isset($follow_ups_per_list[$list_id])){
+
+                    //for each follow up of that list we queu an email
+                    foreach($follow_ups_per_list[$list_id] as $key_queue=>$follow_up){
+                        //insert query per active followup
+                        $query_queue='INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ';
+                        $query_queue.=' SELECT '.$follow_up['email_id'].' , B.user_id , '.($time_now+$follow_up['delay']);
+                        $query_queue.=' FROM [wysija]user_list as B';
+                        $query_queue.=' WHERE B.list_id='.(int)$list_id.' AND sub_date='.$time_now;
+
+                        $resultqry3=$modelWysija->query($query_queue);
+
+                        $dataNumbers['emails_queued']+=$wpdb->rows_affected;
+                    }
+                }
+            }
         }
 
         if($resultqry2===false) {
@@ -1420,6 +1416,33 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             return $array;
         }
 
+    }
+
+    function cleanQueueFromAlreadySent(){
+        $model_queue=&WYSIJA::get('queue','model');
+        $model_email=&WYSIJA::get('email','model');
+        $model_email->setConditions(array('type'=>2));
+        $autonewsletter=$model_email->getRows(array('email_id','params'));
+        $rows_affected=0;
+        foreach ($autonewsletter as $data){
+            $model_email->getParams($data);
+            global $wpdb;
+            if(isset($data['params']['autonl']['event']) && $data['params']['autonl']['event']=='subs-2-nl'){
+                $query_queue='DELETE FROM [wysija]queue';
+                $query_queue.=' WHERE email_id='.(int)$data['email_id'].' AND user_id ';
+                $query_queue.='IN (SELECT B.user_id FROM [wysija]email_user_stat as B WHERE B.email_id='.(int)$data['email_id'].')';
+                $result=$model_queue->query($query_queue);
+                $rows_affected+=$wpdb->rows_affected;
+            }
+
+        }
+
+        if($result){
+
+            echo 'query successfully run<br/>';
+            echo $rows_affected.' rows in the queue table have been deleted';
+        }
+        exit;
     }
 
 
