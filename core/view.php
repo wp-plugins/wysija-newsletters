@@ -87,21 +87,14 @@ class WYSIJA_view extends WYSIJA_object{
      * @return type
      */
     function secure($params=array(),$get=false,$echo=true){
+        $controller='';
         if(!is_array($params)) $action=$params;
         else{
             $action=$params['action'];
             if(isset($params['controller']))    $controller=$params['controller'];
+            elseif(isset($_REQUEST['page'])) $controller=$_REQUEST['page'];
         }
-        if(WYSIJA_SIDE=="front"){
-            $nonceaction=$controller.'-action_'.$action;
-        }else{
-            if(defined('DOING_AJAX')){
-               $nonceaction=$controller.'-action_'.$action;
-            }else{
-               $nonceaction=$_REQUEST['page'].'-action_'.$action;
-            }
-
-        }
+        $nonceaction=$controller.'-action_'.$action;
 
         if(is_array($params) && isset($params['id']) && $params['id']) $nonceaction.='-id_'.$params['id'];
 

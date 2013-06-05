@@ -58,7 +58,7 @@ class WYSIJA_model_user extends WYSIJA_model{
         $data['details']=$array;
 
         //get the list  that the user subscribed to
-        $modelRECYCLE=&WYSIJA::get('user_list','model');
+        $modelRECYCLE=WYSIJA::get('user_list','model');
         $conditions=array('user_id'=>$data['details']['user_id']);
         if($subscribedListOnly){
             $conditions['unsub_date']=0;
@@ -68,7 +68,7 @@ class WYSIJA_model_user extends WYSIJA_model{
 
         //get the user stats if requested
         if($stats){
-            $modelRECYCLE=&WYSIJA::get('email_user_stat','model');
+            $modelRECYCLE=WYSIJA::get('email_user_stat','model');
             $modelRECYCLE->setConditions(array('equal'=>array('user_id'=>$data['details']['user_id'])));
             $data['emails']=$modelRECYCLE->count(false);
         }
@@ -106,42 +106,42 @@ class WYSIJA_model_user extends WYSIJA_model{
         return $objUser;
     }
 
-    function getConfirmLink($userObj=false,$action='subscribe',$text=false,$urlOnly=false){
+    function getConfirmLink($user_obj = false, $action = 'subscribe', $text = false, $url_only = false, $target = '_blank'){
         if(!$text) $text=__('Click here to subscribe',WYSIJA);
         $userspreview=false;
         //if($action=='subscriptions')dbg($userObj);
-        if(!$userObj){
+        if(!$user_obj){
             //preview mode
-            $userObj=$this->getCurrentSubscriber();
+            $user_obj=$this->getCurrentSubscriber();
             $userspreview=true;
         }
         $params=array(
         'wysija-page'=>1,
         'controller'=>'confirm',
         );
-        if($userObj && isset($userObj->keyuser)){
+        if($user_obj && isset($user_obj->keyuser)){
             //if the user key doesn exists let's generate it
-            if(!$userObj->keyuser){
-                $this->getKeyUser($userObj);
+            if(!$user_obj->keyuser){
+                $this->getKeyUser($user_obj);
             }
 
             $this->reset();
-            $params['wysija-key']=$userObj->keyuser;
+            $params['wysija-key']=$user_obj->keyuser;
         }
         $params['action']=$action;
-        $modelConf=&WYSIJA::get('config','model');
+        $modelConf=WYSIJA::get('config','model');
         if($userspreview) $params['demo']=1;
         $fullurl=WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$params);
-        if($urlOnly) return $fullurl;
-        return '<a href="'.$fullurl.'" target="_blank">'.$text.'</a>';
+        if($url_only) return $fullurl;
+        return '<a href="'.$fullurl.'" target="'.$target.'">'.$text.'</a>';
     }
 
-    function getEditsubLink($userObj=false,$urlOnly=false){
-        return $this->getConfirmLink($userObj,'subscriptions',__('Edit your subscriptions',WYSIJA),$urlOnly);
+    function getEditsubLink($user_obj=false,$url_only=false, $target = '_blank'){
+        return $this->getConfirmLink($user_obj,'subscriptions',__('Edit your subscriptions',WYSIJA),$url_only,false,$target);
     }
 
     function getUnsubLink($userObj=false,$urlOnly=false){
-        $modelConf=&WYSIJA::get('config','model');
+        $modelConf=WYSIJA::get('config','model');
         return $this->getConfirmLink($userObj,'unsubscribe',$modelConf->getValue('unsubscribe_linkname'),$urlOnly);
     }
 
@@ -154,7 +154,7 @@ class WYSIJA_model_user extends WYSIJA_model{
             'email_id'=>$email_id
         );
 
-        $modelConf=&WYSIJA::get('config','model');
+        $modelConf=WYSIJA::get('config','model');
         return WYSIJA::get_permalink($modelConf->getValue('confirm_email_link'),$params);
     }
 
@@ -185,30 +185,30 @@ class WYSIJA_model_user extends WYSIJA_model{
         return $obj['user_id'];
     }
 
-    function beforeDelete(){
+    function beforeDelete($conditions){
         $newum=new WYSIJA_model_user();
         $users=$newum->get(array('user_id'),$this->conditions);
         $userids=array();
         foreach($users as $usr) $userids[]=$usr['user_id'];
 
         //delete all the user stats
-        $eusM=&WYSIJA::get('email_user_stat','model');
+        $eusM=WYSIJA::get('email_user_stat','model');
         $conditions=array('user_id'=>$userids);
         $eusM->delete($conditions);
         //delete all the queued emails
-        $qM=&WYSIJA::get('queue','model');
+        $qM=WYSIJA::get('queue','model');
         $qM->delete($conditions);
         return true;
     }
 
     function afterDelete(){
-        $helper_user=&WYSIJA::get('user','helper');
+        $helper_user=WYSIJA::get('user','helper');
         $helper_user->refreshUsers();
         return true;
     }
 
     function afterInsert($id){
-        $helper_user=&WYSIJA::get('user','helper');
+        $helper_user=WYSIJA::get('user','helper');
         $helper_user->refreshUsers();
 
         do_action('wysija_subscriber_added', $id);
@@ -216,7 +216,7 @@ class WYSIJA_model_user extends WYSIJA_model{
     }
 
     function afterUpdate($id){
-        $helper_user=&WYSIJA::get('user','helper');
+        $helper_user=WYSIJA::get('user','helper');
         $helper_user->refreshUsers();
         
         do_action('wysija_subscriber_modified', $id);

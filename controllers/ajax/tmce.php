@@ -5,7 +5,7 @@ class WYSIJA_control_back_tmce extends WYSIJA_control{
     function WYSIJA_control_back_tmce(){
         if(!WYSIJA::current_user_can('wysija_subscriwidget')) die('Action is forbidden.');
         parent::WYSIJA_control();
-        $this->viewObj=&WYSIJA::get('tmce','view');
+        $this->viewObj=WYSIJA::get('tmce','view');
     }
 
 
@@ -35,13 +35,13 @@ class WYSIJA_control_back_tmce extends WYSIJA_control{
             // we need a title to identify the form
             $data_widget['title'] = 'Form on '.$post->post_type.': '.$post->post_title;
 
-            $model_forms =& WYSIJA::get('forms', 'model');
+            $model_forms = WYSIJA::get('forms', 'model');
             $model_forms->reset();
             $form = $model_forms->getOne(false,array('name' => $data_widget['title']));
 
             // this form doesn't exist yet in the new format so let's try to import it
             if(empty($form)){
-                $helper_update=&WYSIJA::get('update','helper');
+                $helper_update=WYSIJA::get('update','helper');
 
                 $form_id = $helper_update->convert_widget_to_form($data_widget);
                 if($form_id!==false) {

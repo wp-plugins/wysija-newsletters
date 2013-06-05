@@ -45,7 +45,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
             if(!isset($email['params']['schedule']['isscheduled'])){
                 $emails_need_to_be_queued = true;
             }else{
-                $helper_toolbox = &WYSIJA::get('toolbox','helper');
+                $helper_toolbox = WYSIJA::get('toolbox','helper');
                 $schedule_date = $email['params']['schedule']['day'].' '.$email['params']['schedule']['time'];
                 $unix_scheduled_time = strtotime($schedule_date);
 
@@ -63,7 +63,7 @@ class WYSIJA_model_queue extends WYSIJA_model{
 
         // if it is a standard email we get the campaign list
         if(!$follow_up){
-            $model_campaign = &WYSIJA::get('campaign','model');
+            $model_campaign = WYSIJA::get('campaign','model');
             $data = $model_campaign->getDetails($email['email_id']);
 
             $lists_to_send_to = $data['campaign']['lists']['ids'];
@@ -71,12 +71,12 @@ class WYSIJA_model_queue extends WYSIJA_model{
         }else{
             // if it is a follow up we get the campaign list
             $lists_to_send_to = array($email['params']['autonl']['subscribetolist']);
-            $delay=$this->calculate_delay($email['params']['autonl']);
-            $to_be_sent='(B.created_at) + '.$delay;
+            $delay = $this->calculate_delay($email['params']['autonl']);
+            $to_be_sent = '(A.sub_date) + '.$delay;
         }
 
         // get the minimum status to queue emails based on the double optin config
-        $model_config=&WYSIJA::get('config','model');
+        $model_config=WYSIJA::get('config','model');
         if($model_config->getValue('confirm_dbleoptin')) $status_min=0;
         else $status_min=-1;
 
@@ -92,18 +92,19 @@ class WYSIJA_model_queue extends WYSIJA_model{
                     WHERE B.status>'.$status_min.' AND A.list_id IN ('.implode(',',$lists_to_send_to).') AND A.sub_date>'.$status_min.' AND A.unsub_date=0;';
         $this->query($query);
 
-        // rows were inserted
-        $nb_emails=$this->getAffectedRows();
-        if((int)$nb_emails  > 0){
-            //$this->notice($nb_emails.' email(s) queued',false);
-            return true;
-        }
-        
-        if(!$result){
-           $this->error('Queue failure : '.$query);
-            return false;
-        }
+        if($this->sql_error){
 
+            $this->error($this->sql_error);
+            $this->error('Full query : '.$query);
+            return false;
+        }else{
+            // rows were inserted
+            $nb_emails=$this->getAffectedRows();
+            if((int)$nb_emails  > 0){
+                //$this->notice(sprintf(__('%1$s email(s) queued', WYSIJA),$nb_emails),false);
+                return true;
+            }
+        }
         return true;
     }
 

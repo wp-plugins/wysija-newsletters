@@ -80,7 +80,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
 
                 if($email_id && !isset($_REQUEST['demo'])){ //if not email_id that means it is an email preview
                     //look for url entry and insert if not exists
-                    $modelUrl=&WYSIJA::get('url','model');
+                    $modelUrl=WYSIJA::get('url','model');
 
                     $urlObj=$modelUrl->getOne(false,array('url'=>$recordedUrl));
 
@@ -99,7 +99,12 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     if(!$emailUserUrlObj){
                         //we need to insert in email_user_url
                         $modelEmailUserUrl->reset();
-                        $modelEmailUserUrl->insert($dataEmailUserUrl);
+                        $query_EmailUserUrl='INSERT IGNORE INTO [wysija]email_user_url (`email_id` ,`user_id`,`url_id`) ';
+                        $query_EmailUserUrl.='VALUES ('.$email_id.', '.$user_id.', '.$urlObj['url_id'].')';
+
+                        $modelEmailUserUrl->query($query_EmailUserUrl);
+
+                        //$modelEmailUserUrl->insert($dataEmailUserUrl);
                         $uniqueclick=true;
                     }
 
@@ -109,7 +114,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     $modelEmailUserUrl=null;
 
                     //look for url_mail entry and insert if not exists
-                    $modelUrlMail=&WYSIJA::get('url_mail','model');
+                    $modelUrlMail=WYSIJA::get('url_mail','model');
                     $dataUrlEmail=array('email_id'=>$email_id,'url_id'=>$urlObj['url_id']);
                     $urlMailObj=$modelUrlMail->getOne(false,$dataUrlEmail);
                     if(!$urlMailObj){
@@ -126,7 +131,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
 
                     $statusEmailUserStat=2;
                     if(in_array($recordedUrl,array('[unsubscribe_link]','[subscriptions_link]','[view_in_browser_link]'))){
-                        $this->subscriberClass = &WYSIJA::get('user','model');
+                        $this->subscriberClass = WYSIJA::get('user','model');
                         $this->subscriberClass->getFormat=OBJECT;
 
                         //check if the security hash is passed to insure privacy
@@ -158,9 +163,9 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                                 }
                                 break;
                             case '[view_in_browser_link]':
-                                $modelEmail=&WYSIJA::get('email','model');
+                                $modelEmail=WYSIJA::get('email','model');
                                 $dataEmail=$modelEmail->getOne(false,array('email_id'=>$email_id));
-                                $emailH=&WYSIJA::get('email','helper');
+                                $emailH=WYSIJA::get('email','helper');
                                 $link=$emailH->getVIB($dataEmail);
                                 break;
                         }
@@ -180,7 +185,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                         if(strpos($decodedUrl, 'http://' )=== false && strpos($decodedUrl, 'https://' )=== false) $decodedUrl='http://'.$decodedUrl;
                         //check that there is no broken unsubscribe link such as http://[unsubscribe_link]
                         if(strpos($decodedUrl, '[unsubscribe_link]')!==false){
-                            $this->subscriberClass = &WYSIJA::get('user','model');
+                            $this->subscriberClass = WYSIJA::get('user','model');
                             $this->subscriberClass->getFormat=OBJECT;
                             $receiver = $this->subscriberClass->getOne($user_id);
                             $decodedUrl=$this->subscriberClass->getUnsubLink($receiver,true);
@@ -196,7 +201,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                     //debug information
                     if(isset($_REQUEST['debug']))   echo '<h2>isset decoded url '.$decodedUrl.'</h2>';
 
-                    $modelEmailUS=&WYSIJA::get('email_user_stat','model');
+                    $modelEmailUS=WYSIJA::get('email_user_stat','model');
                     $exists=$modelEmailUS->getOne(false,array('equal'=>array('email_id'=>$email_id,'user_id'=>$user_id), 'less'=>array('status'=>$statusEmailUserStat)));
                     $dataupdate=array('status'=>$statusEmailUserStat);
                     if($exists && isset($exists['opened_at']) && !(int)$exists['opened_at']){
@@ -210,7 +215,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
 
                 }else{
                    if(in_array($recordedUrl,array('[unsubscribe_link]','[subscriptions_link]','[view_in_browser_link]'))){
-                        $modelU=&WYSIJA::get('user','model');
+                        $modelU=WYSIJA::get('user','model');
                         $modelU->getFormat=OBJECT;
                         $objUser=$modelU->getOne(false,array('wpuser_id'=>get_current_user_id()));
                         switch($recordedUrl){
@@ -250,10 +255,10 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
 
             }else{
                 //opened stat */
-                //$modelEmail=&WYSIJA::get("email","model");
+                //$modelEmail=WYSIJA::get("email","model");
                 //$modelEmail->update(array('number_opened'=>"[increment]"),array("email_id"=>$email_id));
 
-                $modelEmailUS=&WYSIJA::get('email_user_stat','model');
+                $modelEmailUS=WYSIJA::get('email_user_stat','model');
                 $modelEmailUS->reset();
                 $modelEmailUS->update(
                         array('status'=>1,'opened_at'=>time()),
@@ -288,7 +293,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
             'email_id'=>$email_id,
             'user_id'=>0
             );
-        $config=&WYSIJA::get('config','model');
+        $config=WYSIJA::get('config','model');
         return WYSIJA::get_permalink($config->getValue('confirm_email_link'),$paramsurl);
     }
 

@@ -90,7 +90,7 @@ class WYSIJA_model_list extends WYSIJA_model{
                 }
             }
 
-            $model_config=&WYSIJA::get('config','model');
+            $model_config=WYSIJA::get('config','model');
             foreach($listres as $key=>$res){
                 if(!isset($listres[$key]['unconfirmed'])) $listres[$key]['unconfirmed']=0;
                 if(!isset($listres[$key]['unsubscribers'])) $listres[$key]['unsubscribers']=0;

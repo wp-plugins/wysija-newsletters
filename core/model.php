@@ -24,6 +24,7 @@ class WYSIJA_model extends WYSIJA_object{
     var $columns=array();
     var $joins=array();
     var $ignore = false;
+    var $sql_error=false;
     var $comparisonKeys = array('equal', 'notequal', 'like', 'greater', 'less', 'greater_eq', 'less_eq');
 
     function WYSIJA_model($extensions=''){
@@ -46,6 +47,7 @@ class WYSIJA_model extends WYSIJA_object{
         $this->getFormat=ARRAY_A;
         $this->getOne=false;
         $this->limitON=false;
+        $this->sql_error=false;
     }
 
     /**
@@ -67,7 +69,6 @@ class WYSIJA_model extends WYSIJA_object{
             $conditions=array('equal'=>array($this->pk=>$conditions));
         }
         if($this->setConditions($conditions)){
-
             if($this->getOne)   $results=$this->getRows($columnsOrPKval,0,1);
             else $results=$this->getRows($columnsOrPKval);
             //$this->escapeQuotesFromRes($results);
@@ -83,8 +84,6 @@ class WYSIJA_model extends WYSIJA_object{
             }
             else return $results;
         }
-
-
 
         return false;
     }
@@ -158,7 +157,7 @@ class WYSIJA_model extends WYSIJA_object{
         if(!$limit){
             if(isset($this->limit_pp)) $limit=$this->limit_pp;
             else{
-                $config=&WYSIJA::get('config','model');
+                $config=WYSIJA::get('config','model');
                 $limit=$config->getValue('limit_listing');
             }
         }
@@ -553,7 +552,7 @@ class WYSIJA_model extends WYSIJA_object{
                                 $this->values[$key]=time();
                                 break;
                             case 'ip':
-                                $userHelper=&WYSIJA::get("user","helper");
+                                $userHelper=WYSIJA::get("user","helper");
                                 /*record the ip and save the user*/
                                 $this->values[$key]=$userHelper->getIP();
                                 break;
@@ -700,7 +699,7 @@ class WYSIJA_model extends WYSIJA_object{
             /* let's correct the type of the values based on the one defined in the model*/
             switch($this->columns[$key]['type']){
                 case "email":
-                    $userHelper = &WYSIJA::get('user','helper');
+                    $userHelper = WYSIJA::get('user','helper');
                     if(!$userHelper->validEmail($val)){
                         $this->error(sprintf(__('Field "%1$s" needs to be a valid Email.',WYSIJA), $key),true);
                         $error=true;
@@ -848,7 +847,7 @@ class WYSIJA_model extends WYSIJA_object{
 
     function query($query,$arg2="",$arg3=ARRAY_A){
         global $wpdb;
-
+        $this->sql_error=false;
        if(!$arg2) $query=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$query);
        else $arg2=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$arg2);
 
@@ -882,12 +881,12 @@ class WYSIJA_model extends WYSIJA_object{
         if(defined('WYSIJA_DBG') && WYSIJA_DBG>1){
             global $wysija_queries_errors, $wpdb;
             if(!$wysija_queries_errors) $wysija_queries_errors=array();
-            $mysqlerror=mysql_error($wpdb->dbh);
-           /* dbg($wpdb->last_query,0);
-            dbg($wpdb,0);*/
-            if($mysqlerror) {
-                $wysija_queries_errors[]=$mysqlerror;
-                WYSIJA::log('queries_errors',$mysqlerror,'query_errors');
+
+            $this->sql_error=mysql_error($wpdb->dbh);
+
+            if($this->sql_error) {
+                $wysija_queries_errors[]=$this->sql_error;
+                WYSIJA::log('queries_errors',$this->sql_error,'query_errors');
             }
 
         }
@@ -917,7 +916,22 @@ class WYSIJA_model extends WYSIJA_object{
      */
     function getPrefix(){
         if($this->tableWP) return $this->wpprefix.$this->table_prefix;
-        else return $this->wpprefix.$this->table_prefix."_";
+        else return $this->wpprefix.$this->table_prefix.'_';
+    }
+
+    /**
+     * this function allows you to get the prefix from the main site on a multisite
+     * @return type
+     */
+    function get_site_prefix($blog_id=1){
+
+        switch_to_blog( $blog_id );
+        global $wpdb;
+        $main_site_prefix=$wpdb->prefix;
+        restore_current_blog();
+
+        if($this->tableWP) return $main_site_prefix.$this->table_prefix;
+        else return $main_site_prefix.$this->table_prefix.'_';
     }
 
     function beforeInsert(){
@@ -927,7 +941,7 @@ class WYSIJA_model extends WYSIJA_object{
     function afterInsert($resultSaveID){
         return true;
     }
-    function beforeDelete(){
+    function beforeDelete($conditions){
         return true;
     }
 

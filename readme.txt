@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.4.4
+Stable tag: 2.5
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -24,6 +24,7 @@ http://vimeo.com/46247528
 
 * Drag & drop visual editor, an HTML-free experience
 * Post notifications, like Feedburner, Subscribe2 or MailChimp's RSS-to-Email
+* Autoresponders, i.e. "Send email 3 days after someone subscribes"
 * [Selection of over 30 themes](http://www.wysija.com/newsletter-templates-wordpress/). Photoshop files included
 * Get stats for each newsletter: opens, clicks, unreads, unsubscribes
 * Add a subscription form in your sidebar or pages
@@ -34,7 +35,7 @@ http://vimeo.com/46247528
 * Single or double opt-in, your choice
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
-* Autoresponders, i.e. "Send email 3 days after someone subscribes"
+
 * Unlimited number of lists
 * Sending in free version is limited to 2000 subscribers
 
@@ -58,8 +59,8 @@ http://vimeo.com/46247528
 = Future releases =
 
 * Subscriber profiles, ie. gender, city, or whatever you want
-* Possibility to insert your own HTML in newsletter
 * Display a list of past newsletters sent in a page of your site (shortcode)
+* Smart segmentation of subscribers
 
 = Support =
 
@@ -143,8 +144,26 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
-= 2.4.4 - 2013-04-22 =
-* added translations of the "loading..." message in forms
+= 2.5 - 2013-06-06 =
+* added checkbox to select default theme for new newsletters. See Themes tab.
+* added bulk select all subscribers, like Gmail with conversations
+* added bulk actions to move or remove subscribers from lists
+* added bulk action "Confirm unconfirmed subscribers"
+* added "undo unsubscribe" in unsubscribed confirmation page
+* added option to have the beta version of plugin, see Advanced Settings
+* added Styles and Themes tab of visual editor as permissions in Advanced Settings
+* improved single automated bounce handling config for all sites in Multisite, for Premium
+* improved export feature with semi-colon separated option
+* improved sorting of subscribers in stats by open date and time
+* fixed the monthly scheduling of automatic newsletter for "last day..."
+* fixed duplicating a post notification email into an autoresponder would prevent from sending previews
+* fixed new shortcode for issue number was not returning the right number
+* fixed send admin notification on subscribe for each list a user subscribes to, not just the first time
+* fixed outlook rendering issue fixed images alignment
+* fixed tea, with milk and sugar
+
+= 2.4.4 - 2013-04-18 =
+* added translations of the "loading..." message in forms.#
 * added download link to theme's .zip file in theme detail pages
 * added possibility to hide our update page's kitten. It hurt some feelings
 * added protection on looping install process resulting in duplication of default list or newsletter

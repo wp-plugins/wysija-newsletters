@@ -1,14 +1,19 @@
 <?php
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_charts extends WYSIJA_object {
+
     function WYSIJA_help_charts() {
+
     }
+
     function pieChart($id, $options = array()) {
         return $this->drawChart('piechart', $id, $options);
     }
+
     function columnStacked($id, $options = array()) {
         return $this->drawChart('column', $id, $options);
     }
+
     function drawChart($type, $id, $options = array()) {
         $id = str_replace(' ', '-', $id);
         $width = (isset($options['width'])) ? (int)$options['width'] : 400;
@@ -21,6 +26,7 @@ class WYSIJA_help_charts extends WYSIJA_object {
         $categoryField = (isset($options['categoryField'])) ? $options['categoryField'] : null;
         $is_3d = (isset($options['3D']) && (bool)$options['3D'] === true);
         $graphs = (isset($options['graphs'])) ? $options['graphs'] : null;
+
         $content = '<div id="wysija-chart-'.$id.'" class="wysija-chart '.$type.'" style="width:'.$width.'px;height:'.$height.'px;"></div>';
         $content .= '<script type="text/javascript">';
         $content .= 'AmCharts.ready(function () {';
@@ -33,6 +39,7 @@ class WYSIJA_help_charts extends WYSIJA_object {
         if($valueField !== null)     $content .= 'valueField: "'.$valueField.'",';
         if($categoryField !== null)     $content .= 'categoryField: "'.$categoryField.'",';
         if($graphs !== null)        $content .= 'graphs: '.json_encode($graphs).',';
+
         $content .= '       type: "'.$type.'"';
         $content .= '   });';
         $content .= '});';

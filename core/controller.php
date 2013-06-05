@@ -18,10 +18,10 @@ class WYSIJA_control extends WYSIJA_object{
     function WYSIJA_control(){
         //setup some required objects for the request
         if(!defined('DOING_AJAX')){
-            if($this->view) $this->viewObj=&WYSIJA::get($this->view,"view",false,$this->extension);
+            if($this->view) $this->viewObj=WYSIJA::get($this->view,"view",false,$this->extension);
             if($this->model){
-                $this->modelObj=&WYSIJA::get($this->model,"model",false,$this->extension);
-                $this->viewObj->model=&WYSIJA::get($this->model,"model",false,$this->extension);
+                $this->modelObj=WYSIJA::get($this->model,"model",false,$this->extension);
+                $this->viewObj->model=WYSIJA::get($this->model,"model",false,$this->extension);
             }
         }
 

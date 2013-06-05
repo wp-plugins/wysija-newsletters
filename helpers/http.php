@@ -2,20 +2,32 @@
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_http extends WYSIJA_object{
 
+
     function WYSIJA_help_http(){
+
     }
-    
+
+    /**
+     * try three different methods for http request,
+     * @param type $url
+     * @return type
+     */
     function request($url){
-        if(ini_get('allow_url_fopen'))  return file_get_contents($url);
-        elseif(function_exists('curl_init')) {
+        // use curl_get first if it is activated
+        if(function_exists('curl_init')) {
             $this->opts = array(
                 CURLOPT_HEADER => FALSE,
                 CURLOPT_RETURNTRANSFER => TRUE
             );
             $result=$this->curl_get($url);
             return $result['cr'];
+        // then try http_get
         }elseif(function_exists('http_get')){
             return http_parse_message(http_get($url))->body;
+
+        // finally we have file_get_contents which is quite often deactivated
+        }elseif(ini_get('allow_url_fopen')){
+            return file_get_contents($url);
         }else{
             $this->error(__('Your server doesn\'t support remote exchanges.',WYSIJA));
             $this->error(__('Contact your administrator to modify that, it should be configurable.',WYSIJA));
@@ -25,12 +37,15 @@ class WYSIJA_help_http extends WYSIJA_object{
             return false;
         }
     }
+
     function request_timeout($url,$timeout='3'){
         if(function_exists('curl_init')) {
+
             $ch = curl_init( $url );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 0 );
             curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
             $result = curl_exec( $ch );
+
             return   curl_close( $ch );
         }elseif(ini_get('allow_url_fopen')){
             ini_set('default_socket_timeout',(int)$timeout);
@@ -46,6 +61,7 @@ class WYSIJA_help_http extends WYSIJA_object{
             return false;
         }
     }
+
     function curl_request($ch,$opt){
         # assign global options array
         $opts = $this->opts;
@@ -59,10 +75,21 @@ class WYSIJA_help_http extends WYSIJA_object{
         curl_close($ch);
         return $r;
     }
+
     function curl_get($url='',$opt=array()){
         # create cURL resource
         $ch = curl_init($url);
         return $this->curl_request($ch,$opt);
     }
-   
+
+   /* function curl_post($url='',$data=array(),$opt=array()){
+        # set POST options
+        $opts[CURLOPT_POST] = TRUE;
+        $opts[CURLOPT_POSTFIELDS] = $data;
+
+        # create cURL resource
+        $ch = curl_init($url);
+        return $this->curl_request($ch,$opt);
+    }*/
 }
+
