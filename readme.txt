@@ -148,7 +148,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * added protection to avoid switching to the beta without wanting
 * fixed PHP notices in the newsletter's view in your browser version
 * fixed view in your browser link being left aligned
-fixed line-height issue on some Outlook versions
+* fixed line-height issue on some Outlook versions
 
 = 2.5 - 2013-06-06 =
 * added checkbox to select default theme for new newsletters. See Themes tab.
