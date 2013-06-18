@@ -47,8 +47,17 @@ class WYSIJA_model_user extends WYSIJA_model{
         $this->getFormat=OBJECT;
         return $this->getOne(false,array('user_id'=>$uid));
     }
-
-
+    
+    /**
+     * Get User object from email address
+     * @param type $email
+     * @return object WYSIJA_model_user
+     */
+    function get_object_by_email($email){
+        $this->getFormat=OBJECT;
+        return $this->getOne(false,array('email'=>$email));        
+    }
+            
     function getDetails($conditions,$stats=false,$subscribedListOnly=false){
         $data=array();
         $this->getFormat=ARRAY_A;

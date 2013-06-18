@@ -250,8 +250,6 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
     function get_articles(){
         // fixes issue with pcre functions
         @ini_set('pcre.backtrack_limit', 1000000);
-        error_reporting(E_ALL);
-        ini_set('display_errors', '1');
 
         $model=WYSIJA::get('user','model');
 
@@ -389,9 +387,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         $resultarray=array();
 
         // update data in DB
-        $modelEmail = WYSIJA::get('email', 'model');
-        $modelEmail->getFormat=OBJECT;
-        $emailObject = $modelEmail->getOne(false,array('email_id' => $email_id));
+        $model_email = WYSIJA::get('email', 'model');
+        $model_email->getFormat=OBJECT;
+        $email_object = $model_email->getOne(false,array('email_id' => $email_id));
         $mailer->testemail=true;
 
 
@@ -399,7 +397,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
            $dataTemp=$_REQUEST['data'];
             $_REQUEST['data']=array();
             foreach($dataTemp as $val) $_REQUEST['data'][$val['name']]=$val['value'];
-            $dataTemp=null;
+            unset($dataTemp);
             foreach($_REQUEST['data'] as $k =>$v){
                 $newkey=str_replace(array('wysija[email][',']'),'',$k);
                 $configVal[$newkey]=$v;
@@ -410,18 +408,17 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                     'from_email'=>$configVal['from_email'],
                     'replyto_name'=>$configVal['replyto_name'],
                     'replyto_email'=>$configVal['replyto_email']);
-                if(isset($configVal['subject']))    $emailObject->subject=$configVal['subject'];
+                if(isset($configVal['subject']))    $email_object->subject=$configVal['subject'];
             }
 
         }else{
             $params=array(
-                'from_name'=>$emailObject->from_name,
-                'from_email'=>$emailObject->from_email,
-                'replyto_name'=>$emailObject->replyto_name,
-                'replyto_email'=>$emailObject->replyto_email
+                'from_name'=>$email_object->from_name,
+                'from_email'=>$email_object->from_email,
+                'replyto_name'=>$email_object->replyto_name,
+                'replyto_email'=>$email_object->replyto_email
             );
         }
-
         if(strpos($_REQUEST['receiver'], ',')) {
             $receivers = explode(',',$_REQUEST['receiver']);
         } else if(strpos($_REQUEST['receiver'], ';')) {
@@ -430,68 +427,73 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             $receivers = array($_REQUEST['receiver']);
         }
 
+        $user_model = WYSIJA::get('user', 'model');
         foreach($receivers as $key => $receiver){
-            $receivers[$key] = trim($receiver);
-            $dummyReceiver = new stdClass();
-            $dummyReceiver->user_id = 0;
-            $dummyReceiver->email = $receiver;
-            $dummyReceiver->status = 1;
-            $dummyReceiver->lastname = $dummyReceiver->firstname =$langextra='';
-            if($spamtest){
-                $dummyReceiver->firstname ='Mail Tester';
-                if(defined('WPLANG') && WPLANG) $langextra='&lang='.WPLANG;
-                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($dummyReceiver->email).$langextra;
+            $receiver = trim($receiver);
+            $dummy_receiver = $user_model->get_object_by_email($receiver);
+            if(empty($dummy_receiver)){
+                $dummy_receiver = new stdClass();
+                $dummy_receiver->user_id = 0;
+                $dummy_receiver->email = $receiver;
+                $dummy_receiver->status = 1;
+                $dummy_receiver->lastname = $dummy_receiver->firstname = '';                
             }
-
-            $receivers[$key] = $dummyReceiver;
+            
+            if($spamtest){
+                $langextra = '';
+                $dummy_receiver->firstname ='Mail Tester';
+                if(defined('WPLANG') && WPLANG) $langextra ='&lang='.WPLANG;
+                $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($dummy_receiver->email).$langextra;
+            }
+            $receivers[$key] = $dummy_receiver;
 
         }
 
-        $emailClone=array();
-        foreach($emailObject as $kk=>$vv)  $emailClone[$kk]=$vv;
+        $email_clone=array();
+        foreach($email_object as $kk=>$vv)  $email_clone[$kk]=$vv;
 
 
-        $wjEngine = WYSIJA::get('wj_engine', 'helper');
+        $wj_engine = WYSIJA::get('wj_engine', 'helper');
         // set data & styles
-        if(isset($emailClone['wj_data'])) { $wjEngine->setData($emailClone['wj_data'], true); } else { $wjEngine->setData(); }
-        if(isset($emailClone['wj_styles'])) { $wjEngine->setStyles($emailClone['wj_styles'], true); } else { $wjEngine->setStyles(); }
+        if(isset($email_clone['wj_data'])) { $wj_engine->setData($email_clone['wj_data'], true); } else { $wj_engine->setData(); }
+        if(isset($email_clone['wj_styles'])) { $wj_engine->setStyles($email_clone['wj_styles'], true); } else { $wj_engine->setStyles(); }
 
         // generate email html body
-        $body = $wjEngine->renderEmail($emailClone);
+        $body = $wj_engine->renderEmail($email_clone);
 
         // get back email data as it will be updated during the rendering (articles ids + articles count)
-        $emailChild = $wjEngine->getEmailData();
+        $email_child = $wj_engine->getEmailData();
 
         // [total] [number] and [post_title] are only valid for post notifications newsletter
-        if((int)$emailChild['type'] === 2 && isset($emailChild['params']['autonl']['event']) &&
-                $emailChild['params']['autonl']['event'] === 'new-articles' && isset($emailChild['params']['autonl']['articles'])){
+        if((int)$email_child['type'] === 2 && isset($email_child['params']['autonl']['event']) &&
+                $email_child['params']['autonl']['event'] === 'new-articles' && isset($email_child['params']['autonl']['articles'])){
 
-            $itemCount = 0;
-            $totalCount = 1;
-            $firstSubject = '';
+            $item_count = 0;
+            $total_count = 1;
+            $first_subject = '';
 
-            if(isset($emailChild['params']['autonl']['articles']['count'])) $itemCount = (int)$emailChild['params']['autonl']['articles']['count'];
-            if(isset($emailChild['params']['autonl']['articles']['first_subject'])) $firstSubject = $emailChild['params']['autonl']['articles']['first_subject'];
-            if(isset($emailClone['params']['autonl']['total_child'])) $totalCount = (int)$emailClone['params']['autonl']['total_child'] + 1;
+            if(isset($email_child['params']['autonl']['articles']['count'])) $item_count = (int)$email_child['params']['autonl']['articles']['count'];
+            if(isset($email_child['params']['autonl']['articles']['first_subject'])) $first_subject = $email_child['params']['autonl']['articles']['first_subject'];
+            if(isset($email_clone['params']['autonl']['total_child'])) $total_count = (int)$email_clone['params']['autonl']['total_child'] + 1;
 
-            if(empty($firstSubject)) {
+            if(empty($first_subject)) {
                 $this->error(__('There are no articles to be sent in this email.',WYSIJA),1);
                 return array('result' => false);
             }
-            $emailObject->subject = str_replace(
+            $email_object->subject = str_replace(
                     array('[total]','[number]','[post_title]'),
-                    array($itemCount, $totalCount, $firstSubject),
-                    $emailChild['subject']);
+                    array($item_count, $total_count, $first_subject),
+                    $email_child['subject']);
         }
 
-        $successmsg=__('Your email preview has been sent to %1$s', WYSIJA);
+        $successmsg = __('Your email preview has been sent to %1$s', WYSIJA);
 
-        if(isset($emailObject->params)) {
-            $params['params']=$emailObject->params;
+        if(isset($email_object->params)) {
+            $params['params']=$email_object->params;
 
             if(isset($configVal['params[googletrackingcode'])){
                 $paramsemail=array();
-                if(!is_array($emailObject->params)) $paramsemail=unserialize(base64_decode($emailObject->params));
+                if(!is_array($email_object->params)) $paramsemail=unserialize(base64_decode($email_object->params));
 
                 if(trim($configVal['params[googletrackingcode'])) {
                     $paramsemail['googletrackingcode']=$configVal['params[googletrackingcode'];
@@ -499,15 +501,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 else {
                     unset($paramsemail['googletrackingcode']);
                 }
-                $params['params']=base64_encode(serialize($paramsemail));
+                $params['params'] = base64_encode(serialize($paramsemail));
             }
         }
 
-        $params['email_id']=$emailObject->email_id;
+        $params['email_id'] = $email_object->email_id;
         $receiversList = array();
         $res = false;
         foreach($receivers as $receiver){
-            if($mailer->sendSimple($receiver,  stripslashes($emailObject->subject),$emailObject->body,$params)) {
+            if($mailer->sendSimple($receiver,  stripslashes($email_object->subject),$email_object->body,$params)) {
                 $res = true;
                 $receiversList[] = $receiver->email;
             }

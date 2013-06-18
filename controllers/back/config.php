@@ -58,6 +58,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
                 break;
             default:
                 wp_enqueue_script('wysija-config-settings', WYSIJA_URL.'js/admin-config-settings.js', array('wysija-admin-js-global'), WYSIJA::get_version());
+                wp_enqueue_script('jquery-cookie', WYSIJA_URL.'js/jquery/jquery.cookie.js', array('jquery'), WYSIJA::get_version());
         }
 
         if(WYSIJA_DBG > 1) {

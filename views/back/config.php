@@ -588,6 +588,48 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Sender of notifications',WYSIJA),
             'desc'=>__('Choose a FROM name and email address for notifications emails.',WYSIJA));
 
+        $step['commentform']=array(
+            'type'=>'commentform',
+            'label'=>__('Subscribe in comments',WYSIJA),
+            'desc'=>__('Visitors who submit a comment on a post can click on a checkbox to subscribe.',WYSIJA),
+            );
+
+        $showregisteroption=true;
+        //this option is only available for the main site
+        if(is_multisite() && get_current_blog_id()!=1) $showregisteroption=false;
+        if($showregisteroption) {
+            $step ['registerform']=array(
+            'type'=>'commentform',
+            'label'=>__('Subscribe in registration form',WYSIJA),
+            'desc'=>__('Allow users who register to your site to subscribe on a list of your choice.',WYSIJA)
+            );
+        }        
+
+        $modelU=WYSIJA::get('user','model');
+        $objUser=$modelU->getCurrentSubscriber();
+
+        $step['viewinbrowser']=array(
+            'type'=>'viewinbrowser',
+            'label'=>__('Link to browser version',WYSIJA),
+            'desc'=>__('Displays at the top of your newsletters. Don\'t forget to include the link tag, ie: [link]The link[/link]',WYSIJA),
+            );
+
+        $step['unsubscribe_linkname']=array(
+            'type'=>'input',
+            'label'=>__('Text of "Unsubscribe" link',WYSIJA),
+            'desc'=>__('This changes the label for the unsubscribe link in the footer of your newsletters.',WYSIJA));
+
+        $step['unsubscribed_title']=array(
+            'type'=>'input',
+            'label'=>__('Unsubscribe page title',WYSIJA),
+            'desc'=>__('This is the [link]confirmation page[/link] a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter.',WYSIJA),
+            'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1" target="_blank" title="'.__('Preview page',WYSIJA).'">');
+
+
+        $step['unsubscribed_subtitle']=array(
+            'type'=>'input',
+            'label'=>__('Unsubscribe page content',WYSIJA));
+        
         $modelC=WYSIJA::get('config','model');
 
         ?>
@@ -1015,71 +1057,29 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function advanced(){
 
-        $form_fields=array();
-
-        $form_fields['role_campaign']=array(
+        $advanced_fields = $super_advanced_fields = array();
+        $advanced_fields ['role_campaign']=array(
             'type'=>'capabilities',
             '1col'=>1);
 
-        $form_fields['bounce_email']=array(
+        $advanced_fields ['bounce_email']=array(
             'type'=>'input',
             'label'=>__('Bounce Email',WYSIJA),
             'desc'=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
             'link'=>'<a class="premium-tab" href="javascript:;" title="'.__('Purchase the premium version.',WYSIJA).'">');
 
-        $form_fields=apply_filters('wysija_settings_advanced', $form_fields);
-
+        $advanced_fields =apply_filters('wysija_settings_advanced', $advanced_fields );
+        
         $modelU=WYSIJA::get('user','model');
         $objUser=$modelU->getCurrentSubscriber();
 
-
-        $form_fields['commentform']=array(
-            'type'=>'commentform',
-            'label'=>__('Subscribe in comments',WYSIJA),
-            'desc'=>__('Visitors who submit a comment on a post can click on a checkbox to subscribe.',WYSIJA),
-            );
-
-        $showregisteroption=true;
-        //this option is only available for the main site
-        if(is_multisite() && get_current_blog_id()!=1) $showregisteroption=false;
-        if($showregisteroption) {
-            $form_fields['registerform']=array(
-            'type'=>'commentform',
-            'label'=>__('Subscribe in registration form',WYSIJA),
-            'desc'=>__('Allow users who register to your site to subscribe on a list of your choice.',WYSIJA)
-            );
-        }
-
-        $form_fields['viewinbrowser']=array(
-            'type'=>'viewinbrowser',
-            'label'=>__('Link to browser version',WYSIJA),
-            'desc'=>__('Displays at the top of your newsletters. Don\'t forget to include the link tag, ie: [link]The link[/link]',WYSIJA),
-            );
-
-        $form_fields['unsubscribe_linkname']=array(
-            'type'=>'input',
-            'label'=>__('Text of "Unsubscribe" link',WYSIJA),
-            'desc'=>__('This changes the label for the unsubscribe link in the footer of your newsletters.',WYSIJA));
-
-        $form_fields['unsubscribed_title']=array(
-            'type'=>'input',
-            'label'=>__('Unsubscribe page title',WYSIJA),
-            'desc'=>__('This is the [link]confirmation page[/link] a user is directed to after clicking on the unsubscribe link at the bottom of a newsletter.',WYSIJA),
-            'link'=>'<a href="'.$modelU->getConfirmLink($objUser,"unsubscribe",false,true).'&demo=1" target="_blank" title="'.__('Preview page',WYSIJA).'">');
-
-
-        $form_fields['unsubscribed_subtitle']=array(
-            'type'=>'input',
-            'label'=>__('Unsubscribe page content',WYSIJA));
-
-
-        $form_fields['manage_subscriptions']=array(
+        $advanced_fields ['manage_subscriptions']=array(
         'type'=>'managesubscribe',
         'label'=>__('Subscribers can edit their profile',WYSIJA),
         'desc'=>__('Add a link in the footer of all your newsletters so subscribers can edit their profile and lists. [link]See your own subscriber profile page.[/link]',WYSIJA),
         'link'=>'<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('Preview page',WYSIJA).'">',);
 
-        $form_fields['analytics']=array(
+        $advanced_fields ['analytics']=array(
             'rowclass'=>'analytics',
             'type'=>'radio',
             'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
@@ -1090,7 +1090,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
 
 
-        $form_fields['industry']=array(
+        $advanced_fields ['industry']=array(
             'rowclass'=>'industry',
             'type'=>'dropdown_keyval',
             'values'=>array(
@@ -1115,14 +1115,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Industry',WYSIJA),
             'desc'=>__('Select your industry.',WYSIJA));
 
-        $form_fields['html_source'] = array(
+        $advanced_fields ['html_source'] = array(
             'label' => __('Allow HTML edits', WYSIJA),
             'type' => 'radio',
             'values' => array(true => __('Yes', WYSIJA), false => __('No', WYSIJA)),
             'desc' => __('This allows you to modify the HTML of text blocks in the visual editor.', WYSIJA)
         );
 
-        $form_fields['advanced_charset']=array(
+        $super_advanced_fields ['advanced_charset']=array(
             'type'=>'dropdown_keyval',
             'values'=>array('UTF-8','UTF-7',
                 'BIG5',
@@ -1131,20 +1131,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Charset',WYSIJA),
             'desc'=>__('Squares or weird characters are displayed in your emails? Select the encoding for your language.',WYSIJA));
 
-        $form_fields=apply_filters('wysija_settings_advancednext', $form_fields);
+        $super_advanced_fields = apply_filters('wysija_settings_advancednext', $super_advanced_fields );
 
-        $form_fields['cron_manual']=array(
+        $super_advanced_fields ['cron_manual']=array(
             'type'=>'cron',
             'label'=>__('Enable Wysija Cron\'s', WYSIJA),
             'desc'=>__('None of your queued emails have been sent? Then activate this option.',WYSIJA));
 
-        $form_fields['debug_new']=array(
+        $super_advanced_fields ['debug_new']=array(
             'type'=>'debugnew',
             'label'=>__('Debug mode',WYSIJA),
             'desc'=>__('Enable this to show Wysija\'s errors. Our support might ask you to enable this if you seek their help.',WYSIJA));
 
         if(WYSIJA_DBG>1){
-            $form_fields['debug_log']=array(
+            $advanced_fields ['debug_log']=array(
             'type'=>'debuglog',
             'label'=>'Logs',
             'desc'=>  str_replace(array('[link]','[linkclear]','[/link]','[/linkclear]'),
@@ -1158,26 +1158,56 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'betamode',
             'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
             'label'=>__('Become a beta tester',WYSIJA),
-            'desc'=>__('Update your Wysija plugin to the latest beta version. Enjoy the upcoming features. [link]Get in touch[/link] with us for bugs and feedback. Only for experienced users!.',WYSIJA),
+            'desc'=>__('Update your Wysija plugin to the latest beta version. Enjoy the upcoming features. [link]Get in touch[/link] with us for bugs and feedback. Only for experienced users!',WYSIJA),
             'link' => '<a target="_blank" href="http://support.wysija.com/feedback">'
             );
         // only allow the beta mode to network administrators in multisite
         if(is_multisite()){
-            if(WYSIJA::current_user_can('manage_network'))  $form_fields['ms_beta_mode']=$beta_mode_field;
+            if(WYSIJA::current_user_can('manage_network')) $super_advanced_fields ['ms_beta_mode'] = $beta_mode_field;
         }else{
-            $form_fields['beta_mode']=$beta_mode_field;
+            $super_advanced_fields ['beta_mode'] = $beta_mode_field;
         }
-
+        
+        //attach 'super-advanced' class to super_advanced_fields
+        $super_advanced_field_class = 'super-advanced';
+        foreach($super_advanced_fields as $key => $field){
+            if(!empty($super_advanced_fields[$key]['rowclass'])) $super_advanced_fields[$key]['rowclass'] = $super_advanced_fields[$key]['rowclass'] . ' ' . $super_advanced_field_class;
+            else $super_advanced_fields[$key]['rowclass'] = $super_advanced_field_class;
+        }
         ?>
         <table class="form-table">
             <tbody>
-                <?php echo $this->buildMyForm($form_fields,'','config'); ?>
-                <?php if (current_user_can('delete_plugins')): ?>
-                    <tr><th scope="row">
-                        <div class="label"><?php _e('Reinstall from scratch',WYSIJA)?>
-                        <p class="description"><?php _e('Want to start all over again? This will wipe out Wysija and reinstall anew.',WYSIJA)?></p>
+                <?php echo $this->buildMyForm($advanced_fields ,'','config'); ?>
+                <tr>
+                    <td colspan="2">
+                        <div class="show-more-geeky-options geeky-option">
+                            <a href="javascript:void(0);">
+                                <?php echo __('Show me more geeky options',WYSIJA); ?>
+                            </a>
+                            <span class="icon"></span>
                         </div>
-                    </th><td><p><a class="button" href="admin.php?page=wysija_config&action=reinstall"><?php _e('Reinstall now...',WYSIJA); ?></a></p></td></tr>
+                        <div class="hide-geeky-options geeky-option">
+                            <a href="javascript:void(0);">
+                                <?php echo __('Hide the geeky options',WYSIJA); ?>
+                            </a>                        
+                            <span class=" icon"></span>
+                        </div>
+                    </td>
+                </tr>
+                <?php echo $this->buildMyForm($super_advanced_fields ,'','config'); ?>
+                <?php if (current_user_can('delete_plugins')): ?>
+                    <tr class="<?php echo $super_advanced_field_class?>">
+                        <th scope="row">
+                            <div class="label"><?php _e('Reinstall from scratch',WYSIJA)?>
+                                <p class="description"><?php _e('Want to start all over again? This will wipe out Wysija and reinstall anew.',WYSIJA)?></p>
+                            </div>
+                        </th>
+                        <td>
+                            <p>
+                                <a class="button" href="admin.php?page=wysija_config&action=reinstall"><?php _e('Reinstall now...',WYSIJA); ?></a>
+                            </p>
+                        </td>
+                    </tr>
                 <?php endif ?>
             </tbody>
         </table>

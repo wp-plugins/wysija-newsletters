@@ -2778,11 +2778,23 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
             <?php
                 foreach($data['sections'] as $section){
+
                     $link_hide=$class_added='';
                     if(isset($section['hidelink'])){
                         $link_hide=' <span class="ctaupdate">-</span> '.$section['hidelink'];
                         $class_added=' removeme';
                     }
+
+                    if(isset($section['type']) && $section['type'] === 'poll') {
+                        ?>
+                        <!-- BEGIN: Poll on update -->
+                        <h3><?php echo $section['title'].$link_hide ?></h3>
+                        <script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/7177099.js"></script>
+                        <noscript><a href="http://polldaddy.com/poll/7177099/"><?php _e('Where do you send your newsletters?', WYSIJA); ?></a></noscript>
+                        <br />
+                        <!-- END: Poll on update -->
+                        <?php
+                    } else {
                     ?>
                      <div class="changelog <?php echo $class_added ?>">
                             <h3><?php echo $section['title'].$link_hide ?></h3>
@@ -2842,10 +2854,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                         }
 
                                 } ?>
-
                             </div>
                     </div>
                     <?php
+                    }
                 }
             ?>
 
