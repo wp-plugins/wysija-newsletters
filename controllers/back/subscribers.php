@@ -69,7 +69,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                 }
 
             }
-            
+
             //if a confirmation email needs to be sent then we send it
             if($dbloptin && (int)$_POST['wysija']['user']['status']==0 && !empty($newlistids)){
                 $hUser=WYSIJA::get('user','helper');
@@ -90,7 +90,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             if(!empty($unsubsribe_list))
             {
                 $modelUL->reset();
-                $modelUL->update(array('unsub_date'=>time()),array('user_id'=>$id,'list_id'=>$unsubsribe_list));                            
+                $modelUL->update(array('unsub_date'=>time()),array('user_id'=>$id,'list_id'=>$unsubsribe_list));
             }
             $modelUL->reset();
         }else{

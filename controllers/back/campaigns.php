@@ -142,6 +142,12 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $wysija_version=WYSIJA::get_version();
         if(!in_array($wysija_version,$except_version) && count(explode('.', $wysija_version))>2) $major_release=false;
 
+        // poll
+        $this->data['sections'][] = array(
+            'title' => __('A new poll to get to know you better', WYSIJA),
+            'type' => 'poll'
+        );
+
         if($major_release){
            $this->data['sections'][]=array(
                 'title'=>__('Added',WYSIJA),
@@ -223,6 +229,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'paragraphs'=>$helper_readme->changelog[WYSIJA::get_version()]
             );
         }
+
 
 
 

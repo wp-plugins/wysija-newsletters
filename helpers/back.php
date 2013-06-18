@@ -431,7 +431,9 @@ class WYSIJA_help_back extends WYSIJA_help{
     function footer_add_stars($message){
         $message.=' | '.str_replace(
                 array('[stars]','[link]','[/link]'),
-                array('<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >★★★★★</a>','<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >','</a>'),
+
+                array('<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >&#9733;&#9733;&#9733;&#9733;&#9733;</a>','<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >','</a>'),
+
                 __('Add your [stars] on [link]wordpress.org[/link] and keep this plugin essentially free.',WYSIJA)
                 );
         return $message;

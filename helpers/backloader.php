@@ -26,10 +26,12 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 
         // TO IMPROVE: This has NOTHING TO DO HERE. It has to be moved to the subscribers controller
         if(!$controller->jsTrans){
-            $controller->jsTrans["selecmiss"]=__('Please make a selection first!',WYSIJA);
-            $controller->jsTrans["suredelete"]=__('Deleting a list will not delete any subscribers.',WYSIJA);
-        }
+            $controller->jsTrans['selecmiss']=__('Please make a selection first!',WYSIJA);
+            $controller->jsTrans['suredelete']=__('Deleting a list will not delete any subscribers.',WYSIJA);
 
+
+        }
+        $controller->jsTrans['sure_to_switch_package']=__('Do you want to install that version?',WYSIJA);
         $controller->js[]='wysija-admin-ajax';
         $controller->js[]='thickbox';
         wp_enqueue_style( 'thickbox' );
