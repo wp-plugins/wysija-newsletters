@@ -712,10 +712,12 @@ class WYSIJA_help_user extends WYSIJA_object{
             $list_userids = implode(',', $userids);
             $row_count = !empty($_REQUEST['wysija']['user']['user_id']) ? count($_REQUEST['wysija']['user']['user_id']) : 0;
         }
-        $query = 'UPDATE `[wysija]user` SET status = 1 WHERE `user_id` IN ('.$list_userids.')';
+        $query1 = 'UPDATE `[wysija]user` SET status = 1 WHERE `user_id` IN ('.$list_userids.')';
+        $query2 = 'UPDATE `[wysija]user_list` SET sub_date  = '.time().', unsub_date = 0  WHERE `user_id` IN ('.$list_userids.')';
 
         //Execute
-        $model_user->query($query);
+        $model_user->query($query1);
+        $model_user->query($query2);
         return $row_count;
     }
 

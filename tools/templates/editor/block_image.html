@@ -16,7 +16,7 @@
             </div>
             <img class="image_placeholder static active" src="{#image_src}" height="{#image.height}" width="{#image.width}" />
         {/if}
-        {if ! #image.static}<img class="image_placeholder" src="{#image.src}" height="{#image.height}" width="{#image.width}" alt="{#image.alt}" />{/if}
+        {if ! #image.static}<img class="image_placeholder" src="{#image.src}" wysija_src="{#image.src}" height="{#image.height}" wysija_height="{#image.height}" width="{#image.width}" wysija_width="{#image.width}" alt="{#image.alt}" />{/if}
 
         {if ! #image.static}
         <ul style="display: none;" class="wysija_tools">

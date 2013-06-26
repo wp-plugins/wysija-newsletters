@@ -1093,8 +1093,8 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $listnames=array();
         foreach($results as $k =>$v) $listnames[]=$v['name'];
 
-        $helperU=WYSIJA::get('user','helper');
-        $helperU->refreshUsers();
+        $helper_user=WYSIJA::get('user','helper');
+        $helper_user->refreshUsers();
 
         foreach($emailsCount as $emailkeycount =>$countemailfile){
             if($countemailfile==1) unset($emailsCount[$emailkeycount]);
@@ -1306,18 +1306,21 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
     }
 
     /**
-     * Mark users as confirmed
+     * bulk delete option
      */
     function deleteusers(){
-        $helpU=WYSIJA::get('user','helper');
+        $helper_user=WYSIJA::get('user','helper');
         if(!empty($this->_batch_select))
-            $helpU->delete($this->_batch_select, false, true);
+            $helper_user->delete($this->_batch_select, false, true);
         else
-            $helpU->delete($_POST['wysija']['user']['user_id']);
+            $helper_user->delete($_POST['wysija']['user']['user_id']);
         if($this->_affected_rows > 1)
             $this->notice(sprintf(__(' %1$s subscribers have been deleted.',WYSIJA),$this->_affected_rows));
         else
             $this->notice(sprintf(__(' %1$s subscriber have been deleted.',WYSIJA),$this->_affected_rows));
+
+        // make sure the total count of subscribers is updated
+        $helper_user->refreshUsers();
         $this->redirect();
     }
 

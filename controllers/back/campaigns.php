@@ -142,11 +142,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $wysija_version=WYSIJA::get_version();
         if(!in_array($wysija_version,$except_version) && count(explode('.', $wysija_version))>2) $major_release=false;
 
-        // poll
-        $this->data['sections'][] = array(
-            'title' => __('A new poll to get to know you better', WYSIJA),
-            'type' => 'poll'
-        );
+
 
         if($major_release){
            $this->data['sections'][]=array(
@@ -192,6 +188,62 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 	),
                 ),
                 'format'=>'three-col',
+            );
+        }else{
+            // list of polls from poll daddy
+            $polls=array();
+            $polls[7177099]=__('Where do you send your newsletters?', WYSIJA);
+            $polls[7199642]=__('How many users on this site create and send newsletters?', WYSIJA);
+            $polls[7199625]=__('You\'re installing this plugin for...', WYSIJA);
+            $polls[7196766]=__('How would you feel if you could no longer use us?', WYSIJA);
+            $polls[7196752]=__('Pick one improvement which is an absolute must', WYSIJA);
+            $polls[7196784]=__('If our Premium was sold as a monthly payment, instead of a yearly payment, would you consider purchasing it?', WYSIJA);
+            $polls[7196911]=__('On how many sites have you installed our plugin in the last year?', WYSIJA);
+            $polls[7196646]=__('How many WordPress sites do you create every year?', WYSIJA);
+            $polls[7196742]=__('When you installed our plugin, it was to...', WYSIJA);
+            $polls[7196756]=__('How did you find out about Wysija?', WYSIJA);
+            $polls[7196770]=__('How much money did you spend on Premium themes or plugins in the past year?', WYSIJA);
+            $polls[7196783]=__('What other emailing solutions do you use?', WYSIJA);
+            $polls[7196798]=__('What\'s the most annoying thing with our current version?', WYSIJA);
+            $polls[7196805]=__('Have you had problems with your newsletters being marked as spam?', WYSIJA);
+
+            // get the list of polls with the number of views for each
+            $polls_views=get_option('wysija_polls_views');
+            if(empty($polls_views)){
+                $polls_views=array();
+                // this one has been the first poll we've used so we consider that everyone viewed it already once
+                $polls_views[7177099]=1;
+            }
+
+
+            // make sure that we record each poll
+            foreach($polls as $poll_id => $poll_title){
+                if(!isset($polls_views[$poll_id])) $polls_views[$poll_id]=0;
+            }
+
+            // group polls by total view
+            $polls_grouped_by_total_view = array();
+            foreach($polls_views as $pollid =>$views){
+                $polls_grouped_by_total_view[$views][]=$pollid;
+            }
+            // order them
+            ksort($polls_grouped_by_total_view);
+
+            // get the series of polls that has been viewed the least
+            $polls_with_least_views = array_shift($polls_grouped_by_total_view);
+
+            // pull one poll out of that array
+            $random_key = array_rand($polls_with_least_views);
+            $poll_id_selected = $polls_with_least_views[$random_key];
+            $polls_views[$poll_id_selected]++;
+
+            WYSIJA::update_option('wysija_polls_views', $polls_views);
+
+            $this->data['polls'][$poll_id_selected]= $polls[$poll_id_selected];
+            // poll
+            $this->data['sections'][] = array(
+                'title' => __('A new poll to get to know you better', WYSIJA),
+                'type' => 'poll'
             );
         }
 
@@ -1002,14 +1054,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'header' => array(
                         'text' => null,
                         'image' => array(
-                            'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/header.png',
+                            // 'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/header.png',
+                            'src' => WYSIJA_EDITOR_IMG.'transparent.png',
                             'width' => 600,
-                            'height' => 72,
+                            'height' => 86,
                             'alignment' => 'center',
-                            'static' => false
+                            'static' => true
                         ),
                         'alignment' => 'center',
-                        'static' => false,
+                        'static' => true,
                         'type' => 'header'
                     ),
                     'body' => array(
@@ -1117,14 +1170,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'footer' => array(
                         'text' => NULL,
                         'image' => array(
-                            'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/footer.png',
+                            // 'src' => WYSIJA_EDITOR_IMG.'default-newsletter/newsletter/footer.png',
+                            'src' => WYSIJA_EDITOR_IMG.'transparent.png',
                             'width' => 600,
-                            'height' => 46,
+                            'height' => 86,
                             'alignment' => 'center',
-                            'static' => false,
+                            'static' => true,
                         ),
                         'alignment' => 'center',
-                        'static' => false,
+                        'static' => true,
                         'type' => 'footer'
                     )
                 );

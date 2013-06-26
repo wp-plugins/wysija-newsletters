@@ -42,6 +42,34 @@ class WYSIJA_model_user extends WYSIJA_model{
         $result=$this->getOne(array('status'),array('user_id'=>$uid));
         return $result->status;
     }
+    
+    function countSubscribers(Array $list_ids = array(), $confirmed_subscribers = true)
+    {
+        $config = WYSIJA::get('config','model');  
+        $confirm_dbleoptin = $config->getValue('confirm_dbleoptin');
+        if($confirm_dbleoptin) $confirmed_subscribers = true;
+        
+        
+        $where = array();
+        $where[] = 'C.is_enabled = 1';
+        $where[] = $confirmed_subscribers ? 'status = 1' : 'status >= 0';
+        if(!empty($list_ids)){            
+            $where[] = 'C.list_id IN ('.implode(',',$list_ids).')';
+        }
+       
+        $query = '
+            SELECT 
+                COUNT(DISTINCT A.user_id) 
+            FROM 
+               [wysija]user A 
+            JOIN 
+                [wysija]user_list B ON A.user_id = B.user_id 
+            JOIN
+                [wysija]list C ON C.list_id = B.list_id 
+            WHERE 1';
+        if(!empty($where)) $query .= ' AND '.implode (' AND ', $where);
+        return $this->count($query);
+    }
 
     function getObject($uid){
         $this->getFormat=OBJECT;

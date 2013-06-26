@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.5.1
+Stable tag: 2.5.2
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -35,7 +35,6 @@ http://vimeo.com/46247528
 * Single or double opt-in, your choice
 * Send with your web host, Gmail or SMTP
 * Segment your lists based on opened, clicked & bounced
-
 * Unlimited number of lists
 * Sending in free version is limited to 2000 subscribers
 
@@ -51,7 +50,7 @@ http://vimeo.com/46247528
 * Unlimited spam score tests with mail-tester.com
 * Improve deliverability with DKIM signature
 * We trigger your email queue, like a real cron job
-* Don't reinstall. Simply activate!
+* Don't reinstall. Simply install an additional plugin
 * Priority support
 
 [Visit our Premium page](http://www.wysija.com/wordpress-newsletter-plugin-premium/).
@@ -144,11 +143,19 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.5.2 - 2013-06-26 =
+* fixed rendering issues in Outlook 2013 where text was partially hidden by image
+* fixed confusing text alignment not applied in the visual editor's tiny MCE
+* fixed autosave on step 2, the newsletter editor
+* fixed dragged images in IE10 in the newsletters' visual editor
+* fixed subscribers count not being refreshed after a bulk delete
+* fixed bulk confirm option which was missing a subscribed date to be completely working
+
 = 2.5.1 - 2013-06-17 =
 * added protection to avoid switching to the beta without wanting
 * fixed PHP notices in the newsletter's view in your browser version
 * fixed view in your browser link being left aligned
-* fixed rendering issues image floating on some outlook versions
+* fixed line height issue on some Outlook versions
 
 = 2.5 - 2013-06-06 =
 * added checkbox to select default theme for new newsletters. See Themes tab.

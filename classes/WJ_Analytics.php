@@ -1,13 +1,13 @@
-<?php 
+<?php
 
 /**
 * Class Analytics.
-* 
+*
 * It's a sort of useful stats and numbers generator about Wysija usage.
 * It also handles the MixPanel integration.
 */
 class WJ_Analytics {
-  
+
   // Array: store all analytics data to be sent to JS.
   private $analytics_data = array(
     'monthly_emails_sent' => '',
@@ -26,7 +26,8 @@ class WJ_Analytics {
     'average_click_rate' => '',
     'industry' => '',
     'wordpress_language' => '',
-    'rtl' => ''
+    'rtl' => '',
+    'beta' =>''
   );
 
   function __construct() {
@@ -41,7 +42,7 @@ class WJ_Analytics {
 
     // Enqueue analytics Javascript.
     wp_enqueue_script('analytics', WYSIJA_URL.'js/analytics.js',array(),WYSIJA::get_version());
-    // Make analytics data available in JS. 
+    // Make analytics data available in JS.
     wp_localize_script('analytics', 'analytics_data', $this->analytics_data);
 
   }
@@ -69,7 +70,7 @@ class WJ_Analytics {
     $this->analytics_data['industry'] = $this->get_industry();
     $this->analytics_data['wordpress_language'] = get_bloginfo('language');
     $this->analytics_data['rtl'] = $this->get_rtl();
-
+    $this->analytics_data['beta'] = $this->get_beta();
   }
 
   /**
@@ -80,7 +81,7 @@ class WJ_Analytics {
 
     $model_email_user_stat = WYSIJA::get('email_user_stat','model');
     $query = 'SELECT COUNT(*) as total_emails
-              FROM ' . '[wysija]' . $model_email_user_stat->table_name. ' 
+              FROM ' . '[wysija]' . $model_email_user_stat->table_name. '
               WHERE DATE_SUB(CURDATE(),INTERVAL 30 DAY) <= sent_at';
     $result = $model_email_user_stat->query('get_res', $query);
 
@@ -96,7 +97,7 @@ class WJ_Analytics {
 
     $model_user_list = WYSIJA::get('user_list','model');
     $query = 'SELECT list_id, COUNT(*) as count
-              FROM ' . '[wysija]' . $model_user_list->table_name. ' 
+              FROM ' . '[wysija]' . $model_user_list->table_name. '
               GROUP BY list_id
               HAVING COUNT(*) >= 25';
     $result = $model_user_list->query('get_res', $query);
@@ -114,7 +115,7 @@ class WJ_Analytics {
 
     $model_user = WYSIJA::get('user','model');
     $query = 'SELECT COUNT(*) as confirmed_subscribers
-              FROM ' . '[wysija]' . $model_user->table_name. ' 
+              FROM ' . '[wysija]' . $model_user->table_name. '
               WHERE  status = 1';
     $result = $model_user->query('get_res', $query);
 
@@ -130,7 +131,7 @@ class WJ_Analytics {
 
     $model_user = WYSIJA::get('user','model');
     $query = 'SELECT COUNT(*) as unconfirmed_subscribers
-              FROM ' . '[wysija]' . $model_user->table_name. ' 
+              FROM ' . '[wysija]' . $model_user->table_name. '
               WHERE  status = 0';
     $result = $model_user->query('get_res', $query);
 
@@ -146,7 +147,7 @@ class WJ_Analytics {
 
     $model_email = WYSIJA::get('email','model');
     $query = 'SELECT COUNT(*) as standard_newsletters
-              FROM ' . '[wysija]' . $model_email->table_name. ' 
+              FROM ' . '[wysija]' . $model_email->table_name. '
               WHERE type = 1
               AND status = 2';
     $result = $model_email->query('get_res', $query);
@@ -163,7 +164,7 @@ class WJ_Analytics {
 
     $model_email = WYSIJA::get('email','model');
     $query = 'SELECT COUNT(*) as auto_newsletters
-              FROM ' . '[wysija]' . $model_email->table_name. ' 
+              FROM ' . '[wysija]' . $model_email->table_name. '
               WHERE  type = 2';
     $result = $model_email->query('get_res', $query);
 
@@ -239,7 +240,7 @@ class WJ_Analytics {
 
     $model_email_user_stat = WYSIJA::get('email_user_stat','model');
     $query = 'SELECT COUNT(*) as opened_emails
-              FROM ' . '[wysija]' . $model_email_user_stat->table_name. ' 
+              FROM ' . '[wysija]' . $model_email_user_stat->table_name. '
               WHERE status = 1';
     $result = $model_email_user_stat->query('get_res', $query);
 
@@ -264,7 +265,7 @@ class WJ_Analytics {
 
     $model_email_user_stat = WYSIJA::get('email_user_stat','model');
     $query = 'SELECT COUNT(*) as clicked_emails
-              FROM ' . '[wysija]' . $model_email_user_stat->table_name. ' 
+              FROM ' . '[wysija]' . $model_email_user_stat->table_name. '
               WHERE status = 2';
     $result = $model_email_user_stat->query('get_res', $query);
 
@@ -287,7 +288,7 @@ class WJ_Analytics {
    * @return Int
    */
   private function get_total_emails_sent() {
-        
+
       $model_email_user_stat = WYSIJA::get('email_user_stat','model');
       $query = 'SELECT COUNT(*) as all_emails
                 FROM ' . '[wysija]' . $model_email_user_stat->table_name. '';
@@ -322,6 +323,24 @@ class WJ_Analytics {
     }
 
     return $is_rtl;
+
+  }
+
+  /**
+   * Get if is using beta mode
+   * @return String
+   */
+  private function get_beta() {
+
+    $model_config = WYSIJA::get('config','model');
+
+    if ($model_config->getValue('beta_mode')) {
+      $is_beta = 'Yes';
+    } else {
+      $is_beta = 'No';
+    }
+
+    return $is_beta;
 
   }
 

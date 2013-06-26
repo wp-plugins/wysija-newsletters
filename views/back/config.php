@@ -85,6 +85,29 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         return $fieldHTML;
     }
 
+    function fieldFormHTML_subscribers_count($key,$value,$model,$paramsex){
+        // second part concerning the checkbox
+        $formsHelp=WYSIJA::get('forms','helper');
+        $checked=false;
+        if($this->model->getValue($key))   $checked=true;
+        $fieldHTML='<p style="float:left;">';
+        $fieldHTML.='<div id="'.$key.'_linkname'.'" class="linknamecboxes">';
+        $fieldHTML.=$formsHelp->input(array('name'=>'wysija['.$model.']['.$key.'_linkname]', 'size'=>'75', 'class'=>'subscribers-count-shortcode', 'readonly'=>'readonly'),'[wysija_subscribers_count]').'</p>';
+        $modelList=WYSIJA::get('list','model');
+        $lists=$modelList->get(array('name','list_id','is_public'),array('is_enabled'=>1));
+
+
+        foreach($lists as $list){
+            $fieldHTML.= '<p class="labelcheck"><label for="'.$key.'list-'.$list['list_id'].'">'.$formsHelp->checkbox( array('id'=>$key.'list-'.$list['list_id'],
+                        'name'=>'wysija[config]['.$key.'_lists][]', 'class'=>'subscribers-count-list'),
+                            $list['list_id']).$list['name'].'</label></p>';
+        }
+        $fieldHTML.='</div>';
+
+
+        return $fieldHTML;
+    }
+    
     function fieldFormHTML_managesubscribe($key,$value,$model,$paramsex){
         // second part concerning the checkbox
         $formsHelp=WYSIJA::get('forms','helper');
@@ -1068,7 +1091,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
             'link'=>'<a class="premium-tab" href="javascript:;" title="'.__('Purchase the premium version.',WYSIJA).'">');
 
-        $advanced_fields =apply_filters('wysija_settings_advanced', $advanced_fields );
+        $advanced_fields =apply_filters('wysija_settings_advanced', $advanced_fields );       
         
         $modelU=WYSIJA::get('user','model');
         $objUser=$modelU->getCurrentSubscriber();
@@ -1079,6 +1102,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         'desc'=>__('Add a link in the footer of all your newsletters so subscribers can edit their profile and lists. [link]See your own subscriber profile page.[/link]',WYSIJA),
         'link'=>'<a href="'.$modelU->getConfirmLink($objUser,'subscriptions',false,true).'" target="_blank" title="'.__('Preview page',WYSIJA).'">',);
 
+        $advanced_fields ['html_source'] = array(
+            'label' => __('Allow HTML edits', WYSIJA),
+            'type' => 'radio',
+            'values' => array(true => __('Yes', WYSIJA), false => __('No', WYSIJA)),
+            'desc' => __('This allows you to modify the HTML of text blocks in the visual editor.', WYSIJA)
+        );
+        
         $advanced_fields ['analytics']=array(
             'rowclass'=>'analytics',
             'type'=>'radio',
@@ -1087,9 +1117,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__('Share anonymous data and help us improve the plugin. [link]Read more[/link].',WYSIJA),
             'link' => '<a target="_blank" href="http://support.wysija.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings">'
             );
-
-
-
+        
         $advanced_fields ['industry']=array(
             'rowclass'=>'industry',
             'type'=>'dropdown_keyval',
@@ -1115,12 +1143,27 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Industry',WYSIJA),
             'desc'=>__('Select your industry.',WYSIJA));
 
-        $advanced_fields ['html_source'] = array(
-            'label' => __('Allow HTML edits', WYSIJA),
-            'type' => 'radio',
-            'values' => array(true => __('Yes', WYSIJA), false => __('No', WYSIJA)),
-            'desc' => __('This allows you to modify the HTML of text blocks in the visual editor.', WYSIJA)
-        );
+        $beta_mode_field=array(
+            'rowclass'=>'beta_mode',
+            'row_id' => 'beta_mode_setting',
+            'type'=>'betamode',
+            'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
+            'label'=>__('Become a beta tester',WYSIJA),
+            'desc'=>__('Update your Wysija plugin to the latest beta version. Enjoy the upcoming features. [link]Get in touch[/link] with us for bugs and feedback. Only for experienced users!',WYSIJA),
+            'link' => '<a target="_blank" href="http://support.wysija.com/feedback">'
+            );
+        // only allow the beta mode to network administrators in multisite
+        if(is_multisite()){
+            if(WYSIJA::current_user_can('manage_network')) $advanced_fields ['ms_beta_mode'] = $beta_mode_field;
+        }else{
+            $advanced_fields ['beta_mode'] = $beta_mode_field;
+        }        
+        
+        $super_advanced_fields ['subscribers_count']=array(
+        'type'=>'subscribers_count',
+        'label'=>__('Shortcode to display total number of subscribers',WYSIJA),
+        'desc'=>__('Paste this shortcode to display the number of confirmed subscribers in post or page',WYSIJA)
+        );         
 
         $super_advanced_fields ['advanced_charset']=array(
             'type'=>'dropdown_keyval',
@@ -1150,22 +1193,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>  str_replace(array('[link]','[linkclear]','[/link]','[/linkclear]'),
                     array('<a href="admin.php?page=wysija_config&action=log">','<a href="admin.php?page=wysija_config&action=clearlog">','</a>','</a>'),
                     'View them [link]here[/link]. Clear them [linkclear]here[/linkclear]'));
-        }
-
-        $beta_mode_field=array(
-            'rowclass'=>'beta_mode',
-            'row_id' => 'beta_mode_setting',
-            'type'=>'betamode',
-            'values'=>array(true=>__('Yes',WYSIJA),false=>__('No',WYSIJA)),
-            'label'=>__('Become a beta tester',WYSIJA),
-            'desc'=>__('Update your Wysija plugin to the latest beta version. Enjoy the upcoming features. [link]Get in touch[/link] with us for bugs and feedback. Only for experienced users!',WYSIJA),
-            'link' => '<a target="_blank" href="http://support.wysija.com/feedback">'
-            );
-        // only allow the beta mode to network administrators in multisite
-        if(is_multisite()){
-            if(WYSIJA::current_user_can('manage_network')) $super_advanced_fields ['ms_beta_mode'] = $beta_mode_field;
-        }else{
-            $super_advanced_fields ['beta_mode'] = $beta_mode_field;
         }
         
         //attach 'super-advanced' class to super_advanced_fields
@@ -1225,25 +1252,29 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                'title'=>__('Send to more than 2000 subscribers.',WYSIJA),
                'desc'=>__('You have no more limits. Send to 100 000 if you want.',WYSIJA)
                ),
+            'advlinkstats'=>array(
+               'title'=>__('Get the bigger picture with more stats.',WYSIJA),
+               'desc'=>__('The stats dashboard will give you better insight on how you\'re scoring.',WYSIJA)
+               ),
            'linksstats'=>array(
                'title'=>__('Find out which links are clicked.',WYSIJA),
-               'desc'=>__('This is the most important engagement metric. You\'ll get hooked.',WYSIJA)
-               ),
-           'advlinkstats'=>array(
-               'title'=>__('Track clicked links for each subscriber.',WYSIJA),
-               'desc'=>__('Find out who is really addicted to your newsletters.',WYSIJA)
+               'desc'=>__('Which links in your newsletter are getting clicked on? Find out for each newsletter.',WYSIJA)
                ),
            'trackga'=>array(
                'title'=>__('Track with Google Analytics.',WYSIJA),
                'desc'=>__('Find out what your subscribers do once on your site.',WYSIJA)
                ),
-           'cron'=>array(
+           'customfields'=>array(
+               'title'=>__('Add more fields to your forms.',WYSIJA),
+               'desc'=>__('Add phone number, city, gender or whatever you wish in your subscription forms.',WYSIJA)
+               ),
+            'cron'=>array(
                'title'=>__('We activate a cron job for you.',WYSIJA),
-               'desc'=>__('We make sure you\'re sending every 15 minutes to avoid unregular delivery.',WYSIJA)
+               'desc'=>__('We make sure you\'re sending every 15 minutes to avoid irregular delivery.',WYSIJA)
                ),
            'bounces'=>array(
                'title'=>__('Let us handle your bounces.',WYSIJA),
-               'desc'=>__('It\'s bad to send to invalid addresses. Wysija removes them for you. Your reputation stays clean.',WYSIJA)
+               'desc'=>__('Spam filters will notice if you send to invalid addresses. Wysija removes them for you automatically. Your reputation stays clean.',WYSIJA)
                ),
            'themes'=>array(
                'title'=>__('Download more beautiful themes.',WYSIJA),
@@ -1252,7 +1283,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                ),
            'support'=>array(
                'title'=>__('Fast and efficient support.',WYSIJA),
-               'desc'=>__('It\'s like a valet service from the engineers themselves: Ben, Jo and Kim.',WYSIJA)
+               'desc'=>__('It\'s like a valet service from the engineers themselves.',WYSIJA)
                ),
            'dkim'=>array(
                'title'=>__('Increase your deliverability with DKIM.',WYSIJA),

@@ -2786,14 +2786,16 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     }
 
                     if(isset($section['type']) && $section['type'] === 'poll') {
-                        ?>
-                        <!-- BEGIN: Poll on update -->
-                        <h3><?php echo $section['title'].$link_hide ?></h3>
-                        <script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/7177099.js"></script>
-                        <noscript><a href="http://polldaddy.com/poll/7177099/"><?php _e('Where do you send your newsletters?', WYSIJA); ?></a></noscript>
-                        <br />
-                        <!-- END: Poll on update -->
-                        <?php
+                        foreach($data['polls'] as $pollid => $polltitle){
+                            ?>
+                            <!-- BEGIN: Poll on update -->
+                            <h3><?php echo $section['title'].$link_hide ?></h3>
+                            <script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/<?php echo $pollid ?>.js"></script>
+                            <noscript><a href="http://polldaddy.com/poll/<?php echo $pollid ?>/"><?php echo $polltitle; ?></a></noscript>
+                            <br />
+                            <!-- END: Poll on update -->
+                            <?php
+                        }
                     } else {
                     ?>
                      <div class="changelog <?php echo $class_added ?>">

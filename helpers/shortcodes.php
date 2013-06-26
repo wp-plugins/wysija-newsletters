@@ -96,9 +96,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
 
                     default:
                         break;
-
                 }
-
             }
 
             $this->find[] = $tag_find;
@@ -113,8 +111,9 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
     // [user:lastname]
     // [user:email]
     // [user:displayname]
+    // [user:count]
     private function replace_user_shortcodes($tag_value) {
-
+        $replacement = '';
         if (($tag_value === 'firstname') || ($tag_value === 'lastname') || ($tag_value === 'email')) {
             if(isset($this->receiver->$tag_value) && $this->receiver->$tag_value) {
                 $replacement = $this->receiver->$tag_value;
@@ -124,15 +123,20 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
         }
 
         if ($tag_value === 'displayname') {
-            $user_info = get_userdata($this->receiver->wpuser_id);
-            if($user_info->display_name != false) {
-                $replacement = $user_info->display_name;
-             } elseif($user_info->user_nicename != false) {
-                $replacement = $user_info->user_nicename;
-             } else {
-                $replacement = 'member';
-             }
+            $replacement = 'member';
+            if(!empty($this->receiver->wpuser_id))
+            {
+                $user_info = get_userdata();
+                if(!empty($user_info->display_name) && $user_info->display_name != false) {
+                    $replacement = $user_info->display_name;
+                 } elseif(!empty($user_info->user_nicename) && $user_info->user_nicename != false) {
+                    $replacement = $user_info->user_nicename;
+                }                
+            }
         }
+        if ($tag_value === 'count') {
+            $replacement = $this->userM->count();
+        }        
 
         return $replacement;
 
@@ -142,7 +146,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
     // [global:manage]
     // [global:browser]
     private function replace_global_shortcodes($tag_value) {
-
+        $replacement = '';
         if (($tag_value === 'unsubscribe')) {
             $replacement = $this->userM->getUnsubLink($this->receiver);
         }
@@ -150,7 +154,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
         if ($tag_value === 'manage') {
             $replacement = $this->userM->getEditsubLink($this->receiver);
         }
-
+        
         if ($tag_value === 'browser') {
             $emailH = WYSIJA::get('email','helper');
             $configM = WYSIJA::get('config','model');
@@ -174,7 +178,6 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
     // [newsletter:post_title]
     // [newsletter:number]
     private function replace_newsletter_shortcodes($tag_value) {
-
         switch ($tag_value) {
             case 'subject':
                 $replacement = $this->email->subject;
@@ -194,6 +197,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
                 break;
 
             default:
+                $replacement = '';
                 break;
         }
 
@@ -237,6 +241,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
                 break;
 
             default:
+                $replacement = '';
                 break;
         }
 

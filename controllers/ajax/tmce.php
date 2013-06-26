@@ -8,6 +8,22 @@ class WYSIJA_control_back_tmce extends WYSIJA_control{
         $this->viewObj=WYSIJA::get('tmce','view');
     }
 
+    function subscribersAdd(){
+        $this->viewObj->title=__('Insert Total of Subscribers',WYSIJA);
+        $data = array();
+        $data['lists'] = WYSIJA::get('list','model')->getLists();
+        foreach ($data['lists'] as $k => $list){
+            if (empty($list['is_enabled']) OR empty($list['is_public'])) unset($data['lists'][$k]);
+        }
+        $data['confirm_dbleoptin'] = WYSIJA::get('config','model')->getValue('confirm_dbleoptin');
+        
+        $this->viewObj->subscribersAdd($data);
+        exit;        
+    }
+    
+    function subscribersEdit(){
+        
+    }
 
     function registerAdd(){
         $this->viewObj->title=__('Insert Subscription Form',WYSIJA);
@@ -114,7 +130,6 @@ class WYSIJA_control_back_tmce extends WYSIJA_control{
 
         }
 
-        //dbg($datawidget,0);
         if(!isset($data_widget['customfields']) && isset($data_widget['labelswithin']) && $data_widget['labelswithin']=='labels_within'){
             $data_widget['customfields']=array('email'=>array('label'=>__('Email',WYSIJA)));
         }

@@ -75,7 +75,7 @@ class WYSIJA_help_rules extends WYSIJA_help{
 
             $this->defaultrules[]=array("order_display"=>5,"behave"=>"mailbox_na","key"=>"message_delayed","name"=>__('Message delayed',WYSIJA),
                                         "title"=>__('When message is delayed',WYSIJA),
-                                        "regex"=>'has.*been.*delayed|delayed *mail|temporary *failure',
+                                        "regex"=>'possible *mail *loop|too *many *hops|Action: *delayed|has.*been.*delayed|delayed *mail|temporary *failure',
                                          "executed_on"=>array(
                                             "subject"=>1,
                                              "body"=>1
