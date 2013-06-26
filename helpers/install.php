@@ -200,7 +200,7 @@ class WYSIJA_help_install extends WYSIJA_object{
         $campaign_id=$modelCampaign->insert(
                 array(
                     'name'=>__('5 Minute User Guide',WYSIJA),
-                    'description'=>__('Default newsletter created automatically during installation.',WYSIJA),
+                    'description'=>'',
 
                     ));
 

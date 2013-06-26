@@ -82,6 +82,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             'tags_user_lastname' => __('Last Name', WYSIJA),
             'tags_user_email' => __('Email Address', WYSIJA),
             'tags_user_displayname' => __('Wordpress user display name', WYSIJA),
+            'tags_user_count' => __('Total of subscribers', WYSIJA),
             'tags_newsletter' => __('Newsletter', WYSIJA),
             'tags_newsletter_subject' => __('Newsletter Subject', WYSIJA),
             'tags_newsletter_autonl' => __('Post Notifications', WYSIJA),

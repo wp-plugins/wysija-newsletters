@@ -27,6 +27,8 @@ class WYSIJA_help_front extends WYSIJA_help{
 
         // wysija form shortcode
         add_shortcode('wysija_form', array($this,'scan_form_shortcode'));
+        // wysija total of subscribers shortcode
+        add_shortcode('wysija_subscribers_count', array($this,'scan_subscribers_count_shortcode'));        
 
         /* We try to process the least possible code */
         if(isset($_REQUEST['wysija-page']) || isset($_REQUEST['wysija-launch'])){
@@ -212,6 +214,20 @@ class WYSIJA_help_front extends WYSIJA_help{
         }
         return '';
     }
+    
+
+    /**
+     * this is for the new kind of shortcodes [wysija_form form="1"]
+     * @param array $attributes
+     * @return string html
+     */
+    function scan_subscribers_count_shortcode($attributes) {
+        $user = WYSIJA::get('user','model');
+        $list_ids = !empty($attributes['list_id']) ? explode(',', $attributes['list_id']) : array();
+        $confirmed_subscribers = !empty($attributes['confirmed_subscribers']) ? (bool)$attributes['confirmed_subscribers'] : true;
+        return $user->countSubscribers($list_ids, $confirmed_subscribers);
+        
+    }    
 
     function scan_content_NLform($content){
         preg_match_all('/\<div class="wysija-register">(.*?)\<\/div>/i',$content,$matches);

@@ -142,7 +142,12 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                     }*/
                     ?>
                     <option value="deleteusers"><?php _e('Delete subscribers', WYSIJA); ?></option>
+                    <?php 
+                    $config_model = WYSIJA::get('config','model');
+                    if($config_model->getValue('confirm_dbleoptin')){
+                    ?>
                     <option value="actionvar_confirmusers"><?php _e('Confirm unconfirmed subscribers', WYSIJA); ?></option>
+                    <?php } ?>
                 </select>
                 <input type="submit" class="bulksubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Apply', WYSIJA)); ?>">
                 <?php $this->secure('delete'); ?>

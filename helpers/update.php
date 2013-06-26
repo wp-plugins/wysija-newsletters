@@ -356,8 +356,17 @@ class WYSIJA_help_update extends WYSIJA_object{
                 return true;
                 break;
 
+            case '2.5.2':
+                $queries = array();
+                $queries[] = 'UPDATE `[wysija]user_list` AS A JOIN `[wysija]user` AS B ON A.user_id = B.user_id SET A.unsub_date = 0, A.sub_date = '.time().' WHERE STATUS = 1 AND sub_date =0';
+                $errors = $this->runUpdateQueries($queries);
+                if($errors) {
+                    $this->error(implode($errors,"\n"));
+                    return false;
+                }
+                return true;
+                break;
             default:
-
                 return false;
         }
         return false;

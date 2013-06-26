@@ -378,7 +378,7 @@ class WYSIJA_help_back extends WYSIJA_help{
 
     function addRichPlugin($plugin_array) {
        $plugin_array['wysija_register'] = WYSIJA_URL.'mce/wysija_register/editor_plugin.js';
-       //$plugin_array['wysija_links'] = WYSIJA_URL.'mce/wysija_links/editor_plugin.js';
+       $plugin_array['wysija_subscribers'] = WYSIJA_URL.'mce/wysija_subscribers/editor_plugin.js';
 
        return $plugin_array;
     }
@@ -389,6 +389,7 @@ class WYSIJA_help_back extends WYSIJA_help{
        //array_push($newButtons, "|", "styleselect");
        array_push($newButtons, '|', 'wysija_register');
        //array_push($newButtons, "|", "wysija_links");
+       //array_push($newButtons, '|', 'wysija_subscribers');
        return $newButtons;
     }
 
