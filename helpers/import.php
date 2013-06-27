@@ -290,13 +290,13 @@ class WYSIJA_help_import extends WYSIJA_object{
 
                 // in case of a multisite by default we want to import the wp users from the site on which we are running that script
                 if(!$is_main_site){
-                    $query_select.=' INNER JOIN '.$wpdb->base_prefix.'usermeta ON ( '.$wpdb->base_prefix.$table_name.'.ID = '.$wpdb->base_prefix.'usermeta.user_id )';
-                    $query_select.=' WHERE '.$wpdb->base_prefix."usermeta.meta_key = '".$model->wpprefix."capabilities'";
+                    $query_select.=' JOIN '.$wpdb->base_prefix.'usermeta as m3 ON ( u1.ID = m3.user_id AND m3.meta_key = \''.$model->wpprefix.'capabilities\' )';
                 }
 
 
 
                 $query="INSERT IGNORE INTO `[wysija]user` $fields ".$query_select;
+
             }else    {
                 /* query to save the external plugins subscribers into wysija subsribers*/
                 $where=$this->generateWhere($connection_info['where']);
