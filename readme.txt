@@ -144,7 +144,6 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 == Changelog ==
 
 = 2.5.2 - 2013-06-26 =
-* fixed rendering issues in Outlook 2013 where text was partially hidden by image
 * fixed confusing text alignment not applied in the visual editor's tiny MCE
 * fixed autosave on step 2, the newsletter editor
 * fixed dragged images in IE10 in the newsletters' visual editor
