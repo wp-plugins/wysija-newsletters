@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.5.2
+Stable tag: 2.5.3
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,12 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.5.3 - 2013-06-27 =
+* added hook to delete wysija subscribers when a WP multisite user is deleted
+* fixed Wysija's cron page view auto trigger creating some errors on some servers
+* fixed WordPress user auto import as wysija subscribers on multisite
+* fixed rendering issue 2.5.2
 
 = 2.5.2 - 2013-06-26 =
 * fixed confusing text alignment not applied in the visual editor's tiny MCE

@@ -1097,10 +1097,15 @@ class WYSIJA extends WYSIJA_object{
             //call the cron url
 
             $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
+            $cron_request = apply_filters( 'cron_request', array(
+                    'url' => $cron_url,
+                    'args' => array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) )
+            ) );
 
+            wp_remote_post( $cron_url, $cron_request['args'] );
             //TODO we should use the http class there
-            $hHTTP=WYSIJA::get('http','helper');
-            $hHTTP->request_timeout($cron_url);
+            //$hHTTP=WYSIJA::get('http','helper');
+            //$hHTTP->request_timeout($cron_url);
 
         }
     }
@@ -1142,7 +1147,11 @@ class WYSIJA extends WYSIJA_object{
 add_action('user_register', array('WYSIJA', 'hook_add_WP_subscriber'), 1);
 add_action('added_existing_user', array('WYSIJA', 'hook_add_WP_subscriber'), 1);
 add_action('profile_update', array('WYSIJA', 'hook_edit_WP_subscriber'), 1);
+// for standard blog
 add_action('delete_user', array('WYSIJA', 'hook_del_WP_subscriber'), 1);
+// for multisite
+add_action('deleted_user', array('WYSIJA', 'hook_del_WP_subscriber'), 1);
+
 
 // post notif trigger
 add_action('transition_post_status', array('WYSIJA', 'hook_postNotification_transition'), 1, 3);
