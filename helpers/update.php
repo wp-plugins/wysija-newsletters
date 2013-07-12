@@ -5,7 +5,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
         //IMPORTANT when making db updated or running update processes, add the version and in the big switch below in the runUpdate() method
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3','2.4.4','2.5');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3','2.4.4','2.5','2.5.2');
     }
 
 

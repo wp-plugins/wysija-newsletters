@@ -794,14 +794,14 @@ class WYSIJA_help_user extends WYSIJA_object{
 
     /**
      * function used to update the synchronisation with a plugin list or WP's one table
-     * @global type $wpdb
-     * @param type $listid
-     * @param type $total means total synch of the whole user base, it's used for multisite and the WordPress users list
+     * @global object $wpdb
+     * @param int $list_id
+     * @param boolean $synch_all_wp_user_base means complete synch of the whole user base, it's used for multisite and the WordPress users list
      * @return type
      */
-    function synchList($listid,$total=false){
+    function synchList($list_id, $synch_all_wp_user_base = false){
         $model=WYSIJA::get('list','model');
-        $data=$model->getOne(false,array('list_id'=>(int)$listid,'is_enabled'=>'0'));
+        $data=$model->getOne(false,array('list_id'=>(int)$list_id,'is_enabled'=>'0'));
 
         if($data){
 
@@ -833,17 +833,18 @@ class WYSIJA_help_user extends WYSIJA_object{
                         $ismainsite=false;
                     }
                 }
+  
                 $connection_info=array('name'=>'WordPress',
-            'pk'=>'ID',
-            'matches'=>array('ID'=>'wpuser_id','user_email'=>'email','display_name'=>'firstname'),
-            'matchesvar'=>array('status'=>1));
+                    'pk'=>'ID',
+                    'matches'=>array('ID'=>'wpuser_id', 'user_email'=>'email' , 'first_name'=>'firstname' , 'last_name'=>'lastname'),
+                    'matchesvar'=>array('status'=>1));
 
                 $importHelper=WYSIJA::get('import','helper');
                 $lists_ids=array(
                     'wysija_list_main_id'=>$data['list_id']
                 );
 
-                $importHelper->import($data['namekey'],$connection_info,false,$total,$lists_ids);
+                $importHelper->import($data['namekey'],$connection_info,false,$synch_all_wp_user_base,$lists_ids);
 
                 $this->cleanWordpressUsersList();
 

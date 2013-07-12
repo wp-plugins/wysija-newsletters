@@ -68,6 +68,10 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
                     }
                 }
 
+            }else{
+                // if no list is selected we unsubscribe them all
+                $modelUL->reset();
+                $modelUL->update(array('unsub_date'=>time(),'sub_date'=>0),array('user_id'=>$id));
             }
 
             //if a confirmation email needs to be sent then we send it

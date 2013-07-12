@@ -54,7 +54,8 @@ class WYSIJA_help_file extends WYSIJA_object{
         }
         if(!file_exists($dirname)){
             if(!mkdir($dirname, $mode,true)){
-                $dirname=false;
+                $this->error('Cannot create folder '.$dirname.' try to create the folder manually');
+                return false;
             }
             chmod($dirname,$mode);
         }

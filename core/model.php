@@ -25,7 +25,7 @@ class WYSIJA_model extends WYSIJA_object{
     var $joins=array();
     var $ignore = false;
     var $sql_error=false;
-    var $comparisonKeys = array('equal', 'notequal', 'like', 'greater', 'less', 'greater_eq', 'less_eq');
+    var $comparisonKeys = array('equal', 'notequal', 'like', 'greater', 'less', 'greater_eq', 'less_eq', 'is');
 
     function WYSIJA_model($extensions=''){
         if(defined('WYSIJA_DBG') && WYSIJA_DBG>0) $this->dbg=true;
@@ -305,10 +305,15 @@ class WYSIJA_model extends WYSIJA_object{
                             if(is_numeric($condVal) === false) $condVal = '"'.$condVal.'"';
                             $conditions[]=$condK.' <= '.$condVal;
                             break;
+                        case 'is':
+
+                            $conditions[]=$condK.' '.$condVal;
+                            break;
                     }
                 }
 
             }
+
             $query.=' WHERE '.implode(' AND ',$conditions);
         }
 
@@ -809,7 +814,7 @@ class WYSIJA_model extends WYSIJA_object{
                 }
             } else {
                 foreach($conditions as $key => $cond) {
-                    if(!in_array($key, array('like','equal','notequal','greater','less','greater_eq','less_eq'))){
+                    if(!in_array($key, $this->comparisonKeys /*array('like','equal','notequal','greater','less','greater_eq','less_eq')*/)){
                         if($this->colCheck && !$this->checkAreColumns($conditions)) return false;
                         if(array_key_exists('equal', $this->conditions) === false) $this->conditions['equal'] = array();
                         $this->conditions['equal'][$key] = $cond;

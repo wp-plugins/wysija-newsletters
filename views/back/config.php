@@ -107,7 +107,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         return $fieldHTML;
     }
-    
+
     function fieldFormHTML_managesubscribe($key,$value,$model,$paramsex){
         // second part concerning the checkbox
         $formsHelp=WYSIJA::get('forms','helper');
@@ -626,7 +626,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Subscribe in registration form',WYSIJA),
             'desc'=>__('Allow users who register to your site to subscribe on a list of your choice.',WYSIJA)
             );
-        }        
+        }
 
         $modelU=WYSIJA::get('user','model');
         $objUser=$modelU->getCurrentSubscriber();
@@ -652,7 +652,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $step['unsubscribed_subtitle']=array(
             'type'=>'input',
             'label'=>__('Unsubscribe page content',WYSIJA));
-        
+
         $modelC=WYSIJA::get('config','model');
 
         ?>
@@ -1085,14 +1085,20 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'type'=>'capabilities',
             '1col'=>1);
 
+        $advanced_fields['replyto_name']=array(
+            'type'=>'fromname',
+            'class'=>'validate[required]',
+            'label'=>__('Reply-to name & email',WYSIJA),
+            'desc'=>__('You can change the default reply-to name and email for your newsletters. This option is also used for the activation emails and Admin notifications (in Basics).',WYSIJA));
+
         $advanced_fields ['bounce_email']=array(
             'type'=>'input',
             'label'=>__('Bounce Email',WYSIJA),
             'desc'=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
             'link'=>'<a class="premium-tab" href="javascript:;" title="'.__('Purchase the premium version.',WYSIJA).'">');
 
-        $advanced_fields =apply_filters('wysija_settings_advanced', $advanced_fields );       
-        
+        $advanced_fields =apply_filters('wysija_settings_advanced', $advanced_fields );
+
         $modelU=WYSIJA::get('user','model');
         $objUser=$modelU->getCurrentSubscriber();
 
@@ -1108,7 +1114,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'values' => array(true => __('Yes', WYSIJA), false => __('No', WYSIJA)),
             'desc' => __('This allows you to modify the HTML of text blocks in the visual editor.', WYSIJA)
         );
-        
+
         $advanced_fields ['analytics']=array(
             'rowclass'=>'analytics',
             'type'=>'radio',
@@ -1117,7 +1123,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'desc'=>__('Share anonymous data and help us improve the plugin. [link]Read more[/link].',WYSIJA),
             'link' => '<a target="_blank" href="http://support.wysija.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=advanced_settings">'
             );
-        
+
         $advanced_fields ['industry']=array(
             'rowclass'=>'industry',
             'type'=>'dropdown_keyval',
@@ -1157,13 +1163,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             if(WYSIJA::current_user_can('manage_network')) $advanced_fields ['ms_beta_mode'] = $beta_mode_field;
         }else{
             $advanced_fields ['beta_mode'] = $beta_mode_field;
-        }        
-        
+        }
+
         $super_advanced_fields ['subscribers_count']=array(
         'type'=>'subscribers_count',
         'label'=>__('Shortcode to display total number of subscribers',WYSIJA),
         'desc'=>__('Paste this shortcode to display the number of confirmed subscribers in post or page',WYSIJA)
-        );         
+        );
 
         $super_advanced_fields ['advanced_charset']=array(
             'type'=>'dropdown_keyval',
@@ -1194,7 +1200,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     array('<a href="admin.php?page=wysija_config&action=log">','<a href="admin.php?page=wysija_config&action=clearlog">','</a>','</a>'),
                     'View them [link]here[/link]. Clear them [linkclear]here[/linkclear]'));
         }
-        
+
         //attach 'super-advanced' class to super_advanced_fields
         $super_advanced_field_class = 'super-advanced';
         foreach($super_advanced_fields as $key => $field){
@@ -1216,7 +1222,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         <div class="hide-geeky-options geeky-option">
                             <a href="javascript:void(0);">
                                 <?php echo __('Hide the geeky options',WYSIJA); ?>
-                            </a>                        
+                            </a>
                             <span class=" icon"></span>
                         </div>
                     </td>

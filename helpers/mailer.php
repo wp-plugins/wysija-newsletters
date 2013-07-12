@@ -155,8 +155,12 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->WordWrap = 150;
 
             if($this->config->getValue('dkim_active') && $this->config->getValue('dkim_pubk') && !$this->isElasticRest && !$this->isSendGridRest){
-               $this->DKIM_domain = $this->config->getValue('dkim_domain');
-               $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
+               if(!function_exists('openssl_sign')){
+                   $this->error(__('You cannot use the DKIM signature option...',WYSIJA).' '.__('The PHP Extension openssl is not enabled on your server. Ask your host to enable it if you want to use an SSL connection.',WYSIJA));
+               }else{
+                    $this->DKIM_domain = $this->config->getValue('dkim_domain');
+                    $this->DKIM_private = trim($this->config->getValue('dkim_privk'));
+               }
            }
 
            $this->DKIM_selector   = 'wys';

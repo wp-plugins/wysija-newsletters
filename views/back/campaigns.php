@@ -2785,17 +2785,34 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         $class_added=' removeme';
                     }
 
-                    if(isset($section['type']) && $section['type'] === 'poll') {
-                        foreach($data['polls'] as $pollid => $polltitle){
+                    if(isset($section['type'])) {
+
+                        if($section['type'] === 'poll'){
+                            foreach($data['polls'] as $pollid => $polltitle){
+                                ?>
+                                <!-- BEGIN: Poll on update -->
+                                <h3><?php echo $section['title'].$link_hide ?></h3>
+                                <script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/<?php echo $pollid ?>.js"></script>
+                                <noscript><a href="http://polldaddy.com/poll/<?php echo $pollid ?>/"><?php echo $polltitle; ?></a></noscript>
+                                <br />
+                                <!-- END: Poll on update -->
+                                <?php
+                            }
+                        }elseif($section['type'] === 'survey'){
                             ?>
-                            <!-- BEGIN: Poll on update -->
-                            <h3><?php echo $section['title'].$link_hide ?></h3>
-                            <script type="text/javascript" charset="utf-8" src="http://static.polldaddy.com/p/<?php echo $pollid ?>.js"></script>
-                            <noscript><a href="http://polldaddy.com/poll/<?php echo $pollid ?>/"><?php echo $polltitle; ?></a></noscript>
-                            <br />
-                            <!-- END: Poll on update -->
+                                <script type="text/javascript" src="http://i0.poll.fm/survey.js" charset="UTF-8"></script>
+                                <noscript><a href="http://mailpoet.polldaddy.com/s/wysija-user-survey-2013-07"><?php __('4 min survey to better understand what you need',WYSIJA) ?></a></noscript>
+                                <script type="text/javascript">
+                                  polldaddy.add( {
+                                    type: 'iframe',
+                                    auto: true,
+                                    domain: 'mailpoet.polldaddy.com/s/',
+                                    id: 'wysija-user-survey-2013-07'
+                                  } );
+                                </script>
                             <?php
                         }
+
                     } else {
                     ?>
                      <div class="changelog <?php echo $class_added ?>">
