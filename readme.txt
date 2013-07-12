@@ -143,7 +143,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
-= 2.5.4- 2013-07-13 =
+= 2.5.4 - 2013-07-13 =
 * fixed broken sending process when DKIM is activated but the openSSL php library goes missing
 * fixed missing update procedure of 2.5.2 for bulk confirm
 * fixed daily post notification sending sometimes one day old posts
