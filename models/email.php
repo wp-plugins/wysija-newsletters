@@ -97,20 +97,20 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         return true;
     }
-    
+
     /**
      * trigger on Update
      */
     function afterUpdate($result_save_id){
         //First reply-to address (name + email) is a default value for next newsletter
-        $model_config=WYSIJA::get('config','model');         
+        $model_config=WYSIJA::get('config','model');
         if(!$model_config->getValue('replyto_name') || !$model_config->getValue('replyto_email')){
             $email = $this->getOne(false,array('email_id'=>$result_save_id));
             $model_config->save(array(
                 'replyto_name' => $email['replyto_name'],
                 'replyto_email' => $email['replyto_email']
             ));
-        }      
+        }
         return true;
     }
 

@@ -269,7 +269,7 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             $config=WYSIJA::get('config','model');
             $dbloptin=$config->getValue('confirm_dbleoptin');
             //1 - insert new user_list
-            if(isset($_POST['wysija']['user_list']) && $_POST['wysija']['user_list']){
+            if(isset($_POST['wysija']['user_list']['list_id']) && $_POST['wysija']['user_list']['list_id']){
                 $modelUL->reset();
                 $modelUL->update(array('sub_date'=>time()),array('user_id'=>$id));
                 foreach($_POST['wysija']['user_list']['list_id'] as $list_id){

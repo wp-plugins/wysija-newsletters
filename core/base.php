@@ -740,30 +740,30 @@ class WYSIJA extends WYSIJA_object{
 
 
         //check first if a subscribers exists if it doesn't then let's insert it
-        $modelC=WYSIJA::get('config','model');
-        $modelUser=WYSIJA::get('user','model');
-        $modelUser->getFormat=ARRAY_A; // there is one case where we were getting an object instead of an array
-        $subscriber_exists=$modelUser->getOne(array('user_id'),array('email'=>$data->user_email));
-        $modelUser->reset();
+        $model_config=WYSIJA::get('config','model');
+        $model_user=WYSIJA::get('user','model');
+        $model_user->getFormat=ARRAY_A; // there is one case where we were getting an object instead of an array
+        $subscriber_exists=$model_user->getOne(array('user_id'),array('email'=>$data->user_email));
+
+        $first_name=$data->first_name;
+        $last_name=$data->last_name;
+        if(!$data->first_name && !$data->last_name) $first_name=$data->display_name;
+
+        $model_user->reset();
         if($subscriber_exists){
-            $uid=$subscriber_exists['user_id'];
-
+            $user_id=$subscriber_exists['user_id'];
+            // we need to update the current subscriber using it's id
+            $model_user->update(array('wpuser_id'=>$data->ID,'firstname'=>$first_name,'lastname'=>$last_name),array('user_id'=>$user_id));
         }else{
-            $modelUser->noCheck=true;
-
-            $firstname=$data->first_name;
-            $lastname=$data->last_name;
-            if(!$data->first_name && !$data->last_name) $firstname=$data->display_name;
-
-            $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>$modelC->getValue('confirm_dbleoptin')));
-
+            $model_user->noCheck=true;
+            $user_id=$model_user->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$first_name,'lastname'=>$last_name,'status'=>$model_config->getValue('confirm_dbleoptin')));
         }
 
-        $modelUL=WYSIJA::get('user_list','model');
-        $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()),true);
+        $model_user_list=WYSIJA::get('user_list','model');
+        $model_user_list->insert(array('user_id'=>$user_id,'list_id'=>$model_config->getValue('importwp_list_id'),'sub_date'=>time()),true);
 
-        $helperUser=WYSIJA::get('user','helper');
-        $helperUser->sendAutoNl($uid,$data,'new-user');
+        $helper_user=WYSIJA::get('user','helper');
+        $helper_user->sendAutoNl($user_id,$data,'new-user');
         return true;
     }
 
@@ -776,44 +776,44 @@ class WYSIJA extends WYSIJA_object{
         $data=get_userdata($user_id);
 
         //check first if a subscribers exists if it doesn't then let's insert it
-        $modelUser=WYSIJA::get('user','model');
-        $modelC=WYSIJA::get('config','model');
-        $modelUL=WYSIJA::get('user_list','model');
+        $model_user=WYSIJA::get('user','model');
+        $model_config=WYSIJA::get('config','model');
+        $model_user_list=WYSIJA::get('user_list','model');
 
-        $subscriber_exists=$modelUser->getOne(array('user_id'),array('email'=>$data->user_email));
+        $subscriber_exists=$model_user->getOne(array('user_id'),array('email'=>$data->user_email));
 
-        $modelUser->reset();
+        $model_user->reset();
 
-        $firstname=$data->first_name;
-        $lastname=$data->last_name;
-        if(!$data->first_name && !$data->last_name) $firstname=$data->display_name;
+        $first_name=$data->first_name;
+        $last_name=$data->last_name;
+        if(!$data->first_name && !$data->last_name) $first_name=$data->display_name;
 
         if($subscriber_exists){
-            $uid=$subscriber_exists['user_id'];
+            $user_id=$subscriber_exists['user_id'];
 
-            $modelUser->update(array('email'=>$data->user_email,'firstname'=>$firstname,'lastname'=>$lastname),array('wpuser_id'=>$data->ID));
+            $model_user->update(array('wpuser_id'=>$data->ID, 'email'=>$data->user_email,'firstname'=>$first_name,'lastname'=>$last_name),array('user_id'=>$user_id));
 
-            $result=$modelUL->getOne(false,array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id')));
-            $modelUL->reset();
+            $result=$model_user_list->getOne(false,array('user_id'=>$user_id,'list_id'=>$model_config->getValue('importwp_list_id')));
+            $model_user_list->reset();
             if(!$result)
-                $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
+                $model_user_list->insert(array('user_id'=>$user_id,'list_id'=>$model_config->getValue('importwp_list_id'),'sub_date'=>time()));
         }else{
             //chck that we didnt update the email
-            $subscriber_exists=$modelUser->getOne(false,array('wpuser_id'=>$data->ID));
+            $subscriber_exists=$model_user->getOne(false,array('wpuser_id'=>$data->ID));
 
             if($subscriber_exists){
-                $uid=$subscriber_exists['user_id'];
+                $user_id=$subscriber_exists['user_id'];
 
-                $modelUser->update(array('email'=>$data->user_email,'firstname'=>$firstname,'lastname'=>$lastname),array('wpuser_id'=>$data->ID));
+                $model_user->update(array('email'=>$data->user_email,'firstname'=>$first_name,'lastname'=>$last_name),array('wpuser_id'=>$data->ID));
 
-                $result=$modelUL->getOne(false,array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id')));
-                $modelUL->reset();
+                $result=$model_user_list->getOne(false,array('user_id'=>$user_id,'list_id'=>$model_config->getValue('importwp_list_id')));
+                $model_user_list->reset();
                 if(!$result)
-                    $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
+                    $model_user_list->insert(array('user_id'=>$user_id,'list_id'=>$model_config->getValue('importwp_list_id'),'sub_date'=>time()));
             }else{
-                $modelUser->noCheck=true;
-                $uid=$modelUser->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$firstname,'lastname'=>$lastname,'status'=>$modelC->getValue('confirm_dbleoptin')));
-                $modelUL->insert(array('user_id'=>$uid,'list_id'=>$modelC->getValue('importwp_list_id'),'sub_date'=>time()));
+                $model_user->noCheck=true;
+                $user_id=$model_user->insert(array('email'=>$data->user_email,'wpuser_id'=>$data->ID,'firstname'=>$first_name,'lastname'=>$last_name,'status'=>$model_config->getValue('confirm_dbleoptin')));
+                $model_user_list->insert(array('user_id'=>$user_id,'list_id'=>$model_config->getValue('importwp_list_id'),'sub_date'=>time()));
             }
         }
         return true;
@@ -824,12 +824,12 @@ class WYSIJA extends WYSIJA_object{
      * @param type $user_id
      */
     public static function hook_del_WP_subscriber($user_id) {
-        $modelConf=WYSIJA::get('config','model');
-        $modelUser=WYSIJA::get('user','model');
-        $data=$modelUser->getOne(array('email','user_id'),array('wpuser_id'=>$user_id));
-        $modelUser->delete(array('email'=>$data['email']));
-        $modelUser=WYSIJA::get('user_list','model');
-        $modelUser->delete(array('user_id'=>$data['user_id'],'list_id'=>$modelConf->getValue('importwp_list_id')));
+        $model_config=WYSIJA::get('config','model');
+        $model_user=WYSIJA::get('user','model');
+        $data = $model_user->getOne(array('email','user_id'),array('wpuser_id'=>$user_id));
+        $model_user->delete(array('email'=>$data['email']));
+        $model_user=WYSIJA::get('user_list','model');
+        $model_user->delete(array('user_id'=>$data['user_id'],'list_id'=>$model_config->getValue('importwp_list_id')));
     }
 
     /**
@@ -842,16 +842,16 @@ class WYSIJA extends WYSIJA_object{
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
         //we run some process only if the status of the post changes from something to publish
         if( $new_status=='publish' && $old_status!=$new_status){
-            $modelEmail = WYSIJA::get('email', 'model');
-            $emails = $modelEmail->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
+            $model_email = WYSIJA::get('email', 'model');
+            $emails = $model_email->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
             if(!empty($emails)){
                 //we loop through all of the automatic emails
                 foreach($emails as $key => $email) {
                     //we will try to give birth to a child email only if the automatic newsletter is a post notification email and in immediate mode
                     if(is_array($email) && $email['params']['autonl']['event'] === 'new-articles' && $email['params']['autonl']['when-article'] === 'immediate') {
                         WYSIJA::log('post_transition_hook_give_birth',array('postID'=>$post->ID,'postID'=>$post->post_title,'old_status'=>$old_status,'new_status'=>$new_status),'post_notif');
-                        $modelEmail->reset();
-                        $modelEmail->give_birth($email, $post->ID);
+                        $model_email->reset();
+                        $model_email->give_birth($email, $post->ID);
                     }
                 }
             }
