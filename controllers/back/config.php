@@ -70,7 +70,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
 
         if(isset($_REQUEST['validate'])){
             $this->notice(str_replace(array('[link]','[/link]'),
-            array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
+            array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-activate" href="javascript:;">','</a>'),
             __('You\'re almost there. Click this [link]link[/link] to activate the licence you have just purchased.',WYSIJA)));
 
         }

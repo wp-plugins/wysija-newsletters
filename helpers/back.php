@@ -30,7 +30,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             define('WYSIJA_ITF',FALSE);
         }
 
-        if(WYSIJA_DBG>0) include_once(WYSIJA_INC.'debug.php');
+        if( WYSIJA_DBG>0 ) include_once(WYSIJA_INC.'debug.php');
 
         if(!function_exists('dbg')) {
             function dbg($mixed,$exit=true){}
@@ -433,7 +433,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $message.=' | '.str_replace(
                 array('[stars]','[link]','[/link]'),
 
-                array('<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >&#9733;&#9733;&#9733;&#9733;&#9733;</a>','<a target="_blank" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" >','</a>'),
+                array('<a target="_blank" href="http://goo.gl/LVsvys" >&#9733;&#9733;&#9733;&#9733;&#9733;</a>','<a target="_blank" href="http://goo.gl/PFGphH" >','</a>'),
 
                 __('Add your [stars] on [link]wordpress.org[/link] and keep this plugin essentially free.',WYSIJA)
                 );

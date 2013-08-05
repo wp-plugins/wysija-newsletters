@@ -2,6 +2,7 @@
 defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_user extends WYSIJA_object{
 
+    var $no_confirmation_email =false;
     /**
      * Used whend confirming email with dbl optin
      * @param type $user_id
@@ -439,6 +440,8 @@ class WYSIJA_help_user extends WYSIJA_object{
      * @return boolean
      */
     function sendConfirmationEmail($user_ids,$sendone=false,$listids=array()){
+        if($this->no_confirmation_email === true) return;
+
         if($sendone || is_object($user_ids)){
             /* in this case user_ids is just one user object*/
             $users=array($user_ids);
@@ -833,7 +836,7 @@ class WYSIJA_help_user extends WYSIJA_object{
                         $ismainsite=false;
                     }
                 }
-  
+
                 $connection_info=array('name'=>'WordPress',
                     'pk'=>'ID',
                     'matches'=>array('ID'=>'wpuser_id', 'user_email'=>'email' , 'first_name'=>'firstname' , 'last_name'=>'lastname'),
@@ -937,11 +940,18 @@ class WYSIJA_help_user extends WYSIJA_object{
      * make sure that the request wysija-key parameter correspond to a user in the db
      * @return boolean
      */
-    function checkUserKey(){
+    function checkUserKey($user_id=false){
 
-        if(isset($_REQUEST['wysija-key'])){
+        if(isset($_REQUEST['wysija-key']) || $user_id !==false){
             $modelUser=WYSIJA::get('user','model');
-            $result=$modelUser->getDetails(array('keyuser'=>$_REQUEST['wysija-key']));
+
+            if($user_id===false){
+                $where_condition = array('keyuser'=>$_REQUEST['wysija-key']);
+            }else{
+                $where_condition = array('user_id'=>$user_id);
+            }
+
+            $result=$modelUser->getDetails($where_condition);
             if($result) {
                 return $result;
             }
@@ -968,5 +978,75 @@ class WYSIJA_help_user extends WYSIJA_object{
         if(!empty($list_ids)) $list_id_in="AND A.list_id IN(".implode (",", $list_ids).")";
         $query='SELECT A.* FROM [wysija]user_list as A LEFT JOIN [wysija]list as B on A.list_id=B.list_id WHERE A.user_id='.$user_id.' AND B.is_enabled=1 '.$list_id_in;
         return $model_user->getResults($query);
+    }
+
+    /**
+     * if we confirm the user manually we pass it a user_id otherwise it works with a global key
+     * @param type $user_id
+     * @return boolean
+     */
+    function confirm_user($user_id = false){
+         $model_config=WYSIJA::get('config','model');
+        // we need to call the translation otherwise it will not be loaded and translated
+        $model_config->add_translated_default();
+
+        $list_ids=array();
+        if(isset($_REQUEST['wysiconf'])) $list_ids= unserialize(base64_decode($_REQUEST['wysiconf']));
+
+        $this->title=$model_config->getValue('subscribed_title');
+        if(!empty($list_ids)){
+            $model_list=WYSIJA::get('list','model');
+            $lists_names_res=$model_list->get(array('name'),array('list_id'=>$list_ids));
+            $names=array();
+            foreach($lists_names_res as $nameob) $names[]=$nameob['name'];
+
+            if(!isset($model_config->values['subscribed_title'])) $this->title=__('You\'ve subscribed to: %1$s',WYSIJA);
+            $this->title=sprintf($this->title,  implode(', ', $names));
+        }
+
+        $this->subtitle=$model_config->getValue('subscribed_subtitle');
+        if(!isset($model_config->values['subscribed_subtitle'])) $this->subtitle=__("Yup, we've added you to our list. You'll hear from us shortly.",WYSIJA);
+
+        $user_data = $this->checkUserKey($user_id);
+
+        if($user_data){
+            //user is not confirmed yet
+            $model_config = WYSIJA::get('config','model');
+            if((int)$user_data['details']['status']<1){
+                 $this->subscribe($user_data['details']['user_id'],true, false,$list_ids);
+                 $this->uid=$user_data['details']['user_id'];
+                 // send a notification to the email specified in the settings if required to
+                 if($model_config->getValue('emails_notified') && $model_config->getValue('emails_notified_when_sub')){
+                     $this->_notify($user_data['details']['email']);
+                 }
+                 return true;
+             }else{
+                 if(isset($_REQUEST['wysiconf'])){
+                     $needs_subscription=false;
+                     foreach($user_data['lists'] as $list){
+                         if(in_array($list['list_id'],$list_ids) && (int)$list['sub_date']<1){
+                             $needs_subscription=true;
+                         }
+                     }
+
+                     if($needs_subscription){
+                         $this->subscribe($user_data['details']['user_id'],true,false,$list_ids);
+                         $this->title=sprintf($model_config->getValue('subscribed_title'),  implode(', ', $names));
+                         $this->subtitle=$model_config->getValue('subscribed_subtitle');
+                         // send a notification to the email specified in the settings if required to
+                         if($model_config->getValue('emails_notified') && $model_config->getValue('emails_notified_when_sub')){
+                             $this->_notify($user_data['details']['email'], true, $list_ids);
+                         }
+
+                     }else{
+                         $this->title=sprintf(__('You are already subscribed to : %1$s',WYSIJA),  implode(', ', $names));
+                     }
+                 }else{
+                     $this->title=__('You are already subscribed.',WYSIJA);
+                 }
+                 return true;
+             }
+
+         }
     }
 }

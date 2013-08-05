@@ -26,7 +26,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $helper_readme=WYSIJA::get('readme','helper');
         $helper_readme->scan();
         $this->data=array();
-        $this->data['abouttext']=__('A Brand New Wysija. Let the Fun Begin.',WYSIJA);
+        $this->data['abouttext'] = __('A Brand New Wysija. Let the Fun Begin.',WYSIJA);
 
         $model_config=WYSIJA::get('config','model');
         $is_multisite=is_multisite();
@@ -49,6 +49,32 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         }else{
             $welcome_video_link = $video_language['en_EN'];
         }
+
+        $this->data['sections'][]=array(
+            'title'=>__('Hey, we\'re curious! How did you find out about us?',WYSIJA).'<span id="poll_result"></span>',
+            'format'=>'normal',
+            'paragraphs'=>array(
+                    '<ul class="welcome_poll">
+                        <li>
+                            <input type="radio" id="how_did_you_find_us_1" value="repository" name="how_did_you_find_us">
+                            <label value="lab1" for="how_did_you_find_us_1">'.__('WordPress.org plugin repository',WYSIJA).'</label>
+                        </li>
+                        <li>
+                            <input type="radio" id="how_did_you_find_us_2" value="search_engine" name="how_did_you_find_us">
+                            <label value="lab2" for="how_did_you_find_us_2">'.__('Google or other search engine',WYSIJA).'</label>
+                        </li>
+                        <li>
+                            <input type="radio" id="how_did_you_find_us_3" value="friend" name="how_did_you_find_us">
+                            <label value="lab3" for="how_did_you_find_us_3">'.__('Friend recommendation',WYSIJA).'</label>
+                        </li>
+                        <li>
+                            <input type="radio" id="how_did_you_find_us_4" value="url" name="how_did_you_find_us">
+                            <label value="lab4" for="how_did_you_find_us_4">'.__('Blog post, online review, forum:',WYSIJA).'</label>
+                            <input type="text" id="how_did_you_find_us_4_url"  name="how_did_you_find_us_url" placeholder="'.__('Please enter the address where you\'ve found out about us',WYSIJA).'">
+                        </li>
+                    </ul>'
+                )
+            );
 
         $this->data['sections'][]=array(
             'title'=>__('First Time? See it in Action',WYSIJA),
@@ -183,7 +209,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                 ),
                 'format'=>'three-col',
             );
-        }else{
+        }elseif($show_no_survey_or_poll = false){ //turn that into a simple else when you want to use the survey or polls again
             $show_survey=true;
 
             if($show_survey){
@@ -258,7 +284,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         'title'=>'1. '.__('Love kittens?',WYSIJA).' '.__('We love stars...',WYSIJA),
                         'content'=>str_replace(
                                 array('[link]','[/link]'),
-                                array('<a href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters" target="_blank" title="On wordpress.org">','</a>'),
+                                array('<a href="http://goo.gl/D52CBL" target="_blank" title="On wordpress.org">','</a>'),
                                 __('Each time one of our users forgets to write a review, a kitten dies. It\'s sad and breaks our hearts. [link]Add your own review[/link] and save a kitten today.',WYSIJA))
 
 
@@ -2217,9 +2243,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         else $this->jsTrans['ispremium']=0;
 
         $this->jsTrans['premiumfiles']=__('Photoshop file available as part of [link]Premium features[/link].',WYSIJA);
-        $helper_licence=WYSIJA::get('licence','helper');
 
-        $this->jsTrans['premiumfiles']=str_replace(array('[link]','[/link]'),array('<a class="premium-tab ispopup" href="javascript:;" >','</a>'),$this->jsTrans['premiumfiles']);
+        $helper_licence = WYSIJA::get('licence','helper');
+        $url_checkout = $helper_licence->get_url_checkout('themes');
+        $this->jsTrans['premiumfiles']=str_replace(array('[link]','[/link]'),array('<a href="'.$url_checkout.'" target="_blank" >','</a>'),$this->jsTrans['premiumfiles']);
 
         $this->jsTrans['showallthemes']=__('Show all themes',WYSIJA);
         $this->jsTrans['totalvotes']=__('(%1$s votes)',WYSIJA);

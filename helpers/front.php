@@ -28,7 +28,7 @@ class WYSIJA_help_front extends WYSIJA_help{
         // wysija form shortcode
         add_shortcode('wysija_form', array($this,'scan_form_shortcode'));
         // wysija total of subscribers shortcode
-        add_shortcode('wysija_subscribers_count', array($this,'scan_subscribers_count_shortcode'));        
+        add_shortcode('wysija_subscribers_count', array($this,'scan_subscribers_count_shortcode'));
 
         /* We try to process the least possible code */
         if(isset($_REQUEST['wysija-page']) || isset($_REQUEST['wysija-launch'])){
@@ -79,7 +79,11 @@ class WYSIJA_help_front extends WYSIJA_help{
            if($mConfig->getValue('registerform')){
                if(is_multisite()){
                    add_action('signup_extra_fields', array($this,'register_form_extend'));
-                   add_filter('wpmu_validate_user_signup',  array($this,'registerms_posted'), 60,3);
+                   // we need this condition otherwise we will send two confirmation emails when on ms with buddypress
+                    if(!WYSIJA::is_plugin_active('buddypress/bp-loader.php')){
+                        add_filter('wpmu_validate_user_signup',  array($this,'registerms_posted'), 60,3);
+                    }
+
                }else{
                    add_action('register_form', array($this,'register_form_extend'));
                    add_action('register_post',  array($this,'register_posted'), 60,3);
@@ -88,9 +92,26 @@ class WYSIJA_help_front extends WYSIJA_help{
                 if(WYSIJA::is_plugin_active('buddypress/bp-loader.php')){
                     add_action('bp_after_signup_profile_fields', array($this,'register_form_bp_extend'));
                     add_action('bp_signup_validate', array($this,'register_bp'),60,3);
+
+                    // we can have just one activation for the wp user and the wysija confirmation when bp and multisite are activated
+                    if(is_multisite()){
+                        add_action('wpmu_activate_user', array($this,'wpmu_activate_user'));
+                    }
                 }
            }
         }
+    }
+    function wpmu_activate_user($wpuser_id){
+        if((int)$wpuser_id>0){
+            $model_user = WYSIJA::get('user','model');
+            $result_subscriber = $model_user->getOne(false , array('wpuser_id'=>$wpuser_id));
+
+            if(!empty($result_subscriber)){
+                $helper_user = WYSIJA::get('user','helper');
+                $helper_user->confirm_user($result_subscriber['user_id']);
+            }
+        }
+        return true;
     }
 
     function meta_page_title(){
@@ -121,10 +142,15 @@ class WYSIJA_help_front extends WYSIJA_help{
         global $bp;
 
         if ( !isset($bp->signup->errors) && isset($_POST['wysija']['register_subscribe']) && $_POST['wysija']['register_subscribe'] ) {
-            $mConfig=WYSIJA::get('config','model');
-            $userHelper=WYSIJA::get('user','helper');
-            $data=array('user'=>array('email'=>$bp->signup->email),'user_list'=>array('list_ids'=>$mConfig->getValue('registerform_lists')));
-            $userHelper->addSubscriber($data);
+            $model_config=WYSIJA::get('config','model');
+            $helper_user=WYSIJA::get('user','helper');
+            $data=array('user'=>array('email'=>$bp->signup->email),'user_list'=>array('list_ids'=>$model_config->getValue('registerform_lists')));
+
+            if(is_multisite()){
+                $helper_user->no_confirmation_email=true;
+            }
+
+            $helper_user->addSubscriber($data);
         }
     }
 
@@ -214,7 +240,7 @@ class WYSIJA_help_front extends WYSIJA_help{
         }
         return '';
     }
-    
+
 
     /**
      * this is for the new kind of shortcodes [wysija_form form="1"]
@@ -226,8 +252,8 @@ class WYSIJA_help_front extends WYSIJA_help{
         $list_ids = !empty($attributes['list_id']) ? explode(',', $attributes['list_id']) : array();
         $confirmed_subscribers = !empty($attributes['confirmed_subscribers']) ? (bool)$attributes['confirmed_subscribers'] : true;
         return $user->countSubscribers($list_ids, $confirmed_subscribers);
-        
-    }    
+
+    }
 
     function scan_content_NLform($content){
         preg_match_all('/\<div class="wysija-register">(.*?)\<\/div>/i',$content,$matches);

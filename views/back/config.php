@@ -668,7 +668,9 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function premiumSoonFields(){
         $html='';
-        $html.='<li class="notice">'.str_replace(array('[link]','[/link]'), array('<a href="javascript:;" class="premium-tab">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJA)).'</li>';
+        $helper_licence = WYSIJA::get('licence','helper');
+        $url_checkout = $helper_licence->get_url_checkout('custom_fields_soon');
+        $html.='<li class="notice">'.str_replace(array('[link]','[/link]'), array('<a href="'.$url_checkout.'" target="_blank">','</a>'), __('Soon available in [link]Premium[/link]:', WYSIJA)).'</li>';
         $extraTypes=array(
                         'new-text'=>array('label'=>__('Text or number',WYSIJA),'type'=>'text'),
                         'new-textarea'=>array('label'=>__('Paragraph text',WYSIJA),'type'=>'textarea'),
@@ -1091,11 +1093,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
             'label'=>__('Reply-to name & email',WYSIJA),
             'desc'=>__('You can change the default reply-to name and email for your newsletters. This option is also used for the activation emails and Admin notifications (in Basics).',WYSIJA));
 
+        $helper_licence = WYSIJA::get('licence','helper');
+        $url_checkout = $helper_licence->get_url_checkout('bounce_address_automated');
         $advanced_fields ['bounce_email']=array(
             'type'=>'input',
             'label'=>__('Bounce Email',WYSIJA),
             'desc'=>__('To which address should all the bounced emails go? Get the [link]Premium version[/link] to automatically handle these.',WYSIJA),
-            'link'=>'<a class="premium-tab" href="javascript:;" title="'.__('Purchase the premium version.',WYSIJA).'">');
+            'link'=>'<a href="'.$url_checkout.'" target="_blank" title="'.__('Purchase the premium version.',WYSIJA).'">');
 
         $advanced_fields =apply_filters('wysija_settings_advanced', $advanced_fields );
 
@@ -1250,8 +1254,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     }
 
     function premium(){
-       $hLicence=WYSIJA::get('licence','helper');
-       $urlpremium = 'http://www.wysija.com/checkout/?wysijadomain='.$hLicence->getDomainInfo().'&nc=1&utm_source=wpadmin&utm_campaign=purchasebutton';
+       $helper_licence = WYSIJA::get('licence','helper');
+       $url_checkout = $helper_licence->get_url_checkout('purchasebutton');
 
        $arrayPremiumBullets=array(
            'more2000'=>array(
@@ -1302,7 +1306,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
            'happy'=>array(
                'title'=>__('Join our happy users.',WYSIJA),
                'desc'=>__('Wysija is getting better every day thanks to users like you. <br />Read [link]what they are saying[/link].',WYSIJA),
-               'link'=>'http://wordpress.org/support/view/plugin-reviews/wysija-newsletters'
+               'link'=>'http://goo.gl/LVwy3E'
                ),
            'trynow'=>array(
                'title'=>__('Try it now. Not happy? Get your money back.',WYSIJA),
@@ -1327,8 +1331,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         }
         $htmlContent.='</div></div>';
         $htmlContent.='<p class="wysija-premium-wrapper">
-            <a class="wysija-premium-btns wysija-support" href="'.$urlpremium.'" target="_blank">'.__('Upgrade now',WYSIJA).'</a></p>';
-        $htmlContent.='<br><p>'.__('Already paid?', WYSIJA).' <a id="premium-activate" type="submit" class="wysija" href="javascript:;" />'. esc_attr(__('Activate your Premium licence.',WYSIJA)).'</a></p>';
+            <a class="wysija-premium-btns wysija-support" href="'.$url_checkout.'" target="_blank">'.__('Upgrade now',WYSIJA).'</a></p>';
+        $htmlContent.='<br><p>'.__('Already paid?', WYSIJA).' <a type="submit" class="premium-activate wysija" href="javascript:;" />'. esc_attr(__('Activate your Premium licence.',WYSIJA)).'</a></p>';
 
         $htmlContent.='<p>'.str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/contact/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Got a sales question? [link]Get in touch[/link] with Kim, Jo, Adrien and Ben.',WYSIJA)).'</p>';
         $htmlContent.='<p>'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/terms-conditions/?utm_source=wpadmin&utm_campaign=premiumtab" target="_blank">','</a>'),__('Read our simple and easy [link]terms and conditions.[/link]',WYSIJA)).'</p>';
@@ -1401,12 +1405,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         $fields=array();
 
 
-        $fields['ms_from_email']=array(
-            'type'=>'input',
-            'label'=>__('FROM email address for all sites',WYSIJA),
-            'class'=>'msfromemail',
-            'rowclass'=>'choice-one-for-all');
-
         $fields['ms_allow_admin_sending_method']=array(
             'type'=>'debug',
             'label'=>__('Allow site admins to change the sending method',WYSIJA));
@@ -1445,14 +1443,17 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
     function ms_sending_method(){
         $prefix='ms_';
-        $key=$prefix.'sending_method';
-        $mConfig=WYSIJA::get('config','model');
-        $realvalue=$mConfig->getValue($key);
-        $formsHelp=WYSIJA::get('forms','helper');
-        $htmlContent='<table class="form-table" id="ms-sendingmethod">
-            <tbody>
+        $model_config = WYSIJA::get('config','model');
+        $helper_forms = WYSIJA::get('forms','helper');
+        $html_content='<table class="form-table" id="ms-sendingmethod">
+            <tbody>';
 
-                <tr class="methods">
+
+
+        $key = $prefix.'sending_method';
+
+        $realvalue=$model_config->getValue($key);
+        $html_content .= '<tr class="methods">
                     <th scope="row">';
 
                             $checked=false;
@@ -1460,10 +1461,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $id=str_replace("_",'-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
                             $field='<label for="'.$id.'" class="clearfix">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='<h3>'.__('Your own website',WYSIJA).'</h3></label>';
-                        $htmlContent.=$field;
-                        $htmlContent.='</th>
+                        $html_content.=$field;
+                        $html_content.='</th>
                     <th scope="row">';
 
                             $checked = false;
@@ -1472,33 +1473,48 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                             $id = str_replace('_', '-', $key).'-'.$value;
                             $field ='<label for="'.$id.'" class="clearfix">';
-                            $field.= $formsHelp->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
+                            $field.= $helper_forms->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
                             $field.= '<h3>'.__('Third party',WYSIJA).'</h3></label>';
-                            $htmlContent.=$field;
-                        $htmlContent.='</th>
+                            $html_content.=$field;
+                        $html_content.='</th>
 
                     <td>
                     </td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-site">
+
+                        $html_content.='<tr>
+                    <th scope="row">';
+
+                            $key=$prefix.'from_email';
+                            $id=str_replace('_','-',$key);
+                            $field='<label for="'.$id.'">'.__('FROM email address for sites using this method',WYSIJA)."</label>";
+                             $html_content.=$field;
+                     $html_content.='
+                    </th>
+                    <td colspan="2">';
+                        $html_content.=$helper_forms->input( array( 'id'=>$id , 'name'=>'wysija[config]['.$key.']' , 'size'=>'40' ) , $model_config->getValue($key));
+                        $html_content.='</td>
+                </tr>';
+
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-site">
                     <th scope="row">';
                             $field=__('Delivery method',WYSIJA);
                             $field.='<p class="description">'.__('Send yourself some test emails to confirm which method works with your server.',WYSIJA).'</p>';
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
-                     $htmlContent.='</th>
+                     $html_content.='</th>
                     <td colspan="2">';
 
                             $key=$prefix.'sending_emails_site_method';
                             $checked=false;
-                            $realvalue=$mConfig->getValue($key);
+                            $realvalue=$model_config->getValue($key);
                             $value='phpmail';
                             if($value ==$realvalue) $checked=true;
 
                             $id=str_replace('_','-',$key).'-'.$value;
                             $field='<p class="title"><label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='PHP Mail</label><a class="button-secondary" id="ms-send-test-mail-phpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
                             $field.='<p class="description">'.__('This email engine works on 95&#37; of servers',WYSIJA).'</p>';
 
@@ -1509,149 +1525,149 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                             $id=str_replace('_','-',$key).'-'.$value;
                             $field.='<p class="title"><label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='Sendmail</label>
                                 <a class="button-secondary" id="ms-send-test-mail-sendmail">'.__('Send a test mail',WYSIJA).'</a></p>';
                             $field.='<p class="description">'.__('This method works on 5&#37; of servers',WYSIJA).'</p>';
 
                             $id=str_replace("_",'-',$key).'-'.$value."-path";
                             $field.='<p class="title" id="p-'.$id.'"><label for="'.$id.'">';
-                            $field.=__("Sendmail path",WYSIJA).'</label>'.$formsHelp->input(array("id"=>$id,'name'=>'wysija[config][sendmail_path]'),$mConfig->getValue("sendmail_path")).'</p>';
+                            $field.=__("Sendmail path",WYSIJA).'</label>'.$helper_forms->input(array("id"=>$id,'name'=>'wysija[config][sendmail_path]'),$model_config->getValue("sendmail_path")).'</p>';
 
-                             $htmlContent.=$field;
-                     $htmlContent.='</td>
+                             $html_content.=$field;
+                     $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
                     <th scope="row">';
 
                             $key=$prefix.'smtp_host';
                             $id=str_replace('_','-',$key);
                             $field='<label for="'.$id.'">'.__('SMTP Hostname',WYSIJA)."</label>";
                             $field.='<p class="description">'.__('e.g.:smtp.mydomain.com',WYSIJA).'</p>';
-                             $htmlContent.=$field;
-                     $htmlContent.='
+                             $html_content.=$field;
+                     $html_content.='
                     </th>
                     <td colspan="2">';
 
-                            $value=$mConfig->getValue($key);
-                            $field=$formsHelp->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
-                             $htmlContent.=$field;
-                        $htmlContent.='</td>
+                            $value=$model_config->getValue($key);
+                            $field=$helper_forms->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                             $html_content.=$field;
+                        $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
                     <th scope="row">';
 
                             $key=$prefix.'smtp_login';
                             $id=str_replace('_','-',$key);
                             $field='<label for="'.$id.'">'.__('Login',WYSIJA)."</label>";
 
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
-                     $htmlContent.='</th>
+                     $html_content.='</th>
                     <td colspan="2">';
 
-                            $value=$mConfig->getValue($key);
-                            $field=$formsHelp->input(array("id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
-                             $htmlContent.=$field;
-                  $htmlContent.='</td>
+                            $value=$model_config->getValue($key);
+                            $field=$helper_forms->input(array("id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                             $html_content.=$field;
+                  $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
                     <th scope="row">';
 
                             $key=$prefix.'smtp_password';
                             $id=str_replace('_','-',$key);
                             $field='<label for="'.$id.'">'.__('Password',WYSIJA)."</label>";
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
-                     $htmlContent.='</th>
+                     $html_content.='</th>
                     <td colspan="2">';
 
-                            $value=$mConfig->getValue($key);
-                            $field=$formsHelp->input(array("type"=>"password","id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
-                             $htmlContent.=$field;
+                            $value=$model_config->getValue($key);
+                            $field=$helper_forms->input(array("type"=>"password","id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                             $html_content.=$field;
 
-                     $htmlContent.='</td>
+                     $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr id="restapipossible" class="hidechoice">
+                 $html_content.='<tr id="restapipossible" class="hidechoice">
                     <th scope="row">';
 
                             $key=$prefix.'smtp_rest';
                             $id=str_replace('_','-',$key);
                             $field='<label for="'.$id.'">web API</label>';
                             $field.='<p class="description">'.__('Activate if your SMTP ports are blocked.',WYSIJA).'</p>';
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
-                 $htmlContent.='</th>
+                 $html_content.='</th>
                     <td colspan="2">';
 
-                            $value=$mConfig->getValue($key);
+                            $value=$model_config->getValue($key);
                             $checked=false;
-                            if($mConfig->getValue('smtp_rest')) $checked=true;
-                            $field=$formsHelp->checkbox(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),1,$checked);
+                            if($model_config->getValue('smtp_rest')) $checked=true;
+                            $field=$helper_forms->checkbox(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),1,$checked);
 
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
-                     $htmlContent.='</td>
+                     $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-no-restapi">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-no-restapi">
                     <th scope="row">';
 
                             $key=$prefix.'smtp_port';
                             $id=str_replace('_','-',$key);
                             $field='<label for="'.$id.'">'.__('SMTP port',WYSIJA)."</label>";
 
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
-                $htmlContent.='</th>
+                $html_content.='</th>
                     <td colspan="2">';
 
-                            $value=$mConfig->getValue($key);
-                            $field=$formsHelp->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),$value,$checked);
+                            $value=$model_config->getValue($key);
+                            $field=$helper_forms->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),$value,$checked);
 
-                             $htmlContent.=$field;
-                $htmlContent.='</td>
+                             $html_content.=$field;
+                $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-no-restapi">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-no-restapi">
                     <th scope="row">';
 
                             $key=$prefix.'smtp_secure';
                             $id=str_replace('_','-',$key);
                             $field='<label for="'.$id.'">'.__('Secure connection',WYSIJA)."</label>";
-                            $htmlContent.=$field;
-                     $htmlContent.='</th>
+                            $html_content.=$field;
+                     $html_content.='</th>
                     <td colspan="2">';
 
-                            $value=$mConfig->getValue($key);
+                            $value=$model_config->getValue($key);
 
-                            $field=$formsHelp->dropdown(array('name'=>'wysija[config]['.$key.']',"id"=>$id),array(false=>__("No"),"ssl"=>"SSL","tls"=>"TLS"),$value);
-                             $htmlContent.=$field;
+                            $field=$helper_forms->dropdown(array('name'=>'wysija[config]['.$key.']',"id"=>$id),array(false=>__("No"),"ssl"=>"SSL","tls"=>"TLS"),$value);
+                             $html_content.=$field;
 
-                     $htmlContent.='</td>
+                     $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-no-restapi">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-no-restapi">
                     <th scope="row">';
 
                             $field=__('Authentication',WYSIJA);
-                             $htmlContent.=$field.'<p class="description">'.__("Leave this option to Yes. Only a tiny portion of SMTP services ask Authentication to be turned off.",WYSIJA).'</p>';
-                      $htmlContent.='</th>
+                             $html_content.=$field.'<p class="description">'.__("Leave this option to Yes. Only a tiny portion of SMTP services ask Authentication to be turned off.",WYSIJA).'</p>';
+                      $html_content.='</th>
                     <td colspan="2">';
 
                             $key=$prefix.'smtp_auth';
-                            $realvalue=$mConfig->getValue($key);
+                            $realvalue=$model_config->getValue($key);
 
                             $value=false;
                             $checked=false;
                             if($value ==$realvalue) $checked=true;
                             $id=str_replace('_','-',$key).'-'.$value;
                             $field='<label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('No',WYSIJA).'</label>';
 
                             $value=true;
@@ -1659,15 +1675,15 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             if($value ==$realvalue) $checked=true;
                             $id=str_replace('_','-',$key).'-'.$value;
                             $field.='<label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('Yes',WYSIJA).'</label>';
 
 
-                             $htmlContent.=$field;
-                    $htmlContent.='</td>
+                             $html_content.=$field;
+                    $html_content.='</td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
                     <th scope="row">
                         <a class="button-secondary" id="ms-send-test-mail-smtp">'.__('Send a test mail',WYSIJA).'</a>
                     </th>
@@ -1675,36 +1691,36 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     </td>
                 </tr>';
 
-                 $htmlContent.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-sending-method-site">
+                 $html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-sending-method-site">
                     <th scope="row">';
 
                             $field=__('Send...',WYSIJA);
 
-                             $htmlContent.=$field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/?utm_source=wpadmin&utm_campaign=choosing%20frequency" target="_blank">','</a>'),__('Your web host has limits. We suggest 70 emails per hour to be safe. [link]Find out more[/link].',WYSIJA)).'</p>';
-                     $htmlContent.='</th>
+                             $html_content.=$field.'<p class="description">'.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/?utm_source=wpadmin&utm_campaign=choosing%20frequency" target="_blank">','</a>'),__('Your web host has limits. We suggest 70 emails per hour to be safe. [link]Find out more[/link].',WYSIJA)).'</p>';
+                     $html_content.='</th>
                     <td colspan="2">';
 
                             $name=$prefix.'sending_emails_number';
                             $id=str_replace('_','-',$name);
-                            $value=$mConfig->getValue($name);
+                            $value=$model_config->getValue($name);
                             $params=array('id'=>$id,'name'=>'wysija[config]['.$name.']','size'=>'6');
-                            $field=$formsHelp->input($params,$value);
+                            $field=$helper_forms->input($params,$value);
                             $field.= '&nbsp;'.__('emails', WYSIJA).'&nbsp;';
 
 
                             $name=$prefix.'sending_emails_each';
                             $id=str_replace('_','-',$name);
-                            $value=$mConfig->getValue($name);
-                            $field.=$formsHelp->dropdown(array('name'=>'wysija[config]['.$name.']','id'=>$id),$formsHelp->eachValues,$value);
+                            $value=$model_config->getValue($name);
+                            $field.=$helper_forms->dropdown(array('name'=>'wysija[config]['.$name.']','id'=>$id),$helper_forms->eachValues,$value);
                             $field.='<span class="choice-under15"><b>'.__('This is fast!',WYSIJA).'</b> '.str_replace(array('[link]','[/link]'),array('<a href="http://support.wysija.com/knowledgebase/wp-cron-batch-emails-sending-frequency/?utm_source=wpadmin&utm_campaign=cron" target="_blank">','</a>'),__('We suggest you setup a cron job. [link]Read more[/link] on support.wysija.com',WYSIJA)).'</span>';
-                             $htmlContent.=$field;
+                             $html_content.=$field;
 
 
-                    $htmlContent.='</td>
+                    $html_content.='</td>
                 </tr>
             </tbody>
         </table>';
-        return $htmlContent;
+        return $html_content;
     }
 
     // WYSIJA Form Editor

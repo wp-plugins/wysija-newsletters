@@ -29,65 +29,12 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
      * return boolean
      */
     function subscribe(){
-        $list_ids=array();
-        if(isset($_REQUEST['wysiconf'])) $list_ids= unserialize(base64_decode($_REQUEST['wysiconf']));
-        $model_list=WYSIJA::get('list','model');
-        $lists_names_res=$model_list->get(array('name'),array('list_id'=>$list_ids));
-        $names=array();
-        foreach($lists_names_res as $nameob) $names[]=$nameob['name'];
-
-        $model_config=WYSIJA::get('config','model');
-        // we need to call the translation otherwise it will not be loaded and translated
-        $model_config->add_translated_default();
-
-        $this->title=$model_config->getValue('subscribed_title');
-        if(!isset($model_config->values['subscribed_title'])) $this->title=__('You\'ve subscribed to: %1$s',WYSIJA);
-        $this->title=sprintf($this->title,  implode(', ', $names));
-
-        $this->subtitle=$model_config->getValue('subscribed_subtitle');
-        if(!isset($model_config->values['subscribed_subtitle'])) $this->subtitle=__("Yup, we've added you to our list. You'll hear from us shortly.",WYSIJA);
-
+        $helper_user = WYSIJA::get('user','helper');
         if(!isset($_REQUEST['demo'])){
-            if($this->_testKeyuser()){
-               //user is not confirmed yet
+            $helper_user->confirm_user();
 
-               if((int)$this->userData['details']['status']<1){
-                    $this->helperUser->subscribe($this->userData['details']['user_id'],true, false,$list_ids);
-                    $this->helperUser->uid=$this->userData['details']['user_id'];
-                    // send a notification to the email specified in the settings if required to
-                    if($model_config->getValue('emails_notified') && $model_config->getValue('emails_notified_when_sub')){
-                        $this->helperUser->_notify($this->userData['details']['email']);
-                    }
-                    return true;
-                }else{
-                    if(isset($_REQUEST['wysiconf'])){
-                        $needs_subscription=false;
-                        foreach($this->userData['lists'] as $list){
-                            if(in_array($list['list_id'],$list_ids) && (int)$list['sub_date']<1){
-                                $needs_subscription=true;
-                            }
-                        }
-
-                        if($needs_subscription){
-                            $this->helperUser->subscribe($this->userData['details']['user_id'],true,false,$list_ids);
-                            $this->title=sprintf($model_config->getValue('subscribed_title'),  implode(', ', $names));
-                            $this->subtitle=$model_config->getValue('subscribed_subtitle');
-                            // send a notification to the email specified in the settings if required to
-                            if($model_config->getValue('emails_notified') && $model_config->getValue('emails_notified_when_sub')){
-                                $this->helperUser->_notify($this->userData['details']['email'], true, $list_ids);
-                            }
-
-                        }else{
-                            $this->title=sprintf(__('You are already subscribed to : %1$s',WYSIJA),  implode(', ', $names));
-                        }
-                    }else{
-                        $this->title=__('You are already subscribed.',WYSIJA);
-                    }
-                    return true;
-                }
-
-
-            }
+            if(!empty($helper_user->title))    $this->title = $helper_user->title;
+            if(!empty($helper_user->subtitle))    $this->subtitle = $helper_user->subtitle;
         }
 
         return true;

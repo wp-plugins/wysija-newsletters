@@ -336,7 +336,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                     $from_email=$data['ms_from_email'];
                 }
                 else $from_email=$data['from_email'];
-                $mailModel->update(array('from_name'=>$data['from_name'],'from_email'=>$from_email,
+                $mailModel->update(array('from_name'=>$data['from_name'],'from_email'=>$from_email, 'replyto_name'=>$data['replyto_name'],'replyto_email'=>$data['replyto_email'],
                     'subject'=>$data['confirm_email_title'],'body'=>$data['confirm_email_body']),array('email_id'=>$this->values['confirm_email_id']));
             }
             unset($this->values['confirm_email_title']);

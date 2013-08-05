@@ -176,8 +176,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
 
             if(empty($this->ReplyTo)){
-                    $replyToName = $this->config->getValue('reply_name');
-                    $this->AddReplyTo($this->config->getValue('reply_email'),$replyToName);
+                    $replyToName = $this->config->getValue('replyto_name');
+                    $this->AddReplyTo($this->config->getValue('replyto_email'),$replyToName);
             }
 
            //Embed images if there is images to embed...

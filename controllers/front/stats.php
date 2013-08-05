@@ -145,7 +145,7 @@ class WYSIJA_control_front_stats extends WYSIJA_control_front{
                         }else{
                             //link is not valid anymore
                             //propose to resend the newsletter with good links ?
-                            $link=$this->subscriberClass->getResendLink($user_id,$email_id);
+                            $link=$this->subscriberClass->old_get_new_link_for_expired_links($user_id,$email_id);
                         }
 
 

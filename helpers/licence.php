@@ -6,12 +6,24 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_licence extends WYSIJA_help{
 
     function WYSIJA_help_licence(){
-
         parent::WYSIJA_help();
-
     }
 
-    function getDomainInfo(){
+    /**
+     *
+     * @param string $source
+     * @return string
+     */
+    function get_url_checkout($source = 'not_specified'){
+        return 'http://www.wysija.com/checkout/?wysijadomain='.$this->getDomainInfo(true).'&nc=1&utm_source=wpadmin&utm_campaign='.$source;
+    }
+
+    /**
+     *
+     * @param boolean $checkout_data
+     * @return string
+     */
+    function getDomainInfo($checkout_data = false){
         $domain_data = array();
 
         $url = admin_url('admin.php');
@@ -24,6 +36,23 @@ class WYSIJA_help_licence extends WYSIJA_help{
         }
         $domain_data['url'] = $url;
         $domain_data['cron_url'] = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all&silent=1';
+
+        if($checkout_data){
+            $model_config = WYSIJA::get('config' , 'model');
+            if(!$model_config->getValue('poll_origin')){
+                $domain_data['poll_origin'] = 'unidentified';
+            }else{
+                $domain_data['poll_origin'] = $model_config->getValue('poll_origin');
+                $domain_data['poll_origin_url'] = $model_config->getValue('poll_origin_url');
+            }
+
+            $domain_data['installed_time'] = $model_config->getValue('installed_time');
+
+            $over = array(1900, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000);
+            foreach($over as $value_over){
+                if($model_config->getValue('total_subscribers') > $value_over) $domain_data['over'] = $value_over;
+            }
+        }
 
         return base64_encode(serialize($domain_data));
     }
