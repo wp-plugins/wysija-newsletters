@@ -5,7 +5,7 @@ class WYSIJA_help_update extends WYSIJA_object{
     function WYSIJA_help_update(){
         $this->modelWysija=new WYSIJA_model();
         //IMPORTANT when making db updated or running update processes, add the version and in the big switch below in the runUpdate() method
-        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3','2.4.4','2.5','2.5.2');
+        $this->updates=array('1.1','2.0','2.1','2.1.6','2.1.7','2.1.8','2.2','2.2.1','2.3.3','2.3.4', '2.4', '2.4.1', '2.4.3','2.4.4','2.5','2.5.2','2.5.5');
     }
 
 
@@ -15,12 +15,12 @@ class WYSIJA_help_update extends WYSIJA_object{
         switch($version){
             case '1.1':
                 //add column namekey to
-                $modelconfig=WYSIJA::get('config','model');
+                $model_config=WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'namekey';")){
                     $querys[]='ALTER TABLE `[wysija]list` ADD `namekey` VARCHAR( 255 ) NULL;';
                 }
 
-                $querys[]="UPDATE `[wysija]list` SET `namekey` = 'users' WHERE `list_id` =".$modelconfig->getValue('importwp_list_id').";";
+                $querys[]="UPDATE `[wysija]list` SET `namekey` = 'users' WHERE `list_id` =".$model_config->getValue('importwp_list_id').";";
                 $errors=$this->runUpdateQueries($querys);
 
                 $importHelp=WYSIJA::get('import','helper');
@@ -40,11 +40,11 @@ class WYSIJA_help_update extends WYSIJA_object{
                 break;
             case '2.0':
                 //add column namekey to
-                $modelconfig=WYSIJA::get('config','model');
+                $model_config=WYSIJA::get('config','model');
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]email` LIKE 'modified_at';")){
                     $querys[]="ALTER TABLE `[wysija]email` ADD `modified_at` INT UNSIGNED NOT NULL DEFAULT '0';";
                 }
-                if(!$modelconfig->getValue('update_error_20')){
+                if(!$model_config->getValue('update_error_20')){
                     $querys[]="UPDATE `[wysija]email` SET `modified_at` = `sent_at`  WHERE `sent_at`>=0;";
                     $querys[]="UPDATE `[wysija]email` SET `modified_at` = `created_at` WHERE `modified_at`='0';";
                     $querys[]="UPDATE `[wysija]email` SET `status` = '99' WHERE `status` ='1';";//change sending status from 1 to 99
@@ -54,15 +54,15 @@ class WYSIJA_help_update extends WYSIJA_object{
                 $errors=$this->runUpdateQueries($querys);
 
                 if($errors){
-                    $modelconfig->save(array('update_error_20'=>true));
+                    $model_config->save(array('update_error_20'=>true));
                     $this->error(implode($errors,"\n"));
                     return false;
                 }
                 return true;
                 break;
             case '2.1':
-                $modelconfig=WYSIJA::get('config','model');
-                if(!$modelconfig->getValue('update_error_21')){
+                $model_config=WYSIJA::get('config','model');
+                if(!$model_config->getValue('update_error_21')){
                     $modelEmails=WYSIJA::get('email','model');
                     $modelEmails->reset();
                     $emailsLoaded=$modelEmails->get(array('subject','email_id'),array('status'=>2,'type'=>1));
@@ -77,7 +77,7 @@ class WYSIJA_help_update extends WYSIJA_object{
                     $minimumroles=array('role_campaign'=>'wysija_newsletters','role_subscribers'=>'wysija_subscribers');
 
                     foreach($minimumroles as $rolename=>$capability){
-                        $rolesetting=$modelconfig->getValue($rolename);
+                        $rolesetting=$model_config->getValue($rolename);
                         switch($rolesetting){
                             case 'switch_themes':
                                 $keyrole=1;
@@ -119,14 +119,14 @@ class WYSIJA_help_update extends WYSIJA_object{
                         }
                     }
                     $wptoolboxs = WYSIJA::get('toolbox', 'helper');
-                    $modelconfig->save(array('dkim_domain'=>$wptoolboxs->_make_domain_name()));
+                    $model_config->save(array('dkim_domain'=>$wptoolboxs->_make_domain_name()));
                 }
 
                 if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'is_public';")){
                     $querys[]="ALTER TABLE `[wysija]list` ADD `is_public` TINYINT UNSIGNED NOT NULL DEFAULT 0;";
                     $errors=$this->runUpdateQueries($querys);
                     if($errors){
-                        $modelconfig->save(array('update_error_21'=>true));
+                        $model_config->save(array('update_error_21'=>true));
                         $this->error(implode($errors,"\n"));
                         return false;
                     }
@@ -366,23 +366,21 @@ class WYSIJA_help_update extends WYSIJA_object{
                 }
                 return true;
                 break;
+            case '2.5.5':
+                $model_email = WYSIJA::get('email','model',false,'wysija-newsletters',false);
+                $model_config = WYSIJA::get('config','model');
+
+                $model_email->update( array('replyto_name'=>$model_config->getValue('replyto_name'),'replyto_email'=>$model_config->getValue('replyto_email')) ,
+                        array('email_id'=>$model_config->getValue('confirm_email_id')) );
+                return true;
+                break;
             default:
                 return false;
         }
         return false;
     }
 
-    function customerRequestMissingSubscriber(){
-        $mConfig=WYSIJA::get('config','model');
 
-        $querys[]='UPDATE `[wysija]user_list` as A set A.sub_date= '.time().' where A.sub_date=0;';
-        $errors=$this->runUpdateQueries($querys);
-
-        if($errors){
-            $this->error(implode($errors,"\n"));
-            return false;
-        }
-    }
     /**
      * check for a wordpress plugin new version
      * @return type

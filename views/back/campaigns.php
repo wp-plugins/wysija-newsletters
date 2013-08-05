@@ -825,9 +825,12 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                }
             }else{
                 $return.= $statusdata;
+                $helper_licence = WYSIJA::get('licence','helper');
+                $url_checkout = $helper_licence->get_url_checkout('resume_send');
+
                 $link= str_replace(
                     array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" target="_blank" href="'.$url_checkout.'">','</a>'),
                     __('To resume send [link]Go premium now![/link]',WYSIJA));
                  $return.= '<p>'.$link.'</p>';
             }
@@ -839,8 +842,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     function linkStats($result,$data){
         $result='<ol>';
         $countloop=0;
+        $helper_licence = WYSIJA::get('licence','helper');
+        $url_checkout = $helper_licence->get_url_checkout('count_click_stats');
         foreach($data['clicks'] as $click){
-            if($countloop==0)   $label=str_replace(array('[link]','[/link]'),array('<a class="premium-tab" href="javascript:;">','</a>'),__('see links with a [link]Premium licence[/link].',WYSIJA));
+            if($countloop==0)   $label=str_replace(array('[link]','[/link]'),array('<a class="premium-tab" target="_blank" href="'.$url_checkout.'">','</a>'),__('see links with a [link]Premium licence[/link].',WYSIJA));
             else $label='...';
 
             $css_class = 'stats-url-link';
@@ -893,15 +898,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $linkshtml=apply_filters('wysija_links_stats', '',$data);
                     echo $linkshtml;
                 }else  echo __('Nothing yet!',WYSIJA);
-
-                /*if(count($data['clicks'])>0){
-                    echo '<p style="font-size:14px;font-weight:bold;">';
-                    echo str_replace(
-                            array("[link]","[/link]"),
-                            array('<a title="'.__('Just a few clicks. No need to reinstall. Easy.',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
-                            _x_("Detailed view of links and their number of clicks is available in the Premium version. [link]Get it now.[/link]",WYSIJA));
-                    echo '</p>';
-                }*/
 
                  ?>
             </div>
@@ -2851,7 +2847,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                             echo '<div class="review-left'.$class_review_kitten.'">';
                                             echo '<div class="description"><h4>'.$section['review']['title'].'</h4>';
                                             echo '<p>'.$section['review']['content'].'</p></div>';
-                                            echo '<a title="On wordpress.org" target="_blank" class="link-cat-review" href="http://wordpress.org/support/view/plugin-reviews/wysija-newsletters"> </a></div>';
+                                            echo '<a title="On wordpress.org" target="_blank" class="link-cat-review" href="http://goo.gl/P0r5Fc"> </a></div>';
 
                                             echo '<div class="review-right">';
                                             echo '</div>';

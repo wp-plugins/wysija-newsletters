@@ -779,7 +779,7 @@ class WYSIJA extends WYSIJA_object{
         $model_user=WYSIJA::get('user','model');
         $model_config=WYSIJA::get('config','model');
         $model_user_list=WYSIJA::get('user_list','model');
-
+        $model_user->getFormat = ARRAY_A;
         $subscriber_exists=$model_user->getOne(array('user_id'),array('email'=>$data->user_email));
 
         $model_user->reset();
@@ -991,18 +991,20 @@ class WYSIJA extends WYSIJA_object{
      * @return type an array of frequencies
      */
     public static function get_cron_frequencies(){
-        $mConfig=WYSIJA::get('config','model');
-        $fHelper=WYSIJA::get('forms','helper');
+        $model_config = WYSIJA::get('config','model');
+        $helper_forms = WYSIJA::get('forms','helper');
 
-        if(is_multisite() && $mConfig->getValue('sending_method')=='network'){
-           $sending_emails_each=$mConfig->getValue('ms_sending_emails_each');
+        if(is_multisite() && $model_config->getValue('sending_method')=='network'){
+           $sending_emails_each = $model_config->getValue('ms_sending_emails_each');
         }else{
-           $sending_emails_each=$mConfig->getValue('sending_emails_each');
+           $sending_emails_each = $model_config->getValue('sending_emails_each');
         }
 
-        $queue_frequency=$fHelper->eachValuesSec[$sending_emails_each];
-        $bounce_frequency=99999999999999;
-        if(isset($fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')]))  $bounce_frequency=$fHelper->eachValuesSec[$mConfig->getValue('bouncing_emails_each')];
+        $queue_frequency = $helper_forms->eachValuesSec[$sending_emails_each];
+        $bounce_frequency = 99999999999999;
+        if(isset($helper_forms->eachValuesSec[$model_config->getValue('bouncing_emails_each')])){
+            $bounce_frequency = $helper_forms->eachValuesSec[$model_config->getValue('bouncing_emails_each')];
+        }
         return array('queue'=>$queue_frequency,'bounce'=>$bounce_frequency,'daily'=>86400,'weekly'=>604800,'monthly'=>2419200);
     }
 
@@ -1010,44 +1012,52 @@ class WYSIJA extends WYSIJA_object{
      * set the next cron schedule
      * TODO : needs probably to make the difference of running process for the next schedule, so that there is no delay(this is only problematic on some slow servers)
      * @param string $schedule
-     * @param int $lastsaved
+     * @param int $last_saved
      * @param boolean $set_running
      * @return boolean
      */
-    public static function set_cron_schedule($schedule=false,$lastsaved=0,$set_running=false){
-        $cron_schedules=array();
+    public static function set_cron_schedule($schedule = false , $last_saved = 0 , $set_running = false){
+        $cron_schedules = array();
 
-        $start_time=$lastsaved;
-        if(!$start_time)    $start_time=time();
-        $processes=WYSIJA::get_cron_frequencies();
+        $start_time = $last_saved;
+        if(!$start_time)    $start_time = time();
+        $processes = WYSIJA::get_cron_frequencies();
         if(!$schedule){
             foreach($processes as $process => $frequency){
-                $next_schedule=$start_time+$frequency;
-                $prev_schedule=0;
+                $next_schedule = $start_time + $frequency;
+                $prev_schedule = 0;
                 if(isset($cron_schedules[$process]['running']) && $cron_schedules[$process]['running']) $prev_schedule=$cron_schedules[$process]['running'];
                 $cron_schedules[$process]=array(
-                    'next_schedule'=>$next_schedule,
-                    'prev_schedule'=>$prev_schedule,
-                    'running'=>false);
+                    'next_schedule' => $next_schedule,
+                    'prev_schedule' => $prev_schedule,
+                    'running' => false);
             }
         }else{
-            $cron_schedules=WYSIJA::get_cron_schedule('all');
+            $cron_schedules = WYSIJA::get_cron_schedule('all');
             if($set_running){
-                 $cron_schedules[$schedule]['running']=$set_running;
+                 $cron_schedules[$schedule]['running'] = $set_running;
             }else{
-                 $running=0;
-                if(isset($cron_schedules[$schedule]['running'])) $running=$cron_schedules[$schedule]['running'];
-                //if the process is not running or has been running for more than 15 minutes then we set the next_schedule date
-                if(!$running || time()>$running+900){
-                    $next_schedule=$start_time+$processes[$schedule];
-                    $cron_schedules[$schedule]=array(
-                            'next_schedule'=>$next_schedule,
-                            'prev_schedule'=>$running,
-                            'running'=>false);
+                 $running = 0;
+                if(isset($cron_schedules[$schedule]['running'])) $running = $cron_schedules[$schedule]['running'];
+                // if the process is not running or has been running for more than 15 minutes then we set the next_schedule date
+                $process_frequency = $processes[$schedule];
+
+                if(!$running || ( time() > ($running + $process_frequency) ) ){
+
+                    $next_schedule = $start_time + $process_frequency;
+                    // if the next schedule is already behind, we give it 30 seconds before it can triggers again
+                    if( $next_schedule < $start_time ){
+                        $next_schedule = $start_time + 30;
+                    }
+
+                    $cron_schedules[$schedule] = array(
+                            'next_schedule' => $next_schedule,
+                            'prev_schedule' => $running,
+                            'running' => false);
                 }
             }
         }
-        WYSIJA::update_option('wysija_schedules',$cron_schedules,'yes');
+        WYSIJA::update_option( 'wysija_schedules' , $cron_schedules , 'yes' );
         return true;
     }
 
@@ -1057,46 +1067,55 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function cron_check() {
 
-        $cron_schedules=WYSIJA::get_cron_schedule('all');
+        $cron_schedules = WYSIJA::get_cron_schedule('all');
         if(empty($cron_schedules)) return;
         else{
-            $processes=WYSIJA::get_cron_frequencies();
-            $updatedsched=false;
-            foreach($cron_schedules as $proc => &$params){
-                    $running=0;
-                    if(isset($params['running'])) $running=$params['running'];
+            $processes = WYSIJA::get_cron_frequencies();
+
+            $updated_sched = false;
+            foreach($cron_schedules as $schedule => &$params){
+                    $running = 0;
+                    $time_now = time();
+                    if(isset($params['running'])) $running = $params['running'];
                     //if the process has timedout we reschedule the next execution
-                    if($running && time()>$running+900){
+                    if($running && ( $time_now> ($running + $processes[$schedule]) ) ){
                         //WYSIJA::setInfo('error','modifying next schedule for '.$proc);
-                        $next_schedule=time()+$processes[$proc];
+                        $process_frequency = $processes[$schedule];
+
+                        $next_schedule = $running + $process_frequency;
+                        // if the next schedule is already behind, we give it 30 seconds before it can trigger again
+                        if( $next_schedule < $time_now ){
+                            $next_schedule = $time_now + 30;
+                        }
                         $params=array(
-                                'next_schedule'=>$next_schedule,
-                                'prev_schedule'=>$running,
-                                'running'=>false);
-                        $updatedsched=true;
+                                'next_schedule' => $next_schedule,
+                                'prev_schedule' => $running,
+                                'running' => false);
+                        $updated_sched=true;
                     }
             }
-            if($updatedsched){
+            if($updated_sched){
                 //WYSIJA::setInfo('error','updating scheds');
-                WYSIJA::update_option('wysija_schedules',$cron_schedules,'yes');
+                WYSIJA::update_option( 'wysija_schedules' , $cron_schedules , 'yes' );
             }
 
         }
 
-        $timenow=time();
-        $processesToRun=array();
-        foreach($cron_schedules as $process =>$scheduled_times){
-            if((!$scheduled_times['running'] || (int)$scheduled_times['running']+900<$timenow) && $scheduled_times['next_schedule']<$timenow){
-                $processesToRun[]=$process;
+        $time_now = time();
+        $processesToRun = array();
+        foreach($cron_schedules as $schedule => $scheduled_times){
+            $process_frequency = $processes[$schedule];
+            if( ( !$scheduled_times['running'] || (int)$scheduled_times['running'] + $process_frequency < $time_now ) && $scheduled_times['next_schedule'] < $time_now){
+                $processesToRun[] = $schedule;
             }
         }
 
-        $model_config=WYSIJA::get('config','model');
-        $page_view_trigger=(int)$model_config->getValue('cron_page_hit_trigger');
-        if(!empty($processesToRun) && $page_view_trigger===1){
+        $model_config = WYSIJA::get('config','model');
+        $page_view_trigger = (int)$model_config->getValue('cron_page_hit_trigger');
+        if(!empty($processesToRun) && $page_view_trigger === 1){
             //call the cron url
 
-            $cron_url=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
+            $cron_url = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
             $cron_request = apply_filters( 'cron_request', array(
                     'url' => $cron_url,
                     'args' => array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) )

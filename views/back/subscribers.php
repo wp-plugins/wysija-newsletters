@@ -54,19 +54,19 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
             foreach($data['counts'] as $countType =>$count){
                 if(!$count) {$i++;continue;}
                 switch($countType){
-                    case "all":
+                    case 'all':
                         $tradText=__('All',WYSIJA);
                         break;
-                    case "unconfirmed":
+                    case 'unconfirmed':
                         $tradText=__('Unconfirmed',WYSIJA);
                         break;
-                    case "unsubscribed":
+                    case 'unsubscribed':
                         $tradText=__('Unsubscribed',WYSIJA);
                         break;
-                    case "subscribed":
+                    case 'subscribed':
                         $tradText=__('Subscribed',WYSIJA);
                         break;
-                    case "unlisted":
+                    case 'unlisted':
                         $tradText=__('Unlisted',WYSIJA);
                         break;
                 }
@@ -123,7 +123,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                     <?php
                     foreach($data['lists'] as $listK => $list){
                         //if(!(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK) && $list['is_enabled']){ // Commented by TNT
-                        if($list['is_enabled']){                            
+                        if($list['is_enabled']){
                             ?><option value="actionvar_removefromlist-listid_<?php echo $listK ?>"><?php
                             echo str_repeat('&nbsp;',5).$list['name'];
                             if(isset($list['users']))  echo ' ('.$list['users'].')';
@@ -133,16 +133,8 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                     ?>
                     <option value="actionvar_removefromalllists"><?php _e('Remove from all lists', WYSIJA); ?></option>
                     <option value="exportlist"><?php _e('Export', WYSIJA); ?></option>
-                    <?php
-                    /*$config=WYSIJA::get("config","model");
-                    if($config->getValue("confirm_dbleoptin")){
-                        ?>
-                        <option value="sendconfirmation"><?php _e('Resend the activation email', WYSIJA); ?></option>
-                        <?php
-                    }*/
-                    ?>
                     <option value="deleteusers"><?php _e('Delete subscribers', WYSIJA); ?></option>
-                    <?php 
+                    <?php
                     $config_model = WYSIJA::get('config','model');
                     if($config_model->getValue('confirm_dbleoptin')){
                     ?>
@@ -243,14 +235,14 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                         <tr class="batch-select">
                             <td colspan="5">
                                 <input type="radio" name="wysija[user][force_select_all]" id="force_select_all" style="display:none;" />
-                                <input type="hidden" name="wysija[user][timestamp]" value="<?php echo $data['max_create_at']; ?>"/>                              
+                                <input type="hidden" name="wysija[user][timestamp]" value="<?php echo $data['max_create_at']; ?>"/>
                                 <div class="force_to_select_all_link" style="display:none">
                                     <?php echo __('All subscribers on this page are selected.',WYSIJA); ?>
                                     <a href="javascript:void(0);"><?php echo sprintf(__('Select all %1$s subscribers.', WYSIJA), $data['current_counts']); ?></a>
                                 </div>
                                 <div class="clear_select_all" style="display:none">
                                     <?php echo sprintf(__('All %1$s subscribers are selected.', WYSIJA), $data['current_counts']); ?>
-                                    <a><?php echo __('Clear selection', WYSIJA); ?></a>                                    
+                                    <a><?php echo __('Clear selection', WYSIJA); ?></a>
                                 </div>
                             </td>
                         </tr>
@@ -276,18 +268,18 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                                 <tr <?php echo $classRow ?> >
 
                                     <th scope="col" class="check-column" >
-                                        <input type="checkbox" name="wysija[user][user_id][]" id="user_id_<?php echo $row["user_id"] ?>" value="<?php echo esc_attr($row["user_id"]) ?>" class="checkboxselec" />
+                                        <input type="checkbox" name="wysija[user][user_id][]" id="user_id_<?php echo $row['user_id'] ?>" value="<?php echo esc_attr($row['user_id']) ?>" class="checkboxselec" />
                                     </th>
                                     <td class="username column-username">
                                         <?php
-                                        echo get_avatar( $row["email"], 32 );
-                                        echo "<strong>".$row["email"]."</strong>";
-                                        echo "<p style='margin:0;'>".$row["firstname"]." ".$row["lastname"]."</p>";
+                                        echo get_avatar( $row['email'], 32 );
+                                        echo '<strong>'.$row['email'].'</strong>';
+                                        echo '<p style="margin:0;">'.$row['firstname'].' '.$row['lastname'].'</p>';
 
                                         ?>
                                         <div class="row-actions">
                                             <span class="edit">
-                                                <a href="admin.php?page=wysija_subscribers&id=<?php echo $row["user_id"] ?>&action=edit" class="submitedit"><?php _e('View stats or edit',WYSIJA)?></a>
+                                                <a href="admin.php?page=wysija_subscribers&id=<?php echo $row['user_id'] ?>&action=edit" class="submitedit"><?php _e('View stats or edit',WYSIJA)?></a>
                                             </span>
                                         </div>
                                     </td>
@@ -339,9 +331,8 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                         * 4-export
                         */
 
-                        $formObj=WYSIJA::get("forms","helper");
-
-                        $config=WYSIJA::get("config","model");
+                        $formObj=WYSIJA::get('forms','helper');
+                        $config=WYSIJA::get('config','model');
 
 
                         ?>
@@ -349,10 +340,17 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             <th><label for="filterlist"><?php _e("Pick a list",WYSIJA); ?></label></th>
                             <td>
                             <?php
+                            $lists_html = '';
                             foreach($data['lists'] as $listK => $list){
-                                echo '<input type="checkbox" name="wysija[export][filter][list][]" checked="checked" class="validate[minCheckbox[1]] checkbox" value="'.esc_attr($list['list_id']).'" />&nbsp;<label>'.$list['name'].' ('.$list['totals'].')'.'</label><br />';
-                            }                                    
-                            ?>                                
+                                $lists_html .= '<input type="checkbox" name="wysija[export][filter][list][]" checked="checked" class="validate[minCheckbox[1]] checkbox" value="'.esc_attr($list['list_id']).'" />';
+                                $lists_html .= '&nbsp;<label>'.$list['name'];
+                                $lists_html .= ' <span class="count-confirmed-only">('.$list['subscribers'].')</span>';
+                                $lists_html .= '<span class="count-all">('.((int)$list['belonging']).')</span>';
+                                $lists_html .= '</label><br />';
+                            }
+
+                            echo $lists_html;
+                            ?>
                             </td>
                         </tr>
                         <tr>
@@ -365,7 +363,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             </td>
                         </tr>
                         <?php
-                        if($config->getValue("confirm_dbleoptin")){
+                        if($config->getValue('confirm_dbleoptin')){
                             ?>
                             <tr>
                                 <th><label for="confirmedcheck"><?php _e("Export confirmed subscribers only",WYSIJA); ?></label></th>
@@ -375,13 +373,13 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             </tr>
                             <?php
                         }
-                    }elseif(!empty($data['user']['timestamp']) && (bool)$data['user']['force_select_all']){ //batch-select and export
+                    }elseif(!empty($data['user']['timestamp']) && !empty($data['user']['force_select_all']) && (bool)$data['user']['force_select_all']){ //batch-select and export
                         if(!empty($data['filter']) && is_array($data['filter']))
                             foreach($data['filter'] as $k => $v)
                                 echo '<input type="hidden" value="'.$v.'" name="wysija[filter]['.$k.']" />';
                         foreach($data['user'] as $k => $v)
                             if($k != 'user_id') // we don't ask for user_id in case of batch-select
-                                echo '<input type="hidden" value="'.$v.'" name="wysija[user]['.$k.']" />';                        
+                                echo '<input type="hidden" value="'.$v.'" name="wysija[user]['.$k.']" />';
                     }
                     ?>
                     <tr>
@@ -409,6 +407,9 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
         </form>
     <?php
     }
+
+
+
     function add($data=false){
 
         if(!$data['user'] || isset($this->add)) {
@@ -517,7 +518,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
                                 $fieldHTML.= '<p><label for="'.$field.$list['list_id'].'">';
                                 $datacheck=array('id'=>$field.$list['list_id'],'name'=>"wysija[user_list][list_id][]", 'class'=>'');
-                                if(!$list['is_enabled']) $datacheck['disabled']='disabled';
+
                                 $fieldHTML.=$formObj->checkbox( $datacheck,$list['list_id'],$checked,$extraCheckbox).$list['name'];
                                 $fieldHTML.=$hiddenField;
                                 $fieldHTML.='</label></p>';
@@ -547,9 +548,11 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
 
         if(count($data['charts']['stats'])>0 ){
             $htmlContent.= '<p>';
+            $helper_licence = WYSIJA::get('licence','helper');
+            $url_checkout = $helper_licence->get_url_checkout('subscriber_stats');
             $htmlContent.= str_replace(
-                    array("[link]","[/link]"),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
+                    array('[link]','[/link]'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" target="_blank" href="'.$url_checkout.'">','</a>'),
                     __("Note: Find out what this subscribers opens and clicks with our [link]Premium version.[/link]",WYSIJA));
             $htmlContent.= '</p>';
         }
@@ -845,7 +848,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                         <tr class="thead">
                             <th><?php _e('Match the data',WYSIJA);?></th>
                             <?php
-                            $columns=array("nomatch"=>__("Ignore column...",WYSIJA),'email'=>__('Email',WYSIJA),'firstname'=>__('First name',WYSIJA),'lastname'=>__('Last name',WYSIJA),'ip'=>__('IP address',WYSIJA));
+                            $columns=array("nomatch"=>__("Ignore column...",WYSIJA),'email'=>__('Email',WYSIJA),'firstname'=>__('First name',WYSIJA),'lastname'=>__('Last name',WYSIJA),'ip'=>__('IP address',WYSIJA),'status'=>__('Status',WYSIJA));
 
                             $formObj=WYSIJA::get("forms","helper");
                             $i=0;

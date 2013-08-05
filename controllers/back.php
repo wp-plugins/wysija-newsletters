@@ -249,7 +249,7 @@ class WYSIJA_control_back extends WYSIJA_control{
                 $action =$datas['actionvar'];
                 unset($datas['actionvar']);
                 $this->action=$action;
-                
+
                 if(method_exists($this, $this->action)){
                     $this->viewShow=$this->action;
                     $this->$action($datas);
@@ -277,7 +277,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         do_action('wysija_remove_action_check_total_subscribers');
         do_action('wysija_check_total_subscribers');
     }
-    
+
     /**
      * Batch select process
      * - Currently, is for subscribers only
@@ -299,70 +299,19 @@ class WYSIJA_control_back extends WYSIJA_control{
         //
         //select all users which match to $_POST['wysija']['filter'] and create_at <= $_POST['wysija']['user']['timestamp']
         // - build query
-        $this->filters = array();
-        $config = WYSIJA::get('config','model');
-        if(!empty($_REQUEST['search'])){
-            $_REQUEST['wysija']['filter']['search'] = $_REQUEST['search'];
-        }
 
-        //link_fitler
-        if (!empty($_REQUEST['wysija']['filter']['link_filter'])){
-            switch($_REQUEST['wysija']['filter']['link_filter']){
-                case 'unconfirmed':
-                    $this->filters['equal']['status'] = 0;
-                    break;
-                case 'unsubscribed':
-                    $this->filters['equal']['status'] = -1;
-                    break;
-                case 'subscribed':
-                    if($config->getValue('confirm_dbleoptin'))
-                        $this->filters['equal']['status'] = 1;
-                    else
-                        $this->filters['greater_eq']=array('status'=>0);
-                    break;
-                case 'all':
-                default:
-                    break;
-            }
-        }
-        //filter_list
-        $orphaned = $filter_join = false;
-        if (!empty($_REQUEST['wysija']['filter']['filter_list'])){
-            if ($_REQUEST['wysija']['filter']['filter_list'] == 'orphaned') {
-                $this->filters['equal']['list_id'] = null;
-                $orphaned = true;
-            } elseif ((int)$_REQUEST['wysija']['filter']['filter_list']>0) {
-                $this->filters['equal']['list_id'] = (int)$_REQUEST['wysija']['filter']['filter_list'];
-                $filter_join = true;
-            } else {
-                // nothing to do
-            }
-        }
-        
-        if(!empty($_REQUEST['wysija']['filter']['search'])){
-            $keyword = trim($_REQUEST['wysija']['filter']['search']);
-            foreach(array('email','firstname', 'lastname') as $field)
-                $this->filters['like'][$field] = $keyword;            
-        }
+        $select = array( '[wysija]user.user_id');
+
+        // filters for unsubscribed
+        $filters = $this->modelObj->detect_filters();
 
 
-        //timestamp (max of create_at)
-        $this->filters['less_eq']['created_at'] = $_REQUEST['wysija']['user']['timestamp'];
-        
-        $this->modelObj->noCheck = true; // force to not check column fields, just combine WHERE clause
-        $this->modelObj->setConditions($this->filters);
         $this->_batch_select = array();
-        $this->_batch_select['where'] = $this->modelObj->makeWhere();
-        $from = 'FROM [wysija]user A';
-        if($filter_join)
-            $from .= ' JOIN [wysija]user_list B ON A.user_id = B.user_id';
-        elseif($orphaned)
-            $from .= ' LEFT JOIN [wysija]user_list B ON A.user_id = B.user_id';        
-        $this->_batch_select['from'] = $from;
-        $this->_batch_select['select'] = 'SELECT DISTINCT A.user_id';
-        
-        $this->_batch_select['query'] = $this->_batch_select['select'] . ' ' . $this->_batch_select['from'] . ' ' . $this->_batch_select['where'];
-        
+
+
+        $this->_batch_select['query'] = $this->modelObj->get_subscribers( $select, $filters, '', true );
+        $this->_batch_select['query_count'] = $this->modelObj->get_subscribers( array( 'COUNT(DISTINCT([wysija]user.user_id))'), $filters, '', true );
+
         //Create a temporary table
         $temp_table_name = 'user'. time();
         $temp_table_create = 'CREATE TEMPORARY TABLE '.$temp_table_name . ' (user_id int (10) NOT NULL, PRIMARY KEY (user_id)) ENGINE=MyISAM';
@@ -370,15 +319,15 @@ class WYSIJA_control_back extends WYSIJA_control{
         $model_user = WYSIJA::get('user','model');
         $model_user->query($temp_table_create);
         $model_user->query($temp_table_insert);
-        
+
         //Override the queres with temporary table
         unset($this->_batch_select['where']);
-        $row_count = $model_user->query('get_row', 'SELECT ROW_COUNT() as row_count');        
+        $row_count = $model_user->query('get_row', 'SELECT ROW_COUNT() as row_count');
         $this->_batch_select['original_query'] = $this->_batch_select['query']; // useful for export feature; in this case, we don't use temporary table
         $this->_batch_select['select'] = 'SELECT DISTINCT user_id';
         $this->_batch_select['from'] = 'FROM '.$temp_table_name . ' A';
         $this->_batch_select['query'] = 'SELECT user_id FROM '.$temp_table_name;
-        $this->_batch_select['count'] = $row_count['row_count'];       
+        $this->_batch_select['count'] = $row_count['row_count'];
         return true;
     }
 
@@ -388,16 +337,19 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         $config=WYSIJA::get('config','model');
         $totalSubscribers=$config->getValue('total_subscribers');
-
+        $helper_licence = WYSIJA::get('licence','helper');
+        
         if((int)$totalSubscribers>1900){
             if((int)$totalSubscribers>2000){
+                $url_checkout = $helper_licence->get_url_checkout('over200');
                 $this->error(str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" target="_blank" href="'.$url_checkout.'">','</a>'),
                     sprintf(__('Yikes. You\'re over the limit of 2000 subscribers for the free version of Wysija (%1$s in total). Sending is disabled now. Please upgrade your version to [link]premium[/link] to send without limits.',WYSIJA)
                             ,$totalSubscribers)),true);
             }else{
+                $url_checkout = $helper_licence->get_url_checkout('near200');
                 $this->notice(str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" class="premium-tab" href="javascript:;">','</a>'),
+                    array('<a title="'.__('Get Premium now',WYSIJA).'" target="_blank" href="'.$url_checkout.'">','</a>'),
                     sprintf(__('Yikes! You\'re near the limit of %1$s subscribers for Wysija\'s free version. Upgrade to [link]Premium[/link] to send without limits, and more.',WYSIJA)
                             ,"2000")));
             }

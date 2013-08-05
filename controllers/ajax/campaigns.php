@@ -7,6 +7,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         parent::WYSIJA_control();
     }
 
+    function save_poll(){
+        $model_config = WYSIJA::get('config','model');
+        $model_config->save(array('poll_origin' => $_REQUEST['how'] , 'poll_origin_url' => $_REQUEST['where']));
+
+        $res['result'] = true;
+        $res['msg'] = '<span><span class="checkmark">---</span>'. __('Thanks!',WYSIJA). '</span>';
+        return $res;
+    }
+
     function switch_theme() {
         if(isset($_POST['wysijaData'])) {
             $rawData = $_POST['wysijaData'];
@@ -436,9 +445,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
                 $dummy_receiver->user_id = 0;
                 $dummy_receiver->email = $receiver;
                 $dummy_receiver->status = 1;
-                $dummy_receiver->lastname = $dummy_receiver->firstname = '';                
+                $dummy_receiver->lastname = $dummy_receiver->firstname = '';
             }
-            
+
             if($spamtest){
                 $langextra = '';
                 $dummy_receiver->firstname ='Mail Tester';
@@ -474,7 +483,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
             if(isset($email_child['params']['autonl']['articles']['count'])) $item_count = (int)$email_child['params']['autonl']['articles']['count'];
             if(isset($email_child['params']['autonl']['articles']['first_subject'])) $first_subject = $email_child['params']['autonl']['articles']['first_subject'];
-            if(isset($email_clone['params']['autonl']['total_child'])) $total_count = (int)$email_clone['params']['autonl']['total_child'] + 1;
+            if(isset($email_child['params']['autonl']['total_child'])) $total_count = (int)$email_child['params']['autonl']['total_child'] + 1;
 
             if(empty($first_subject)) {
                 $this->error(__('There are no articles to be sent in this email.',WYSIJA),1);
@@ -487,6 +496,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         $successmsg = __('Your email preview has been sent to %1$s', WYSIJA);
+
+        // correction added for post notifications with the tag [newsletter:post_title] failing to send
+        if(isset($email_object->params['autonl']) && isset($email_child['params']['autonl'])){
+            $email_object->params['autonl']=$email_child['params']['autonl'];
+        }
 
         if(isset($email_object->params)) {
             $params['params']=$email_object->params;
