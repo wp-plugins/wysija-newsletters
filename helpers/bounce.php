@@ -62,7 +62,7 @@ class WYSIJA_help_bounce extends WYSIJA_help {
             //This method could cause a fatal error, but we will still display some messages in that case.
             dl($EXTENSION);
             $warnings = str_replace($fatalMessage, '', ob_get_clean());
-            if (extension_loaded("imap") OR function_exists('imap_open'))
+            if (extension_loaded('imap') OR function_exists('imap_open'))
                 return true;
         }
 
@@ -424,6 +424,7 @@ class WYSIJA_help_bounce extends WYSIJA_help {
                 if ($this->_handleRule($one_rule))
                     break;
             }
+
 
             if ($msgNB % 50 == 0){
                 if(!$this->record_ms_bounce) $this->_sub_actions();
@@ -1071,7 +1072,7 @@ class WYSIJA_help_bounce extends WYSIJA_help {
 
         $main_site_prefix=$this->subClass->get_site_prefix();
         $query_insert_bounce_ms='INSERT INTO `'.$main_site_prefix.'bounce` (`email`,`site_id`,`user_id`,`email_id`,`action_taken`,`case`,`message`,`created_at`)';
-        $query_insert_bounce_ms.= " VALUES ('".$result_subscriber->email."','".(int)$this->_message->site_id."','".(int)$this->_message->user_id."','".(int)$this->_message->email_id."','".$action_taken."', '".$one_rule['key']."', '".$email_copy."', '".time()."')";
+        $query_insert_bounce_ms.= " VALUES ('".$result_subscriber->email."','".(int)$this->_message->site_id."','".(int)$this->_message->user_id."','".(int)$this->_message->email_id."','".$action_taken."', '".$one_rule['key']."', '".  mysql_real_escape_string($email_copy)."', '".time()."')";
 
         $this->subClass->query($query_insert_bounce_ms);
 
