@@ -518,7 +518,11 @@ class WYSIJA_model_user extends WYSIJA_model{
             }
             $arr_max_create_at[] = $status_data['max_create_at'];
         }
-        $counts['all'] = $counts['unsubscribed'] + $counts['unconfirmed'] + $counts['subscribed'];
+        $counts['all'] = 0;
+        if(isset($counts['unsubscribed'])) $counts['all'] += $counts['unsubscribed'];
+        if(isset($counts['unconfirmed'])) $counts['all'] += $counts['unconfirmed'];
+        if(isset($counts['subscribed'])) $counts['all'] += $counts['subscribed'];
+
         return $counts;
     }
 
