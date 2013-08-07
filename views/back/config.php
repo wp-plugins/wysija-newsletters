@@ -1262,10 +1262,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                'title'=>__('Send to more than 2000 subscribers.',WYSIJA),
                'desc'=>__('You have no more limits. Send to 100 000 if you want.',WYSIJA)
                ),
-            'advlinkstats'=>array(
-               'title'=>__('Get the bigger picture with more stats.',WYSIJA),
-               'desc'=>__('The stats dashboard will give you better insight on how you\'re scoring.',WYSIJA)
-               ),
+//            'advlinkstats'=>array(
+//               'title'=>__('Get the bigger picture with more stats.',WYSIJA),
+//               'desc'=>__('The stats dashboard will give you better insight on how you\'re scoring.',WYSIJA)
+//               ),
            'linksstats'=>array(
                'title'=>__('Find out which links are clicked.',WYSIJA),
                'desc'=>__('Which links in your newsletter are getting clicked on? Find out for each newsletter.',WYSIJA)
@@ -1274,10 +1274,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                'title'=>__('Track with Google Analytics.',WYSIJA),
                'desc'=>__('Find out what your subscribers do once on your site.',WYSIJA)
                ),
-           'customfields'=>array(
-               'title'=>__('Add more fields to your forms.',WYSIJA),
-               'desc'=>__('Add phone number, city, gender or whatever you wish in your subscription forms.',WYSIJA)
-               ),
+//           'customfields'=>array(
+//               'title'=>__('Add more fields to your forms.',WYSIJA),
+//               'desc'=>__('Add phone number, city, gender or whatever you wish in your subscription forms.',WYSIJA)
+//               ),
             'cron'=>array(
                'title'=>__('We activate a cron job for you.',WYSIJA),
                'desc'=>__('We make sure you\'re sending every 15 minutes to avoid irregular delivery.',WYSIJA)
