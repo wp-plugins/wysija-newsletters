@@ -54,8 +54,8 @@ class WYSIJA_model_list extends WYSIJA_model{
     function getLists(){
         $model_user = WYSIJA::get('user','model');
 
-        $query='SELECT A.name, A.list_id, A.created_at, A.is_enabled, A.is_public, A.namekey, 0 as subscribers, 0 as campaigns_sent
-        FROM '.$this->getPrefix().'list as A';
+        $query='SELECT A.`name`, A.`list_id`, A.`created_at`, A.`is_enabled`, A.`is_public`, A.`namekey`, 0 as subscribers, 0 as campaigns_sent
+        FROM '.$this->getPrefix().'list as A ORDER BY A.`name`';
 
         $this->countRows=$this->count($query);
 

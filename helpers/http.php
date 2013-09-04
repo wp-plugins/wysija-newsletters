@@ -38,6 +38,28 @@ class WYSIJA_help_http extends WYSIJA_object{
         }
     }
 
+    function wp_request($url){
+        global $wp_version;
+
+        $active  = get_option( 'active_plugins', array() );
+        $to_send = (object) compact('plugins', 'active');
+
+	$options = array(
+		'timeout' => ( ( defined('DOING_CRON') && DOING_CRON ) ? 30 : 3),
+		'body' => array( 'plugins' => serialize( $to_send ) ),
+		'user-agent' => 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' )
+	);
+
+	$raw_response = wp_remote_post($url, $options);
+
+        if ( is_wp_error( $raw_response ) || 200 != wp_remote_retrieve_response_code( $raw_response ) ){
+            $this->error($raw_response->get_error_messages());
+            return false;
+        }
+
+	return maybe_unserialize( wp_remote_retrieve_body( $raw_response ) );
+    }
+
     function request_timeout($url,$timeout='3'){
         if(function_exists('curl_init')) {
 

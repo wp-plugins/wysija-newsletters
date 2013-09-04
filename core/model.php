@@ -26,6 +26,8 @@ class WYSIJA_model extends WYSIJA_object{
     var $ignore = false;
     var $sql_error=false;
     var $comparisonKeys = array('equal', 'notequal', 'like', 'greater', 'less', 'greater_eq', 'less_eq', 'is');
+    var $time_start = 0;
+    var $query_duration = 0;
 
     function WYSIJA_model($extensions=''){
         if(defined('WYSIJA_DBG') && WYSIJA_DBG>0) $this->dbg=true;
@@ -204,9 +206,18 @@ class WYSIJA_model extends WYSIJA_object{
             $query.=$groupBy;
         }
 
-        if($this->dbg) $this->keepQry($query,'count');
 
+        // if dbg is on we track the duration of the query
+        if($this->dbg){
+            $this->timer_start();
+        }
         $results=$this->query('get_res',$query,$this->getFormat);
+
+        // if dbg is on we track the duration of the query
+        if($this->dbg){
+            $this->timer_stop();
+            $this->keepQry('count');
+        }
 
         if(!$results || count($results)>1) return $results;
         else {
@@ -613,6 +624,11 @@ class WYSIJA_model extends WYSIJA_object{
 
         global $wpdb;
 
+        // if dbg is on we track the duration of the query
+        if($this->dbg){
+            $this->timer_start();
+        }
+
         if($update){
 
             if( $this->specialUpdate || isset($this->conditions['equal']) || isset($this->conditions['notequal']) || isset($this->conditions['like'])){
@@ -640,8 +656,11 @@ class WYSIJA_model extends WYSIJA_object{
             }
 
         }
+
+        // if dbg is on we track the duration of the query
         if($this->dbg){
-            $this->keepQry();
+            $this->timer_stop();
+            $this->keepQry('save');
         }
 
         if(!$resultSave){
@@ -850,36 +869,51 @@ class WYSIJA_model extends WYSIJA_object{
         return true;
     }
 
-    function query($query,$arg2="",$arg3=ARRAY_A){
+    function timer_start() {
+        $this->query_duration = 0;
+        $this->time_start = microtime( true );
+        return true;
+    }
+
+    function timer_stop() {
+        $this->query_duration = ( microtime( true ) - $this->time_start );
+    }
+
+    function query($query,$arg2='',$arg3=ARRAY_A){
         global $wpdb;
-        $this->sql_error=false;
-       if(!$arg2) $query=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$query);
-       else $arg2=str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$arg2);
+        $this->sql_error = false;
+       if(!$arg2) $query = str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$query);
+       else $arg2 = str_replace(array('[wysija]','[wp]'),array($this->getPrefix(),$wpdb->prefix),$arg2);
+
+       // if dbg is on we track the duration of the query
+       if($this->dbg){
+           $this->timer_start();
+       }
 
         switch($query){
             case 'get_row':
-                if($this->dbg) $this->keepQry($arg2,'query');
-
-                $resultss=$wpdb->get_row($arg2,$arg3);
+                $result = $wpdb->get_row($arg2,$arg3);
                 $this->logError();
-                return $resultss;
                 break;
             case 'get_res':
-                if($this->dbg) $this->keepQry($arg2,'query');
-                $results=$wpdb->get_results($arg2,$arg3);
+                $result = $wpdb->get_results($arg2,$arg3);
                 //$this->escapeQuotesFromRes($results);
                 $this->logError();
-                return $results;
                 break;
             default:
-                if($this->dbg) $this->keepQry($query,'query');
-
-                $result=$wpdb->query($query);
+                $result = $wpdb->query($query);
                 $this->logError();
-                if(substr($query, 0, 6)=='INSERT') return $wpdb->insert_id;
-                else return $result;
-        }
 
+                // get the last insert id if it's an insert query
+                if(substr($query, 0, 6) == 'INSERT') $result = $wpdb->insert_id;
+
+        }
+        // if dbg is on we track the duration of the query
+        if($this->dbg){
+           $this->timer_stop();
+           $this->keepQry('query');
+       }
+       return $result;
     }
 
     function logError(){
@@ -898,10 +932,12 @@ class WYSIJA_model extends WYSIJA_object{
 
     }
 
-    function keepQry($qry=false,$from='wpdb'){
+    function keepQry($from='wpdb'){
         global $wpdb,$wysija_queries;
-        if($qry)    $wysija_queries[]='[FROM '.$from.']'.$qry;
-        else    $wysija_queries[$from][]='[FROM '.$from.']'.$wpdb->last_query;
+
+        //if($qry)    $wysija_queries['[FROM '.$from.']'] = array('duration' => $this->query_duration , 'query' => $qry);
+        //else
+        $wysija_queries[$from][] = array('duration' => $this->query_duration , 'query' => $wpdb->last_query);
     }
 
     function getAffectedRows(){

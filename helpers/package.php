@@ -79,7 +79,8 @@ class WYSIJA_help_package extends WYSIJA_object{
      */
     function _check_request($url_check, $plugin_path, $plugin_key){
         $helper_http = WYSIJA::get('http','helper');
-        $content = trim( $helper_http->request($url_check) );
+
+        $content = trim( $helper_http->wp_request($url_check) );
 
         if($content && strlen($content)>2 && strlen($content)<10){
             $version_number = explode('.', $content);

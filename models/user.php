@@ -522,7 +522,7 @@ class WYSIJA_model_user extends WYSIJA_model{
         if(isset($counts['unsubscribed'])) $counts['all'] += $counts['unsubscribed'];
         if(isset($counts['unconfirmed'])) $counts['all'] += $counts['unconfirmed'];
         if(isset($counts['subscribed'])) $counts['all'] += $counts['subscribed'];
-
+        
         return $counts;
     }
 

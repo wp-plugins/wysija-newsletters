@@ -1378,8 +1378,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                 Wysija.setDivider(response.responseJSON.result.templates.divider, response.responseJSON.result.templates.divider_options);
                                 Wysija.replaceDividers();
                             }
+
                             Wysija.init();
-                            Wysija.autoSave();
+                            saveWYSIJA();
                         }
                     });
                     return false;
@@ -1727,8 +1728,16 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
             $fieldHTML.=$singleFieldHtml;
         }
 
-        $fieldHTML.='</div>';
+
+
+        $fieldHTML .= $this->local_time_is(). '</div>';
         return $fieldHTML;
+    }
+
+    function local_time_is(){
+        $helper_toolbox = WYSIJA::get('toolbox','helper');
+
+        return '<span class="local_time">'. sprintf( __('Local time is <code>%1$s</code>') , $helper_toolbox->site_current_time() ).'</span>';
     }
 
     function fieldFormHTML_type_nl($key,$val,$model,$params){
@@ -1794,13 +1803,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         return $fieldHTML;
     }
     function fieldFormHTML_scheduleit($key,$val,$model,$params){
-        $formObj=WYSIJA::get("forms","helper");
+        $formObj=WYSIJA::get('forms' , 'helper');
 
         $valuescheduled='';
 
-        if(isset($this->data['email']['params']['schedule']['isscheduled']))$valuescheduled=$this->data['email']['params']['schedule']['isscheduled'];
-        $data=$formObj->checkbox( array('class'=>$params['class'], 'id'=>$key,'name'=>"wysija[email][params][schedule][isscheduled]"),true,$valuescheduled);
-        $data.=$this->fieldFormHTML_datepicker('datepicker',$val,$model,$params);
+        if(isset($this->data['email']['params']['schedule']['isscheduled'])) $valuescheduled = $this->data['email']['params']['schedule']['isscheduled'];
+        $data = $formObj->checkbox( array( 'class' => $params['class'], 'id' => $key , 'name' => 'wysija[email][params][schedule][isscheduled]' ) , true , $valuescheduled);
+        $data .= $this->fieldFormHTML_datepicker('datepicker' , $val , $model , $params);
+
         return $data;
     }
 
@@ -1826,8 +1836,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
         $fieldHTML.=$formObj->dropdown(
                     array('name'=>'wysija[email][params][schedule][time]','id'=>$field.'-time'),
                     $this->data['autonl']['fields']['time']['values'],$valuetime);
-
-        $fieldHTML.="</span>";
+        
+        $fieldHTML .= $this->local_time_is();
+        $fieldHTML.='</span>';
         return $fieldHTML;
     }
 
