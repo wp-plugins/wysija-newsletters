@@ -342,8 +342,8 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back{
                             <?php
                             $lists_html = '';
                             foreach($data['lists'] as $listK => $list){
-                                $lists_html .= '<input type="checkbox" name="wysija[export][filter][list][]" checked="checked" class="validate[minCheckbox[1]] checkbox" value="'.esc_attr($list['list_id']).'" />';
-                                $lists_html .= '&nbsp;<label>'.$list['name'];
+                                $lists_html .= '<label><input type="checkbox" name="wysija[export][filter][list][]" checked="checked" class="validate[minCheckbox[1]] checkbox" value="'.esc_attr($list['list_id']).'" />';
+                                $lists_html .= '&nbsp;'.$list['name'];
                                 $lists_html .= ' <span class="count-confirmed-only">('.$list['subscribers'].')</span>';
                                 $lists_html .= '<span class="count-all">('.((int)$list['belonging']).')</span>';
                                 $lists_html .= '</label><br />';

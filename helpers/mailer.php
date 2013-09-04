@@ -46,7 +46,13 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             //override the config with the one passed as parameter above in the constructor
             $optionsMsOverride=array();
             if(!empty($config)){
-                $optionsMsOverride=array('sending_method','sendmail_path','smtp_rest','smtp_host','smtp_port','smtp_secure','smtp_auth','smtp_login','smtp_password');
+
+                $optionsMsOverride = array('sendmail_path' , 'smtp_rest' , 'smtp_host' , 'smtp_port' , 'smtp_secure' , 'smtp_auth' , 'smtp_login' , 'smtp_password');
+
+                if($this->config->getValue('sending_method') === 'network'){
+                    $optionsMsOverride[] = 'sending_method';
+                }
+
                 //unset($this->config->values);
                foreach($config as $key => $val){
                    if($multisiteTest && in_array($key, $optionsMsOverride) && isset($config['ms_'.$key])){
@@ -57,14 +63,14 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                }
             }
 
-            $is_multisite=is_multisite();
+            $is_multisite = is_multisite();
 
             //$is_multisite=true;//PROD comment that line
             //if we are in a  multisite situation and there is one sending method set for all the sites then we just force all of the multisites settings
-            if($is_multisite && $this->config->getValue('ms_sending_config')=='one-for-all' && ($this->config->getValue('sending_method')=='network' || $multisiteTest)){
+            if($is_multisite && ( ( $this->config->getValue('sending_method') == 'network' && $this->config->getValue('ms_sending_config')=='one-for-all' )  || $multisiteTest )){
 
                 //if we use the network method or we send a test multisite email then we ovverride the from_email and the rest of the option
-                $optionsMsOverride=array('from_email','sendmail_path','smtp_rest','smtp_host','smtp_port','smtp_secure','smtp_auth','smtp_login','smtp_password');
+                $optionsMsOverride = array( 'sending_method', 'from_email' , 'sendmail_path' , 'smtp_rest' , 'smtp_host' , 'smtp_port' , 'smtp_secure' , 'smtp_auth' , 'smtp_login' , 'smtp_password');
                 foreach($optionsMsOverride as $key){
                     if(isset($this->config->values['ms_'.$key]))    $this->config->values[$key]=$this->config->values['ms_'.$key];
                 }
@@ -72,7 +78,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             // this distinction is important somehow the network sending method needs to be overriden after we pass that condfition above
             $sending_method = $this->config->getValue('sending_method');
-            if(is_multisite())  $sending_method = $this->config->getValue('ms_sending_method');
+            //if(is_multisite())  $sending_method = $this->config->getValue('ms_sending_method');
 
 
             $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name'));
@@ -806,12 +812,13 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $email->subject = $shortcodesH->replace_subject($email, $receiver);
             $email->body = $shortcodesH->replace_body($email, $receiver);
 
-            //dbg($values_user,0);
+            // TODO I think we can remove that subscriptions_links tag
             $arrayfind[]='[subscriptions_links]';
             if(!empty($receiver))   $subscriptions_links='<div>'.$this->subscriberClass->getUnsubLink($receiver).'</div>';
             else $subscriptions_links='';
 
             $arrayreplace[]=$subscriptions_links;
+            // end TODO
 
             if($email->email_id == $this->config->getValue('confirm_email_id')){
                 $this->subscriberClass->reset();

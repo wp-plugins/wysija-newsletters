@@ -550,7 +550,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         // table queue to delete
         $tables = array(
             'user_history',
-            'user_url',
+            'email_user_url',
             'email_user_stat',
             'user_list',
             'queue',

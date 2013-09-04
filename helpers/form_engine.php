@@ -501,18 +501,14 @@ class WYSIJA_help_form_engine extends WYSIJA_object {
             break;
             case 'html':
                 //need some language for the validation
-                if(defined('WPLANG') && WPLANG!=''){
-                    $locale=explode('_',WPLANG);
-                    $wp_lang=$locale[0];
-                }else{
-                    $wp_lang='en';
-                }
+                $helper_toolbox = WYSIJA::get('toolbox','helper');
+                $wp_language_code = $helper_toolbox->get_language_code();
 
                 $wysija_version=WYSIJA::get_version();
                 $scripts_to_include='<!--START Scripts : this is the script part you can add to the header of your theme-->'."\n";
                 $scripts_to_include.='<script type="text/javascript" src="'.includes_url().'js/jquery/jquery.js'.'?ver='.$wysija_version.'"></script>'."\n";
-                if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wp_lang.'.js')){
-                    $scripts_to_include.='<script type="text/javascript" src="'.WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wp_lang.'.js'.'?ver='.$wysija_version.'"></script>'."\n";
+                if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wp_language_code.'.js')){
+                    $scripts_to_include.='<script type="text/javascript" src="'.WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wp_language_code.'.js'.'?ver='.$wysija_version.'"></script>'."\n";
                 }else{
                     $scripts_to_include.='<script type="text/javascript" src="'.WYSIJA_URL.'js/validate/languages/jquery.validationEngine-en.js'.'?ver='.$wysija_version.'"></script>'."\n";
                 }

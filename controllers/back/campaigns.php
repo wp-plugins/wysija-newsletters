@@ -44,8 +44,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $video_language['sv_SE']='http://www.youtube.com/embed/O8_t_dekx74';
         $video_language['ar']='http://www.youtube.com/embed/cyDHlX_qgOo';
 
-        if(defined('WPLANG') && WPLANG!='' && isset($video_language[WPLANG])){
-            $welcome_video_link = $video_language[WPLANG];
+        $wp_lang = get_locale();
+        if(!empty($wp_lang) && isset($video_language[$wp_lang])){
+            $welcome_video_link = $video_language[$wp_lang];
         }else{
             $welcome_video_link = $video_language['en_EN'];
         }
@@ -393,10 +394,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $helper_bounce->record_bounce_ms();
 
             // then we take actions from what has been returned by the bounce
-            return $helper_bounce->process_bounce_ms();
+            $helper_bounce->process_bounce_ms();
         }else{
-           return $helper_bounce->process_bounce();
+           $helper_bounce->process_bounce();
         }
+        exit;
     }
 
     function add($dataPost=false){
@@ -741,17 +743,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function immediateWarning(){
-        $mConfig=WYSIJA::get('config','model');
-
-        $is_multisite=is_multisite();
+        $model_config = WYSIJA::get('config','model');
+        $is_multisite = is_multisite();
 
         //$is_multisite=true;//PROD comment that line
-        if($is_multisite && $mConfig->getValue('sending_method')=='network'){
-           $sending_emails_each=$mConfig->getValue('ms_sending_emails_each');
-           $number=$mConfig->getValue('ms_sending_emails_number');
+        if($is_multisite && $model_config->getValue('sending_method') == 'network'){
+           $sending_emails_each = $model_config->getValue('ms_sending_emails_each');
+           $number = $model_config->getValue('ms_sending_emails_number');
         }else{
-           $sending_emails_each=$mConfig->getValue('sending_emails_each');
-           $number=$mConfig->getValue('sending_emails_number');
+           $sending_emails_each = $model_config->getValue('sending_emails_each');
+           $number = $model_config->getValue('sending_emails_number');
         }
 
         $formsHelp=WYSIJA::get('forms','helper');
@@ -1412,11 +1413,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['processqueue']=__('Sending batch of emails...',WYSIJA);
         $this->jsTrans['viewnews']=__('View newsletter',WYSIJA);
         $this->jsTrans['confirmpauseedit']=__('The newsletter will be deactivated, you will need to reactivate it once you\'re over editing it. Do you want to proceed?',WYSIJA);
-        //make sure that there is no late scheduled or automatic newsletter
-        $autoNL=WYSIJA::get('autonews','helper');
-        $autoNL->checkPostNotif();
-        $autoNL->checkScheduled();
-        $config=WYSIJA::get('config','model');
+
         //get the filters
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
             $this->filters['like']=array();

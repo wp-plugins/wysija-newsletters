@@ -74,11 +74,11 @@ class WYSIJA_help_licence extends WYSIJA_help{
             $json_result=false;
         }else{
             $helper_http = WYSIJA::get('http','helper');
-            $json_result = $helper_http->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domain_data);
+            $json_result = $helper_http->wp_request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domain_data);
         }
 
 
-        if($json_result) {
+        if($json_result!==false) {
             $decoded = json_decode($json_result, true);
 
             if(isset($decoded['result']) === false) {
@@ -190,10 +190,10 @@ class WYSIJA_help_licence extends WYSIJA_help{
             $domainData=$this->getDomainInfo();
             $hHTTP = WYSIJA::get('http','helper');
 
-            $jsonResult = $hHTTP->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&data='.$domainData);
+            $jsonResult = $hHTTP->wp_request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&data='.$domainData);
 
             //remotely connect to host
-            if($jsonResult){
+            if($jsonResult!==false){
                 $decoded=json_decode($jsonResult);
 
                 $configData=array('dkim_domain'=>$dkim_domain,'dkim_privk'=>$decoded->dkim_privk,'dkim_pubk'=>$decoded->dkim_pubk->key,'dkim_1024'=>1);
