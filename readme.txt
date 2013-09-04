@@ -94,7 +94,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fix retrieve wp.posts when time is different on mysql server and apache server
 * fix changing encoding from utf8 to another was not sending
 * newsletter background colour now displays in new Gmail
-* less confusing queue sending status 
+* less confusing queue sending status
 * updated language file (pot) with 20 or so modifications
 
 = 0.9.6 =
@@ -104,7 +104,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed menu submenu no wysija but newsletters no js
 * fixed bug statistics opened_at not inserted
 * fixed bug limit subscribers updated on subscribers delete
-* fixed daily cron scandir empty dir 
+* fixed daily cron scandir empty dir
 * fixed subscribe from frontend without javascript error
 * fixed subscribe IP server validation when trying in local
 * fixed CSS issues with Wordpress 3.3
@@ -124,7 +124,7 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 * fixed issue with wp_attachment function affecting Wordpress post insertion
 * fixed issue when importing subscribers (copy/paste from Gmail)
 * fixed issue related to Wordpress MU
-* minor bugfixes 
+* minor bugfixes
 
 = 0.9 =
 * Hello World. We just launched this plugin.
