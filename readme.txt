@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.5.5
+Stable tag: 2.5.8
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -143,7 +143,22 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
-= 2.5.5 - 2013-07-31 =
+= 2.5.8 - 2013-09-05 =
+* fixed error firing daily and weekly newsletters
+* fixed premium mail-tester iframe not working on modern browser
+* fixed send_at parameter being updated wrongfully for automatic newsletters
+
+= 2.5.7 - 2013-09-04 =
+* fixed missing cron schedules for post notifications and scheduled newsletters
+* fixed issue with auto save when switching themes
+* fixed issue preventing the deletion of newly added image
+* fixed sending method not being override in multisite
+* fixed validation messages not translated on some MS sites due to language locale issue
+* improved better use of the language definition so that we understand on which language a WPML site is for instance
+* improved better use of the language definition (removed WPLANG) so that we understand on which language a WPML site is for instance
+* added retina icons for text editor
+
+= 2.5.5 - 2013-08-05 =
 * fixed compatibility issue with WordPress 3.6 and latest jQuery
 * fixed general reply to email settings not applied to sign up confirmation email
 * fixed wild "Security failure during request." in the backend of some server configurations

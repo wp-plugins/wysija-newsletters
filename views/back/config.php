@@ -186,34 +186,57 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         return $field;
     }
 
-    function fieldFormHTML_cron($key,$value,$model,$paramsex){
+    function fieldFormHTML_cron($key,$value,$model){
         //second part concerning the checkbox
-        $formsHelp=WYSIJA::get('forms','helper');
-        $checked=false;
-        if($this->model->getValue($key))   $checked=true;
-        $field='<div><div class="cronleft"><label for="'.$key.'">';
-        $field.=$formsHelp->checkbox(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']','class'=>'activateInput'),1,$checked);
-        $field.='</label></div>';
+        $helper_forms = WYSIJA::get('forms','helper');
+        $checked = false;
+        if($this->model->getValue($key))   $checked = true;
 
-        $url_cron=site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all';
-        $field.='<div class="cronright" id="'.$key.'_linkname">';
+        $field = '<div><div class="cronleft"><label for="'.$key.'">';
+        $field .= $helper_forms->checkbox( array( 'id' => $key , 'name' => 'wysija['.$model.']['.$key.']' , 'class' => 'activateInput') , 1 , $checked);
+        $field .= '</label></div>';
 
-        $text_cron_manual_trigger=__('I\'ll setup a cron job on my server to execute at the frequency I want. Read about [link]setting up a cron job yourself[/link].',WYSIJA).'<br/><span>'.__('Use this URL in your cron job: [cron_url]').'</span>';
-        $text_cron_manual_trigger=  str_replace(array('[link]','[/link]','[cron_url]'), array('<a href="http://support.wysija.com/knowledgebase/configure-cron-job/?utm_source=wpadmin&utm_campaign=advanced_settings" title="Seting up cron job" target="_blank">','</a>','<a href="'.$url_cron.'" target="_blank">'.$url_cron.'</a>'), $text_cron_manual_trigger);
+        $url_cron = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all';
+        $field .= '<div class="cronright" id="'.$key.'_linkname">';
 
-        $text_cron_page_view=__('No thanks! I have enough visitors on my site. Their visits will trigger Wysija\'s cron automatically.',WYSIJA);
-        $values_page_view_trigger = array(2=>$text_cron_manual_trigger, 1=>$text_cron_page_view);
+        $text_cron_manual_trigger = __('I\'ll setup a cron job on my server to execute at the frequency I want. Read about [link]setting up a cron job yourself[/link].',WYSIJA).'<br/><span>'.__('Use this URL in your cron job: [cron_url]').'</span>';
+        $text_cron_manual_trigger = str_replace(array('[link]','[/link]','[cron_url]'), array('<a href="http://support.wysija.com/knowledgebase/configure-cron-job/?utm_source=wpadmin&utm_campaign=advanced_settings" title="Seting up cron job" target="_blank">','</a>','<a href="'.$url_cron.'" target="_blank">'.$url_cron.'</a>'), $text_cron_manual_trigger);
 
-        $value=2;
-        if((int)$this->model->getValue('cron_page_hit_trigger')===1)   $value=1;
-//echo '<pre>';print_r($this->model->values);exit;
-        $key='cron_page_hit_trigger';
+        $text_cron_page_view = __('No thanks! I have enough visitors on my site. Their visits will trigger Wysija\'s cron automatically.',WYSIJA);
+        $values_page_view_trigger = array(2 => $text_cron_manual_trigger, 1 => $text_cron_page_view);
 
-        $field.=$formsHelp->radios(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'), $values_page_view_trigger , $value);
-        $field.='</div></div>';
+        $value = 2;
+        if((int)$this->model->getValue('cron_page_hit_trigger') === 1)   $value = 1;
+
+        $key = 'cron_page_hit_trigger';
+
+        $field .= $helper_forms->radios(array('id'=>$key,'name'=>'wysija['.$model.']['.$key.']'), $values_page_view_trigger , $value);
+        $field .= '</div></div>';
 
         return $field;
     }
+
+    function fieldFormHTML_cron_prem($key,$value,$model){
+
+        $url_cron = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process=all';
+        $field = '<p>';
+
+        $text_cron_manual_trigger = __('If I want I can [link]create an additional cron job[/link] on my end to increase the frequency.',WYSIJA).'<br/><span>'.__('Use this URL in your cron job: [cron_url]').'</span>';
+        $field .= str_replace(array('[link]','[/link]','[cron_url]'), array('<a href="http://support.wysija.com/knowledgebase/configure-cron-job/?utm_source=wpadmin&utm_campaign=advanced_settings" title="Seting up cron job" target="_blank">','</a>','<a href="'.$url_cron.'" target="_blank">'.$url_cron.'</a>'), $text_cron_manual_trigger);
+
+        $field .= '</p>';
+
+        $model_config = WYSIJA::get('config','model');
+        if($model_config->getValue('cron_manual') !== true){
+            $model_config->save( array('cron_manual' => true) );
+
+            $helper_licence = WYSIJA::get('licence','helper');
+            $helper_licence->check(true);
+        }
+
+        return $field;
+    }
+
 
     function fieldFormHTML_debugnew($key,$value,$model,$paramsex){
         /*second part concerning the checkbox*/
@@ -1177,19 +1200,30 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
         $super_advanced_fields ['advanced_charset']=array(
             'type'=>'dropdown_keyval',
-            'values'=>array('UTF-8','UTF-7',
-                'BIG5',
-                "ISO-8859-1","ISO-8859-2","ISO-8859-3","ISO-8859-4","ISO-8859-5","ISO-8859-6","ISO-8859-7","ISO-8859-8","ISO-8859-9","ISO-8859-10","ISO-8859-13","ISO-8859-14","ISO-8859-15",
-                'Windows-1251','Windows-1252'),
+            'values'=>array('UTF-8','UTF-7','BIG5', 'ISO-2022-JP',
+                'ISO-8859-1','ISO-8859-2','ISO-8859-3',
+                'ISO-8859-4','ISO-8859-5','ISO-8859-6',
+                'ISO-8859-7','ISO-8859-8','ISO-8859-9',
+                'ISO-8859-10','ISO-8859-13','ISO-8859-14',
+                'ISO-8859-15','Windows-1251','Windows-1252'),
             'label'=>__('Charset',WYSIJA),
             'desc'=>__('Squares or weird characters are displayed in your emails? Select the encoding for your language.',WYSIJA));
 
         $super_advanced_fields = apply_filters('wysija_settings_advancednext', $super_advanced_fields );
 
-        $super_advanced_fields ['cron_manual']=array(
-            'type'=>'cron',
-            'label'=>__('Enable Wysija Cron\'s', WYSIJA),
-            'desc'=>__('None of your queued emails have been sent? Then activate this option.',WYSIJA));
+        // TODO force wysija's cron to wysija's premium let's do it in september
+        if(false && WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php') && $this->model->getValue('premium_key')){
+            $super_advanced_fields ['cron_manual']=array(
+                'type'=>'cron_prem',
+                'label'=>__('Wysija\'s scheduled tasks', WYSIJA),
+                'desc'=>__('As a premium user, my scheduled tasks are launched directly by wysija.com each 15 minutes.',WYSIJA));
+        }else{
+            $super_advanced_fields ['cron_manual']=array(
+                'type'=>'cron',
+                'label'=>__('Enable Wysija\'s Cron', WYSIJA),
+                'desc'=>__('None of your queued emails have been sent? Then activate this option.',WYSIJA));
+        }
+
 
         $super_advanced_fields ['debug_new']=array(
             'type'=>'debugnew',

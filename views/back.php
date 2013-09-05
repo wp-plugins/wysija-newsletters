@@ -55,22 +55,25 @@ class WYSIJA_view_back extends WYSIJA_view{
 
         if($this->skip_header === true) return;
 
-        echo '<div class="icon32" id="'.$this->icon.'"><br/></div>';
-
-        $fulltitle=__($this->title,WYSIJA);
-        $action=$subtitle="";
+        $header = '<div class="icon32" id="'.$this->icon.'"><br/></div>';
+        $header='';
+        $full_title = __($this->title,WYSIJA);
+        $action = $sub_title = '';
 
         if(isset($_REQUEST['action'])) $action=$_REQUEST['action'];
-        if($action && $action!='main' && isset($this->subtitle)) $subtitle="[".ucfirst(__($action,WYSIJA))."]";
+        if($action && $action!='main' && isset($this->subtitle)) $sub_title='['.ucfirst(__($action,WYSIJA)).']';
 
 
         if(isset($this->titlelink)){
-            $mytitle='<a href="admin.php?page='.$_REQUEST['page'].'">'.$fulltitle.'</a> ';
+            $my_title = '<a href="admin.php?page='.$_REQUEST['page'].'">'.$full_title.'</a> ';
         }else{
-            $mytitle=$fulltitle.' ';
+            $my_title = $full_title . ' ';
         }
-        echo '<h2>'.$mytitle.$subtitle.$this->menuTop($this->action,$data).'</h2>';
-        echo $this->messages();
+
+        $header .= '<h2>'.$my_title.$sub_title.$this->menuTop($this->action,$data).'</h2>';
+        $header .= $this->messages();
+
+        echo $header;
 
     }
 
@@ -79,7 +82,7 @@ class WYSIJA_view_back extends WYSIJA_view{
      * to help reproduce the standard view of wordpress admin view here is the footer part
      */
     function footer(){
-        echo "</div>";/*end div class wrap*/
+        echo '</div>';/*end div class wrap*/
     }
 
     /**
@@ -279,7 +282,7 @@ class WYSIJA_view_back extends WYSIJA_view{
         $limitPerpageS=array(10,20,50,100);
         if($this->model->countRows <= $limitPerpageS[0]) return true;
         $limitPerpage=array();
-        
+
         foreach($limitPerpageS as $k => $count){
             $limitPerpage[] = $count;
             if($this->model->countRows < $count) break;

@@ -65,20 +65,22 @@ class WYSIJA_help_cron extends WYSIJA_object{
     /**
      * check that one scheduled task is ready to be executed
      * @param type $cron_schedules list of recorded cron schedules
-     * @param type $processNK what to process all, queue, bounce etc...
+     * @param type $processNK what to process queue, bounce etc...
      */
     function check_scheduled_task($cron_schedules,$processNK){
         $helper_toolbox = WYSIJA::get('toolbox','helper');
         $time_passed = $time_left = 0;
-        if($cron_schedules[$processNK]['running']){
-            $time_passed = time()-$cron_schedules[$processNK]['running'];
+
+        // calculate the time passed processing a scheduled task
+        if(!empty($cron_schedules[$processNK]['running'])){
+            $time_passed = time()- $cron_schedules[$processNK]['running'];
             $time_passed = $helper_toolbox->duration($time_passed,true,2);
         }else{
-            $time_left = $cron_schedules[$processNK]['next_schedule']-time();
+            $time_left = $cron_schedules[$processNK]['next_schedule'] - time();
             $time_left = $helper_toolbox->duration($time_left,true,2);
         }
 
-        if($cron_schedules[$processNK]['next_schedule']<time() && !$cron_schedules[$processNK]['running']){
+        if($cron_schedules[$processNK]['next_schedule'] < time() && !$cron_schedules[$processNK]['running']){
             if($this->report) echo 'exec process '.$processNK.'<br/>';
             $this->run_scheduled_task($processNK);
         }else{
@@ -95,12 +97,14 @@ class WYSIJA_help_cron extends WYSIJA_object{
      * @param type $process
      * @return type
      */
-    function run_scheduled_task($process='queue'){
-
-        // first let's make sure that the process asked to be run is not still   running
+    function run_scheduled_task($process = 'queue'){
+        //first let's make sure that the process asked to be run is not already running
         $scheduled_times = WYSIJA::get_cron_schedule($process);
         $processes = WYSIJA::get_cron_frequencies();
         $process_frequency = $processes[$process];
+
+        // check if the scheduled task is already being processed,
+        // we consider it timed out once the started running time plus the frequency has been passed
         if(!empty($scheduled_times['running']) && ($scheduled_times['running'] + $process_frequency) > time()){
             if($this->report)   echo 'already running : '.$process.'<br/>';
             return;
@@ -112,14 +116,16 @@ class WYSIJA_help_cron extends WYSIJA_object{
         // execute schedule
         switch($process){
             case 'queue':
+                // check if there are any scheduled newsletters ready for action
+                WYSIJA::check_scheduled_newsletters();
 
                 // if premium is activated we execute the premium cron process
                 if(defined('WYSIJANLP')){
                     $helper_premium = WYSIJA::get('premium', 'helper', false, WYSIJANLP);
                     $helper_premium->croned_queue_process();
                 }else{
-                    // run the standard queue process
-                    WYSIJA::croned_queue($process);
+                    // run the standard queue process no scheduled tasks will be check since it has already been checked above
+                    WYSIJA::croned_queue(false);
                 }
                 break;
             case 'bounce':

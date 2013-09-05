@@ -28,7 +28,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'debug_log_manual',
 
     );
-    var $defaults=array(
+    var $defaults = array(
         'limit_listing'=>10,
         'role_campaign'=>'switch_themes',
         'role_subscribers'=>'switch_themes',
@@ -43,6 +43,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'confirm_dbleoptin' =>1,
         'bounce_selfsigned'=>0,
         'bounce_email_notexists'=>'unsub',
+        'bouncing_emails_each'=>'daily',
         'bounce_inbox_full'=>'not',
         'pluginsImportedEgg'=>false,
         'advanced_charset'=>'UTF-8',
@@ -67,6 +68,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'ms_sending_emails_number'=>'100',
         'ms_allow_admin_sending_method'=>false,
         'ms_allow_admin_toggle_signup_confirmation'=>false,
+        'ms_bouncing_emails_each'=>'daily',
         'cron_page_hit_trigger'=>1,
         'beta_mode'=>false,
         'cron_manual'=>true,
@@ -235,9 +237,9 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
 
                 //bounce frequency has been changed
-                if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each']!=$this->getValue('bouncing_emails_each')){
+                if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each'] != $this->getValue('bouncing_emails_each')){
                     $bouncing_freq_has_changed=true;
-                    $data['last_save']=time();
+                    $data['last_save'] = time();
                 }
 
                 //if saved with gmail then we set up the smtp settings

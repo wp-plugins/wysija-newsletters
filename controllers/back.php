@@ -338,7 +338,7 @@ class WYSIJA_control_back extends WYSIJA_control{
         $config=WYSIJA::get('config','model');
         $totalSubscribers=$config->getValue('total_subscribers');
         $helper_licence = WYSIJA::get('licence','helper');
-        
+
         if((int)$totalSubscribers>1900){
             if((int)$totalSubscribers>2000){
                 $url_checkout = $helper_licence->get_url_checkout('over200');
@@ -510,8 +510,12 @@ class WYSIJA_control_back extends WYSIJA_control{
         if($location)
         {
             $url = parse_url($location);
-            if(!empty($url['query']))
+            if(!empty($url['query'])) {
                 $location .= '&';
+            } else {
+                $location .= '?';
+            }
+
             $location .= 'redirect=1';
         }
         $wysi_location=$location;

@@ -451,7 +451,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
             if($spamtest){
                 $langextra = '';
                 $dummy_receiver->firstname ='Mail Tester';
-                if(defined('WPLANG') && WPLANG) $langextra ='&lang='.WPLANG;
+
+                $wp_lang = get_locale();
+                if(!empty($wp_lang)) $langextra ='&lang='.$wp_lang;
                 $resultarray['urlredirect']='http://www.mail-tester.com/check.php?id='.urlencode($dummy_receiver->email).$langextra;
             }
             $receivers[$key] = $dummy_receiver;
@@ -535,6 +537,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         $resultarray['result'] = $res;
+
         return $resultarray;
     }
 
@@ -700,9 +703,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
             $request='http://api.wysija.com/download/zip/'.$_REQUEST['theme_id'].'?domain='.$domain_name;
 
-            $ZipfileResult = $httpHelp->request($request);
+            $ZipfileResult = $httpHelp->wp_request($request);
 
-            if(!$ZipfileResult){
+            if($ZipfileResult === false){
                 $result=false;
                 $this->error(__('We were unable to contact the API, the site may be down. Please try again later.',WYSIJA),true);
             }else{

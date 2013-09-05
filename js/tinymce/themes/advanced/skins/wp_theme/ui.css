@@ -2066,6 +2066,7 @@ RTL
 	.wp_themeSkin span.mce_justifycenter,
 	.wp_themeSkin span.mce_justifyfull,
 	.wp_themeSkin span.mce_indent,
+	.wp_themeSkin span.wj_custom_fields,
 	.wp_themeSkin span.mce_outdent,
 	.wp_themeSkin span.mce_link,
 	.wp_themeSkin span.mce_unlink,
@@ -2088,7 +2089,7 @@ RTL
 	.wp_themeSkin .mceSplitButton span.mce_numlist,
 	.wp_themeSkin .mceSplitButton span.mce_bullist {
 		background-image: url('../../img/wpicons-2x.png?ver=20120720');
-		background-size: 560px 40px;
+		background-size: 580px 40px;
 	}
 
 	.wp-media-buttons .add_media span.wp-media-buttons-icon,

@@ -937,7 +937,7 @@ class WYSIJA_help_bounce extends WYSIJA_help {
         // we will delete one by one all of the data from the users that need to be removed
         $tables = array(
             'user_history',
-            'user_url',
+            'email_user_url',
             'email_user_stat',
             'user_list',
             'queue',
