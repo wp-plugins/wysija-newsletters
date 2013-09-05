@@ -673,6 +673,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	    return $result;
 	}
 	function textVersion($html,$fullConvert = true){
+        @ini_set('pcre.backtrack_limit', 1000000);
 		//$html = acymailing_absoluteURL($html);
 		if($fullConvert){
 			$html = preg_replace('# +#',' ',$html);

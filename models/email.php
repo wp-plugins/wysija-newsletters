@@ -164,14 +164,19 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         //set the email status based on parameters and also return a message
         $email_status=99;
+        $sent_status = array();
+
+
+
         if((int)$email['type']===1)  {
             if(isset($email['params']['schedule']['isscheduled']) && !$emails_have_been_queued){
                 $email_status=4;
                 $this->notice(__('Newsletter has been scheduled.',WYSIJA));
             } else $this->notice(__('Your latest newsletter is being sent.',WYSIJA));
+            $sent_status['sent_at'] = time();
         } else $this->notice(__('Your auto newsletter has been activated.',WYSIJA));
+        $sent_status['status'] = $email_status;
 
-        $sent_status=array('status'=>$email_status,'sent_at'=>time());
 
         $this->reset();
         $this->update($sent_status,array('email_id'=>$email['email_id']));

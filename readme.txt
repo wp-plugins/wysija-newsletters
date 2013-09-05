@@ -3,7 +3,7 @@ Contributors: wysija, benheu
 Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 2.5.7
+Stable tag: 2.5.8
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -142,6 +142,11 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.5.8 - 2013-09-05 =
+* fixed error firing daily and weekly newsletters
+* fixed premium mail-tester iframe not working on modern browser
+* fixed send_at parameter being updated wrongfully for automatic newsletters
 
 = 2.5.7 - 2013-09-04 =
 * fixed missing cron schedules for post notifications and scheduled newsletters

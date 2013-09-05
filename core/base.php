@@ -577,7 +577,7 @@ class WYSIJA extends WYSIJA_object{
         $last_scheduled_check = get_option('wysija_last_scheduled_check');
 
         // if the latest post notification check was done more than five minutes ago let's check it again
-        if(empty($last_scheduled_check) || ( $last_scheduled_check + 300 > time())){
+        if(empty($last_scheduled_check) || ( time() > ($last_scheduled_check + 300) ) ){
             // create the scheduled automatic post notifications email if there are any
             $helper_autonews = WYSIJA::get('autonews','helper');
             $helper_autonews->checkPostNotif();

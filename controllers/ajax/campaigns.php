@@ -537,6 +537,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
         }
 
         $resultarray['result'] = $res;
+
         return $resultarray;
     }
 
