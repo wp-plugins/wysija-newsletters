@@ -70,6 +70,23 @@ class WYSIJA_help_cron extends WYSIJA_object{
     function check_scheduled_task($cron_schedules,$processNK){
         $helper_toolbox = WYSIJA::get('toolbox','helper');
         $time_passed = $time_left = 0;
+        $run_scheduled = true;
+        $extra_text = '';
+        // this is to display a different message whether we're dealing with bounce or not.
+        if($processNK == 'bounce'){
+             $model_config = WYSIJA::get( 'config' , 'model' );
+             // if premium is activated we launch the premium function
+             if(is_multisite()){
+                 $multisite_prefix='ms_';
+             }
+
+             // we don't process the bounce automatically unless the option is ticked
+             if(!(defined('WYSIJANLP') && $model_config->getValue( $multisite_prefix . 'bounce_process_auto' )) ){
+                 $extra_text = ' (bounce handling not activated)';
+                 $run_scheduled=false;
+             }
+
+        }
 
         // calculate the time passed processing a scheduled task
         if(!empty($cron_schedules[$processNK]['running'])){
@@ -80,14 +97,15 @@ class WYSIJA_help_cron extends WYSIJA_object{
             $time_left = $helper_toolbox->duration($time_left,true,2);
         }
 
-        if($cron_schedules[$processNK]['next_schedule'] < time() && !$cron_schedules[$processNK]['running']){
+        if($run_scheduled && $cron_schedules[$processNK]['next_schedule'] < time() && !$cron_schedules[$processNK]['running']){
             if($this->report) echo 'exec process '.$processNK.'<br/>';
             $this->run_scheduled_task($processNK);
         }else{
            if($this->report){
-               if($time_passed) $texttime = ' running since : '.$time_passed;
-               else  $texttime = ' next run : '.$time_left;
-               echo 'skip process <strong>'.$processNK.'</strong>'.$texttime.'<br/>';
+               if($time_passed) $text_time = ' running since : '.$time_passed;
+               else  $text_time = ' next run : '.$time_left;
+               if(!empty($extra_text)) $text_time = $extra_text;
+               echo 'skip process <strong>'.$processNK.'</strong>'.$text_time.'<br/>';
            }
         }
     }
@@ -129,11 +147,20 @@ class WYSIJA_help_cron extends WYSIJA_object{
                 }
                 break;
             case 'bounce':
+                $helper_premium = WYSIJA::get('premium', 'helper', false, WYSIJANLP);
+                $model_config = WYSIJA::get( 'config' , 'model' );
                 // if premium is activated we launch the premium function
-                if(defined('WYSIJANLP')){
-                    $helper_premium = WYSIJA::get('premium', 'helper', false, WYSIJANLP);
-                    $helper_premium->croned_bounce();
+                if(is_multisite()){
+                    $multisite_prefix='ms_';
                 }
+
+                // we don't process the bounce automatically unless the option is ticked
+                if(defined('WYSIJANLP') && $model_config->getValue( $multisite_prefix . 'bounce_process_auto' )){
+                    $helper_premium->croned_bounce();
+                }else{
+                    $process .= ' (bounce handling not activated)';
+                }
+
                 break;
             case 'daily':
                 WYSIJA::croned_daily();

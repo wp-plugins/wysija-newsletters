@@ -124,23 +124,24 @@ class WYSIJA_view extends WYSIJA_object{
      * @return string
      */
     function getClassValidate($params,$returnAttr=false,$prefixclass=""){
-        $classValidate="";
-        $recognisedtypes=array("email","url");
+        $class_validate = '';
+        $recognised_types = array('email','url');
+
         if(isset($params['req'])){
-            $classValidate="required";
-            if(isset($params['type']) && in_array($params['type'], $recognisedtypes))  {
-                $classValidate.=",custom[".$params['type']."]";
+            $class_validate='required';
+            if(isset($params['type']) && in_array($params['type'], $recognised_types))  {
+                $class_validate.=',custom['.$params['type'].']';
             }
         }else{
-           if(isset($params['type']) && in_array($params['type'],$recognisedtypes ))  {
-                $classValidate.="custom[".$params['type']."]";
+           if(isset($params['type']) && in_array($params['type'],$recognised_types ))  {
+                $class_validate.='custom['.$params['type'].']';
             }
         }
 
-        if($prefixclass) $prefixclass.=" ";
-        if($classValidate) $classValidate="validate[".$classValidate."]";
-        if(!$returnAttr && $classValidate)  $classValidate= ' class="'.$prefixclass.$classValidate.'" ';
+        if($prefixclass) $prefixclass.=' ';
+        if($class_validate) $class_validate='validate['.$class_validate.']';
+        if(!$returnAttr && $class_validate)  $class_validate= ' class="'.$prefixclass.$class_validate.'" ';
 
-        return $classValidate;
+        return $class_validate;
     }
 }

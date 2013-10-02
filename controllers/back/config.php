@@ -23,6 +23,9 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->jsTrans['processbounce'] = __('Process bounce handling now!', WYSIJA);
         $this->jsTrans['errorbounceforward'] = __('When setting up the bounce system, you need to have a different address for the bounce email and the forward to address', WYSIJA);
 
+        $this->jsTrans['premium_activate'] = __('Already paid? Click here to activate', WYSIJA);
+        $this->jsTrans['premium_activating'] = __('Checking license', WYSIJA);
+
         // form list
         $this->jsTrans['suredelete'] = __('Are you sure you want to delete this form?', WYSIJA);
 

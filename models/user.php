@@ -129,12 +129,14 @@ class WYSIJA_model_user extends WYSIJA_model{
      * @return object user
      */
     function getCurrentSubscriber(){
-        $this->getFormat=OBJECT;
-        $result_user=$this->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
+        static $result_user;
+        if(!empty($result_user)) return $result_user;
+        $this->getFormat = OBJECT;
+        $result_user = $this->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
 
         if(!$result_user){
-            $this->getFormat=OBJECT;
-            $result_user=$this->getOne(false,array('email'=>WYSIJA::wp_get_userdata('user_email')));
+            $this->getFormat = OBJECT;
+            $result_user = $this->getOne(false,array('email'=>WYSIJA::wp_get_userdata('user_email')));
             $this->update(array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')),array('email'=>WYSIJA::wp_get_userdata('user_email')));
         }
 
@@ -173,10 +175,10 @@ class WYSIJA_model_user extends WYSIJA_model{
         //if($action=='subscriptions')dbg($userObj);
         if(!$user_obj){
             //preview mode
-            $user_obj=$this->getCurrentSubscriber();
-            $users_preview=true;
+            $user_obj = $this->getCurrentSubscriber();
+            $users_preview = true;
         }
-        $params=array(
+        $params = array(
         'wysija-page'=>1,
         'controller'=>'confirm',
         );
@@ -522,7 +524,7 @@ class WYSIJA_model_user extends WYSIJA_model{
         if(isset($counts['unsubscribed'])) $counts['all'] += $counts['unsubscribed'];
         if(isset($counts['unconfirmed'])) $counts['all'] += $counts['unconfirmed'];
         if(isset($counts['subscribed'])) $counts['all'] += $counts['subscribed'];
-        
+
         return $counts;
     }
 

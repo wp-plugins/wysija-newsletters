@@ -82,7 +82,7 @@ class WYSIJA_control_back extends WYSIJA_control{
                 // redirect instantly to a page with a javascript file  where we check the domain is ok
                 $data=get_option('wysijey');
                 // remotely connect to host
-                wp_enqueue_script('wysija-verif-licence', 'http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
+                wp_enqueue_script('wysija-verif-licence', 'http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
             }
         }
 
@@ -647,9 +647,9 @@ class WYSIJA_control_back extends WYSIJA_control{
           js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
           fjs.parentNode.insertBefore(js, fjs);
         }(document, \'script\', \'facebook-jssdk\'));</script>
-        <div class="fb-like" data-href="http://www.facebook.com/wysija" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false"></div></div>
+        <div class="fb-like" data-href="http://www.facebook.com/mailpoetplugin" data-send="false" data-layout="button_count" data-width="90" data-show-faces="false"></div></div>
         <div class="twitter">
-        <a href="https://twitter.com/wysija" class="twitter-follow-button" data-show-count="true">Follow @wysija</a>
+        <a href="https://twitter.com/mail_poet" class="twitter-follow-button" data-show-count="true">Follow us</a>
         <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
         </div>
         <div class="gplus">

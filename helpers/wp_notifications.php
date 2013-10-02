@@ -14,7 +14,7 @@ class WYSIJA_help_wp_notifications extends WYSIJA_object{
         if(!$modelC->getValue('wp_notifications')) return $var;
 
         $modelEmail = WYSIJA::get('email', 'model');
-        $email = $modelEmail->getOne(false, array('status'=>99,'type' => 3)); // WARNING: This id matches the confirmation email on Wysija.com
+        $email = $modelEmail->getOne(false, array('status'=>99,'type' => 3)); // WARNING: This id matches the confirmation email on mailpoet.com
 
         $hMailer=WYSIJA::get('mailer','helper');
 

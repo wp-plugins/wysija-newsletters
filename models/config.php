@@ -72,6 +72,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'cron_page_hit_trigger'=>1,
         'beta_mode'=>false,
         'cron_manual'=>true,
+        'email_cyrillic' => false,
     );
 
     var $capabilities=array();
@@ -333,7 +334,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 $is_multisite=is_multisite();
 
                 //$is_multisite=true;//PROD comment that line
-                if($is_multisite && $data['ms_sending_config']=='one-for-all') {
+                if($is_multisite && $data['sending_method']=='network') {
 
                     $from_email=$data['ms_from_email'];
                 }
@@ -471,11 +472,9 @@ class WYSIJA_model_config extends WYSIJA_object{
 
         if($editor){
             $modelU=WYSIJA::get('user','model',false,'wysija-newsletters',false);
-            $modelU->getFormat=OBJECT;
-            $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
 
-            $unsubscribe[0]['link'] = $modelU->getConfirmLink($objUser,'unsubscribe',false,true).'&demo=1';
-            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink($objUser,'subscriptions',false,true);
+            $unsubscribe[0]['link'] = $modelU->getConfirmLink(false,'unsubscribe',false,true).'&demo=1';
+            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink(false,'subscriptions',false,true);
         }
 
         return $unsubscribe;

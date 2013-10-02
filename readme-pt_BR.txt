@@ -10,7 +10,7 @@ Send your posts and newsletters from WordPress easily, and beautifully.
 
 == Description ==
 
-Drag and drop your articles, images, social bookmarks and dividers in your newsletter. Pick one of 20 themes. Change fonts and colors on the fly. Manage your lists and subscription forms with a few clicks. Configuration is dummy proof. And if you're lost, [we're here](http://support.wysija.com/) to help. Sending newsletters from WordPress is finally fun.
+Drag and drop your articles, images, social bookmarks and dividers in your newsletter. Pick one of 20 themes. Change fonts and colors on the fly. Manage your lists and subscription forms with a few clicks. Configuration is dummy proof. And if you're lost, [we're here](http://support.mailpoet.com/) to help. Sending newsletters from WordPress is finally fun.
 
 
 = One minute video demo =

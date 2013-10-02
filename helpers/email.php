@@ -79,7 +79,7 @@ class WYSIJA_help_email extends WYSIJA_object{
                 $content_email=__('You\'re all setup! You\'ve successfully sent with Gmail.',WYSIJA).'<br/><br/>';
                 $content_email.=str_replace(
                         array('[link]','[/link]'),
-                        array('<a href="http://support.wysija.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=test_email_result" target="_blank" title="SendGrid partnership">','</a>'),
+                        array('<a href="http://support.mailpoet.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=test_email_result" target="_blank" title="SendGrid partnership">','</a>'),
                         __('Looking for a faster method to send? [link]Read more[/link] on sending with a professional SMTP.',WYSIJA));
                 break;
         }

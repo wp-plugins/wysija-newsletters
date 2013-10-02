@@ -341,7 +341,7 @@ class WYSIJA extends WYSIJA_object{
         if((int)$debugmode>0 && empty($current_user)) return true;
 
         if(isset($current_user->data->user_email) &&
-                (strpos($current_user->data->user_email, '@wysija.com') !== false
+                (strpos($current_user->data->user_email, '@mailpoet.com') !== false
                 || strpos($current_user->data->user_email, '@bencaubere.com') !== false)) {
             return true;
         }

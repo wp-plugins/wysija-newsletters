@@ -361,4 +361,31 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         }
         return $language_code;
     }
+
+    /**
+     * check if a domain exist
+     * @param type $domain
+     * @return boolean
+     */
+    function check_domain_exist($domain){
+
+        $mxhosts = array();
+        // 1 - Check if the domain exists
+        $checkDomain = getmxrr($domain, $mxhosts);
+        // 2 - Sometimes the returned host is checkyouremailaddress-hostnamedoesnotexist262392208.com ... not sure why!
+        // But we remove it if it's the case...
+        if(!empty($mxhosts) && strpos($mxhosts[0],'hostnamedoesnotexist')) array_shift($mxhosts);
+
+
+        if(!$checkDomain || empty($mxhosts)){
+                // 3 - Lets check with another function in case of...
+                $dns = @dns_get_record($domain, DNS_A);
+                if(empty($dns)) return false;
+        }
+        return true;
+    }
+
+    function check_email_domain($email){
+        return $this->check_domain_exist(substr($email,strrpos($email,'@')+1));
+    }
 }

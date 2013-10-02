@@ -166,7 +166,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_enqueue_script("wysija-prototype", WYSIJA_URL."js/prototype/prototype.js",array(),WYSIJA::get_version());
                             wp_deregister_script('thickbox');
 
-                            wp_register_script('thickbox',WYSIJA_URL."js/thickbox/thickbox.js",array(),WYSIJA::get_version());
+                            wp_register_script('thickbox',WYSIJA_URL.'js/thickbox/thickbox.js',array('jquery'),WYSIJA::get_version());
 
                             wp_localize_script('thickbox', 'thickboxL10n', array(
                                 'next' => __('Next &gt;'),
