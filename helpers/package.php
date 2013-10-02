@@ -3,11 +3,11 @@ defined('WYSIJA') or die('Restricted access');
 class WYSIJA_help_package extends WYSIJA_object{
 
 //    Old urls
-//    var $base_url_check = 'http://packager.wysija.com/release/check/?key=';
-//    var $base_url_package = 'http://packager.wysija.com/download/zip?key=';
+//    var $base_url_check = 'http://packager.mailpoet.com/release/check/?key=';
+//    var $base_url_package = 'http://packager.mailpoet.com/download/zip?key=';
 
-    var $base_url_check = 'http://packager.wysija.com/release/check?key=';
-    var $base_url_package = 'http://packager.wysija.com/release/zip?key=';
+    var $base_url_check = 'http://packager.mailpoet.com/release/check?key=';
+    var $base_url_package = 'http://packager.mailpoet.com/release/zip?key=';
     var $beta_param='';
 
     function WYSIJA_help_package(){
@@ -79,7 +79,8 @@ class WYSIJA_help_package extends WYSIJA_object{
      */
     function _check_request($url_check, $plugin_path, $plugin_key){
         $helper_http = WYSIJA::get('http','helper');
-        $content = trim( $helper_http->request($url_check) );
+
+        $content = trim( $helper_http->wp_request($url_check) );
 
         if($content && strlen($content)>2 && strlen($content)<10){
             $version_number = explode('.', $content);
@@ -90,7 +91,7 @@ class WYSIJA_help_package extends WYSIJA_object{
                     $object_wjp->id=9999999;
                     $object_wjp->slug=$plugin_key;
                     $object_wjp->new_version=$content;
-                    $object_wjp->url='http://www.wysija.com/wordpress-newsletter-plugin-premium/';
+                    $object_wjp->url='http://www.mailpoet.com/wordpress-newsletter-plugin-premium/';
 
                     return $object_wjp;
                 }
@@ -109,11 +110,11 @@ class WYSIJA_help_package extends WYSIJA_object{
 
         $array_wysija=array(
             'Name'=>'Wysija Newsletters',
-            'PluginURI'=>'http://www.wysija.com/',
+            'PluginURI'=>'http://www.mailpoet.com/',
             'Version'=>'1.0',
             'Description'=>'Create and send newsletters. Import and manage your lists. Add subscription forms in widgets, articles and pages. Wysija is a freemium plugin updated regularly with new features.',
             'Author'=>'Wysija',
-            'AuthorURI'=>'http://www.wysija.com/',
+            'AuthorURI'=>'http://www.mailpoet.com/',
             'TextDomain'=>'wysija-newsletters',
             'DomainPath'=>'/languages/',
             'Network'=>FALSE,

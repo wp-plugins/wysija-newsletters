@@ -46,7 +46,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             //override the config with the one passed as parameter above in the constructor
             $optionsMsOverride=array();
             if(!empty($config)){
-                $optionsMsOverride=array('sending_method','sendmail_path','smtp_rest','smtp_host','smtp_port','smtp_secure','smtp_auth','smtp_login','smtp_password');
+
+                $optionsMsOverride = array('sendmail_path' , 'smtp_rest' , 'smtp_host' , 'smtp_port' , 'smtp_secure' , 'smtp_auth' , 'smtp_login' , 'smtp_password');
+
+
                 //unset($this->config->values);
                foreach($config as $key => $val){
                    if($multisiteTest && in_array($key, $optionsMsOverride) && isset($config['ms_'.$key])){
@@ -57,23 +60,25 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                }
             }
 
-            $is_multisite=is_multisite();
+            $is_multisite = is_multisite();
 
             //$is_multisite=true;//PROD comment that line
             //if we are in a  multisite situation and there is one sending method set for all the sites then we just force all of the multisites settings
-            if($is_multisite && $this->config->getValue('ms_sending_config')=='one-for-all' && ($this->config->getValue('sending_method')=='network' || $multisiteTest)){
+            if($is_multisite && ( ( $this->config->getValue('sending_method') == 'network')  || $multisiteTest )){
 
                 //if we use the network method or we send a test multisite email then we ovverride the from_email and the rest of the option
-                $optionsMsOverride=array('from_email','sendmail_path','smtp_rest','smtp_host','smtp_port','smtp_secure','smtp_auth','smtp_login','smtp_password');
+                $optionsMsOverride = array('from_email' , 'sendmail_path' , 'smtp_rest' , 'smtp_host' , 'smtp_port' , 'smtp_secure' , 'smtp_auth' , 'smtp_login' , 'smtp_password');
                 foreach($optionsMsOverride as $key){
                     if(isset($this->config->values['ms_'.$key]))    $this->config->values[$key]=$this->config->values['ms_'.$key];
                 }
             }
 
             // this distinction is important somehow the network sending method needs to be overriden after we pass that condfition above
-            $sending_method = $this->config->getValue('sending_method');
-            if(is_multisite())  $sending_method = $this->config->getValue('ms_sending_method');
-
+            if(is_multisite() && $this->config->getValue('sending_method')=='network'){
+                $sending_method = $this->config->getValue('ms_sending_method');
+            }else{
+                $sending_method = $this->config->getValue('sending_method');
+            }
 
             $this->setFrom($this->config->getValue('from_email'),$this->config->getValue('from_name'));
             $this->Sender 	= $this->cleanText($this->config->getValue('bounce_email'));
@@ -516,20 +521,15 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $addedName = $this->cleanText($receiver->firstname.' '.$receiver->lastname);
             $this->AddAddress($this->cleanText($receiver->email),$addedName);
             if(!isset($this->forceVersion)){
-                    //$this->sendHTML = $receiver->html && $this->defaultMail[$email_id]->html;
-                    //$this->sendHTML = $this->defaultMail[$email_id]->mail_format;
-                    $this->sendHTML = true;
-                    $this->IsHTML($this->sendHTML);
+                    $this->IsHTML(true);
             }else{
-                    $this->sendHTML = (bool) $this->forceVersion;
-                    $this->IsHTML($this->sendHTML);
+                    $this->IsHTML(false);
             }
             $this->Subject = $this->defaultMail[$email_id]->subject;
             if($this->sendHTML){
                 $this->Body =  $this->defaultMail[$email_id]->body;
                 if($confirmEmail)    {
                     $this->Body =  nl2br($this->Body );
-                    //$this->Body =  str_replace(array('\n','\r'),'<br />',$this->Body );
                 }
 
                 if($this->config->getValue('multiple_part',false)){
@@ -546,24 +546,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
                     $this->AddReplyTo($this->cleanText($this->defaultMail[$email_id]->replyto_email),$replyToName);
             }
             if(!empty($this->defaultMail[$email_id]->attachments)){
-                    if(true /*$this->config->getValue('embed_files')*/){
-                            foreach($this->defaultMail[$email_id]->attachments as $attachment){
-                                    $this->AddAttachment($attachment->filename);
-                            }
-                    }else{
-                            /*$attachStringHTML = '<br/><fieldset><legend>'.__("Attachments",WYSIJA).'</legend><table>';
-                            $attachStringText = "\n"."\n".'------- '.__("Attachments",WYSIJA).' -------';
-                            foreach($this->defaultMail[$email_id]->attachments as $attachment){
-                                    $attachStringHTML .= '<tr><td><a href="'.$attachment->url.'" target="_blank">'.$attachment->name.'</a></td></tr>';
-                                    $attachStringText .= "\n".'-- '.$attachment->name.' ( '.$attachment->url.' )';
-                            }
-                            $attachStringHTML .= '</table></fieldset>';
-                            if($this->sendHTML){
-                                    $this->Body .= $attachStringHTML;
-                                    if(!empty($this->AltBody)) $this->AltBody .= "\n".$attachStringText;
-                            }else{
-                                    $this->Body .= $attachStringText;
-                            }*/
+                    foreach($this->defaultMail[$email_id]->attachments as $attachment){
+                            $this->AddAttachment($attachment->filename);
                     }
             }
             if(!empty($this->parameters)){
@@ -578,7 +562,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             //$is_multisite=true;//PROD comment that line
             //if we are in a  multisite situation and there is one sending method set for all the sites then we just force the from email
-            if($is_multisite && $this->config->getValue('ms_sending_config')=='one-for-all' && $this->config->getValue('sending_method')=='network'){
+            if($is_multisite && $this->config->getValue('sending_method')=='network'){
                 $this->defaultMail[$email_id]->from_email=$this->config->getValue('ms_from_email');
             }
 
@@ -608,19 +592,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             $mailforTrigger->tags = &$this->defaultMail[$email_id]->tags;
             $mailforTrigger->subject_tags = &$this->defaultMail[$email_id]->subject_tags;
-            $mailforTrigger->sendHTML = true;
-            /*$mailforTrigger->key = $this->defaultMail[$email_id]->key;
-            $mailforTrigger->alias = $this->defaultMail[$email_id]->alias;
-            $mailforTrigger->sendHTML = $this->sendHTML;
-            $mailforTrigger->type = $this->defaultMail[$email_id]->type;
-            $mailforTrigger->tempid = $this->defaultMail[$email_id]->tempid;*/
-            //$this->dispatcher->trigger('acymailing_replaceusertags',array(&$mailforTrigger,&$receiver));
 
             add_action('wysija_replaceusertags', array($this,'replaceusertags'),10,2);
             add_action('wysija_replaceusertags', array($this,'tracker_replaceusertags'),11,2);
             add_action('wysija_replaceusertags', array($this,'openrate_replaceusertags'),12,2);
-
-            #\[user:([^\]|]*)([^\]]*)\]#Uis
 
             do_action( 'wysija_replaceusertags', $mailforTrigger,$receiver);
 
@@ -667,6 +642,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	    return $result;
 	}
 	function textVersion($html,$fullConvert = true){
+        @ini_set('pcre.backtrack_limit', 1000000);
 		//$html = acymailing_absoluteURL($html);
 		if($fullConvert){
 			$html = preg_replace('# +#',' ',$html);
@@ -806,12 +782,13 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $email->subject = $shortcodesH->replace_subject($email, $receiver);
             $email->body = $shortcodesH->replace_body($email, $receiver);
 
-            //dbg($values_user,0);
+            // TODO I think we can remove that subscriptions_links tag
             $arrayfind[]='[subscriptions_links]';
             if(!empty($receiver))   $subscriptions_links='<div>'.$this->subscriberClass->getUnsubLink($receiver).'</div>';
             else $subscriptions_links='';
 
             $arrayreplace[]=$subscriptions_links;
+            // end TODO
 
             if($email->email_id == $this->config->getValue('confirm_email_id')){
                 $this->subscriberClass->reset();
@@ -876,7 +853,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
                         $paramsinline=array();
                         foreach($argsp as $k => $v){
-                            $paramsinline[]=$k."=".$v;
+                            $paramsinline[]=$k.'='.$v;
                         }
                         $urlreuse.=implode('&',$paramsinline);
                         $urlreuse.=$hashPartUrl;
@@ -1018,6 +995,16 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
             //$this->ErrorInfoVar = $var;
         }
+
+        /**
+	 * Sets message type to HTML.
+	 * @param bool $bool
+	 * @return void
+	 */
+	public function IsHTML($ishtml = true) {
+               parent::IsHTML($ishtml);
+               $this->sendHTML = $ishtml;
+       }
 
 }
 

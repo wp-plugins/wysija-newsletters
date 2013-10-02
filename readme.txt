@@ -1,9 +1,9 @@
-=== Wysija Newsletters ===
-Contributors: wysija, benheu
-Tags: newsletter, newsletters, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
+=== MailPoet Newsletters (formerly Wysija) ===
+Contributors: wysija, benheu, mamaduka
+Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email marketing, email, emailing, subscription
 Requires at least: 3.3
-Tested up to: 3.5
-Stable tag: 2.5.5
+Tested up to: 3.6
+Stable tag: 2.5.9
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -25,7 +25,7 @@ http://vimeo.com/46247528
 * Drag & drop visual editor, an HTML-free experience
 * Post notifications, like Feedburner, Subscribe2 or MailChimp's RSS-to-Email
 * Autoresponders, i.e. "Send email 3 days after someone subscribes"
-* [Selection of over 30 themes](http://www.wysija.com/newsletter-templates-wordpress/). Photoshop files included
+* [Selection of over 30 themes](http://www.mailpoet.com/newsletter-templates-wordpress/). Photoshop files included
 * Get stats for each newsletter: opens, clicks, unreads, unsubscribes
 * Add a subscription form in your sidebar or pages
 * Your newsletters look the same in Gmail, iPhone, Android, Outlook, Yahoo, Hotmail, etc.
@@ -40,7 +40,7 @@ http://vimeo.com/46247528
 
 = Premium version =
 
-[Wysija Premium](http://www.wysija.com/wordpress-newsletter-plugin-premium/) offers these nifty extra features:
+[MailPoet Premium](http://www.mailpoet.com/wordpress-newsletter-plugin-premium/) offers these nifty extra features:
 
 * Send to more than 2000 subscribers
 * Stats for individual subscribers (opened, clicked)
@@ -53,7 +53,7 @@ http://vimeo.com/46247528
 * Don't reinstall. Simply install an additional plugin
 * Priority support
 
-[Visit our Premium page](http://www.wysija.com/wordpress-newsletter-plugin-premium/).
+[Visit our Premium page](http://www.mailpoet.com/wordpress-newsletter-plugin-premium/).
 
 = Future releases =
 
@@ -65,11 +65,11 @@ http://vimeo.com/46247528
 
 We got a dedicated website just to help you out. And we're quite quick to reply.
 
-[support.wysija.com](http://support.wysija.com/)
+[support.mailpoet.com](http://support.mailpoet.com/)
 
 = Translations in your language =
 
-[Get a Premium license in exchange for your translation](http://support.wysija.com/knowledgebase/translations-in-your-language/)
+[Get a Premium license in exchange for your translation](http://support.mailpoet.com/knowledgebase/translations-in-your-language/)
 
 * Arabic
 * Catalan
@@ -103,10 +103,10 @@ There are 3 ways to install this plugin:
 
 = 1. The super easy way =
 1. In your Admin, go to menu Plugins > Add
-1. Search for `Wysija`
+1. Search for `mailpoet`
 1. Click to install
 1. Activate the plugin
-1. A new menu `Wysija` will appear in your Admin
+1. A new menu `mailpoet` will appear in your Admin
 
 = 2. The easy way =
 1. Download the plugin (.zip file) on the right column of this page
@@ -114,18 +114,18 @@ There are 3 ways to install this plugin:
 1. Select the tab "Upload"
 1. Upload the .zip file you just downloaded
 1. Activate the plugin
-1. A new menu `Wysija` will appear in your Admin
+1. A new menu `MailPoet` will appear in your Admin
 
 = 3. The old and reliable way (FTP) =
 1. Upload `wysija-newsletters` folder to the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
-1. A new menu `Wysija` will appear in your Admin
+1. A new menu `MailPoet` will appear in your Admin
 
 == Frequently Asked Questions ==
 
 = Got questions? =
 
-Our [support site](http://support.wysija.com/) has plenty of articles and a ticketing system.
+Our [support site](http://support.mailpoet.com/) has plenty of articles and a ticketing system.
 
 = Submit your feature request =
 
@@ -143,14 +143,39 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
-= 2.5.5 - 2013-07-31 =
+= 2.5.9 - 2013-10-02 =
+* improved multisite bounce process
+* improved email validation
+* improved IP recording
+* fixed issue with "Magic Members" plugin adding their list of users when one of our forms shortcode was in a post/page
+* fixed notice in the links tracking controller in the frontend
+* fixed cross image in popup was slightly shifted
+* fixed network sending method not inheriting the right parameters in MS (From address, etc...)
+* fixed issue when trying to delete first list in list selection widget
+
+= 2.5.8 - 2013-09-05 =
+* fixed error firing daily and weekly newsletters
+* fixed premium mail-tester iframe not working on modern browser
+* fixed send_at parameter being updated wrongfully for automatic newsletters
+
+= 2.5.7 - 2013-09-04 =
+* fixed missing cron schedules for post notifications and scheduled newsletters
+* fixed issue with auto save when switching themes
+* fixed issue preventing the deletion of newly added image
+* fixed sending method not being override in multisite
+* fixed validation messages not translated on some MS sites due to language locale issue
+* improved better use of the language definition so that we understand on which language a WPML site is for instance
+* improved better use of the language definition (removed WPLANG) so that we understand on which language a WPML site is for instance
+* added retina icons for text editor
+
+= 2.5.5 - 2013-08-05 =
 * fixed compatibility issue with WordPress 3.6 and latest jQuery
 * fixed general reply to email settings not applied to sign up confirmation email
 * fixed wild "Security failure during request." in the backend of some server configurations
 * fixed count issues on subscribers and list
 * fixed failing to send post notification newsletter preview with the tag [newsletter:post_title]
 * refactored export and import code
-* improved wysija's cron in order to respect better the delays between one scheduled task and another
+* improved MailPoet's cron in order to respect better the delays between one scheduled task and another
 
 = 2.5.4 - 2013-07-13 =
 * fixed broken sending process when DKIM is activated but the openSSL php library goes missing
@@ -163,9 +188,9 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * added reply-to address in advanced settings
 
 = 2.5.3 - 2013-06-27 =
-* added hook to delete wysija subscribers when a WP multisite user is deleted
-* fixed Wysija's cron page view auto trigger creating some errors on some servers
-* fixed WordPress user auto import as wysija subscribers on multisite
+* added hook to delete MailPoet subscribers when a WP multisite user is deleted
+* fixed MailPoet's cron page view auto trigger creating some errors on some servers
+* fixed WordPress user auto import as MailPoet subscribers on multisite
 * fixed rendering issue 2.5.2
 
 = 2.5.2 - 2013-06-26 =
@@ -230,7 +255,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 * added ability to edit HTML in text blocks of visual editor (beta)
 * added a form manager in settings, with a drag and drop interface
-* added ability for users to share their usage data with Wysija's team
+* added ability for users to share their usage data with MailPoet's team
 * added a dozen newsletter themes
 * added image resizing of images uploaded in previous versions
 * added autosave on browser back button. No more lost changes
@@ -255,7 +280,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 * added default value from WordPress' logged in user in the subscription form
 * added dropdown selection of statuses (publish, private, scheduled, draft) for WordPress' Posts to be dropped into the visual editor
-* added option to Wysija's CRON (task scheduler) to deactivate the schedule tasks checks on any page view
+* added option to MailPoet's CRON (task scheduler) to deactivate the schedule tasks checks on any page view
 * fixed unsubscribe date in the frontend subscriptions management is now translated with date_i18n (thanks Anna :))
 * fixed unsubscribe link in preview emails
 * fixed subscribers count when double optin is deactivated
@@ -289,8 +314,8 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * added custom roles to autoresponders so you can send to more than just the default roles (admin, editor, author, etc.)
 * added single sending method for all sites in Multisite. See new "MS" tab in settings for more
 * added DKIM optional upgrade to 1024 bits to comply with Gmail (Premium feature)
-* added support for Premium behind firewall with no possible requests to wysija.com
-* fixed images uploaded in Wysija are now resized to 600px. Next release will include images from media library.
+* added support for Premium behind firewall with no possible requests to MailPoet.com
+* fixed images uploaded in MailPoet are now resized to 600px. Next release will include images from media library.
 * fixed lightbox (popups) width for right to left languages
 * fixed subscription form on WordPress user registration
 * fixed load translation error on Windows server
@@ -364,7 +389,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 = 2.1.8 - 2012-11-27 =
 * added get HTML version of form. See in Widgets.
-* improved Wysija homemade cron, available in Settings > Advanced
+* improved MailPoet homemade cron, available in Settings > Advanced
 * removed validation for first name & last name on subscriber profile
 * fixed incompatibility with "Root Relative URLs" plugin
 * fixed conflict with plugin "Magic Members"
@@ -379,7 +404,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed various plugins conflicting with our subscription form inserted into the content of a post or page
 
 = 2.1.7 - 2012-11-09 =
-* added Wysija custom cron option in Advanced Settings as an alternative to wp-cron
+* added MailPoet custom cron option in Advanced Settings as an alternative to wp-cron
 * fixed translation missing for "unsubscribe", "view in your browser" and "manage your subscription" links
 * fixed escaping quotes on subject in step 3 send preview
 * fixed wrong total of subscribers when sending
@@ -526,7 +551,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * added onload attribute on iframe subscription form which seems more reliable
 * added independant cron manager wysija_cron.php
 * added cleaning the queue of deleted users or deleted emails through phpmyadmin for instance
-* added theme menu erasing Wysija's menu when in the position right below ours
+* added theme menu erasing MailPoet's menu when in the position right below ours
 
 = 2.0.4 - 2012-07-05 =
 
@@ -552,7 +577,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 = 2.0.2 - 2012-06-21 =
 
 * fixed missing title on widget when cache plugin activated
-* fixed update procedure to Wysija version "2.0" failed! on some MySQL servers
+* fixed update procedure to MailPoet version "2.0" failed! on some MySQL servers
 * fixed W3C validation for subscription form with empty action: replace with #wysija
 * fixed forbidden iframe subfolder corrected to a home url with params
 * improved theme installation with PclZip
@@ -588,7 +613,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * improved report after importing csv
 * fixed Warning: sprintf() /helpers/back.php on some environnements
 * fixed roles for creating newsletters or managing subscribers "parent roles can edit as well as child roles if a child role is selected"
-* fixed cron wysija's frequencies added in a cleaner way to avoid conflict with other plugins
+* fixed cron MailPoet's frequencies added in a cleaner way to avoid conflict with other plugins
 * fixed w3c validation on confirmation and unsubscription page
 * improved avoiding duplicates on environment with high sending frequencies
 * removed php show errors lost in resolveConflicts
@@ -638,7 +663,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 * fixed small IE8 and IE9 compatibility issues
 * fixed fatal error for new installation
-* fixed wysija admin white screen on wordpres due to get_current_screen function
+* fixed MailPoet admin white screen on wordpres due to get_current_screen function
 * fixed unsubscribe link disappearing because of qtranslate fix
 * fixed old separators just blocked the email wizard
 * fixed unsubscribe link disappearing because of default color
@@ -707,10 +732,10 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * updated language file (pot) with 20 or so modifications
 
 = 0.9.6 - 2011/12/18 =
-* fixed subscribe from a wysija confirmation page bug
+* fixed subscribe from a MailPoet confirmation page bug
 * fixed campaigns "Column does not exists in model .."
 * fixed address and unsubscribe links appearing at bottom of newsletter a second time
-* fixed menu submenu no wysija but newsletters no js
+* fixed menu submenu no MailPoet but newsletters no js
 * fixed bug statistics opened_at not inserted
 * fixed bug limit subscribers updated on subscribers delete
 * fixed daily cron scandir empty dir

@@ -167,7 +167,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         $config=WYSIJA::get('config','model');
         $linkcontent=__("It doesn't always work the way we want it to, doesn't it? We have a [link]dedicated support website[/link] with documentation and a ticketing system.",WYSIJA);
         $finds=array('[link]','[/link]');
-        $replace=array('<a target="_blank" href="http://support.wysija.com" title="support.wysija.com">','</a>');
+        $replace=array('<a target="_blank" href="http://support.mailpoet.com" title="support.mailpoet.com">','</a>');
         $truelinkhelp='<p>'.str_replace($finds,$replace,$linkcontent).'</p>';
 
         $extra='<a href="admin.php?page=wysija_config&scroll_to=beta_mode_setting#tab-advanced" title="'.__('Switch to beta',WYSIJA).'">'.__('Switch to beta',WYSIJA).'</a>';
@@ -188,7 +188,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             $msg=$config->getValue('ignore_msgs');
             if(!isset($msg['queuesendsslow'])){
                 $this->notice(
-                        __('Tired of waiting more than 48h to send your emails?',WYSIJA).' '. str_replace(array('[link]','[/link]'), array('<a href="http://support.wysija.com/knowledgebase/how-fast-can-i-send-emails-optimal-sending-configurations-explained/?utm_source=wpadmin&utm_campaign=slowqueue" target="_blank">','</a>'), __('[link]Find out[/link] how you can improve this.',WYSIJA)).
+                        __('Tired of waiting more than 48h to send your emails?',WYSIJA).' '. str_replace(array('[link]','[/link]'), array('<a href="http://support.mailpoet.com/knowledgebase/how-fast-can-i-send-emails-optimal-sending-configurations-explained/?utm_source=wpadmin&utm_campaign=slowqueue" target="_blank">','</a>'), __('[link]Find out[/link] how you can improve this.',WYSIJA)).
                         ' <a class="linkignore queuesendsslow" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
             }
         }
@@ -201,7 +201,7 @@ class WYSIJA_help_back extends WYSIJA_help{
                         __("Oops! Looks like your site's event scheduler (wp-cron) is turned off.",WYSIJA).' '.
                         str_replace(
                             array('[link]','[/link]'),
-                            array('<a href="http://support.wysija.com/knowledgebase/your-cron-is-disabled/?utm_source=wpadmin&utm_campaign=notice_message" target="_blank">','</a>'), __('[link]Read more.[/link]',WYSIJA)
+                            array('<a href="http://support.mailpoet.com/knowledgebase/your-cron-is-disabled/?utm_source=wpadmin&utm_campaign=notice_message" target="_blank">','</a>'), __('[link]Read more.[/link]',WYSIJA)
                         ).' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
             }
         }
@@ -407,7 +407,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             $beta_link=$link_start.'"   title="'.__('Switch to beta',WYSIJA).'">'.__('Switch to beta',WYSIJA).'</a>';
         }
         if( (is_multisite() && !WYSIJA::current_user_can('manage_network')) || (!is_multisite() && !WYSIJA::current_user_can('switch_themes')) ) $beta_link='';
-        $wysija_footer_links.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.wysija.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support',WYSIJA).'</a>'.$beta_link;
+        $wysija_footer_links.= '<div id="upperfoot"><div class="support"><a target="_blank" href="http://support.mailpoet.com/?utm_source=wpadmin&utm_campaign=footer" >'.__('Support',WYSIJA).'</a>'.$beta_link;
 
         add_filter('wysija_footer_add_stars', array($this,'footer_add_stars'),10);
         $wysija_footer_links.=apply_filters('wysija_footer_add_stars', '');

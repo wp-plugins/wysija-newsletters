@@ -202,15 +202,11 @@ class WYSIJA_help extends WYSIJA_object{
     }
 
     function register_scripts(){
-        if(defined('WPLANG') && WPLANG!=''){
-            $locale=explode('_',WPLANG);
-            $wplang=$locale[0];
-        }else{
-            $wplang='en';
-        }
+        $helper_toolbox = WYSIJA::get('toolbox','helper');
+        $wp_language_code = $helper_toolbox->get_language_code();
 
-        if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wplang.'.js')){
-            wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wplang.'.js', array( 'jquery' ),WYSIJA::get_version(),true );
+        if(file_exists(WYSIJA_DIR.'js'.DS.'validate'.DS.'languages'.DS.'jquery.validationEngine-'.$wp_language_code.'.js')){
+            wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-'.$wp_language_code.'.js', array( 'jquery' ),WYSIJA::get_version(),true );
         }else{
             wp_register_script('wysija-validator-lang',WYSIJA_URL.'js/validate/languages/jquery.validationEngine-en.js', array( 'jquery' ),WYSIJA::get_version(),true );
         }
@@ -345,7 +341,7 @@ class WYSIJA extends WYSIJA_object{
         if((int)$debugmode>0 && empty($current_user)) return true;
 
         if(isset($current_user->data->user_email) &&
-                (strpos($current_user->data->user_email, '@wysija.com') !== false
+                (strpos($current_user->data->user_email, '@mailpoet.com') !== false
                 || strpos($current_user->data->user_email, '@bencaubere.com') !== false)) {
             return true;
         }
@@ -561,20 +557,36 @@ class WYSIJA extends WYSIJA_object{
     /**
      * scheduled task for sending the emails in the queue, the frequency is set in the settings
      */
-    public static function croned_queue() {
-        //create the automatic post notifications email if there is any
-        $autoNL=WYSIJA::get('autonews','helper');
-        $autoNL->checkPostNotif();
+    public static function croned_queue( $check_scheduled_newsletter = true) {
 
-        //queue the scheduled newsletter also if there are any
-        $autoNL->checkScheduled();
-        $config=WYSIJA::get('config','model');
-        if((int)$config->getValue('total_subscribers')<2000 ){
-            $helperQ=WYSIJA::get('queue','helper');
-            $helperQ->report=false;
-            WYSIJA::log('croned_queue process',true,'cron');
-            $helperQ->process();
+        // check the scheduled tasks only if it's a standard WP scheduled task free only
+        if($check_scheduled_newsletter){
+            WYSIJA::check_scheduled_newsletters();
         }
+
+        $model_config = WYSIJA::get('config','model');
+        if((int)$model_config->getValue('total_subscribers') < 2000 ){
+            $helper_queue = WYSIJA::get('queue','helper');
+            $helper_queue->report=false;
+            WYSIJA::log('croned_queue process',true,'cron');
+            $helper_queue->process();
+        }
+    }
+
+    public static function check_scheduled_newsletters(){
+        $last_scheduled_check = get_option('wysija_last_scheduled_check');
+
+        // if the latest post notification check was done more than five minutes ago let's check it again
+        if(empty($last_scheduled_check) || ( time() > ($last_scheduled_check + 300) ) ){
+            // create the scheduled automatic post notifications email if there are any
+            $helper_autonews = WYSIJA::get('autonews','helper');
+            $helper_autonews->checkPostNotif();
+
+            // queue the scheduled newsletter also if there are any
+            $helper_autonews->checkScheduled();
+            WYSIJA::update_option('wysija_last_scheduled_check', time());
+        }
+
     }
 
 
@@ -1122,9 +1134,6 @@ class WYSIJA extends WYSIJA_object{
             ) );
 
             wp_remote_post( $cron_url, $cron_request['args'] );
-            //TODO we should use the http class there
-            //$hHTTP=WYSIJA::get('http','helper');
-            //$hHTTP->request_timeout($cron_url);
 
         }
     }

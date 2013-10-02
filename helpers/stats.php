@@ -53,7 +53,7 @@ class WYSIJA_help_stats extends WYSIJA_object{
             $html.='<h2>'.sprintf(__('Here is the list of bounced emails.',WYSIJA),$total).'</h2>';
 
             foreach($details as $email){
-                $html.='<h4>'.$email['email'].'</h4>';
+                $html.='<p>'.$email['email'].'</p>';
             }
         }
         $html.='<p>'.__('Cheers, your Wysija Newsletter Plugin',WYSIJA).'</p>';
@@ -105,19 +105,4 @@ class WYSIJA_help_stats extends WYSIJA_object{
         return $data;
     }
 
-   function share(){
-       $data=$this->getDomainStats();
-
-        if(!$js) {
-            WYSIJA::update_option('wysijey',$data);
-        }
-        $res['domain_name']=$data;
-        $res['nocontact']=false;
-
-        $httpHelp=WYSIJA::get('http','helper');
-        $jsonResult = $httpHelp->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=shareData&data='.$data);
-        if($jsonResult){
-
-        }
-   }
 }

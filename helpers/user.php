@@ -536,7 +536,7 @@ class WYSIJA_help_user extends WYSIJA_object{
             // actually, this case is not implemeted yet
             // in this case user_ids is just one user object
             // $users=array($user_ids);
-            exit('Not implemented! Please contact Wysija.com');
+            exit('Not implemented! Please contact mailpoet.com');
         }elseif($is_batch_select){
             // in this case $users_ids = an associated array('query', 'from', 'select', ...etc)
             $list_user_ids = $user_ids['query'];
@@ -550,7 +550,7 @@ class WYSIJA_help_user extends WYSIJA_object{
         // table queue to delete
         $tables = array(
             'user_history',
-            'user_url',
+            'email_user_url',
             'email_user_stat',
             'user_list',
             'queue',
@@ -912,16 +912,22 @@ class WYSIJA_help_user extends WYSIJA_object{
      */
     function getIP(){
         $ip = '';
-        if( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) AND strlen($_SERVER['HTTP_X_FORWARDED_FOR'])>6 ){
+
+        // cloudFlare IP check
+        if(isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+              $ip = strip_tags($_SERVER['HTTP_CF_CONNECTING_IP']);
+        }elseif( !empty($_SERVER['HTTP_X_FORWARDED_FOR']) AND strlen($_SERVER['HTTP_X_FORWARDED_FOR'])>6 ){
             $ip = strip_tags($_SERVER['HTTP_X_FORWARDED_FOR']);
         }elseif( !empty($_SERVER['HTTP_CLIENT_IP']) AND strlen($_SERVER['HTTP_CLIENT_IP'])>6 ){
              $ip = strip_tags($_SERVER['HTTP_CLIENT_IP']);
         }elseif(!empty($_SERVER['REMOTE_ADDR']) AND strlen($_SERVER['REMOTE_ADDR'])>6){
              $ip = strip_tags($_SERVER['REMOTE_ADDR']);
         }//endif
-        if(!$ip) $ip='127.0.0.1';
+        if(empty($ip)) $ip='127.0.0.1';
         return strip_tags($ip);
     }
+
+
 
     /**
      * verify that an email string is valid
@@ -929,11 +935,40 @@ class WYSIJA_help_user extends WYSIJA_object{
      * @return boolean
      */
     function validEmail($email){
-            if(empty($email) OR !is_string($email)) return false;
+        //1 - check if the email parameter looks like an email
+        if(empty($email) || !is_string($email) || strpos($email, '@') === false) return false;
 
-            $stringSpecialChars='\æ\ø\å\ä\ö\ü';
-            if(!preg_match('/^([a-z0-9_\'&\.\-\+'.$stringSpecialChars.'])+\@(([a-z0-9\-'.$stringSpecialChars.'])+\.)+([a-z0-9]{2,10})+$/i',$email)) return false;
-            return true;
+        //2 - pregmatch the email
+        $check_domain = false;
+        $preg_check = true;
+        $string_special_chars = '\æ\ø\å\ä\ö\ü';
+        $email_pattern = '/^([a-z0-9_\'&\.\-\+'.$string_special_chars.'])+\@(([a-z0-9\-'.$string_special_chars.'])+\.)+([a-z0-9\-'.$string_special_chars.']{2,10})+$/i';
+        //$string_special_chars = '';
+        $model_config = WYSIJA::get('config','model');
+        if($model_config->getValue('email_cyrillic')){
+            // check domain
+            $preg_check = false;
+        }
+
+        if($model_config->getValue('check_domain')){
+            // check domain
+            $check_domain = true;
+        }
+
+        if($preg_check){
+            if(!preg_match($email_pattern , $email)) return false;
+        }
+
+
+        if($check_domain){
+            //3 - make sure the domain of the email exists
+            $helper_toolbox = WYSIJA::get('toolbox' , 'helper');
+
+            if(!$helper_toolbox->check_email_domain($email)) return false;
+        }
+        return true;
+
+
     }
 
     /**

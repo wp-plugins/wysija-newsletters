@@ -28,7 +28,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'debug_log_manual',
 
     );
-    var $defaults=array(
+    var $defaults = array(
         'limit_listing'=>10,
         'role_campaign'=>'switch_themes',
         'role_subscribers'=>'switch_themes',
@@ -43,6 +43,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'confirm_dbleoptin' =>1,
         'bounce_selfsigned'=>0,
         'bounce_email_notexists'=>'unsub',
+        'bouncing_emails_each'=>'daily',
         'bounce_inbox_full'=>'not',
         'pluginsImportedEgg'=>false,
         'advanced_charset'=>'UTF-8',
@@ -67,9 +68,11 @@ class WYSIJA_model_config extends WYSIJA_object{
         'ms_sending_emails_number'=>'100',
         'ms_allow_admin_sending_method'=>false,
         'ms_allow_admin_toggle_signup_confirmation'=>false,
+        'ms_bouncing_emails_each'=>'daily',
         'cron_page_hit_trigger'=>1,
         'beta_mode'=>false,
         'cron_manual'=>true,
+        'email_cyrillic' => false,
     );
 
     var $capabilities=array();
@@ -235,9 +238,9 @@ class WYSIJA_model_config extends WYSIJA_object{
                 }
 
                 //bounce frequency has been changed
-                if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each']!=$this->getValue('bouncing_emails_each')){
+                if(isset($data['bouncing_emails_each']) && $data['bouncing_emails_each'] != $this->getValue('bouncing_emails_each')){
                     $bouncing_freq_has_changed=true;
-                    $data['last_save']=time();
+                    $data['last_save'] = time();
                 }
 
                 //if saved with gmail then we set up the smtp settings
@@ -331,7 +334,7 @@ class WYSIJA_model_config extends WYSIJA_object{
                 $is_multisite=is_multisite();
 
                 //$is_multisite=true;//PROD comment that line
-                if($is_multisite && $data['ms_sending_config']=='one-for-all') {
+                if($is_multisite && $data['sending_method']=='network') {
 
                     $from_email=$data['ms_from_email'];
                 }
@@ -469,11 +472,9 @@ class WYSIJA_model_config extends WYSIJA_object{
 
         if($editor){
             $modelU=WYSIJA::get('user','model',false,'wysija-newsletters',false);
-            $modelU->getFormat=OBJECT;
-            $objUser=$modelU->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
 
-            $unsubscribe[0]['link'] = $modelU->getConfirmLink($objUser,'unsubscribe',false,true).'&demo=1';
-            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink($objUser,'subscriptions',false,true);
+            $unsubscribe[0]['link'] = $modelU->getConfirmLink(false,'unsubscribe',false,true).'&demo=1';
+            if($this->getValue('manage_subscriptions')) $unsubscribe[1]['link'] = $modelU->getConfirmLink(false,'subscriptions',false,true);
         }
 
         return $unsubscribe;

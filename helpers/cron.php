@@ -65,27 +65,47 @@ class WYSIJA_help_cron extends WYSIJA_object{
     /**
      * check that one scheduled task is ready to be executed
      * @param type $cron_schedules list of recorded cron schedules
-     * @param type $processNK what to process all, queue, bounce etc...
+     * @param type $processNK what to process queue, bounce etc...
      */
     function check_scheduled_task($cron_schedules,$processNK){
         $helper_toolbox = WYSIJA::get('toolbox','helper');
         $time_passed = $time_left = 0;
-        if($cron_schedules[$processNK]['running']){
-            $time_passed = time()-$cron_schedules[$processNK]['running'];
+        $run_scheduled = true;
+        $extra_text = '';
+        // this is to display a different message whether we're dealing with bounce or not.
+        if($processNK == 'bounce'){
+             $model_config = WYSIJA::get( 'config' , 'model' );
+             // if premium is activated we launch the premium function
+             if(is_multisite()){
+                 $multisite_prefix='ms_';
+             }
+
+             // we don't process the bounce automatically unless the option is ticked
+             if(!(defined('WYSIJANLP') && $model_config->getValue( $multisite_prefix . 'bounce_process_auto' )) ){
+                 $extra_text = ' (bounce handling not activated)';
+                 $run_scheduled=false;
+             }
+
+        }
+
+        // calculate the time passed processing a scheduled task
+        if(!empty($cron_schedules[$processNK]['running'])){
+            $time_passed = time()- $cron_schedules[$processNK]['running'];
             $time_passed = $helper_toolbox->duration($time_passed,true,2);
         }else{
-            $time_left = $cron_schedules[$processNK]['next_schedule']-time();
+            $time_left = $cron_schedules[$processNK]['next_schedule'] - time();
             $time_left = $helper_toolbox->duration($time_left,true,2);
         }
 
-        if($cron_schedules[$processNK]['next_schedule']<time() && !$cron_schedules[$processNK]['running']){
+        if($run_scheduled && $cron_schedules[$processNK]['next_schedule'] < time() && !$cron_schedules[$processNK]['running']){
             if($this->report) echo 'exec process '.$processNK.'<br/>';
             $this->run_scheduled_task($processNK);
         }else{
            if($this->report){
-               if($time_passed) $texttime = ' running since : '.$time_passed;
-               else  $texttime = ' next run : '.$time_left;
-               echo 'skip process <strong>'.$processNK.'</strong>'.$texttime.'<br/>';
+               if($time_passed) $text_time = ' running since : '.$time_passed;
+               else  $text_time = ' next run : '.$time_left;
+               if(!empty($extra_text)) $text_time = $extra_text;
+               echo 'skip process <strong>'.$processNK.'</strong>'.$text_time.'<br/>';
            }
         }
     }
@@ -95,12 +115,14 @@ class WYSIJA_help_cron extends WYSIJA_object{
      * @param type $process
      * @return type
      */
-    function run_scheduled_task($process='queue'){
-
-        // first let's make sure that the process asked to be run is not still   running
+    function run_scheduled_task($process = 'queue'){
+        //first let's make sure that the process asked to be run is not already running
         $scheduled_times = WYSIJA::get_cron_schedule($process);
         $processes = WYSIJA::get_cron_frequencies();
         $process_frequency = $processes[$process];
+
+        // check if the scheduled task is already being processed,
+        // we consider it timed out once the started running time plus the frequency has been passed
         if(!empty($scheduled_times['running']) && ($scheduled_times['running'] + $process_frequency) > time()){
             if($this->report)   echo 'already running : '.$process.'<br/>';
             return;
@@ -112,22 +134,33 @@ class WYSIJA_help_cron extends WYSIJA_object{
         // execute schedule
         switch($process){
             case 'queue':
+                // check if there are any scheduled newsletters ready for action
+                WYSIJA::check_scheduled_newsletters();
 
                 // if premium is activated we execute the premium cron process
                 if(defined('WYSIJANLP')){
                     $helper_premium = WYSIJA::get('premium', 'helper', false, WYSIJANLP);
                     $helper_premium->croned_queue_process();
                 }else{
-                    // run the standard queue process
-                    WYSIJA::croned_queue($process);
+                    // run the standard queue process no scheduled tasks will be check since it has already been checked above
+                    WYSIJA::croned_queue(false);
                 }
                 break;
             case 'bounce':
+                $helper_premium = WYSIJA::get('premium', 'helper', false, WYSIJANLP);
+                $model_config = WYSIJA::get( 'config' , 'model' );
                 // if premium is activated we launch the premium function
-                if(defined('WYSIJANLP')){
-                    $helper_premium = WYSIJA::get('premium', 'helper', false, WYSIJANLP);
-                    $helper_premium->croned_bounce();
+                if(is_multisite()){
+                    $multisite_prefix='ms_';
                 }
+
+                // we don't process the bounce automatically unless the option is ticked
+                if(defined('WYSIJANLP') && $model_config->getValue( $multisite_prefix . 'bounce_process_auto' )){
+                    $helper_premium->croned_bounce();
+                }else{
+                    $process .= ' (bounce handling not activated)';
+                }
+
                 break;
             case 'daily':
                 WYSIJA::croned_daily();

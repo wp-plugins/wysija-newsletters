@@ -41,7 +41,7 @@ class WYSIJA_help_front extends WYSIJA_help{
                 if($paramscontroller=='stat') $paramscontroller='stats';
 
                 $this->controller=WYSIJA::get($paramscontroller,'controller');
-                if(method_exists($this->controller, $_REQUEST['action'])){
+                if(isset($_REQUEST['action']) && method_exists($this->controller, $_REQUEST['action'])){
                     add_action('init',array($this->controller,$_REQUEST['action']));
                     //$this->controller->$_REQUEST['action']();
                 }else $this->error('Action does not exist.');
@@ -101,6 +101,8 @@ class WYSIJA_help_front extends WYSIJA_help{
            }
         }
     }
+
+
     function wpmu_activate_user($wpuser_id){
         if((int)$wpuser_id>0){
             $model_user = WYSIJA::get('user','model');
@@ -228,6 +230,8 @@ class WYSIJA_help_front extends WYSIJA_help{
      * @return string html
      */
     function scan_form_shortcode($attributes) {
+        // this is to make sure MagicMember won't scan our form and find [user_list] as a code they should replace.
+        remove_shortcode('user_list');
 
         if(isset($attributes['id']) && (int)$attributes['id']>0){
             $widget_data=array();

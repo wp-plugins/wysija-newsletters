@@ -23,6 +23,9 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->jsTrans['processbounce'] = __('Process bounce handling now!', WYSIJA);
         $this->jsTrans['errorbounceforward'] = __('When setting up the bounce system, you need to have a different address for the bounce email and the forward to address', WYSIJA);
 
+        $this->jsTrans['premium_activate'] = __('Already paid? Click here to activate', WYSIJA);
+        $this->jsTrans['premium_activating'] = __('Checking license', WYSIJA);
+
         // form list
         $this->jsTrans['suredelete'] = __('Are you sure you want to delete this form?', WYSIJA);
 
@@ -31,6 +34,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
             case 'save':
             case 'clearlog':
                 wp_enqueue_script('wysija-config-settings', WYSIJA_URL.'js/admin-config-settings.js', array('wysija-admin-js-global'), WYSIJA::get_version());
+                wp_enqueue_script('jquery-cookie', WYSIJA_URL.'js/jquery/jquery.cookie.js', array('jquery'), WYSIJA::get_version());
             case 'form_add':
             case 'form_edit':
             case 'form_duplicate':

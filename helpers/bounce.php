@@ -814,6 +814,10 @@ class WYSIJA_help_bounce extends WYSIJA_help {
         elseif ($encoding == 4)
             $content = imap_qprint($content);
         //Other cases??
+        //added for a client who had issue when message was base64
+        if(base64_decode($content,true)!==FALSE)
+            $content = base64_decode($content);
+
         //Now we convert into utf-8!
         //$charset = $this->_getMailParam($structure,'charset');
         // removes attachment to prevent bounce handling timeout
@@ -937,7 +941,7 @@ class WYSIJA_help_bounce extends WYSIJA_help {
         // we will delete one by one all of the data from the users that need to be removed
         $tables = array(
             'user_history',
-            'user_url',
+            'email_user_url',
             'email_user_stat',
             'user_list',
             'queue',
@@ -956,7 +960,7 @@ class WYSIJA_help_bounce extends WYSIJA_help {
         }
 
         // delete process from  the  user table needs to be made through a join since we cannot nest select from the same table we delete from
-        $query_delete_user = 'DELETE A.* [wysija]user as A JOIN '.$main_site_prefix.'bounce as B on A.email = B.email';
+        $query_delete_user = 'DELETE FROM A.* [wysija]user as A JOIN '.$main_site_prefix.'bounce as B on A.email = B.email';
         $this->subClass->query($query_delete_user);
 
         // central query to fetch the id of the bounced emails of the unsubscribe action
@@ -1062,17 +1066,21 @@ class WYSIJA_help_bounce extends WYSIJA_help {
         }
 
         //  insert the message or just the action taken on that message in the main bounce table
-        switch_to_blog($this->_message->site_id);
-        $result_subscriber = $this->subClass->getOne(array('email'),array('user_id'=>$this->_message->user_id));
+
+        // get the prefix of the current child site
+        $bounced_site_prefix = $this->subClass->get_site_prefix($this->_message->site_id);
+        // get the email of the bounced message based on the user_id and the site_id
+        $query = 'SELECT email FROM `'.$bounced_site_prefix.'user` WHERE user_id='.(int)$this->_message->user_id.' LIMIT 0 , 1';
+        $result_subscriber = $this->subClass->query('get_res',$query,OBJECT);
+
         $this->subClass->reset();
-        restore_current_blog();
 
         if(strpos($one_rule['action_user'], 'unsub')!==false) $action_taken='unsubscribe';
         elseif($one_rule['action_user']!='') $action_taken='delete';
 
         $main_site_prefix=$this->subClass->get_site_prefix();
         $query_insert_bounce_ms='INSERT INTO `'.$main_site_prefix.'bounce` (`email`,`site_id`,`user_id`,`email_id`,`action_taken`,`case`,`message`,`created_at`)';
-        $query_insert_bounce_ms.= " VALUES ('".$result_subscriber->email."','".(int)$this->_message->site_id."','".(int)$this->_message->user_id."','".(int)$this->_message->email_id."','".$action_taken."', '".$one_rule['key']."', '".  mysql_real_escape_string($email_copy)."', '".time()."')";
+        $query_insert_bounce_ms.= " VALUES ('".$result_subscriber[0]->email."','".(int)$this->_message->site_id."','".(int)$this->_message->user_id."','".(int)$this->_message->email_id."','".$action_taken."', '".$one_rule['key']."', '".  mysql_real_escape_string($email_copy)."', '".time()."')";
 
         $this->subClass->query($query_insert_bounce_ms);
 

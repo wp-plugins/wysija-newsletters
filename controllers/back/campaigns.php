@@ -44,8 +44,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $video_language['sv_SE']='http://www.youtube.com/embed/O8_t_dekx74';
         $video_language['ar']='http://www.youtube.com/embed/cyDHlX_qgOo';
 
-        if(defined('WPLANG') && WPLANG!='' && isset($video_language[WPLANG])){
-            $welcome_video_link = $video_language[WPLANG];
+        $wp_lang = get_locale();
+        if(!empty($wp_lang) && isset($video_language[$wp_lang])){
+            $welcome_video_link = $video_language[$wp_lang];
         }else{
             $welcome_video_link = $video_language['en_EN'];
         }
@@ -96,15 +97,15 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                     'title'=>__('Share your data',WYSIJA),
                     'content'=>  str_replace(
                             array('[link]', '[/link]', '[ajaxlink]', '[/ajaxlink]'),
-                            array('<a title="Anonymous Data" target="_blank" href="http://support.wysija.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=welcome_page">', '</a>', '<a id="share_analytics" href="javascript:;">', '</a>'),
+                            array('<a title="Anonymous Data" target="_blank" href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=welcome_page">', '</a>', '<a id="share_analytics" href="javascript:;">', '</a>'),
                             __("We know too little about our users. We're looking for [link]anonymous data[/link] to build a better plugin. [ajaxlink]Yes, count me in![/ajaxlink]",WYSIJA))
                     ),
                 array(
                     'title'=>__('Help yourself. Or let us help you.',WYSIJA),
                     'content'=>  str_replace(
                             array('[link]','[/link]'),
-                            array('<a href="http://support.wysija.com/" target="_blank" title="On our blog!">','</a>'),
-                            __('We got documentation and a ticket system on [link]support.wysija.com[/link]. We answer within 24h.',WYSIJA))
+                            array('<a href="http://support.mailpoet.com/" target="_blank" title="On our blog!">','</a>'),
+                            __('We got documentation and a ticket system on [link]support.mailpoet.com[/link]. We answer within 24h.',WYSIJA))
                     )
                 ),
             'format'=>'three-col',
@@ -116,7 +117,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'paragraphs'=>array(
             str_replace(
                     array('[link]','[/link]'),
-                    array('<a href="http://www.wysija.com/you-want-to-help-us-out/" target="_blank">','</a>'),
+                    array('<a href="http://www.mailpoet.com/you-want-to-help-us-out/" target="_blank">','</a>'),
                     __('So who are we? We\'re 4 guys who decided in 2011 that WordPress needed a better emailing solution. The tag line <em>What You Send Is Just Awesome</em> was born and the acronym Wysija became our name. If you like what we do, make sure [link]you spread the good word[/link].',WYSIJA))
                 )
         );
@@ -203,7 +204,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
                         'title'=>__('Share your data, help Wysija',WYSIJA),
                         'content'=>  str_replace(
                                 array('[link]', '[/link]', '[ajaxlink]', '[/ajaxlink]'),
-                                array('<a title="Open in new tab" target="_blank" href="http://support.wysija.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=update_page">', '</a>', '<a id="share_analytics" href="javascript:;">', '</a>'),
+                                array('<a title="Open in new tab" target="_blank" href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_source=wpadmin&utm_campaign=update_page">', '</a>', '<a id="share_analytics" href="javascript:;">', '</a>'),
                                 __("We're looking for [link]anonymous data[/link] to build a better plugin. [ajaxlink]<strong>Yes, count me in!</strong>[/ajaxlink]",WYSIJA))
                 	),
                 ),
@@ -319,7 +320,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     /* START prem check hook */
-    // when curl or any php remote function not available wysija.com returns lcheck to that function
+    // when curl or any php remote function not available mailpoet.com returns lcheck to that function
     function licok() {
         parent::WYSIJA_control_back();
         $dt = get_option('wysijey');
@@ -331,7 +332,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $dataconf = array('premium_key' => '', 'premium_val' => '');
 
             $helper_licence=WYSIJA::get('licence','helper');
-            $url_premium = 'http://www.wysija.com/checkout/?wysijadomain='.$dt.'&nc=1&utm_source=wpadmin&utm_campaign=error_licence_activation';
+            $url_premium = 'http://www.mailpoet.com/checkout/?wysijadomain='.$dt.'&nc=1&utm_source=wpadmin&utm_campaign=error_licence_activation';
 
             $this->error(str_replace(array('[link]','[/link]'),array('<a href="'.$url_premium.'" target="_blank">','</a>'),
             __('Premium licence does not exist for your site. Purchase it [link]here[/link].',WYSIJA)), 1);
@@ -393,10 +394,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             $helper_bounce->record_bounce_ms();
 
             // then we take actions from what has been returned by the bounce
-            return $helper_bounce->process_bounce_ms();
+            $helper_bounce->process_bounce_ms();
         }else{
-           return $helper_bounce->process_bounce();
+           $helper_bounce->process_bounce();
         }
+        exit;
     }
 
     function add($dataPost=false){
@@ -741,17 +743,16 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
     }
 
     function immediateWarning(){
-        $mConfig=WYSIJA::get('config','model');
-
-        $is_multisite=is_multisite();
+        $model_config = WYSIJA::get('config','model');
+        $is_multisite = is_multisite();
 
         //$is_multisite=true;//PROD comment that line
-        if($is_multisite && $mConfig->getValue('sending_method')=='network'){
-           $sending_emails_each=$mConfig->getValue('ms_sending_emails_each');
-           $number=$mConfig->getValue('ms_sending_emails_number');
+        if($is_multisite && $model_config->getValue('sending_method') == 'network'){
+           $sending_emails_each = $model_config->getValue('ms_sending_emails_each');
+           $number = $model_config->getValue('ms_sending_emails_number');
         }else{
-           $sending_emails_each=$mConfig->getValue('sending_emails_each');
-           $number=$mConfig->getValue('sending_emails_number');
+           $sending_emails_each = $model_config->getValue('sending_emails_each');
+           $number = $model_config->getValue('sending_emails_number');
         }
 
         $formsHelp=WYSIJA::get('forms','helper');
@@ -1412,11 +1413,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
         $this->jsTrans['processqueue']=__('Sending batch of emails...',WYSIJA);
         $this->jsTrans['viewnews']=__('View newsletter',WYSIJA);
         $this->jsTrans['confirmpauseedit']=__('The newsletter will be deactivated, you will need to reactivate it once you\'re over editing it. Do you want to proceed?',WYSIJA);
-        //make sure that there is no late scheduled or automatic newsletter
-        $autoNL=WYSIJA::get('autonews','helper');
-        $autoNL->checkPostNotif();
-        $autoNL->checkScheduled();
-        $config=WYSIJA::get('config','model');
+
         //get the filters
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
             $this->filters['like']=array();

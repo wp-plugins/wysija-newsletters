@@ -54,8 +54,8 @@ class WYSIJA_model_list extends WYSIJA_model{
     function getLists(){
         $model_user = WYSIJA::get('user','model');
 
-        $query='SELECT A.name, A.list_id, A.created_at, A.is_enabled, A.is_public, A.namekey, 0 as subscribers, 0 as campaigns_sent
-        FROM '.$this->getPrefix().'list as A';
+        $query='SELECT A.`name`, A.`list_id`, A.`created_at`, A.`is_enabled`, A.`is_public`, A.`namekey`, 0 as subscribers, 0 as campaigns_sent
+        FROM '.$this->getPrefix().'list as A ORDER BY A.`name`';
 
         $this->countRows=$this->count($query);
 
@@ -71,7 +71,15 @@ class WYSIJA_model_list extends WYSIJA_model{
         $list_ids = array_keys($lists_details);
 
 
-        $counts_per_list = $model_user->count_users_per_list($list_ids);
+        $model_config = WYSIJA::get('config' , 'model');
+        if($model_config->getValue('speed_no_count')){
+            // we disable the count in order to speed up the process
+            $counts_per_list = array();
+        }else{
+            // these count requests can take a lot of time on big databases, we need to change the db diagram slightly to improve that
+            $counts_per_list = $model_user->count_users_per_list($list_ids);
+        }
+
 
         // get the count of confirmed user per each and unconfirmed user per list
         foreach($lists_details as $key_list_id => &$result){

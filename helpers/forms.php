@@ -25,9 +25,9 @@ class WYSIJA_help_forms{
                             'fifteen_min'=> '900',
                             'thirty_min'=> '1800',
                             'hourly'=> '3600',
-                            'two_hours'=>'7200'
-                            //'twicedaily'=> '43200',
-                            //'daily'=> '86400'
+                            'two_hours'=>'7200',
+                            'twicedaily'=> '43200',
+                            'daily'=> '86400'
                             );
     }
 
@@ -58,7 +58,7 @@ class WYSIJA_help_forms{
                     unset($data['value']);
             }
 
-            return "<textarea ".$this->setAttrib($data, $defaults).$extra.">".$val."</textarea>";
+            return '<textarea '.$this->setAttrib($data, $defaults).$extra.'>'.$val.'</textarea>';
     }
 
 

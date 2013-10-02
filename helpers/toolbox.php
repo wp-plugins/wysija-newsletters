@@ -253,6 +253,16 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
         return $server_time - $time_difference;
     }
 
+    function site_current_time($date_format = 'H:i:s'){
+        // display the current time
+        $current_server_time = time();
+        $gmt_time = $current_server_time - date('Z');
+
+        //this is the local time on this site :  current time at GMT-0 + the offset chosen in WP settings
+        $current_local_time = $gmt_time + ( get_option( 'gmt_offset' ) * 3600 );
+        return date($date_format , $current_local_time);
+    }
+
     /**
      * get the translated day name based on a lowercase day namekey
      * @param type $day if specified we return only one value otherwise we return the entire array
@@ -315,5 +325,67 @@ class WYSIJA_help_toolbox extends WYSIJA_object{
 
         if(!$day || !isset($daynumbers[$day])) return $daynumbers;
         else return $daynumbers[$day];
+    }
+
+    /**
+     * we use to deal with the WPLANG constant but that's silly considering there are plugins like
+     * WPML which needs to alter that value
+     * @return string
+     */
+    function get_language_code(){
+
+        // in WP Multisite if we have a WPLANG defined in the wp-config,
+        // it won't be used each site needs to have a WPLANG option defined and if it's not defined it will be empty and default to en_US
+        if ( is_multisite() ) {
+		// Don't check blog option when installing.
+		if ( defined( 'WP_INSTALLING' ) || ( false === $ms_locale = get_option( 'WPLANG' ) ) )
+			$ms_locale = get_site_option('WPLANG');
+
+		if ( $ms_locale !== false )
+			$locale = $ms_locale;
+                // make sure we don't default to en_US if we have an empty locale and a WPLANG defined
+                if(empty($locale)) $locale = WPLANG;
+	}else{
+            $locale = get_locale();
+        }
+
+        if($locale!=''){
+            if(strpos($locale, '_')!==false){
+                $locale = explode('_',$locale);
+                $language_code = $locale[0];
+            }else{
+                $language_code = $locale;
+            }
+        }else{
+            $language_code = 'en';
+        }
+        return $language_code;
+    }
+
+    /**
+     * check if a domain exist
+     * @param type $domain
+     * @return boolean
+     */
+    function check_domain_exist($domain){
+
+        $mxhosts = array();
+        // 1 - Check if the domain exists
+        $checkDomain = getmxrr($domain, $mxhosts);
+        // 2 - Sometimes the returned host is checkyouremailaddress-hostnamedoesnotexist262392208.com ... not sure why!
+        // But we remove it if it's the case...
+        if(!empty($mxhosts) && strpos($mxhosts[0],'hostnamedoesnotexist')) array_shift($mxhosts);
+
+
+        if(!$checkDomain || empty($mxhosts)){
+                // 3 - Lets check with another function in case of...
+                $dns = @dns_get_record($domain, DNS_A);
+                if(empty($dns)) return false;
+        }
+        return true;
+    }
+
+    function check_email_domain($email){
+        return $this->check_domain_exist(substr($email,strrpos($email,'@')+1));
     }
 }

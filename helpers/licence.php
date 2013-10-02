@@ -15,7 +15,7 @@ class WYSIJA_help_licence extends WYSIJA_help{
      * @return string
      */
     function get_url_checkout($source = 'not_specified'){
-        return 'http://www.wysija.com/checkout/?wysijadomain='.$this->getDomainInfo(true).'&nc=1&utm_source=wpadmin&utm_campaign='.$source;
+        return 'http://www.mailpoet.com/checkout/?wysijadomain='.$this->getDomainInfo(true).'&nc=1&utm_source=wpadmin&utm_campaign='.$source;
     }
 
     /**
@@ -48,10 +48,6 @@ class WYSIJA_help_licence extends WYSIJA_help{
 
             $domain_data['installed_time'] = $model_config->getValue('installed_time');
 
-            $over = array(1900, 2000, 5000, 10000, 20000, 50000, 100000, 200000, 500000, 1000000);
-            foreach($over as $value_over){
-                if($model_config->getValue('total_subscribers') > $value_over) $domain_data['over'] = $value_over;
-            }
         }
 
         return base64_encode(serialize($domain_data));
@@ -74,11 +70,10 @@ class WYSIJA_help_licence extends WYSIJA_help{
             $json_result=false;
         }else{
             $helper_http = WYSIJA::get('http','helper');
-            $json_result = $helper_http->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domain_data);
+            $json_result = $helper_http->wp_request('http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domain_data);
         }
 
-
-        if($json_result) {
+        if($json_result!==false) {
             $decoded = json_decode($json_result, true);
 
             if(isset($decoded['result']) === false) {
@@ -128,7 +123,7 @@ class WYSIJA_help_licence extends WYSIJA_help{
                         }
                         $this->error(str_replace(
                                 array('[link]','[/link]','%1$s'),
-                                array('<a href="http://www.wysija.com/account/licences/" target="_blank">','</a>',$decoded['domain']),
+                                array('<a href="http://www.mailpoet.com/account/licences/" target="_blank">','</a>',$decoded['domain']),
                                 $error_msg), true);
                     }
 
@@ -136,7 +131,7 @@ class WYSIJA_help_licence extends WYSIJA_help{
                     $config_data = array('premium_key' => '', 'premium_val' => '');
 
                     // error message
-                    //$this->error(str_replace(array('[link]','[/link]'),array('<a href="http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$domainData.'" target="_blank">','</a>'), __('Premium licence does not exist for your site. Purchase from our website [link]here[/link].',WYSIJA)), 1);
+                    //$this->error(str_replace(array('[link]','[/link]'),array('<a href="http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$domainData.'" target="_blank">','</a>'), __('Premium licence does not exist for your site. Purchase from our website [link]here[/link].',WYSIJA)), 1);
                      WYSIJA::update_option('wysicheck', false);
                 }
 
@@ -186,14 +181,14 @@ class WYSIJA_help_licence extends WYSIJA_help{
                 $mConfig->save($configData);
             }
 
-        }else{//fetch them through a request to wysija.com
+        }else{//fetch them through a request to mailpoet.com
             $domainData=$this->getDomainInfo();
             $hHTTP = WYSIJA::get('http','helper');
 
-            $jsonResult = $hHTTP->request('http://www.wysija.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&data='.$domainData);
+            $jsonResult = $hHTTP->wp_request('http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDkimNew&data='.$domainData);
 
             //remotely connect to host
-            if($jsonResult){
+            if($jsonResult!==false){
                 $decoded=json_decode($jsonResult);
 
                 $configData=array('dkim_domain'=>$dkim_domain,'dkim_privk'=>$decoded->dkim_privk,'dkim_pubk'=>$decoded->dkim_pubk->key,'dkim_1024'=>1);
