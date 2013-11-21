@@ -666,15 +666,20 @@ class WYSIJA extends WYSIJA_object{
      * @global type $wysija_msg
      * @global type $wysija_queries
      * @global type $wysija_queries_errors
-     * @param type $redirectTo
+     * @param type $location
      */
-    public static function redirect($redirectTo){
+    public static function redirect($location) {
         //save the messages
         global $wysija_msg,$wysija_queries,$wysija_queries_errors;
         WYSIJA::update_option('wysija_msg',$wysija_msg);
         WYSIJA::update_option('wysija_queries',$wysija_queries);
         WYSIJA::update_option('wysija_queries_errors',$wysija_queries_errors);
-        wp_redirect($redirectTo);
+
+        // make sure we encode square brackets as wp_redirect will strip them off
+        $location = str_replace(array('[', ']'), array('%5B', '%5D'), $location);
+
+        // redirect to specified location
+        wp_redirect($location);
         exit;
     }
 
@@ -844,6 +849,14 @@ class WYSIJA extends WYSIJA_object{
         $model_user->delete(array('user_id'=>$data['user_id'],'list_id'=>$model_config->getValue('importwp_list_id')));
     }
 
+
+    public static function hook_auto_newsletter_refresh($post_id) {
+        $helper_autonews = WYSIJA::get('autonews', 'helper');
+        $helper_autonews->refresh_automatic_content();
+
+        return true;
+    }
+
     /**
      * post notification transition hook, know when a post really gets published
      * @param type $new_status
@@ -950,7 +963,13 @@ class WYSIJA extends WYSIJA_object{
      * @param string $plugin_name
      */
     public static function is_beta($plugin_name=false){
-        if(count(explode('.', WYSIJA::get_version($plugin_name))) > 3 ) return true;
+        // exceptions
+        $not_beta_versions = array('2.5.9.1');
+        $mailpoet_version = WYSIJA::get_version($plugin_name);
+        if(in_array($mailpoet_version, $not_beta_versions)) return false;
+
+        // standard way of defining a beta version
+        if(count(explode('.', $mailpoet_version)) > 3 ) return true;
         return false;
     }
 
@@ -1126,14 +1145,20 @@ class WYSIJA extends WYSIJA_object{
         $page_view_trigger = (int)$model_config->getValue('cron_page_hit_trigger');
         if(!empty($processesToRun) && $page_view_trigger === 1){
             //call the cron url
+            // do not call that more than once per 15 minutes attempt at reducing the CPU load for some users
+            // http://wordpress.org/support/topic/wysija-newsletters-slowing-down-my-site-1
+            $last_cron_time_plus_15min = (int)get_option('wysija_last_php_cron_call') + (15*60);
+            if($last_cron_time_plus_15min > time()){
+                $cron_url = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
+                $cron_request = apply_filters( 'cron_request', array(
+                        'url' => $cron_url,
+                        'args' => array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) )
+                ) );
 
-            $cron_url = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
-            $cron_request = apply_filters( 'cron_request', array(
-                    'url' => $cron_url,
-                    'args' => array( 'timeout' => 0.01, 'blocking' => false, 'sslverify' => apply_filters( 'https_local_ssl_verify', true ) )
-            ) );
+                wp_remote_post( $cron_url, $cron_request['args'] );
+                WYSIJA::update_option('wysija_last_php_cron_call', time());
+            }
 
-            wp_remote_post( $cron_url, $cron_request['args'] );
 
         }
     }
@@ -1183,9 +1208,12 @@ add_action('deleted_user', array('WYSIJA', 'hook_del_WP_subscriber'), 1);
 
 // post notif trigger
 add_action('transition_post_status', array('WYSIJA', 'hook_postNotification_transition'), 1, 3);
+// refresh auto newsletter content when a post is modified
+add_action('save_post', array('WYSIJA', 'hook_auto_newsletter_refresh'), 1, 1);
+add_action('delete_post', array('WYSIJA', 'hook_auto_newsletter_refresh'), 1, 1);
 
 // add image size for emails
-add_image_size( 'wysija-newsletters-max', 600, 99999 );
+add_image_size('wysija-newsletters-max', 600, 99999);
 
 $modelConf=WYSIJA::get('config','model');
 if($modelConf->getValue('installed_time')){
@@ -1207,7 +1235,8 @@ if($modelConf->getValue('installed_time')){
         // this action is triggerred only by a cron job
         // if we're entering the wysija's cron part, it should end here
         if(isset($_REQUEST['action']) && $_REQUEST['action']=='wysija_cron'){
-            add_action('init', 'init_wysija_cron',1);
+            // priority is hundred so that the messages such as unsubscribe or view in your browser have time to be translated(they get translated around 96, 97)
+            add_action('init', 'init_wysija_cron',100);
 
             function init_wysija_cron(){
                 $hCron=WYSIJA::get('cron','helper');

@@ -70,7 +70,7 @@ class WYSIJA_help_licence extends WYSIJA_help{
             $json_result=false;
         }else{
             $helper_http = WYSIJA::get('http','helper');
-            $json_result = $helper_http->wp_request('http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.$domain_data);
+            $json_result = $helper_http->wp_request('http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&data='.urlencode($domain_data));
         }
 
         if($json_result!==false) {

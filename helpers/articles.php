@@ -249,25 +249,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
             }
         }
 
-        if(isset($post_image['src'])) {
-            // check that height & width have been set, if not try to calculate
-            if(array_key_exists('height', $post_image) === false || array_key_exists('width', $post_image) === false) {
-                try {
-                    $image_info = getimagesize($post_image['src']);
-                    if($image_info !== false) {
-                        $post_image['width'] = $image_info[0];
-                        $post_image['height'] = $image_info[1];
-                    }
-                } catch(Exception $e) {
-                    return null;
-                }
-            }
-            $post_image = array_merge($post_image, array('url' => get_permalink($post['ID'])));
-        } else {
-            $post_image = null;
-        }
-
-        return $post_image;
+        return $this->_valid_image($post_image);
+        //return $post_image;
     }
 
     function convertEmbeddedContent($content = '') {
@@ -278,6 +261,31 @@ class WYSIJA_help_articles extends WYSIJA_object {
         $content = preg_replace('#http://www.youtube.com/embed/([a-zA-Z0-9_-]*)#Ui', 'http://www.youtube.com/watch?v=$1', $content);
 
         return $content;
+    }
+
+    /**
+     * make sure the image is valid, has a src and has an height and width
+     * @param type $post_image
+     * @return null
+     */
+    private function _valid_image($post_image){
+        if(isset($post_image['src'])) {
+            // check that height & width have been set, if not try to calculate
+            if(empty($post_image['height']) || empty($post_image['width'])) {
+                try {
+                    $image_info = getimagesize($post_image['src']);
+                    if($image_info !== false) {
+                        $post_image['width'] = $image_info[0];
+                        $post_image['height'] = $image_info[1];
+                    }
+                } catch(Exception $e) {
+                    return null;
+                }
+            }
+            return array_merge($post_image, array('url' => get_permalink($post['ID'])));
+        } else {
+            return null;
+        }
     }
 
 }

@@ -143,6 +143,15 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 
 == Changelog ==
 
+= 2.5.9.1 - 2013-11-18 =
+* fixed newsletters not being saved in Chrome at visual editor level
+* fixed daily/weekly post notifications missing some articles if other newsletters were being sent at the same time
+* fixed broken redirection when square brackets are present in your URLs
+* fixed rare case where image goes missing when dragging and dropping a WordPress' post into our visual editor
+* fixed "View in your Browser" and "Unsubscribe" not being translated in your language in daily/weekly post notifications
+* fixed broken links with port specified (e.g.: mysiteurl.com:8888/my-post)
+* fixed updating automatically the "automated latest content" widget in automatic newsletter on create/update/delete any post
+
 = 2.5.9 - 2013-10-02 =
 * improved multisite bounce process
 * improved email validation
