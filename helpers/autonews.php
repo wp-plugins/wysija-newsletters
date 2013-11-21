@@ -315,4 +315,38 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         }
 
     }
+
+    function refresh_automatic_content($email_ids = array()) {
+        // TO OPTIMIZE: add a boolean flag for ALP widget being present or not (this way we filter out "static" auto nl)
+        $model_email = WYSIJA::get('email', 'model');
+
+        $conditions = array('type' => 2, 'status' => array(1, 3, 99));
+        if(!empty($email_ids)) {
+            $conditions['email_id'] = $email_ids;
+        }
+
+        $emails = $model_email->get(false, $conditions);
+
+        foreach($emails as $key => $email) {
+            if(is_array($email) && isset($email['params']['autonl']['event']) ) {
+                // we have to regenerate the html rendering of each auto newsletter
+                $helper_wj_engine = WYSIJA::get('wj_engine', 'helper');
+                $helper_wj_engine->setStyles($email['wj_styles'], true);
+                $helper_wj_engine->setData($email['wj_data'], true);
+
+                // update email data
+                $values = array(
+                    'email_id' => (int)$email['email_id'],
+                    'wj_data' => $helper_wj_engine->getEncoded('data'),
+                    'body' => $helper_wj_engine->renderEmail($email)
+                );
+
+                // make sure the modified_at columns get updated
+                $model_email->columns['modified_at']['autoup'] = 1;
+
+                // update data in DB
+                $model_email->update($values, array('email_id' => (int)$email['email_id']));
+            }
+        }
+    }
 }
