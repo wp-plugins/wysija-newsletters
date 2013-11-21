@@ -249,7 +249,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
             }
         }
 
-        return $this->_valid_image($post_image);
+        return $this->_valid_image($post_image,$post['ID']);
         //return $post_image;
     }
 
@@ -268,7 +268,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
      * @param type $post_image
      * @return null
      */
-    private function _valid_image($post_image){
+    private function _valid_image($post_image,$pid){
         if(isset($post_image['src'])) {
             // check that height & width have been set, if not try to calculate
             if(empty($post_image['height']) || empty($post_image['width'])) {
@@ -282,7 +282,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                     return null;
                 }
             }
-            return array_merge($post_image, array('url' => get_permalink($post['ID'])));
+            return array_merge($post_image, array('url' => get_permalink($pid)));
         } else {
             return null;
         }
