@@ -27,6 +27,7 @@ class WJ_Export extends WYSIJA_object{
         if(!empty($_POST['wysija']['export']['user_ids'])) $this->_user_ids = $this->_get_posted_user_ids();
         if(!empty($_POST['wysija']['export']['filter']['list']))  $this->_filter_list = $_POST['wysija']['export']['filter']['list'];
         if(!empty($_POST['wysija']['export']['filter']['confirmed'])) $this->_filter_confirmed = $_POST['wysija']['export']['filter']['confirmed'];
+        if(!empty($_POST['wysija']['export']['format'])) $this->_fields_separator = $_POST['wysija']['export']['format'];
     }
 
     /**

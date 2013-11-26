@@ -239,6 +239,13 @@ class WYSIJA_model_email extends WYSIJA_model{
         // update parent email articles' ids to reflect the ones added in the child email
         $paramsVal['autonl']['articles']['ids'] = $emailChild['params']['autonl']['articles']['ids'];
 
+//        $count_array_ids = count($paramsVal['autonl']['articles']['ids']);
+//        if($count_array_ids > 200){
+//            $offset = $count_array_ids - 50;
+//            $paramsVal['autonl']['articles']['ids'] = array_slice($paramsVal['autonl']['articles']['ids'], $offset, -1);
+//        }
+
+
         $donotsend=false;
         // if there's no article, do not send
         if($emailChild['params']['autonl']['articles']['count'] === 0) {

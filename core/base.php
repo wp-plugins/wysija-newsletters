@@ -491,16 +491,14 @@ class WYSIJA extends WYSIJA_object{
     public static function log($key='default',$data='empty',$category='default'){
         $config=WYSIJA::get('config','model');
 
-        if(defined('WYSIJA_DBG') && WYSIJA_DBG>1 && $category && (int)$config->getValue('debug_log_'.$category)>0){
+        if((int)$config->getValue('debug_new')>1 && $category && $config->getValue('debug_log_'.$category)){
 
             $optionlog=get_option('wysija_log');
-            if ( false === $optionlog ){
-                add_option( 'wysija_log', array() ,'','no');
-                $optionlog=array();
-            }
+
 
             $optionlog[$category][(string)microtime(true)][$key]=$data;
-            update_option('wysija_log', $optionlog);
+
+            WYSIJA::update_option('wysija_log' , $optionlog);
         }
         return false;
     }
@@ -964,7 +962,7 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function is_beta($plugin_name=false){
         // exceptions
-        $not_beta_versions = array('2.5.9.1');
+        $not_beta_versions = array('2.5.9.1','2.5.9.2');
         $mailpoet_version = WYSIJA::get_version($plugin_name);
         if(in_array($mailpoet_version, $not_beta_versions)) return false;
 
@@ -1145,10 +1143,11 @@ class WYSIJA extends WYSIJA_object{
         $page_view_trigger = (int)$model_config->getValue('cron_page_hit_trigger');
         if(!empty($processesToRun) && $page_view_trigger === 1){
             //call the cron url
-            // do not call that more than once per 15 minutes attempt at reducing the CPU load for some users
+            // do not call that more than once per 5 minutes attempt at reducing the CPU load for some users
             // http://wordpress.org/support/topic/wysija-newsletters-slowing-down-my-site-1
-            $last_cron_time_plus_15min = (int)get_option('wysija_last_php_cron_call') + (15*60);
-            if($last_cron_time_plus_15min > time()){
+            $last_cron_time_plus_5min = (int)get_option('wysija_last_php_cron_call') + (5*60);
+
+            if($last_cron_time_plus_5min < time()){
                 $cron_url = site_url( 'wp-cron.php').'?'.WYSIJA_CRON.'&action=wysija_cron&process='.implode(',',$processesToRun).'&silent=1';
                 $cron_request = apply_filters( 'cron_request', array(
                         'url' => $cron_url,

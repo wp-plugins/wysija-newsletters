@@ -126,7 +126,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
         $content = preg_replace('/<([\/])?ol(.*?)>/', '<$1ul$2>', $content);
 
         // convert dollar signs
-        $content = str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), $content);
+        $content = str_replace(array('$', 'â‚¬', 'Â£', 'Â¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), $content);
 
         // strip useless tags
         $content = strip_tags($content, '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li><br>');
@@ -134,7 +134,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
         // set post title if present
         if(strlen(trim($post['post_title'])) > 0) {
             // cleanup post title
-            $post['post_title'] = trim(str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), strip_tags($post['post_title'])));
+            $post['post_title'] = trim(str_replace(array('$', 'â‚¬', 'Â£', 'Â¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), strip_tags($post['post_title'])));
             // build content starting with title
             $content = '<'.$params['title_tag'].' class="align-'.$params['title_alignment'].'">'.  $post['post_title'].'</'.$params['title_tag'].'>'.$content;
         }
@@ -268,7 +268,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
      * @param type $post_image
      * @return null
      */
-    private function _valid_image($post_image,$pid){
+    private function _valid_image($post_image,$post_id){
         if(isset($post_image['src'])) {
             // check that height & width have been set, if not try to calculate
             if(empty($post_image['height']) || empty($post_image['width'])) {
@@ -282,7 +282,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                     return null;
                 }
             }
-            return array_merge($post_image, array('url' => get_permalink($pid)));
+            return array_merge($post_image, array('url' => get_permalink($post_id)));
         } else {
             return null;
         }

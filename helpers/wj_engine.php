@@ -877,7 +877,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     $params['post_limit'] = 1;
                 }else{
                     //we set the post_date to filter articles only older than the last time we sent articles
-                    if(isset($email['params']['autonl']['lastSend']) && $email['params']['autonl']['lastSend'] >0){
+                    if(isset($email['params']['autonl']['lastSend'])){
                         $params['post_date'] = $email['params']['autonl']['lastSend'];
                     }else{
                         //get the latest child newsletter sent_at value
