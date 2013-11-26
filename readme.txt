@@ -144,7 +144,8 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 == Changelog ==
 
 = 2.5.9.2 - 2013-11-26 =
-* fixed issue automatic newsletter not going out when using Wysija's php cron in Settings > Advanced "No thanks! I have enough visitors on my site. Their visits will trigger Wysija's cron automatically."
+* fixed issue automatic newsletter not going out when using Wysija's cron triggered by visitors pageview in Settings > Advanced
+* fixed issue wrong separator in export file(CSV or Excel)
 
 = 2.5.9.1 - 2013-11-18 =
 * fixed newsletters not being saved in Chrome at visual editor level
