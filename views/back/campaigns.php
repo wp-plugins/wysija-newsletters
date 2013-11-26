@@ -1297,7 +1297,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 <input data-type="<?php echo (int)$data['email']['type'] ?>" type="hidden" name="wysija[email][email_id]" id="email_id" value="<?php echo esc_attr($data['email']['email_id']) ?>" />
                 <input type="hidden" value="saveemail" name="action" />
 
-                <a id="wj_next" class="button-primary wysija" href="admin.php?page=wysija_campaigns&action=editDetails&id=<?php echo $data['email']['email_id'] ?>"><?php _e("Next step",WYSIJA) ?></a>
+                <a id="wysija-do-save" class="button-primary wysija" href="javascript:;"><?php _e("Save changes", WYSIJA) ?></a>
+                <a id="wysija-next-step" class="button-primary wysija" href="admin.php?page=wysija_campaigns&action=editDetails&id=<?php echo $data['email']['email_id'] ?>"><?php _e("Next step",WYSIJA) ?></a>
+
                 <?php
                 // we cannot have it everywhere
                  if(false && $data && (int)$data['email']['type'] === 2) {
@@ -1317,17 +1319,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                 WYSIJA_SYNC_AJAX({ success: callback });
             }
 
-
-            // make sure we save the editor when leaving the page
-            Event.observe(window, 'unload', function(e) {
-                if(Wysija.options.debug === false) {
-                    // save the editor in a synchronous way
-                    saveWYSIJA();
-                }
-            });
-
-            // make sure we save the newsletter when clicking on links in VIB or unsubscribe
-            $$('#wysija_viewbrowser a, #wysija_unsubscribe a').invoke('observe', 'click', function() {
+            // trigger the save on these links/buttons (save, next step, view in browser, unsubscribe)
+            $$('#wysija-do-save, #wysija-next-step, #wysija_viewbrowser a, #wysija_unsubscribe a').invoke('observe', 'click', function() {
                 saveWYSIJA();
                 return false;
             });

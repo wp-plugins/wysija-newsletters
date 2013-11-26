@@ -206,9 +206,17 @@ class WYSIJA_help_wp_tools extends WYSIJA_object{
             }
         }
 
-        $url = sprintf('%s://%s%s', $paramsquery['scheme'], $paramsquery['host'], $paramsquery['path']);
+        // make sure we include the port if it's specified
+        if(isset($paramsquery['port']) && strlen(trim($paramsquery['port'])) > 0) {
+            $port = ':'.(int)$paramsquery['port'];
+        } else {
+            $port = '';
+        }
 
-        if($params){
+        // build url
+        $url = sprintf('%s://%s%s%s', $paramsquery['scheme'], $paramsquery['host'], $port, $paramsquery['path']);
+
+        if($params) {
             if(strpos($url, '?') !== false) $charStart='&';
             else $charStart='?';
             $url.=$charStart;

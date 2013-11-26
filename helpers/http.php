@@ -53,7 +53,9 @@ class WYSIJA_help_http extends WYSIJA_object{
 	$raw_response = wp_remote_post($url, $options);
 
         if ( is_wp_error( $raw_response ) || 200 != wp_remote_retrieve_response_code( $raw_response ) ){
-            $this->error($raw_response->get_error_messages());
+            if(method_exists($raw_response, 'get_error_messages')){
+                $this->error($raw_response->get_error_messages());
+            }
             return false;
         }
 

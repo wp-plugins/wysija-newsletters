@@ -25,8 +25,21 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
         $emailH = WYSIJA::get('email','helper');
         $mailerH = WYSIJA::get('mailer','helper');
 
+        $email_id = (int)$_REQUEST['email_id'];
         // Get current email object.
-        $current_email = $emailM->getOne((int)$_REQUEST['email_id']);
+        $current_email = $emailM->getOne($email_id);
+
+        if($current_email->type==2){
+
+            $emailM->reset();
+            $autonewsHelper = WYSIJA::get('autonews','helper');
+            $autonewsHelper->refresh_automatic_content(array($email_id));
+            $emailM->getFormat = OBJECT;
+            $current_email = $emailM->getOne($email_id);
+        }
+
+
+
 
         // Get current user object if possible
         $current_user = null;

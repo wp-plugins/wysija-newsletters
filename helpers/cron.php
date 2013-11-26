@@ -76,8 +76,9 @@ class WYSIJA_help_cron extends WYSIJA_object{
         if($processNK == 'bounce'){
              $model_config = WYSIJA::get( 'config' , 'model' );
              // if premium is activated we launch the premium function
+             $multisite_prefix = '';
              if(is_multisite()){
-                 $multisite_prefix='ms_';
+                 $multisite_prefix = 'ms_';
              }
 
              // we don't process the bounce automatically unless the option is ticked
