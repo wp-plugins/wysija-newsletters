@@ -126,7 +126,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
         $content = preg_replace('/<([\/])?ol(.*?)>/', '<$1ul$2>', $content);
 
         // convert dollar signs
-        $content = str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), $content);
+        $content = str_replace(array('$', 'â‚¬', 'Â£', 'Â¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), $content);
 
         // strip useless tags
         $content = strip_tags($content, '<p><em><span><b><strong><i><h1><h2><h3><a><ul><ol><li><br>');
@@ -134,7 +134,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
         // set post title if present
         if(strlen(trim($post['post_title'])) > 0) {
             // cleanup post title
-            $post['post_title'] = trim(str_replace(array('$', '€', '£', '¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), strip_tags($post['post_title'])));
+            $post['post_title'] = trim(str_replace(array('$', 'â‚¬', 'Â£', 'Â¥'), array('&#36;', '&euro;', '&pound;', '&#165;'), strip_tags($post['post_title'])));
             // build content starting with title
             $content = '<'.$params['title_tag'].' class="align-'.$params['title_alignment'].'">'.  $post['post_title'].'</'.$params['title_tag'].'>'.$content;
         }
@@ -249,25 +249,11 @@ class WYSIJA_help_articles extends WYSIJA_object {
             }
         }
 
-        if(isset($post_image['src'])) {
-            // check that height & width have been set, if not try to calculate
-            if(array_key_exists('height', $post_image) === false || array_key_exists('width', $post_image) === false) {
-                try {
-                    $image_info = getimagesize($post_image['src']);
-                    if($image_info !== false) {
-                        $post_image['width'] = $image_info[0];
-                        $post_image['height'] = $image_info[1];
-                    }
-                } catch(Exception $e) {
-                    return null;
-                }
-            }
-            $post_image = array_merge($post_image, array('url' => get_permalink($post['ID'])));
-        } else {
-            $post_image = null;
-        }
+        $helper_images = WYSIJA::get('image','helper');
+        $post_image = $helper_images->valid_image($post_image);
 
-        return $post_image;
+        if($post_image===null) return $post_image;
+        return array_merge($post_image, array('url' => get_permalink($post['ID'])));
     }
 
     function convertEmbeddedContent($content = '') {

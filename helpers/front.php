@@ -45,17 +45,7 @@ class WYSIJA_help_front extends WYSIJA_help{
                     add_action('init',array($this->controller,$_REQUEST['action']));
                     //$this->controller->$_REQUEST['action']();
                 }else $this->error('Action does not exist.');
-
-                if(isset($_REQUEST['wysija-page'])){
-                    /* set the content filter to replace the shortcode */
-                    add_filter('wp_title', array($this,'meta_page_title'));
-                    add_filter( 'the_title', array($this,'scan_title'));
-                    add_filter( 'the_content', array($this,'scan_content'),98);
-                    if(isset($_REQUEST['message_success'])){
-                        add_filter( 'the_content', array($this,'scan_content_NLform'),99 );
-                    }
-                }
-
+                
                 if(isset($_REQUEST['wysija-page'])){
                     /* set the content filter to replace the shortcode */
                     add_filter('wp_title', array($this,'meta_page_title'));

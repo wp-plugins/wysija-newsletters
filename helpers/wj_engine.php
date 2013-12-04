@@ -871,23 +871,24 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
                     $params['post_date'] = $email['params']['autonl']['firstSend'];
                 }
 
-                // if immediate let it know to the get post
+                 // if immediate let it know to the get post
                 if(isset($email['params']['autonl']['articles']['immediatepostid'])){
-                    $params['includeonly'] = $email['params']['autonl']['articles']['immediatepostid'];
+                    $params['include'] = $email['params']['autonl']['articles']['immediatepostid'];
                     $params['post_limit'] = 1;
                 }else{
                     //we set the post_date to filter articles only older than the last time we sent articles
-                    //get the latest child newsletter sent_at value
-                    $mEmail=WYSIJA::get('email','model');
-                    $mEmail->reset();
-                    $mEmail->orderBy('email_id','DESC');
-                    $lastEmailSent=$mEmail->getOne(false,array('campaign_id'=>$email['campaign_id'],'type'=>'1'));
+                    if(isset($email['params']['autonl']['lastSend'])){
+                        $params['post_date'] = $email['params']['autonl']['lastSend'];
+                    }else{
+                        //get the latest child newsletter sent_at value
+                        $mEmail=WYSIJA::get('email','model');
+                        $mEmail->reset();
+                        $mEmail->orderBy('email_id','DESC');
+                        $lastEmailSent=$mEmail->getOne(false,array('campaign_id'=>$email['campaign_id'],'type'=>'1'));
 
-                    if(!empty($lastEmailSent))  $params['post_date'] = $lastEmailSent['sent_at'];
+                        if(!empty($lastEmailSent)) $params['post_date'] = $lastEmailSent['sent_at'];
+                    }
                 }
-
-
-
 
 
                 // decode readmore text & nopost message

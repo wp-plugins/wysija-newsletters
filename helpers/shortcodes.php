@@ -66,7 +66,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
                     // [user:xxx | default:xxx]
                     case 'user':
                         $replacement = $this->replace_user_shortcodes($couple_value[1]);
-                        if ($replacement === 'subscriber') {
+                        if ($replacement === 'subscriber' || $replacement === 'member') {
                             continue;
                         }
                         break(2);
@@ -116,7 +116,13 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
         $replacement = '';
         if (($tag_value === 'firstname') || ($tag_value === 'lastname') || ($tag_value === 'email')) {
             if(isset($this->receiver->$tag_value) && $this->receiver->$tag_value) {
-                $replacement = $this->receiver->$tag_value;
+                // uppercase the initials of the first name and last name when replacing it
+                if (($tag_value === 'firstname') || ($tag_value === 'lastname')){
+                    $replacement = ucwords(strtolower($this->receiver->$tag_value));
+                }else{
+                    $replacement = $this->receiver->$tag_value;
+                }
+
              } else {
                 $replacement = 'subscriber';
              }
@@ -131,12 +137,12 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
                     $replacement = $user_info->display_name;
                  } elseif(!empty($user_info->user_nicename) && $user_info->user_nicename != false) {
                     $replacement = $user_info->user_nicename;
-                }                
+                }
             }
         }
         if ($tag_value === 'count') {
             $replacement = $this->userM->count();
-        }        
+        }
 
         return $replacement;
 
@@ -154,7 +160,7 @@ class WYSIJA_help_shortcodes extends WYSIJA_object {
         if ($tag_value === 'manage') {
             $replacement = $this->userM->getEditsubLink($this->receiver);
         }
-        
+
         if ($tag_value === 'browser') {
             $emailH = WYSIJA::get('email','helper');
             $configM = WYSIJA::get('config','model');

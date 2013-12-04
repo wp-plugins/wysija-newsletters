@@ -215,6 +215,7 @@ class WYSIJA_model_email extends WYSIJA_model{
         // build autonl articles params for child
         $emailChild['params']['autonl']['articles'] = array('ids' => $ids, 'count' => 0, 'first_subject' => '');
         if(isset($email['params']['autonl']['firstSend']))  $emailChild['params']['autonl']['firstSend'] = $email['params']['autonl']['firstSend'];
+        if(isset($email['params']['autonl']['lastSend']))  $emailChild['params']['autonl']['lastSend'] = $email['params']['autonl']['lastSend'];
 
         //if it's an immediate post notif let know the render email
         if($immediatePostNotif) {
@@ -237,6 +238,13 @@ class WYSIJA_model_email extends WYSIJA_model{
 
         // update parent email articles' ids to reflect the ones added in the child email
         $paramsVal['autonl']['articles']['ids'] = $emailChild['params']['autonl']['articles']['ids'];
+
+//        $count_array_ids = count($paramsVal['autonl']['articles']['ids']);
+//        if($count_array_ids > 200){
+//            $offset = $count_array_ids - 50;
+//            $paramsVal['autonl']['articles']['ids'] = array_slice($paramsVal['autonl']['articles']['ids'], $offset, -1);
+//        }
+
 
         $donotsend=false;
         // if there's no article, do not send
