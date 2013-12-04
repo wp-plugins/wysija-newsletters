@@ -147,7 +147,7 @@ We got a User Voice page where you can [add or vote for new features](http://wys
 * fixed another rare case where image goes missing when dragging and dropping a WordPress' post into our visual editor
 * fixed post updates taking too long when refreshing automatic newsletters with the "automated latest content" widget
 * fixed rare case where image goes missing when dragging and dropping an uploaded image into our visual editor
-* fixed birthday cake for our two years anniversary http://www.mailpoet.com/two-year-anniversary/
+* fixed birthday cake for our two years anniversary  http://www.mailpoet.com/two-year-anniversary/
 
 = 2.5.9.2 - 2013-11-26 =
 * fixed issue automatic newsletter not going out when using Wysija's cron triggered by visitors pageview in Settings > Advanced
