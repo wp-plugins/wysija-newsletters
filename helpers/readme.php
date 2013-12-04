@@ -59,7 +59,7 @@ class WYSIJA_help_readme extends WYSIJA_object{
 
         $parse = parse_url($array_result[0]);
 
-        $parse['scheme'] .= '//';
+        $parse['scheme'] .= '://';
 
         if(isset($parse['query'])) $parse['query'] .= $ga_string;
         else $parse['query'] = $ga_string;
