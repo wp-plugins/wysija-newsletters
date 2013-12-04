@@ -865,6 +865,7 @@ class WYSIJA extends WYSIJA_object{
     public static function hook_postNotification_transition($new_status, $old_status, $post) {
         //we run some process only if the status of the post changes from something to publish
         if( $new_status=='publish' && $old_status!=$new_status){
+
             $model_email = WYSIJA::get('email', 'model');
             $emails = $model_email->get(false, array('type' => 2, 'status' => array(1, 3, 99)));
             if(!empty($emails)){
@@ -878,6 +879,10 @@ class WYSIJA extends WYSIJA_object{
                     }
                 }
             }
+
+            // we check for automatic latest content widget in automatic newsletter
+            $helper_autonews = WYSIJA::get('autonews', 'helper');
+            $helper_autonews->refresh_automatic_content();
         }
 
         return true;
@@ -962,7 +967,7 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function is_beta($plugin_name=false){
         // exceptions
-        $not_beta_versions = array('2.5.9.1','2.5.9.2');
+        $not_beta_versions = array('2.5.9.1', '2.5.9.2', '2.5.9.3');
         $mailpoet_version = WYSIJA::get_version($plugin_name);
         if(in_array($mailpoet_version, $not_beta_versions)) return false;
 
@@ -1208,7 +1213,7 @@ add_action('deleted_user', array('WYSIJA', 'hook_del_WP_subscriber'), 1);
 // post notif trigger
 add_action('transition_post_status', array('WYSIJA', 'hook_postNotification_transition'), 1, 3);
 // refresh auto newsletter content when a post is modified
-add_action('save_post', array('WYSIJA', 'hook_auto_newsletter_refresh'), 1, 1);
+//add_action('save_post', array('WYSIJA', 'hook_auto_newsletter_refresh'), 1, 1);
 add_action('delete_post', array('WYSIJA', 'hook_auto_newsletter_refresh'), 1, 1);
 
 // add image size for emails

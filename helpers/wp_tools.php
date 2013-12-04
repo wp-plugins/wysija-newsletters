@@ -185,7 +185,6 @@ class WYSIJA_help_wp_tools extends WYSIJA_object{
             $modelConf->save($values);
             $post = get_post($values['confirm_email_link']);
             $url=get_permalink($post);
-            if(!$url) $this->error('Error with the wysijap subscription confirmation page.');
         }
 
         $paramsquery=parse_url($url);

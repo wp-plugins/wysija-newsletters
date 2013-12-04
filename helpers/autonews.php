@@ -324,11 +324,22 @@ class WYSIJA_help_autonews  extends WYSIJA_object {
         if(!empty($email_ids)) {
             $conditions['email_id'] = $email_ids;
         }
-
-        $emails = $model_email->get(false, $conditions);
+        // get only the data needed to update an auto nl so we save some resources
+        $data_needed = array('campaign_id','email_id','params','wj_styles','wj_data');
+        $emails = $model_email->get( $data_needed, $conditions );
 
         foreach($emails as $key => $email) {
             if(is_array($email) && isset($email['params']['autonl']['event']) ) {
+
+                $wj_data = unserialize(base64_decode($email['wj_data']));
+                $reload_auto_content = false;
+                foreach($wj_data['body'] as $block){
+                    if(isset($block['type']) && $block['type']=='auto-post'){
+                        $reload_auto_content = true;
+                    }
+                }
+                if(!$reload_auto_content) continue;
+
                 // we have to regenerate the html rendering of each auto newsletter
                 $helper_wj_engine = WYSIJA::get('wj_engine', 'helper');
                 $helper_wj_engine->setStyles($email['wj_styles'], true);

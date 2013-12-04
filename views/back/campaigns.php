@@ -1222,11 +1222,18 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     <ul id="wj-images-quick" class="clearfix">
                         <?php
                         //get list images from template
-                        $helperImage=WYSIJA::get('images','helper');
-                        $result=$helperImage->getList();
+                        $helper_image = WYSIJA::get('image','helper');
+                        $result = $helper_image->get_list_directory();
 
                         $quick_select = $data['email']['params'];
-                        if(!isset($quick_select['quickselection'])) $quick_select['quickselection'] = array();
+                        if(!isset($quick_select['quickselection'])){
+                            $quick_select['quickselection'] = array();
+                        }else{
+                            foreach($quick_select['quickselection'] as &$image){
+                                $image = $helper_image->valid_image($image);
+                            }
+
+                        }
 
                         if($result && empty($quick_select['quickselection'])) {
                             echo $wjEngine->renderImages($result);

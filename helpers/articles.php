@@ -249,8 +249,11 @@ class WYSIJA_help_articles extends WYSIJA_object {
             }
         }
 
-        return $this->_valid_image($post_image,$post['ID']);
-        //return $post_image;
+        $helper_images = WYSIJA::get('image','helper');
+        $post_image = $helper_images->valid_image($post_image);
+
+        if($post_image===null) return $post_image;
+        return array_merge($post_image, array('url' => get_permalink($post['ID'])));
     }
 
     function convertEmbeddedContent($content = '') {
@@ -261,31 +264,6 @@ class WYSIJA_help_articles extends WYSIJA_object {
         $content = preg_replace('#http://www.youtube.com/embed/([a-zA-Z0-9_-]*)#Ui', 'http://www.youtube.com/watch?v=$1', $content);
 
         return $content;
-    }
-
-    /**
-     * make sure the image is valid, has a src and has an height and width
-     * @param type $post_image
-     * @return null
-     */
-    private function _valid_image($post_image,$post_id){
-        if(isset($post_image['src'])) {
-            // check that height & width have been set, if not try to calculate
-            if(empty($post_image['height']) || empty($post_image['width'])) {
-                try {
-                    $image_info = getimagesize($post_image['src']);
-                    if($image_info !== false) {
-                        $post_image['width'] = $image_info[0];
-                        $post_image['height'] = $image_info[1];
-                    }
-                } catch(Exception $e) {
-                    return null;
-                }
-            }
-            return array_merge($post_image, array('url' => get_permalink($post_id)));
-        } else {
-            return null;
-        }
     }
 
 }
