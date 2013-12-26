@@ -88,8 +88,18 @@ class WYSIJA_model_queue extends WYSIJA_model{
         $query='INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ';
         $query.='SELECT '.$email['email_id'].', A.user_id,'.$to_be_sent.'
             FROM [wysija]user_list as A
-                JOIN [wysija]user as B on A.user_id=B.user_id
-                    WHERE B.status>'.$status_min.' AND A.list_id IN ('.implode(',',$lists_to_send_to).') AND A.sub_date>'.$status_min.' AND A.unsub_date=0;';
+            JOIN [wysija]user as B on A.user_id=B.user_id
+            WHERE B.status>'.$status_min.'
+                AND A.list_id IN ('.implode(',',$lists_to_send_to).')
+                AND A.sub_date>'.$status_min.'
+                AND A.unsub_date=0';
+
+        // if some emails have already been sent on that newsletter, make sure we don't re enqueue the same emails again
+        $query_count = 'SELECT count(user_id) as count FROM [wysija]email_user_stat WHERE email_id = '.$email['email_id'];
+        if( $this->count( $query_count) > 0){
+            $query .= ' AND A.user_id NOT IN (SELECT user_id FROM [wysija]email_user_stat WHERE email_id = '.$email['email_id'].')';
+        }
+
         $this->query($query);
 
         if($this->sql_error){

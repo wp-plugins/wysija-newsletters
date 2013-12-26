@@ -73,6 +73,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'beta_mode'=>false,
         'cron_manual'=>true,
         'email_cyrillic' => false,
+        'allow_wpmail' => false
     );
 
     var $capabilities=array();
@@ -385,21 +386,47 @@ class WYSIJA_model_config extends WYSIJA_object{
 
 
     /**
+     * some values in the settings needs to be overridden by ms values
+     * eg bounce with ms_bounce
+     * @param array $ms_overriden
+     * @return array
+     */
+    function ms_override($ms_overriden){
+        if($this->getValue('premium_key')){
+             $bounce_value = array('bounce','bouncing');
+            return array_replace($ms_overriden, $bounce_value);
+        }
+        return $ms_overriden;
+    }
+
+    /**
      *
      * @param type $key
      * @param type $type
      * @return type
      */
-    function getValue($key,$default=false,$type='normal') {
+    function getValue($key, $default=false, $type='normal') {
 
         // special case for multisite
-        if(is_multisite()){
+        if(is_multisite() && $key != 'premium_key'){
             // if we're getting the from email value
             if($key=='ms_from_email' && !isset($this->defaults['ms_from_email'])){
                 $helper_toolbox=WYSIJA::get('toolbox','helper');
                 if(is_object($helper_toolbox))  $this->defaults['ms_from_email']='info@'.$helper_toolbox->_make_domain_name(network_site_url());
-            }elseif((strpos($key, 'bounce_')!==false && strpos($key, 'ms_bounce_')===false) || (strpos($key, 'bouncing_')!==false && strpos($key, 'ms_bouncing_')===false) || $key=='beta_mode'){
-                    $key='ms_'.$key;
+            }
+
+            $values_overidden_by_multisite = array();
+
+            add_filter('mpoet_ms_override', array($this, 'ms_override'), 1);
+            $values_overidden_by_bounce = apply_filters('mpoet_ms_override',$values_overidden_by_multisite);
+            foreach($values_overidden_by_bounce as $key_part_bounce){
+                if(strpos($key, $key_part_bounce . '_')!==false && strpos($key, 'ms_' . $key_part_bounce . '_')===false){
+                        $key='ms_' . $key;
+                        break;
+                }
+            }
+            if($key == 'beta_mode'){
+                    $key = 'ms_'.$key;
             }
         }
 

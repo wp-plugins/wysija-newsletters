@@ -967,7 +967,7 @@ class WYSIJA extends WYSIJA_object{
      */
     public static function is_beta($plugin_name=false){
         // exceptions
-        $not_beta_versions = array('2.5.9.1', '2.5.9.2', '2.5.9.3');
+        $not_beta_versions = array('2.5.9.1', '2.5.9.2', '2.5.9.3', "2.5.9.4");
         $mailpoet_version = WYSIJA::get_version($plugin_name);
         if(in_array($mailpoet_version, $not_beta_versions)) return false;
 

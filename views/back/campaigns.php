@@ -1122,6 +1122,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
     }
 
     function editTemplate($data=false){
+        wp_print_styles('editor-buttons');
+
         $wjEngine = WYSIJA::get('wj_engine', 'helper');
 
         if(isset($data['email']['wj_data'])) {
@@ -2720,6 +2722,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
 
             $selectedImages=$this->_getSelectedImages();
             $output = '';
+            $helper_image = WYSIJA::get('image','helper');
             foreach ( (array) $attachments as $id => $attachment ) {
 
                  if(!$post_id && $attachment->post_parent==$_REQUEST['post_id']){
@@ -2744,7 +2747,19 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                         $full_url = $attachment->guid;
                     }
 
-                     if ( ( $id = intval( $id ) )) $img_details = wp_get_attachment_image_src( $id, 'full', true );
+                    if ( ( $id = intval( $id ) )) $img_details = wp_get_attachment_image_src( $id, 'full', true );
+
+                    $image_template = array(
+                           'width'=> $img_details[1],
+                           'height'=> $img_details[2],
+                           'url'=> $full_url,
+                           );
+
+                    if(empty($image_template['width']) || empty($image_template['height']) || (empty($image_template['width']) && empty($image_template['height']))){
+                        $image_template = $helper_image->valid_image($image_template);
+                    }
+
+
                      $classname="";
 
                      if(isset($selectedImages["wp-".$attachment->ID])) $classname=" selected ";
@@ -2753,8 +2768,8 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                     $output .= '<img title="'.$attachment->post_title.'" alt="'.$attachment->post_title.'" src="'.$thumb_url.'" class="thumbnail" />';
                     if(!$wpimage)    $output.='<span class="delete-wrap"><span class="delete del-attachment">'.$attachment->ID.'</span></span>';
                     $output.='<span class="identifier">'.$attachment->ID.'</span>
-                        <span class="width">'.$img_details[1].'</span>
-                        <span class="height">'.$img_details[2].'</span>
+                        <span class="width">'.$image_template['width'].'</span>
+                        <span class="height">'.$image_template['height'].'</span>
                         <span class="url">'.$full_url.'</span>
                         <span class="thumb_url">'.$thumb_url.'</span></div>';
             }
@@ -2868,7 +2883,11 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back{
                                             echo '<div class="socials">'.$section['follow']['content'].'</div></div>';
                                             echo '</div>';
 
-                                            echo '<div class="follow-right">';
+                                            $class_name = 'follow-right';
+                                            if(version_compare(get_bloginfo('version'), '3.8.0')>= 0){
+                                                $class_name .= '38';
+                                            }
+                                            echo '<div class="follow-right38">';
                                             echo '</div>';
                                         echo '</div>';
                                         break;

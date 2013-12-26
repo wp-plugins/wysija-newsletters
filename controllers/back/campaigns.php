@@ -39,10 +39,11 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
 
         //add a new language code with a new video
         $video_language=array();
-        $video_language['en_EN']='http://www.youtube.com/embed/pYzaHDTg5Jk';
-        $video_language['fr_FR']='http://www.youtube.com/embed/W5EyW5w7aWQ';
-        $video_language['sv_SE']='http://www.youtube.com/embed/O8_t_dekx74';
-        $video_language['ar']='http://www.youtube.com/embed/cyDHlX_qgOo';
+        $video_language['en_EN'] = '<iframe width="853" height="480" src="http://www.youtube.com/embed/pYzaHDTg5Jk" frameborder="0" allowfullscreen></iframe>';
+        $video_language['en_EN'] = '<iframe src="//player.vimeo.com/video/81479899" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+        $video_language['fr_FR'] = '<iframe width="853" height="480" src="http://www.youtube.com/embed/W5EyW5w7aWQ" frameborder="0" allowfullscreen></iframe>';
+        $video_language['sv_SE']='<iframe width="853" height="480" src="http://www.youtube.com/embed/O8_t_dekx74" frameborder="0" allowfullscreen></iframe>';
+        $video_language['ar']='<iframe width="853" height="480" src="http://www.youtube.com/embed/cyDHlX_qgOo" frameborder="0" allowfullscreen></iframe>';
 
         $wp_lang = get_locale();
         if(!empty($wp_lang) && isset($video_language[$wp_lang])){
@@ -82,7 +83,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back{
             'format'=>'normal',
             'paragraphs'=>array(
                     __('You can start by watching this video by one of our users.',WYSIJA),
-                    '<iframe width="853" height="480" src="'.$welcome_video_link.'" frameborder="0" allowfullscreen></iframe>'
+                    $welcome_video_link
                 )
             );
 

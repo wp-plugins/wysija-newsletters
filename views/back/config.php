@@ -353,7 +353,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
         /*second part concerning the checkbox*/
         $formsHelp=WYSIJA::get('forms','helper');
 
-        $field='<table width="400" cellspacing="0" cellpadding="3" bordercolor="#FFFFFF" border="0" style="background-color:#FFFFFF" class="fixed capabilities_form">
+        $field='<table cellspacing="0" cellpadding="3" class="wp-list-table widefat fixed capabilities_form">
     <thead>
         <tr>
 <th class="rolestitle" style="width:200px">'.__('Roles and permissions',WYSIJA).'</th>';
@@ -776,7 +776,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
     function sendingmethod(){
         $key='sending_method';
         $realvalue=$this->model->getValue($key);
-        $formsHelp=WYSIJA::get('forms','helper');
+        $helper_forms=WYSIJA::get('forms','helper');
         ?>
         <table class="form-table" id="ms-sendingmethod">
             <tbody>
@@ -793,7 +793,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                         $id=str_replace('_','-',$key).'-'.$value;
                         if($value ==$realvalue) $checked=true;
                         $field.='<label for="'.$id.'" class="clearfix">';
-                        $field.=$formsHelp->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                        $field.=$helper_forms->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                         $field.='<h3>'.__('Network\'s Method' ,WYSIJA).'</h3></label>';
                         $field.='<p>'.__('Method set by the network admin.',WYSIJA).'</p>';
                         if(!$this->model->getValue('ms_sending_emails_ok')) $field.='<strong'.__('Not Configured!',WYSIJA).'</strong>';
@@ -810,7 +810,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $id=str_replace('_','-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
                             $field='<label for="'.$id.'" class="clearfix">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='<h3>'.__('Your own website',WYSIJA).'</h3></label>';
                             $field.='<p>'.__('The simplest solution for small lists. Your web host sets a daily email limit.',WYSIJA).'</p>';
                             echo $field;
@@ -823,7 +823,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $id=str_replace("_",'-',$key).'-'.$value;
                             if($value ==$realvalue) $checked=true;
                             $field='<label for="'.$id.'" class="clearfix">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='<h3>Gmail</h3></label>';
                             $field.='<p>'.__("Easy to setup. Limited to 500 emails a day. We recommend that you open a dedicated Gmail account for this purpose.",WYSIJA).'</p>';
                             echo $field;
@@ -837,7 +837,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                             $id = str_replace('_', '-', $key).'-'.$value;
                             $field ='<label for="'.$id.'" class="clearfix">';
-                            $field.= $formsHelp->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
+                            $field.= $helper_forms->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
                             $field.= '<h3>'.__('Third party',WYSIJA).'</h3></label>';
                             $field.='<p>'.__('Send with a professional SMTP provider, a great choice for big and small lists. We\'ve negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.mailpoet.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=sending method" target="_blank">'.__('Read more',WYSIJA).'</a>.</p>';
                             echo $field;
@@ -866,7 +866,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                             $id=str_replace("_",'-',$key).'-'.$value;
                             $field='<p class="title"><label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='PHP Mail</label><a class="button-secondary" id="send-test-mail-phpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
                             $field.='<p class="description">'.__('This email engine works on 95&#37; of servers',WYSIJA).'</p>';
 
@@ -877,14 +877,28 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                             $id=str_replace("_",'-',$key).'-'.$value;
                             $field.='<p class="title"><label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.='Sendmail</label>
                                 <a class="button-secondary" id="send-test-mail-sendmail">'.__('Send a test mail',WYSIJA).'</a></p>';
                             $field.='<p class="description">'.__('This method works on 5&#37; of servers',WYSIJA).'</p>';
 
                             $id=str_replace("_",'-',$key).'-'.$value."-path";
                             $field.='<p class="title" id="p-'.$id.'"><label for="'.$id.'">';
-                            $field.=__("Sendmail path",WYSIJA).'</label>'.$formsHelp->input(array("id"=>$id,'name'=>'wysija[config][sendmail_path]'),$this->model->getValue("sendmail_path")).'</p>';
+                            $field.=__("Sendmail path",WYSIJA).'</label>'.$helper_forms->input(array("id"=>$id,'name'=>'wysija[config][sendmail_path]'),$this->model->getValue("sendmail_path")).'</p>';
+
+
+                            if($this->model->getValue('allow_wpmail')){
+                                $checked=false;
+                                $value='wpmail';
+                                if($value ==$realvalue) $checked=true;
+
+                                $id=str_replace('_','-',$key).'-'.$value;
+                                $field.='<p class="title"><label for="'.$id.'">';
+                                $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                                $field.='WP Mail</label><a class="button-secondary" id="send-test-mail-wpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
+                                $field.='<p class="description">'.__('Use the same method as the one used for your WP site.',WYSIJA).'</p>';
+                            }
+
 
                             echo $field;
                         ?>
@@ -904,7 +918,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <td colspan="2">
                         <?php
                             $value=$this->model->getValue($key);
-                            $field=$formsHelp->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                            $field=$helper_forms->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
                             echo $field;
                         ?>
                     </td>
@@ -923,7 +937,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <td colspan="2">
                         <?php
                             $value=$this->model->getValue($key);
-                            $field=$formsHelp->input(array("id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                            $field=$helper_forms->input(array("id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
                             echo $field;
                         ?>
                     </td>
@@ -941,7 +955,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <td colspan="2">
                         <?php
                             $value=$this->model->getValue($key);
-                            $field=$formsHelp->input(array("type"=>"password","id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
+                            $field=$helper_forms->input(array("type"=>"password","id"=>$id,'name'=>'wysija[config]['.$key.']','size'=>'40'),$value,$checked);
                             echo $field;
                         ?>
                     </td>
@@ -962,7 +976,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $value=$this->model->getValue($key);
                             $checked=false;
                             if($this->model->getValue('smtp_rest')) $checked=true;
-                            $field=$formsHelp->checkbox(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),1,$checked);
+                            $field=$helper_forms->checkbox(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),1,$checked);
 
                             echo $field;
                         ?>
@@ -982,7 +996,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                     <td colspan="2">
                         <?php
                             $value=$this->model->getValue($key);
-                            $field=$formsHelp->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),$value,$checked);
+                            $field=$helper_forms->input(array('id'=>$id,'name'=>'wysija[config]['.$key.']','size'=>'3'),$value,$checked);
 
                             echo $field;
                         ?>
@@ -1003,7 +1017,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
 
                             $value=$this->model->getValue($key);
 
-                            $field=$formsHelp->dropdown(array('name'=>'wysija[config]['.$key.']',"id"=>$id),array(false=>__("No"),"ssl"=>"SSL","tls"=>"TLS"),$value);
+                            $field=$helper_forms->dropdown(array('name'=>'wysija[config]['.$key.']',"id"=>$id),array(false=>__("No"),"ssl"=>"SSL","tls"=>"TLS"),$value);
                             echo $field;
                         ?>
                     </td>
@@ -1027,7 +1041,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             if($value ==$realvalue) $checked=true;
                             $id=str_replace('_','-',$key).'-'.$value;
                             $field='<label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('No',WYSIJA).'</label>';
 
                             $value=true;
@@ -1035,7 +1049,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             if($value ==$realvalue) $checked=true;
                             $id=str_replace('_','-',$key).'-'.$value;
                             $field.='<label for="'.$id.'">';
-                            $field.=$formsHelp->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                            $field.=$helper_forms->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
                             $field.=__('Yes',WYSIJA).'</label>';
 
 
@@ -1071,14 +1085,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $value=$this->model->getValue($name);
                             $params=array("id"=>$id,'name'=>'wysija[config]['.$name.']','size'=>'6');
                             //if($this->model->getValue("smtp_host")=="smtp.gmail.com") $params["readonly"]="readonly";
-                            $field=$formsHelp->input($params,$value);
+                            $field=$helper_forms->input($params,$value);
                             $field.= '&nbsp;'.__('emails', WYSIJA).'&nbsp;';
 
 
                             $name='sending_emails_each';
                             $id=str_replace('_','-',$name);
                             $value=$this->model->getValue($name);
-                            $field.=$formsHelp->dropdown(array('name'=>'wysija[config]['.$name.']','id'=>$id),$formsHelp->eachValues,$value);
+                            $field.=$helper_forms->dropdown(array('name'=>'wysija[config]['.$name.']','id'=>$id),$helper_forms->eachValues,$value);
                             echo $field;
                         ?>
                     </td>
@@ -1582,6 +1596,19 @@ class WYSIJA_view_back_config extends WYSIJA_view_back{
                             $id=str_replace("_",'-',$key).'-'.$value."-path";
                             $field.='<p class="title" id="p-'.$id.'"><label for="'.$id.'">';
                             $field.=__("Sendmail path",WYSIJA).'</label>'.$helper_forms->input(array("id"=>$id,'name'=>'wysija[config][sendmail_path]'),$model_config->getValue("sendmail_path")).'</p>';
+
+                            if($model_config->getValue('allow_wpmail')){
+                                $checked=false;
+                                $value='wpmail';
+                                if($value ==$realvalue) $checked=true;
+
+                                $id=str_replace('_','-',$key).'-'.$value;
+                                $field.='<p class="title"><label for="'.$id.'">';
+                                $field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+                                $field.='WP Mail</label><a class="button-secondary" id="ms-send-test-mail-wpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
+                                $field.='<p class="description">'.__('Use the same method as the one used for your WP site.',WYSIJA).'</p>';
+                            }
+
 
                              $html_content.=$field;
                      $html_content.='</td>

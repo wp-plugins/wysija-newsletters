@@ -977,7 +977,9 @@ class WYSIJA_help_user extends WYSIJA_object{
      */
     function checkUserKey($user_id=false){
 
-        if(isset($_REQUEST['wysija-key']) || $user_id !==false){
+        // the !is numeric condition is here because if we input wysija-key=3 in the url
+        // our model will search keyuser=3 which will return the result of the user with key user 3b61ac508456ab6ee7594c47cddb86a5
+        if((!empty($_REQUEST['wysija-key']) && !is_numeric($_REQUEST['wysija-key'])) || $user_id !==false){
             $modelUser=WYSIJA::get('user','model');
 
             if($user_id===false){
