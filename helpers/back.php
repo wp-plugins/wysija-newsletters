@@ -194,18 +194,6 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
 
 
-        if(defined('DISABLE_WP_CRON') && DISABLE_WP_CRON && !WYSIJA::is_plugin_active('wp-cron-control/wp-cron-control.php')) {
-            $msg=$config->getValue('ignore_msgs');
-            if(!isset($msg['crondisabled'])){
-                $this->notice(
-                        __("Oops! Looks like your site's event scheduler (wp-cron) is turned off.",WYSIJA).' '.
-                        str_replace(
-                            array('[link]','[/link]'),
-                            array('<a href="http://support.mailpoet.com/knowledgebase/your-cron-is-disabled/?utm_source=wpadmin&utm_campaign=notice_message" target="_blank">','</a>'), __('[link]Read more.[/link]',WYSIJA)
-                        ).' <a class="linkignore crondisabled" href="javascript:;">'.__('Hide!',WYSIJA).'</a>');
-            }
-        }
-
         if(WYSIJA_ITF){
             global $wysija_installing;
             if( !$config->getValue('sending_emails_ok')){

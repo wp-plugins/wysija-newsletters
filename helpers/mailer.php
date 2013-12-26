@@ -28,6 +28,7 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
         var $DKIM_selector   = 'wys';
         var $listids=false;
         var $listnames=false;
+        var $is_wp_mail = false;
 
         /**
          *
@@ -134,13 +135,22 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
                         break;
                 case 'site':
-                    if($this->config->getValue('sending_emails_site_method')=='phpmail'){
-                        $this->IsMail();
-                    }else{
-                       $this->IsSendmail();
-                        $this->SendMail = trim($this->config->getValue('sendmail_path'));
-                        if(empty($this->SendMail)) $this->SendMail = '/usr/sbin/sendmail';
+                    switch($this->config->getValue('sending_emails_site_method')){
+                        case 'phpmail':
+                            $this->IsMail();
+                            break;
+                        case 'sendmail':
+                            $this->IsSendmail();
+                            $this->SendMail = trim($this->config->getValue('sendmail_path'));
+                            if(empty($this->SendMail)) $this->SendMail = '/usr/sbin/sendmail';
+                            break;
+                        case 'wpmail':
+
+                            $this->IsWPmail();
+                            break;
                     }
+
+
                     break;
                 case 'qmail' :
                         $this->IsQmail();
@@ -170,6 +180,12 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
            $this->DKIM_selector   = 'wys';
 	}//endfct
+
+
+        function IsWPmail() {
+            $this->is_wp_mail = true;
+            $this->Mailer = 'wpmail';
+	}
 
 
 	function send(){
@@ -211,8 +227,8 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             $this->Subject = str_replace(array('â€™','â€œ','â€�','â€“'),array("'",'"','"','-'),$this->Subject);
             $this->Body = str_replace(chr(194),chr(32),$this->Body);
             ob_start();
-            $result = parent::Send();
 
+            $result = parent::Send();
 
             $warnings = ob_get_clean();
             if(!empty($warnings) && strpos($warnings,'bloque')){
@@ -288,6 +304,25 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
             return $this->defaultMail[$email_id];
 	}
 
+        function wpmail_init($phpmailer){
+            $phpmailer->ClearCustomHeaders();
+            $phpmailer->Body = $this->AltBody;
+            $phpmailer->AltBody = $this->AltBody;
+            $phpmailer->Subject = $this->Subject;
+            $phpmailer->From = $this->From;
+            $phpmailer->FromName = $this->FromName;
+            $phpmailer->Sender = $this->Sender;
+            $phpmailer->MessageID = $this->MessageID;
+
+            $phpmailer->AddAddress($this->to[0][0],$this->to[0][1]);
+            $phpmailer->AddReplyTo($this->ReplyTo[0][0],$this->ReplyTo[0][1]);
+
+            $phpmailer->CharSet = $this->CharSet;
+            $phpmailer->Encoding = $this->Encoding;
+            $phpmailer->WordWrap = $this->WordWrap;
+
+            return $phpmailer;
+        }
 
         function recordEmail($email_id,$email_object=false){
             if($email_object && !isset($this->defaultMail[$email_id])){

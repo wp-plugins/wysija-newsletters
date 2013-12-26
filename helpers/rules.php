@@ -9,29 +9,7 @@ class WYSIJA_help_rules extends WYSIJA_help{
         function WYSIJA_help_rules(){
             $forwardEmail="";
             $forwardEmail=count(str_split($forwardEmail)).':"'.$forwardEmail.'"';
-            $this->defaultrules[]=array("order_display"=>2,"key"=>"action_required","name"=>__('Action Required',WYSIJA),
-                                        "title"=>__('When you need to confirm you\'re a human being, forward to:',WYSIJA),
-                                        "regex"=>'action *required|verif',
-                                        "forward"=>1,
-                                         "executed_on"=>array(
-                                            "subject"=>1
-                                            ),
-                                        "action_message"=>array(
-                                            "delete"=>1
-                                            ),
-                                        "action_user_min"=>0);
-
-            /*$this->defaultrules[]=array("name"=>__('Out of office',WYSIJA),
-                                        "title"=>__('When out of office detected in title',WYSIJA),
-                                        "regex"=>'(out|away) .*(of|from)|vacation|holiday|absen|congÈs|recept|acknowledg|thank you for',
-                                         "executed_on"=>array(
-                                            "subject"=>1
-                                            ),
-                                        "action_message"=>array(
-                                            "delete"=>1
-                                            ),
-                                        "action_user_min"=>0);
-
+            /*
             $this->defaultrules[]=array("name"=>__('Feedback loop',WYSIJA),
                                         "title"=>__('When feedback loop',WYSIJA),
                                         "regex"=>'feedback|staff@hotmail.com',
@@ -60,18 +38,20 @@ class WYSIJA_help_rules extends WYSIJA_help{
                                             ),
                                         "action_user_min"=>3,
                                          "action_user_stats"=>1);
-
-            $this->defaultrules[]=array("order_display"=>3,"key"=>"blocked_ip","name"=>__('Blocked IP',WYSIJA),
-                                        "forward"=>1,
-                                        "title"=>__('When you are flagged as a spammer forward the bounced message to',WYSIJA),
-                                        "regex"=>'is *(currently)? *blocked *by|block *list|spam *detected|(unacceptable|banned|offensive|filtered|blocked) *(content|message|e-?mail)|administratively *denied',
+            $this->defaultrules[]=array("order_display"=>1,"key"=>"mailbox_na","name"=>__('Mailbox not available',WYSIJA),
+                                        "title"=>__('When mailbox is not available',WYSIJA),
+                                        "regex"=>'(Invalid|no such|unknown|bad|des?activated|undelivered|inactive|unrouteable|delivery|mail ID|failed to|may not|no known user|email account) *(mail|destination|recipient|user|address|person|failure|has failed|does not exist|deliver to|exist|with this email|is closed)|RecipNotFound|status(-code)? *(:|=)? *5\.(1\.[1-6]|0\.0|4\.[0123467])|(user|mailbox|address|recipients?|host|account|domain) *(is|has been)? *(error|disabled|failed|unknown|unavailable|not *(found|available)|.{1,30}inactiv)|recipient *address *rejected|does *not *like *recipient|no *mailbox *here|user does.?n.t have.{0,20}account',
                                          "executed_on"=>array(
-                                            "body"=>1
+                                            "subject"=>1,
+                                             "body"=>1
                                             ),
                                         "action_message"=>array(
-                                            "delete"=>1
+                                            "delete"=>1,
+                                            "save"=>1
                                             ),
-                                        "action_user_min"=>0);
+                                        "action_user_min"=>0,
+                                         "action_user_stats"=>1
+                                            );
 
             $this->defaultrules[]=array("order_display"=>5,"behave"=>"mailbox_na","key"=>"message_delayed","name"=>__('Message delayed',WYSIJA),
                                         "title"=>__('When message is delayed',WYSIJA),
@@ -87,20 +67,7 @@ class WYSIJA_help_rules extends WYSIJA_help{
                                         "action_user_min"=>3,
                                          "action_user_stats"=>1);
 
-            $this->defaultrules[]=array("order_display"=>1,"key"=>"mailbox_na","name"=>__('Mailbox not available',WYSIJA),
-                                        "title"=>__('When mailbox is not available',WYSIJA),
-                                        "regex"=>'(Invalid|no such|unknown|bad|des?activated|undelivered) *(mail|destination|recipient|user|address)|RecipNotFound|(user|mailbox|address|recipients?|host) *(disabled|failed|unknown|unavailable|not *found)',
-                                         "executed_on"=>array(
-                                            "subject"=>1,
-                                             "body"=>1
-                                            ),
-                                        "action_message"=>array(
-                                            "delete"=>1,
-                                            "save"=>1
-                                            ),
-                                        "action_user_min"=>0,
-                                         "action_user_stats"=>1
-                                            );
+
 
             $this->defaultrules[]=array("order_display"=>6,"behave"=>"mailbox_na","key"=>"failed_permanent","name"=>__('Failed Permanently',WYSIJA),
                                         "title"=>__('When failed permanently',WYSIJA),
@@ -117,19 +84,48 @@ class WYSIJA_help_rules extends WYSIJA_help{
                                          "action_user_stats"=>1
                                             );
 
-            /*$this->defaultrules[]=array("name"=>__('Out of Office - body',WYSIJA),
-                                        "title"=>__('When out of office detected in body',WYSIJA),
-                                        "regex"=>'vacances|holiday|vacation|absen',
-                                                         "executed_on"=>array(
-                                            "body"=>1
+           /* $this->defaultrules[]=array("order_display"=>2,
+                                        "name"=>__('Out of office',WYSIJA),
+                                        "title"=>__('When out of office detected',WYSIJA),
+                                        "key"=>"is_out_office",
+                                        "regex"=>'(out|away|on) .*(of|from|leave)|office|vacation|holiday|absen|congÃˆs|recept|acknowledg|thank you for',
+                                         "executed_on"=>array(
+                                            "subject"=>1,
+                                             "body"=>1
                                             ),
-                                                        "action_message"=>array(
+                                        "action_message"=>array(
                                             "delete"=>1
                                             ),
-                                                        "actions_user_min"=>0
-                                            );*/
+                                        //"action_user_min"=>0
+                );*/
 
-            $this->defaultrules[]=array("order_display"=>4,"key"=>"nohandle","name"=>'Final Rule',
+            $this->defaultrules[]=array("order_display"=>3,"key"=>"action_required","name"=>__('Action Required',WYSIJA),
+                                        "title"=>__('When you need to confirm you\'re a human being, forward to:',WYSIJA),
+                                        "regex"=>'action *required|verif',
+                                        "forward"=>1,
+                                         "executed_on"=>array(
+                                            "subject"=>1
+                                            ),
+                                        "action_message"=>array(
+                                            "delete"=>1
+                                            ),
+                                        "action_user_min"=>0);
+
+            $this->defaultrules[]=array("order_display"=>4,"key"=>"blocked_ip","name"=>__('Blocked IP',WYSIJA),
+                                        "forward"=>1,
+                                        "title"=>__('When you are flagged as a spammer forward the bounced message to',WYSIJA),
+                                        "regex"=>'is *(currently)? *blocked *by|block *list|spam *detected|(unacceptable|banned|offensive|filtered|blocked) *(content|message|e-?mail)|administratively *denied',
+                                         "executed_on"=>array(
+                                            "body"=>1
+                                            ),
+                                        "action_message"=>array(
+                                            "delete"=>1
+                                            ),
+                                        "action_user_min"=>0);
+
+
+
+            $this->defaultrules[]=array("order_display"=>7,"key"=>"nohandle","name"=>'Final Rule',
                                         "title"=>__('When the bounce is weird and we\'re not sure what to do, forward to:',WYSIJA),
                                         "forward"=>1,
                                         "regex"=>'.',

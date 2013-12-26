@@ -158,15 +158,13 @@ class WYSIJA_model_email extends WYSIJA_model{
         // we go through that queuing function which will check if it is necessary to queue the email
         // depending on the type of email we're dealing with there will be no queuing
         if($this->retro_active_autoresponders){
-            $model_queue=WYSIJA::get('queue','model');
+            $model_queue = WYSIJA::get('queue','model');
             $emails_have_been_queued = $model_queue->queue_email($email);
         }
 
         //set the email status based on parameters and also return a message
         $email_status=99;
         $sent_status = array();
-
-
 
         if((int)$email['type']===1)  {
             if(isset($email['params']['schedule']['isscheduled']) && !$emails_have_been_queued){
