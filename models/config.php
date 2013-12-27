@@ -394,7 +394,7 @@ class WYSIJA_model_config extends WYSIJA_object{
     function ms_override($ms_overriden){
         if($this->getValue('premium_key')){
              $bounce_value = array('bounce','bouncing');
-            return array_replace($ms_overriden, $bounce_value);
+            return array_merge($ms_overriden, $bounce_value);
         }
         return $ms_overriden;
     }
