@@ -115,6 +115,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                                 'wysijaplugin' => $plugin,
                                 'dataType'=>"json",
                                 'ajaxurl'=>admin_url( 'admin-ajax.php', 'relative' ),
+                                // 'ajaxurl'=>plugins_url( 'wysija-newsletters' ).'/core/ajax.php',
                                 'pluginurl'=>plugins_url( 'wysija-newsletters' ),
                                 'loadingTrans'  =>__('Loading...',WYSIJA)
                             );
@@ -134,33 +135,47 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                         case 'wysija-edit-autonl':
                             wp_enqueue_script('wysija-edit-autonl', WYSIJA_URL.'js/admin-campaigns-editAutonl.js',array('jquery'),WYSIJA::get_version());
                             break;
-                        case 'wysija-form-widget-settings':
-                            wp_enqueue_script('wysija-prototype', WYSIJA_URL.'js/prototype/prototype.js',array(),WYSIJA::get_version());
-                            wp_enqueue_script('wysija-proto-scriptaculous', WYSIJA_URL.'js/prototype/scriptaculous.js',array('wysija-prototype'),WYSIJA::get_version());
-                            wp_enqueue_script('wysija-proto-dragdrop', WYSIJA_URL.'js/prototype/dragdrop.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
-                            wp_enqueue_script('wysija-proto-controls', WYSIJA_URL.'js/prototype/controls.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
+                        case 'wysija-scriptaculous':
+                            // include prototypeJS + scriptaculous & addons
+                            wp_enqueue_script('wysija-prototype', WYSIJA_URL.'js/prototype/prototype.js', array(), WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-scriptaculous', WYSIJA_URL.'js/prototype/scriptaculous.js', array('wysija-prototype'), WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-dragdrop', WYSIJA_URL.'js/prototype/dragdrop.js', array('wysija-proto-scriptaculous'), WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-controls', WYSIJA_URL.'js/prototype/controls.js', array('wysija-proto-scriptaculous'), WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-slider', WYSIJA_URL.'js/prototype/slider.js', array('wysija-proto-scriptaculous'), WYSIJA::get_version());
                         break;
-
+                        case 'wysija-chosen-proto':
+                            // chosen library
+                            wp_enqueue_script('wysija-proto-chosen', WYSIJA_URL.'js/chosen/chosen.proto.min.js', array('wysija-prototype'), WYSIJA::get_version());
+                            // chosen styles
+                            wp_enqueue_style('wysija-chosen-styles', WYSIJA_URL.'js/chosen/chosen.min.css', array(), WYSIJA::get_version());
+                        break;
+                        case 'wysija-chosen-jquery':
+                            // chosen library
+                            wp_enqueue_script('wysija-chosen', WYSIJA_URL.'js/chosen/chosen.jquery.min.js', array('jquery'), WYSIJA::get_version());
+                            // chosen styles
+                            wp_enqueue_style('wysija-chosen-styles', WYSIJA_URL.'js/chosen/chosen.min.css', array(), WYSIJA::get_version());
+                        break;
                         case 'wysija-form-editor':
                             wp_enqueue_script('wysija-prototype', WYSIJA_URL.'js/prototype/prototype.js',array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-proto-scriptaculous', WYSIJA_URL.'js/prototype/scriptaculous.js',array('wysija-prototype'),WYSIJA::get_version());
                             wp_enqueue_script('wysija-proto-dragdrop', WYSIJA_URL.'js/prototype/dragdrop.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
                             wp_enqueue_script('wysija-proto-controls', WYSIJA_URL.'js/prototype/controls.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
+                            wp_enqueue_script('wysija-proto-slider', WYSIJA_URL.'js/prototype/slider.js',array('wysija-proto-scriptaculous'),WYSIJA::get_version());
 
                             // include form editor
                             wp_enqueue_script($js, WYSIJA_URL.'js/'.$js.'.js', array(), WYSIJA::get_version());
 
-                            /* Wysija form editor i18n */
+                            /* MailPoet form editor i18n */
                             wp_localize_script('wysija-form-editor', 'Wysija_i18n', $controller->jsTrans);
 
                             // form editor css
                             wp_enqueue_style('wysija-form-editor-css', WYSIJA_URL."css/wysija-form-editor.css",array(),WYSIJA::get_version());
-                            break;
+                        break;
                         case 'wysija-amcharts':
-                            // Wysija chart
+                            // MailPoet chart
                             wp_enqueue_script("amcharts", WYSIJA_URL."js/amcharts/amcharts.js",array(),WYSIJA::get_version());
                             wp_enqueue_script("wysija-amcharts", WYSIJA_URL."js/wysija-charts.js",array(),WYSIJA::get_version());
-
+                        break;
                         case 'wysija-editor':
 
                             wp_enqueue_script("wysija-prototype", WYSIJA_URL."js/prototype/prototype.js",array(),WYSIJA::get_version());
@@ -185,18 +200,22 @@ class WYSIJA_help_backloader extends WYSIJA_help{
                             wp_enqueue_script($js, WYSIJA_URL."js/".$js.".js",array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-konami', WYSIJA_URL."js/konami.js",array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-tinymce', WYSIJA_URL."js/tinymce/tiny_mce.js",array(),WYSIJA::get_version());
+
                             wp_enqueue_script('wysija-tinymce-init', WYSIJA_URL."js/tinymce_init.js",array(),WYSIJA::get_version());
                             wp_enqueue_style('wysija-editor-css', WYSIJA_URL."css/wysija-editor.css",array(),WYSIJA::get_version());
                             wp_enqueue_script('wysija-colorpicker', WYSIJA_URL."js/excolor/jquery.modcoder.excolor.js",array(),WYSIJA::get_version());
 
-                            /* Wysija editor i18n */
+                            /* MailPoet editor i18n */
                             wp_localize_script('wysija-editor', 'Wysija_i18n', $controller->jsTrans);
-                            break;
+                        break;
                         case 'wysija-colorpicker':
                             wp_enqueue_script('wysija-colorpicker', WYSIJA_URL."js/excolor/jquery.modcoder.excolor.js",array(),WYSIJA::get_version());
-                            break;
+                        break;
+                        case 'wysija-tooltip':
+                            wp_enqueue_script( 'jquery-qtip', WYSIJA_URL.'js/qtip2/jquery.qtip.min.js', array('jquery'), WYSIJA::get_version());
+                            wp_enqueue_style('jquery-qtip-css', WYSIJA_URL.'css/qtip2/jquery.qtip.min.css');
+                        break;
                         default:
-
                             if(is_string($kjs)) {
                                 // check if there's a trailing slash in the urlbase
                                 if(substr($urlbase, -1) !== '/') $urlbase .= '/';
@@ -206,7 +225,6 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 
                                 wp_enqueue_script($kjs, $urlbase.'js/'.$js,array(),WYSIJA::get_version());
                             } else {
-
                                 wp_enqueue_script($js);
                             }
                     }
