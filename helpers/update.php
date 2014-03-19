@@ -396,7 +396,7 @@ class WYSIJA_help_update extends WYSIJA_object {
 			case '2.5.9.6':
 				$alter_queries   = array();
 				$alter_queries[] = 'ALTER TABLE [wysija]user ADD COLUMN `domain` VARCHAR(255);';
-				$this->run_update_queries( $alter_queries );
+				$errors    = $this->run_update_queries( $alter_queries );
 
 				if ( $this->does_column_exist( 'domain', '[wysija]user' ) ) {
 					$queries   = array();
@@ -406,15 +406,20 @@ class WYSIJA_help_update extends WYSIJA_object {
 						$this->error( implode( $errors, "\n" ) );
 						return false;
 					}
+
 				} else {
-					return false;
+                                    if(!empty($errors)){
+                                        $this->error( implode( $errors, "\n" ) );
+                                    }
+                                    return false;
 				}
+
 				return true;
 			break;
 
 			case '2.5.9.7':
 				$queries = array();
-
+                                
 				//add column namekey to
 				$model_config = WYSIJA::get( 'config', 'model' );
 				$columns_to_add_to_user_table = array(
@@ -600,7 +605,10 @@ class WYSIJA_help_update extends WYSIJA_object {
 			$query=str_replace('[wysija]',$this->modelWysija->getPrefix(),$query);
 			$wpdb->query($query);
 
-			if(!$wpdb->result)    $failed[]= mysql_error($wpdb->dbh)." ($query)";
+
+
+			if(empty($wpdb->result) || !$wpdb->result)    $failed[]= mysql_error($wpdb->dbh)." ($query)";
+
 		}
 		if($failed) return $failed;
 		else return false;
@@ -616,7 +624,11 @@ class WYSIJA_help_update extends WYSIJA_object {
 	protected function does_column_exist($column_name, $table_name) {
 	global $wpdb;
 	$sql = "SHOW COLUMNS FROM `$table_name` LIKE '$column_name';";
+
 	$results = $wpdb->get_results(str_replace('[wysija]',$this->modelWysija->getPrefix(),$sql));
+
+
+
 	return (!empty($results));
 	}
 
