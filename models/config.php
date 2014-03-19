@@ -10,14 +10,13 @@ class WYSIJA_model_config extends WYSIJA_object{
         'bounce_process_auto',
         'ms_bounce_process_auto',
         'sharedata',
-        'send_analytics_now',
-        'industry',
         'manage_subscriptions',
         'viewinbrowser',
         'dkim_active',
         'cron_manual',
         'commentform',
         'smtp_rest',
+        'ms_smtp_rest',
         'registerform',
         'ms_allow_admin_sending_method',
         'ms_allow_admin_toggle_signup_confirmation',
@@ -34,7 +33,7 @@ class WYSIJA_model_config extends WYSIJA_object{
         'role_subscribers'=>'switch_themes',
         'emails_notified_when_unsub' =>true,
         'sending_method'=>'gmail',
-        'sending_emails_number'=>'200',
+        'sending_emails_number'=>'70',
         'sending_method'=>'site',
         'sending_emails_site_method'=>'phpmail',
         'smtp_port'=>'',
@@ -112,7 +111,7 @@ class WYSIJA_model_config extends WYSIJA_object{
             // in multisite the default sending method is the network one
             $this->defaults['sending_method']='network';
         }
-
+        $this->add_translated_default();
 
         //install the application because there is no option setup it's safer than the classic activation scheme
         if(defined('WP_ADMIN')){
@@ -152,14 +151,17 @@ class WYSIJA_model_config extends WYSIJA_object{
 
         $this->capabilities['newsletters']=array(
             'label'=>__('Who can create newsletters?',WYSIJA));
-        $this->capabilities['subscribers']=array(
+        $this->capabilities['subscribers']=array( // if this role (name) is changed, please change at the filter "wysija_capabilities" as well
             'label'=>__('Who can manage subscribers?',WYSIJA));
         $this->capabilities['config']=array(
-            'label'=>__('Who can change Wysija\'s settings?',WYSIJA));
+            'label'=>__('Who can change MailPoet\'s settings?',WYSIJA));
         $this->capabilities['theme_tab']=array(
             'label'=>__('Who can see the themes tab in the visual editor?',WYSIJA));
         $this->capabilities['style_tab']=array(
             'label'=>__('Who can see the styles tab in the visual editor?',WYSIJA));
+
+        $this->capabilities = apply_filters('wysija_capabilities', $this->capabilities);
+
     }
 
     /**
@@ -181,45 +183,55 @@ class WYSIJA_model_config extends WYSIJA_object{
                     }
                 }
 
-                foreach($this->cboxes as $cbox){
-                    if(!isset($data[$cbox])){
-                        $data[$cbox]=$this->values[$cbox]=false;
-                    }else $data[$cbox]=$this->values[$cbox]=1;
+                // if the wysija's cron option is activated we check the licence to share the cron url
+                if(isset($data['cron_manual']) && $data['cron_manual'] != $this->getValue('cron_manual')){
+                    $helper_licence = WYSIJA::get('licence', 'helper');
+                    $helper_licence->check(true);
+                }
+
+                foreach($this->cboxes as $checkbox){
+                    // we set to false the checkbox valu if the data is not set checkbox are not posted in the form when unchecked
+                    if(!isset($data[$checkbox])){
+                        $data[$checkbox] = $this->values[$checkbox] = false;
+                    }else{
+                        // otherwise we set it as value 1
+                        $data[$checkbox] = $this->values[$checkbox] = 1;
+                    }
 
                     //this checkbox is of a role type
-                    if(strpos($cbox, 'rolescap---')!==false){
+                    if(strpos($checkbox, 'rolescap---')!==false){
 
-                        $rolecap=str_replace('rolescap---','',$cbox);
+                        $role_capability = str_replace('rolescap---','',$checkbox);
                         //this is a rolecap let's add or remove the cap to the role
-                        $rolecapexp=explode('---', $rolecap);
-                        $role=get_role($rolecapexp[0]);
-                        $capab='wysija_'.$rolecapexp[1];
+                        $role_capability_exploded = explode('---', $role_capability);
+                        $role = get_role($role_capability_exploded[0]);
+                        $capability = 'wysija_'.$role_capability_exploded[1];
                         //added for invalid roles ...
                         if($role){
-                            if($this->values[$cbox]){
-                                $role->add_cap($capab);
+                            if($this->values[$checkbox]){
+                                $role->add_cap($capability);
                             }else{
                                 //remove cap only for roles different of admins
-                                if($role->has_cap($capab) && !in_array($rolecapexp[0], array('administrator','super_admin'))){
-                                    $role->remove_cap($capab);
+                                if($role->has_cap($capability) && !in_array($role_capability_exploded[0], array('administrator','super_admin'))){
+                                    $role->remove_cap($capability);
                                 }
                             }
                         }
                         //no need to save those values which are already saved in wordpress
-                        unset($this->values[$cbox]);
+                        unset($this->values[$checkbox]);
                     }
 
 
                 }
 
-                $userHelper = WYSIJA::get('user','helper',false,'wysija-newsletters',false);
-                if(isset($data['from_email']) && !$userHelper->validEmail($data['from_email'])){
+                $helper_user = WYSIJA::get('user','helper',false,'wysija-newsletters',false);
+                if(isset($data['from_email']) && !$helper_user->validEmail($data['from_email'])){
                     if(!$data['from_email']) $data['from_email']=__('empty',WYSIJA);
                     $this->error(sprintf(__('The <strong>from email</strong> value you have entered (%1$s) is not a valid email address.',WYSIJA),$data['from_email']),true);
                     $data['from_email']=$this->values['from_email'];
                 }
 
-                if(isset($data['replyto_email']) && !$userHelper->validEmail($data['replyto_email'])){
+                if(isset($data['replyto_email']) && !$helper_user->validEmail($data['replyto_email'])){
                     if(!$data['replyto_email']) $data['replyto_email']=__('empty',WYSIJA);
                     $this->error(sprintf(__('The <strong>reply to</strong> email value you have entered (%1$s) is not a valid email address.',WYSIJA),$data['replyto_email']),true);
                     $data['replyto_email']=$this->values['replyto_email'];
@@ -288,6 +300,13 @@ class WYSIJA_model_config extends WYSIJA_object{
                         unset($data['dkim_regenerate']);
                     }
                 }
+
+                if(isset($data['confirm_dbleoptin']) && $data['confirm_dbleoptin']!=$this->values['confirm_dbleoptin']){
+                    $helper_user = WYSIJA::get('user','helper');
+                    $helper_user->refreshUsers();
+                }
+
+
             }
             $is_multisite=is_multisite();
             $is_network_admin=WYSIJA::current_user_can('manage_network');
@@ -434,7 +453,7 @@ class WYSIJA_model_config extends WYSIJA_object{
             /*if($type=="trans")  return stripslashes($this->values[$key]);
             else return $this->values[$key]; */
             if($key=='pluginsImportableEgg'){
-                $helperImport=WYSIJA::get('import','helper',false,'wysija-newsletters',false);
+                $helperImport=WYSIJA::get('plugins_import','helper',false,'wysija-newsletters',false);
                 foreach($this->values[$key] as $tablename =>$plugInfosExtras){
                     $extraData=$helperImport->getPluginsInfo($tablename);
                     if($extraData)  $this->values[$key][$tablename]=array_merge($extraData,$this->values[$key][$tablename]);
@@ -535,10 +554,10 @@ class WYSIJA_model_config extends WYSIJA_object{
                 'wysija-page'=>1,
                 'controller'=>"email",
                 'action'=>"view",
-                'email_id'=>$email_id,
+                'email_id' => $email_id,
                 'user_id'=>0
                 );
-            if($email_id==0) $paramsurl['email_id']=$_REQUEST['id'];
+            if($email_id==0 && !empty($_REQUEST['id'])) $paramsurl['email_id'] = $_REQUEST['id'];
             $data['link']=WYSIJA::get_permalink($this->getValue('confirm_email_link'),$paramsurl);
         }
 

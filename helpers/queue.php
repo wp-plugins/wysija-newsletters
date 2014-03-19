@@ -64,7 +64,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
          * @return boolean
          */
 	function process($email_id=false,$user_id=false){
-            if($email_id)    $this->email_id=$email_id;
+                if($email_id)    $this->email_id=$email_id;
                 $model_queue = WYSIJA::get('queue','model');
 		$queue_elements = $model_queue->getReady($this->send_limit,$this->email_id,$user_id);
 
@@ -146,8 +146,8 @@ class WYSIJA_help_queue extends WYSIJA_object{
 
                 $helper_mailer=WYSIJA::get('mailer','helper');
 		$helper_mailer->report = false;
-		//if($this->config->getValue('smtp_keepalive',0) || in_array($this->config->getValue('mailer_method'),array('elasticemail','smtp_com'))) $mailHelper->SMTPKeepAlive = true;
-                $helper_mailer->SMTPKeepAlive = true;
+		if($this->config->getValue('smtp_keepalive',1)) $helper_mailer->SMTPKeepAlive = true;
+                else $helper_mailer->SMTPKeepAlive = false;
 		$queue_delete = array();
 		$queue_update = array();
 		$stats_add = array();
@@ -262,8 +262,8 @@ class WYSIJA_help_queue extends WYSIJA_object{
 		$this->_deleteQueue($queue_delete);
 		$this->_statsAdd($stats_add);
 		$this->_queueUpdate($queue_update);
-		//if($this->config->getValue('smtp_keepalive',1)) $mailHelper->SmtpClose();
-                $helper_mailer->SmtpClose();
+		if($this->config->getValue('smtp_keepalive',1)) $helper_mailer->SmtpClose();
+
 		if(!empty($this->total) AND $current_mail >= $this->total){
 			$this->finish = true;
 		}

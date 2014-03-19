@@ -845,6 +845,10 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
                     }
                 break;
 
+                case 'includes':
+                    return (bool)(is_array($value) && in_array($arguments[0], $value));
+                break;
+
                 case 'color':
                     if($value !== 'transparent' && $value !== '') {
                         $value = '#'.$value;
@@ -867,7 +871,7 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
                 break;
 
                 case 'ucfirst':
-                    $value = ucFirst ($value);
+                    $value = ucfirst ($value);
                 break;
 
                 case 'upper':
