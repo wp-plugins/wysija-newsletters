@@ -18,7 +18,7 @@ class WYSIJA_help_quick_html extends WYSIJA_object {
         $count = 1;
         foreach ($arguments as $sale_argument) {
             if (isset($sale_argument['link'])) {
-                if($cta_links)  $class_link = 'class="button-primary argument-cta"';
+                if($cta_links)  $class_link = 'class="argument-cta"';
                 $sale_argument['desc'] = str_replace(array('[link]', '[/link]'), array('<a '.$class_link.' href="' . $sale_argument['link'] . '" target="_blank">', '</a>'), $sale_argument['desc']);
             }
             if($count==3) $sale_argument['key'] .= ' last-feature';
