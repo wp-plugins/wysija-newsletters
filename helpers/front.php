@@ -236,18 +236,14 @@ class WYSIJA_help_front extends WYSIJA_help{
             $wysija_undo = $this->controller->undo_unsubscribe;
         }
 
-        // this is a special case so that the user who specifies his own  unsubscribe page in the settings
-        // and don't add a [wysija_page] tag into it will still have the undo subscribe link and will write his own message.
-        if(!empty($_REQUEST['action']) && $_REQUEST['action'] == 'unsubscribe' && strpos($content, '[wysija_page]') == false){
-                return $content.'<div>'.$wysija_undo.'</div>';
+        // only force our edit subscription screen at the bottom of the content of the page
+        // if it's the right action and there is no wysija_page shortcode in teh page
+        if(!empty($_REQUEST['action']) && $_REQUEST['action'] == 'subscriptions' && strpos($content, '[wysija_page]') == false){
+            // we append the subscription form at the bottom of the page if we can't detect it
+            return $content.'<div class="mpoet_profile_edit">'.$wysija_content.'</div>';
         }else{
-            // this is the standard case where the shortcode is found in the page
-            if(strpos($content, '[wysija_page]') !== false){
-                return str_replace('[wysija_page]', $wysija_content.$wysija_undo, $content);
-            }else{
-                //where the shortcode is not found we append at the bottom of the page
-                return $content.$wysija_content;
-            }
+            // we replace the shortcode by our automatic content, other wise if there is no shortcode the page stays the same
+            return str_replace('[wysija_page]', $wysija_content.$wysija_undo, $content);
         }
 
     }
@@ -265,7 +261,7 @@ class WYSIJA_help_front extends WYSIJA_help{
      * @return string html
      */
     function scan_form_shortcode($attributes) {
-        // this is to make sure MagicMember won't scan our form and find [user_list] as a code they should replace.
+        // IMPORTANT: this is to make sure MagicMember won't scan our form and find [user_list] as a code they should replace.
         remove_shortcode('user_list');
 
         if(isset($attributes['id']) && (int)$attributes['id']>0){

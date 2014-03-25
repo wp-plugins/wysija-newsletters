@@ -121,6 +121,19 @@ class WYSIJA_view_front_widget_nl extends WYSIJA_view_front {
                     // replace total subscribers shortcode by actual value
                     $form_html = str_replace('[total_subscribers]', number_format($model_config->getValue('total_subscribers'), 0, '.', ' '), $form_html);
                 }
+
+                // IMPORTANT: we remove the ones that could break our subscription form
+                // this resolve the conflict with Ultimate Shortcodes
+                remove_shortcode('user');
+                remove_shortcode('user_list');
+                remove_shortcode('list_ids');
+                remove_shortcode('list_id');
+                remove_shortcode('firstname');
+                remove_shortcode('lastname');
+                remove_shortcode('email');
+                remove_shortcode('custom');
+                remove_shortcode('required');
+
                 // interpret shortcodes
                 $form_html = do_shortcode($form_html);
 

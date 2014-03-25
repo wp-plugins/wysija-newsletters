@@ -885,9 +885,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	/**
 	 * Detects if a link is on a same website
 	 * @param string $link
+	 * @access public
 	 * @return boolean
 	 */
-	protected function is_internal_link($link) {
+	public function is_internal_link($link) {
 	    $helper_toolbox = WYSIJA::get('toolbox', 'helper');
 	    return (strpos($link, $helper_toolbox->_make_domain_name(site_url())) !== false);
 	}
@@ -895,9 +896,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	/**
 	 * is a wysija link
 	 * @param string $link
+	 * @access public
 	 * @return boolean
 	 */
-	protected function is_wysija_link($link) {
+	public function is_wysija_link($link) {
 	    // @todo: we should use pattern to remove all links with []
 	    return (
 		    strpos($link, '[view_in_browser_link]') !== false
@@ -909,9 +911,10 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 	/**
 	 * Get a character which is between the original url and the next param
 	 * @param string $link
+	 * @access public
 	 * @return string
 	 */
-	protected function get_started_character_of_param($link) {
+	public function get_started_character_of_param($link) {
 	    return (strpos($link, '?') !== false) ? '&' : '?';
 	}
 

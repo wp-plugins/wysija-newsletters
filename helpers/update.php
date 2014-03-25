@@ -419,7 +419,7 @@ class WYSIJA_help_update extends WYSIJA_object {
 
 			case '2.5.9.7':
 				$queries = array();
-                                
+
 				//add column namekey to
 				$model_config = WYSIJA::get( 'config', 'model' );
 				$columns_to_add_to_user_table = array(
@@ -626,8 +626,6 @@ class WYSIJA_help_update extends WYSIJA_object {
 	$sql = "SHOW COLUMNS FROM `$table_name` LIKE '$column_name';";
 
 	$results = $wpdb->get_results(str_replace('[wysija]',$this->modelWysija->getPrefix(),$sql));
-
-
 
 	return (!empty($results));
 	}

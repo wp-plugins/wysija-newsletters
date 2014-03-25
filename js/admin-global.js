@@ -1,0 +1,1 @@
+(function(n){"use strict";n(document).ready(function(){n(".mp-select-sort").on({sort:function(){n(this).each(function(o,t){var e=n(t),r=e.children("option");r.detach().sort(function(n,o){return"NA"===n.innerHTML?1:"NA"===o.innerHTML?-1:n.innerHTML.toLowerCase()>o.innerHTML.toLowerCase()?1:-1}).appendTo(e)})}}).trigger("sort")})})(jQuery.noConflict(),_.noConflict());
