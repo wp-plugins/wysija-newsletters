@@ -1246,7 +1246,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
                 preg_match('#[^a-z0-9_-\s]#i', $_REQUEST['wysija']['email']['params']['googletrackingcode']) !== 0 )) {
             //force to simple text
             $_REQUEST['wysija']['email']['params']['googletrackingcode'] = preg_replace('#[^a-z0-9_-\s]#i', '_', $_REQUEST['wysija']['email']['params']['googletrackingcode']);
-            $this->error(__('The Google Campaign name needs to be only letters, number, spaces and hyphens. We\'ll improve this in the future!', WYSIJA), 1);
+            $this->error(__('Your Google Campaign can only contain letters, number, spaces and hyphens!', WYSIJA), 1);
             return $this->editDetails();
         }
 
@@ -2513,7 +2513,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
         $this->js[] = 'wysija-base64';
         $this->js[] = 'wysija-scriptaculous';
         $this->js[] = 'wysija-colorpicker';
-        $this->js[] = 'wysija-chosen-jquery';
+        $this->js[] = 'mailpoet-select2';
 
         // translations
         $this->jsTrans['show_advanced'] = __('Show display options', WYSIJA);

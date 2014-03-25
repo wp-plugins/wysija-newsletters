@@ -257,7 +257,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         $this->js[]='wysija-admin-ajax-proto';
         // $this->js[]='wysija-admin-ajax';
         $this->js[]='wysija-base-script-64';
-        $this->js[] = 'wysija-chosen-proto';
+        $this->js[] = 'mailpoet-select2';
 
         // make sure the editor content is not cached
         //header('Cache-Control: no-cache, max-age=0, must-revalidate, no-store'); // HTTP/1.1

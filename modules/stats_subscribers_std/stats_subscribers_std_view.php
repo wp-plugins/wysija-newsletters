@@ -16,7 +16,7 @@ class WYSIJA_module_view_stats_subscribers_std_view extends WYSIJA_view_back {
                 ?>
             </h3>
             <?php if (empty($data['opened_newsletters']['emails'])) { ?>
-                <div class="warning"><?php echo $data['messages']['data_not_available']; ?></div>
+                <div class="notice-msg updated inline"><ul><li><?php echo $data['messages']['data_not_available']; ?></li></ul></div>
             <?php } else { ?>              
                 <table class="widefat fixed">
                     <thead>

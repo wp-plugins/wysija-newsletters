@@ -171,8 +171,27 @@ class WYSIJA_module_stats_newsletter_std extends WYSIJA_module_statistics {
             return;
         $this->data = array_merge($this->data, $params);
         $this->data['lists'] = $this->model_obj->get_lists($params['email_object']['campaign_id']);
+        $this->data['bounce'] = $this->get_bounce_address();
         $this->view_show = 'hook_newsletter_action_buttons';
         return $this->render();
+    }
+    
+    /**
+     * Get bounce email address
+     * @return string
+     */
+    protected function get_bounce_address() {
+        $bounce_address = null;
+        $config_model = WYSIJA::get('config', 'model');
+        // Test email, host, logi, password to make sure at least Bounce was fully configured
+        if ($config_model->getValue('bounce_email')
+                && $config_model->getValue('bounce_host')
+                && $config_model->getValue('bounce_login')
+                && $config_model->getValue('bounce_password')
+                ) {
+            $bounce_address = $config_model->getValue('bounce_email');
+        }
+        return $bounce_address;
     }
 
     /**

@@ -17,6 +17,17 @@ class WYSIJA_object{
 	}
 
 	/**
+	 * Order an array by param name string compare
+	 *
+	 * @param  array $a  Array with the param to compare
+	 * @param  array $b  Array with the param to compare
+	 * @return int    Sorting result from strcmp
+	 */
+    public static function sort_by_name($a, $b){
+       return strcmp( strtolower( $a["name"] ), strtolower( $b["name"] ) );
+    }
+
+	/**
 	 * return a plugin version safely anywhere in any hook and stock it staticaly
 	 * @staticvar array $versions
 	 * @param string $plugin_name
@@ -209,6 +220,7 @@ class WYSIJA_help extends WYSIJA_object{
 	}
 
 	public function admin_enqueue_scripts(){
+		wp_enqueue_script( 'mailpoet-global' );
 		wp_enqueue_style('mailpoet-dashicons');
 	}
 
@@ -255,6 +267,7 @@ class WYSIJA_help extends WYSIJA_object{
 		wp_register_style('validate-engine-css',WYSIJA_URL.'css/validationEngine.jquery.css',array(),WYSIJA::get_version());
 		wp_register_script('wysija-admin-ajax', WYSIJA_URL.'js/admin-ajax.js',array(),WYSIJA::get_version());
 		wp_register_script('wysija-admin-ajax-proto', WYSIJA_URL.'js/admin-ajax-proto.js',array(),WYSIJA::get_version());
+		wp_register_script( 'mailpoet-global', WYSIJA_URL.'js/admin-global.js', array( 'jquery', 'underscore' ), WYSIJA::get_version() );
 
 		if(defined('WYSIJA_SIDE') && WYSIJA_SIDE=='front')  wp_enqueue_style('validate-engine-css');
 

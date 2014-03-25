@@ -133,7 +133,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
         $model_list = WYSIJA::get('list', 'model');
         $lists = $model_list->get(array('name', 'list_id', 'is_public'), array('is_enabled' => 1));
 
-
+        usort( $lists, array( $this, 'sort_by_name' ) );
         foreach ($lists as $list) {
             if ($list['is_public'])
                 $checked = true;
@@ -1855,6 +1855,8 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
                             if ($form_lists === null or is_array($form_lists) === false)
                                 $form_lists = array();
 
+                            usort( $data['lists'], array( $this, 'sort_by_name' ) );
+
                             print '<select id="lists-selection" name="lists" data-placeholder="'.__('Choose a list', WYSIJA).'" multiple class="chosen_select">';
 
                             for ($i = 0, $count = count($data['lists']); $i < $count; $i++) {
@@ -2099,8 +2101,10 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
                 // setup widget events
                 setupToolbar();
 
-                // setup chosen for list selection
-                new Chosen($('lists-selection'), { width: '642px', no_results_text: "<?php _e('Oops, nothing found!', WYSIJA); ?>" });
+                // Setups the jQuery Select2
+                jQuery('#lists-selection').select2({
+                    'width': 640
+                });
 
                 // in place editor for form name
                 new Ajax.InPlaceEditor('form-name', wysijaAJAX.ajaxurl, {
@@ -2350,7 +2354,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
         $output .= '<h3>' . __('Select the list you want to add:', WYSIJA) . '</h3>';
 
         // available lists select
-        $output .= '<select id="lists-available">';
+        $output .= '<select id="lists-available" class="mp-select-sort">';
         for ($j = 0, $count = count($extra['lists']); $j < $count; $j++) {
             // set current list
             $list = $extra['lists'][$j];

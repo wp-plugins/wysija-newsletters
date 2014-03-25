@@ -182,7 +182,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 	    </div>
 
 	    <div class="alignleft actions">
-		<select name="wysija[filter][filter_list]" class="global-filter">
+		<select name="wysija[filter][filter_list]" class="global-filter mp-select-sort">
 		    <option selected="selected" value=""><?php _e('View all lists', WYSIJA); ?></option>
 	<?php
 	foreach ($data['lists'] as $listK => $list)
@@ -277,7 +277,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 	    		<input type="radio" name="wysija[user][force_select_all]" id="force_select_all" style="display:none;" />
 	    		<input type="hidden" name="wysija[user][timestamp]" value="<?php echo $data['max_create_at']; ?>"/>
 	    		<div class="force_to_select_all_link" style="display:none">
-			   <?php echo __('All subscribers on this page are selected.', WYSIJA); ?>
+			   <?php _e('All subscribers on this page are selected.', WYSIJA); ?>
 	    		    <a href="javascript:void(0);"><?php echo sprintf(__('Select all %1$s subscribers.', WYSIJA), $data['current_counts']); ?></a>
 	    		</div>
 	    		<div class="clear_select_all" style="display:none">
@@ -536,6 +536,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			    $valuefield = array();
 			    if ($data['user'] && isset($data['user']['lists']))
 			    {
+
 				foreach ($data['user']['lists'] as $list)
 				{
 				    $valuefield[$list['list_id']] = $list;
@@ -543,6 +544,8 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			    }
 
 			    $_display_style = 2; // 1 = 1 column, 2 = float left
+	            usort( $data['list'], array( $this, 'sort_by_name' ) );
+
 			    foreach ($data['list'] as $list)
 			    {
 
@@ -565,7 +568,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 				}
 
 				$checkout_params = array('id' => $field.$list['list_id'], 'name' => "wysija[user_list][list_id][]", 'class' => '');
-				$checkbox = $form_obj->checkbox($checkout_params, $list['list_id'], $checked, $extra_checkbox).$list['name'];
+				$checkbox = $form_obj->checkbox($checkout_params, $list['list_id'], $checked, $extra_checkbox) . "<label for='list{$list['list_id']}'>{$list['name']}</label>";
 
 				if ($_display_style == 1)
 				{
@@ -578,7 +581,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 				{
 				    $field_html .= '<p class="labelcheck">';
 				    $field_html .= $checkbox;
-				    $field_html.=$hidden_field;
+				    $field_html .= $hidden_field;
 				    $field_html .= '</p>';
 				}
 			    }

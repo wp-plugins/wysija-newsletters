@@ -418,27 +418,32 @@ class WYSIJA_help_queue extends WYSIJA_object{
          */
         function clear(){
 
-            $model_config=WYSIJA::get('config','model');
-            $model_queue=WYSIJA::get('queue','model');
+            $model_config = WYSIJA::get('config','model');
+            $model_queue = WYSIJA::get('queue','model');
 
             //remove queued emails of unsubscribed users
-            $real_query='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.status< '.$model_config->getValue('confirm_dbleoptin');
+            $real_query = 'DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.status< '.$model_config->getValue('confirm_dbleoptin');
             $model_queue->query($real_query);
 
             //remove queued emails of deleted emails
-            $real_query='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]email` as b on a.email_id = b.email_id WHERE b.email_id IS NULL';
+            $real_query = 'DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]email` as b on a.email_id = b.email_id WHERE b.email_id IS NULL';
             $model_queue->query($real_query);
 
             //remove queued emails of deleted users
-            $real_query='DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.user_id IS NULL';
+            $real_query = 'DELETE a.* FROM `[wysija]queue` as a LEFT JOIN `[wysija]user` as b on a.user_id = b.user_id WHERE b.user_id IS NULL';
             $model_queue->query($real_query);
 
             //finally check if there are any queued emails left that stays unsent from 2 days ago
-            $conditions=array();
-            $conditions['less']=array('send_at'=>time()-(3600*48));
-            if($model_queue->exists($conditions)){
+            $conditions = array();
+            $conditions['less'] = array( 'send_at' => time() - (3600*48) );
+
+            // replaced the exists function with a count
+            $model_queue->setConditions( $conditions );
+            $count_late_in_queue = $model_queue->count();
+
+            if( $count_late_in_queue > 1000 ){
                 //send message your queue cannot send very fast
-                $model_config->save(array('queue_sends_slow'=>1));
+                $model_config->save( array( 'queue_sends_slow' => 1 ) );
             }
 
             return true;

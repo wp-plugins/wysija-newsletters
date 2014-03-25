@@ -350,7 +350,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             wp_enqueue_script('wysija-admin-js-global', WYSIJA_URL.'js/admin-wysija-global.js',array(),WYSIJA::get_version());
             $pagename=str_replace('wysija_','',$_REQUEST['page']);
             $backloader=WYSIJA::get('backloader','helper');
-            $backloader->initLoad($this->controller);
+            $backloader->init( $this->controller );
 
             //$this->controller->jsTrans["ignoremsg"]=__('Are you sure you want to ignore this message?.',WYSIJA);
             $jstrans=$this->controller->jsTrans;
@@ -359,13 +359,13 @@ class WYSIJA_help_back extends WYSIJA_help{
             $jstrans['gopremium']=__('Go Premium!',WYSIJA);
 
             //enqueue all the scripts that have been declared in the controller
-            $backloader->jsParse($this->controller,$pagename,WYSIJA_URL);
+            $backloader->parse_js( $this->controller, $pagename, WYSIJA_URL );
 
             //this will load automatically existing scripts and stylesheets based on the page and action parameters
-            $backloader->loadScriptsStyles($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
+            $backloader->load_assets($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
 
             //add some translation
-            $backloader->localize($pagename,WYSIJA_DIR,WYSIJA_URL,$this->controller);
+            $backloader->localize( $pagename, WYSIJA_DIR, WYSIJA_URL, $this->controller );
 
             // add rtl support
             if ( is_rtl() ) {

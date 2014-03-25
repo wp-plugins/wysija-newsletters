@@ -3,7 +3,7 @@
 class WYSIJA_module_view_stats_newsletter_std_view extends WYSIJA_view_back {
 
     public function hook_newsletter_top($data) {
-        echo '<div class="stats_newsletter_std hook-column" style="height:300px; width:600px">';
+        echo '<div class="stats_newsletter_std hook-column left" style="height:300px;">';
         if (empty($data['emails_count']))
             return;
         if (!empty($data['dataset']))
@@ -60,7 +60,7 @@ class WYSIJA_module_view_stats_newsletter_std_view extends WYSIJA_view_back {
         <div class="container-top-links container clear" rel="<?php echo $data['module_name']; ?>">
             <h3 class="title"><?php echo __('Top links', WYSIJA); ?></h3>
             <?php if (empty($data['top_links'])) { ?>
-                <div class="warning"><?php echo $data['messages']['data_not_available']; ?></div>
+                <div class="notice-msg updated inline"><ul><li><?php echo $data['messages']['data_not_available']; ?></li></ul></div>
         <?php } else { ?>              
                 <table class="widefat fixed">
                     <thead>
@@ -120,7 +120,7 @@ class WYSIJA_module_view_stats_newsletter_std_view extends WYSIJA_view_back {
      * @param type $data
      */
     public function hook_newsletter_action_buttons($data) {
-        echo '<div class="actions left">';
+        echo '<div class="actions right">';
 
         $classes = function_exists('wp_star_rating') ? 'add-new-h2' : 'button-secondary2';
         
@@ -143,19 +143,63 @@ class WYSIJA_module_view_stats_newsletter_std_view extends WYSIJA_view_back {
         $link_duplicate = 'admin.php?'.http_build_query($params);
         echo '<a id="action-'.$action.'" href="'.$link_duplicate.'" class="action-'.$action.' '.$classes.'">'.__('Duplicate', WYSIJA).'</a>';
         
+        $alternate = false;
+        echo '<table class="newsletter-stats-block widefat fixed">';
         // Google tracking code
         if (!empty($data['email_object']['params']['googletrackingcode'])) {
-            echo '<div class="googletrackingcode"><span>' . __('Google Analytics', WYSIJA) . ':</span> ' . $data['email_object']['params']['googletrackingcode'] . '</div>';
+            // echo '<div class="googletrackingcode"><span>' . __('Google Analytics', WYSIJA) . ':</span> ' . $data['email_object']['params']['googletrackingcode'] . '</div>';
+            echo '<tr class="'.($alternate ? 'alternate' : '').'"><td class="label">'.__('Google Analytics', WYSIJA).'</td><td>'.$data['email_object']['params']['googletrackingcode'].'</td></tr>';
+            $alternate = !$alternate;
         }    
         
         // Sent on:
-        echo '<div class="googletrackingcode"><span>' . __('Sent on', WYSIJA) . ':</span> ' . $this->fieldListHTML_created_at_time($data['email_object']['sent_at']) . '</div>';
+        // echo '<div class="googletrackingcode"><span>' . __('Sent on', WYSIJA) . ':</span> ' . $this->fieldListHTML_created_at_time($data['email_object']['sent_at']) . '</div>';
+        echo '<tr class="'.($alternate ? 'alternate' : '').'"><td class="label">'.__('Sent on', WYSIJA).'</td><td>'.$this->fieldListHTML_created_at_time($data['email_object']['sent_at']).'</td></tr>';
+        $alternate = !$alternate;
         
         // Lists: 
         if (!empty($data['lists'])) {
-            echo '<div class="googletrackingcode"><span>' . __('Lists', WYSIJA) . ':</span> ' . implode(', ',$data['lists']) . '</div>';
+            // echo '<div class="googletrackingcode"><span>' . __('Lists', WYSIJA) . ':</span> ' . implode(', ',$data['lists']) . '</div>';
+            echo '<tr class="'.($alternate ? 'alternate' : '').'"><td class="label">'.__('Lists', WYSIJA).'</td><td>'.implode(', ',$data['lists']).'</td></tr>';
+            $alternate = !$alternate;
         }
+
+        // From address: 
+        $_from_address = array();
+        if (!empty($data['email_object']['from_name'])) {
+            $_from_address[] = $data['email_object']['from_name'];
+        }        
+        if (!empty($data['email_object']['from_email'])) {
+            $_from_address[] = $data['email_object']['from_email'];
+        }     
+        if (!empty($_from_address)) {
+            // echo '<div class="googletrackingcode"><span>' . __('From', WYSIJA) . ':</span> ' . implode(', ',$_from_address) . '</div>';            
+            echo '<tr class="'.($alternate ? 'alternate' : '').'"><td class="label">'.__('From', WYSIJA).'</td><td>'.implode(' &lt;',$_from_address).(count($_from_address)>1 ? '&gt;' : '').'</td></tr>';
+            $alternate = !$alternate;
+        }
+
+        // Reply-to address
+        $_reply_to_address = array();
+        if (!empty($data['email_object']['replyto_name'])) {
+            $_reply_to_address[] = $data['email_object']['replyto_name'];
+        }        
+        if (!empty($data['email_object']['replyto_email'])) {
+            $_reply_to_address[] = $data['email_object']['replyto_email'];
+        }     
+
+        if (!empty($_reply_to_address)) {
+            // echo '<div class="googletrackingcode"><span>' . __('Reply-to', WYSIJA) . ':</span> ' . implode(', ',$_reply_to_address) . '</div>';            
+            echo '<tr class="'.($alternate ? 'alternate' : '').'"><td class="label">'.__('Reply-to', WYSIJA).'</td><td>'.implode(' &lt;',$_reply_to_address). (count($_reply_to_address)>1 ? '&gt;' : '') . '</td></tr>';
+            $alternate = !$alternate;
+        }     
         
+        if (!empty($data['bounce'])) {
+            // echo '<div class="googletrackingcode"><span>' . __('Bounce', WYSIJA) . ':</span> ' . $data['bounce'] . '</div>';            
+            echo '<tr class="'.($alternate ? 'alternate' : '').'"><td class="label">'.__('Bounce', WYSIJA).'</td><td>'.$data['bounce'].'</td></tr>';
+            $alternate = !$alternate;
+        }
+
+        echo '</table>';
         echo '</div>';
     }    
 

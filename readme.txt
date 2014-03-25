@@ -3,7 +3,7 @@ Contributors: wysija, kgjerstad, benheu, jon1op, badshark, tung-wysija, bordoni,
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
 Tested up to: 3.8.1
-Stable tag: 2.6
+Stable tag: 2.6.1
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -133,6 +133,18 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 
 == Changelog ==
 
+= 2.6.1 - 2014-03-25 =
+* Fixed a conflict with the "Ultimate Shortcode" plugin breaking our subscription forms
+* Fixed automatically inserted text in confirmation/subscription pages
+* Improved CSV special characters handling in the Subscribers import functionality
+* Improved some of our warnings in the backend to make the messages clearer
+* Improved MailPoet Statistics Page with styling compatible to WordPress v3.8
+* Improved handling Big Databases on daily post notifications
+* Added extra information in the Newsletters' statistics page for a better understanding
+* Added German Disclaimer to a new Docs Folder for legal purpose
+* Minor changes improving the User Experience in some of our Forms in the backend
+* Replaced The autoselection script "Choosen" in favor of "Select2" (JavaScript Library)
+
 = 2.6 - 2014-03-18 =
 * This is the juiciest of all releases. Ready?
 * a new statistics dashboard in Premium. The beauty of the big picture
@@ -151,21 +163,17 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 * needless to say, hundreds of mini improvements
 * we hand over to you 6 months of hard work. Enjoy!
 
-= 2.6.0.9 - 2014-03-18 =
+= 2.6.beta - 2013-12-19 to 2014-03-18 =
 * The latest Beta for v2.6
 * Fixed stable update URL to the Core Repository
 * Google Analytics URLs now working as expected
 * Update warning fixed
-
-= 2.6.0.8 - 2014-03-05 =
 * fixed links url not being properly saved in some case when using the google campaign code
 * fixed queue processing fatal error, halting the sending process (only in rare case scenarios)
 * Automatic latest content widget improved
 * added minor visual improvements to fit better WP 3.8 style
 * Mail-tester now works also on ssl sites
 * Theme installation now works with https protected sites too
-
-= 2.6.0.7 - 2014-02-19 =
 * Adapted buttons to the WordPress 3.8 style
 * Changed some image icons to use `dashicons`
 * Removed notices regarding an unused file
@@ -178,27 +186,17 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 * Fixed domain column missing
 * Fixed problems with problem author name for automatic newsletters
 * Removed notices on preview on Browser
-
-= 2.6.0.6 - 2014-02-07 =
 * improved the update plugin process
 * better CSS for the add-ons bage
 * fixed bug on bulk actions for subscribers and newsletters
 * removing some PHP Notices/Warnings
 * improved installing premium plugin process
-
-= 2.6.0.5 - 2014-02-03 =
 * added newsletter bulk delete option
 * fixed a bug throwing an error trying to update "Warning: fopen(..."
 * improved RTL on form editor
-
-= 2.6.0.3 - 2013-01-23 =
 * added smoother auto update process free and premium plugin happening together
 * small corrections on statistics dashboard form editor and newsletter editor
-
-= 2.6.0.2 - 2013-12-28 =
 * added better support for Retina displays
-
-= 2.6.0.1 - 2013-12-19 =
 * added custom fields functionality in the form editor section
 * improved stats dashboard for premium users
 * added archive page shortcode
