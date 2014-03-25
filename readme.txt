@@ -140,7 +140,7 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 * Improved some of our warnings in the backend to make the messages clearer
 * Improved MailPoet Statistics Page with styling compatible to WordPress v3.8
 * Improved handling Big Databases on daily post notifications
-* Added extra information in the Newsletters' statistics page for a better understanding
+* Added extra information in the Newsletters' statistics page for an efficient summary
 * Added German Disclaimer to a new Docs Folder for legal purpose
 * Minor changes improving the User Experience in some of our Forms in the backend
 * Replaced The autoselection script "Choosen" in favor of "Select2" (JavaScript Library)
