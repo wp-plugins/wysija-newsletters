@@ -220,8 +220,10 @@ class WYSIJA_help extends WYSIJA_object{
 	}
 
 	public function admin_enqueue_scripts(){
-		wp_enqueue_script( 'mailpoet-global' );
-		wp_enqueue_style('mailpoet-dashicons');
+            if(WYSIJA_ITF){
+                wp_enqueue_script( 'mailpoet-global' );
+                wp_enqueue_style('mailpoet-dashicons');
+            }
 	}
 
 	public function admin_body_class( $body_class_str ){
