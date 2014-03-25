@@ -222,8 +222,8 @@ class WYSIJA_help extends WYSIJA_object{
 	public function admin_enqueue_scripts(){
             if(WYSIJA_ITF){
                 wp_enqueue_script( 'mailpoet-global' );
-                wp_enqueue_style('mailpoet-dashicons');
             }
+            wp_enqueue_style('mailpoet-dashicons');
 	}
 
 	public function admin_body_class( $body_class_str ){
