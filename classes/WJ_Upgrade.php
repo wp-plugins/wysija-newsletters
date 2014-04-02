@@ -294,16 +294,35 @@ class WJ_Upgrade extends WYSIJA_object {
 			$plugins = (array) $_POST['checked'];
 			$plugins = array_map( 'urldecode', $plugins );
 
-			foreach ( $plugins as $plugin ) {
-				if ( in_array( $plugin, self::$plugins ) ) {
-					unset(self::$plugins[array_search( $plugin, self::$plugins )]);
-				}
+			$__intersection = array_intersect( $plugins, self::$plugins );
+
+			if ( empty( $__intersection ) )
+				return;
+
+			switch ( $_POST['action'] ){
+				case 'delete-selected':
+					break;
+
+				case 'deactivate-selected':
+					if ( in_array( self::$plugins[0], $plugins ) && ! in_array( self::$plugins[1], $plugins ) && is_plugin_active( self::$plugins[1] ) ){
+						$plugins[] = self::$plugins[1];
+					}
+					break;
+
+				case 'update-selected':
+				case 'activate-selected':
+					if ( in_array( self::$plugins[1], $plugins ) && ! in_array( self::$plugins[0], $plugins ) ){
+						$plugins[] = self::$plugins[0];
+					}
+
+					break;
 			}
-			$plugins = array_merge( $plugins, self::$plugins );
-			$_POST['checked'] = array_map( 'urlencode', $plugins );
+
+			$_POST['checked'] = $plugins;
 
 			return;
 		}
+
 
 		if ( $current_screen->id !== 'update' ){
 			return;

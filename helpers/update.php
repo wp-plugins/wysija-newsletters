@@ -867,5 +867,60 @@ class WYSIJA_help_update extends WYSIJA_object {
 		*/
 	}
 
+        /**
+         * in some cases scenario our update helper can't be run simply because a version is missing
+         */
+        function repair_settings(){
+            static $is_repairing = FALSE;
 
+            if($is_repairing === FALSE){
+                $is_repairing = TRUE;
+
+                // set installed as true
+                $values['installed'] = true;
+                // set installed_time: minus 7200 on it so that we don't display the welcome page again on the
+                // view condition in the check() function above WYSIJA::redirect('admin.php?page=wysija_campaigns&action=welcome_new');
+                $values['installed_time'] = time() - 7200;
+
+                // find our current db version
+                $values['wysija_db_version'] = $this->_find_db_version();
+
+                // save the missing settings to repair the installation
+                $model_config = WYSIJA::get('config','model');
+                $model_config->save($values);
+
+            }
+
+        }
+
+        /**
+         * find out what is the db version based on the existing columns of some tables
+         */
+        private function _find_db_version(){
+            $model_wysija = new WYSIJA_model();
+
+            // test against 2.0 and set it to 1.1 if true
+            $test = $model_wysija->query('get_res', "SHOW COLUMNS FROM `[wysija]email` like 'modified_at';" );
+            if(empty($test)){
+                return '1.1';
+            }
+            // test against 2.4 and set it to 2.3.4 if true
+            $test = $model_wysija->query('get_res', "SHOW COLUMNS FROM `[wysija]form`;" );
+            if(empty($test)){
+                return '2.3.4';
+            }
+
+            // test against 2.5.9.6 and set it to 2.5.5 if true
+            $test = $model_wysija->query('get_res', "SHOW COLUMNS FROM `[wysija]user` like 'domain';" );
+            if(empty($test)){
+                return '2.5.5';
+            }
+            // test against 2.5.9.7 and set it to 2.5.9.6 if true
+            $test = $model_wysija->query('get_res', "SHOW COLUMNS FROM `[wysija]user` like 'last_opened';" );
+            if(empty($test)){
+                return '2.5.9.6';
+            }
+
+            return WYSIJA::get_version();
+        }
 }

@@ -6,6 +6,19 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
     }
 
+    function stripShortcodes($content) {
+        if(strlen(trim($content)) === 0) {
+            return '';
+        }
+        // remove captions
+        $content = preg_replace("/\[caption.*?\](.*<\/a>)(.*?)\[\/caption\]/", '$1', $content);
+
+        // remove other shortcodes
+        $content = preg_replace('/\[[^\[\]]*\]/', '', $content);
+
+        return $content;
+    }
+
     function convertPostToBlock($post, $params = array()) {
 
         // defaults
@@ -35,8 +48,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
             if(!empty($post['post_excerpt'])) {
                 $content = $post['post_excerpt'];
             } else {
-                // remove shortcodes before getting the excerpt
-                $post['post_content'] = preg_replace('/\[[^\[\]]*\]/', '', $post['post_content']);
+                // strip shortcodes before getting the excerpt
+                $post['post_content'] = $this->stripShortcodes($post['post_content']);
 
                 // if excerpt is empty then try to find the "more" tag
                 $excerpts = explode('<!--more-->', $post['post_content']);
@@ -58,8 +71,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
         // remove images
         $content = preg_replace('/<img[^>]+./','', $content);
 
-        // remove shortcodes
-        $content = preg_replace('/\[[^\[\]]*\]/', '', $content);
+        // strip shortcodes
+        $content = $this->stripShortcodes($content);
 
         // remove wysija nl shortcode
         $content= preg_replace('/\<div class="wysija-register">(.*?)\<\/div>/','',$content);

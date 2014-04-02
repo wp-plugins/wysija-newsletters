@@ -1,16 +1,25 @@
 <?php
 // Require constants.
-require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'constants.php');
-// Require global classes autoloader
-require_once(dirname(__FILE__).DIRECTORY_SEPARATOR.'autoloader.php');
+require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'constants.php' );
 
-defined('WYSIJA') or die('Restricted access');
-global $wysija_msg;
-global $wysija_wpmsg;
-if(!$wysija_msg) $wysija_msg=array();
-$wysija_wpmsg=array();
+// Require global classes autoloader
+require_once( dirname( __FILE__ ) . DIRECTORY_SEPARATOR . 'autoloader.php' );
+
+defined( 'WYSIJA' ) or die( 'Restricted access' );
+
+global $wysija_msg, $wysija_wpmsg;
+if ( ! $wysija_msg ) {
+	$wysija_msg = array();
+}
+$wysija_wpmsg = array();
 
 class WYSIJA_object{
+
+	/**
+	 * Static variable holding core MailPoet's version
+	 * @var array
+	 */
+	static $version = '2.6.2';
 
 	function WYSIJA_object(){
 
@@ -23,36 +32,22 @@ class WYSIJA_object{
 	 * @param  array $b  Array with the param to compare
 	 * @return int    Sorting result from strcmp
 	 */
-    public static function sort_by_name($a, $b){
-       return strcmp( strtolower( $a["name"] ), strtolower( $b["name"] ) );
-    }
-
-	/**
-	 * return a plugin version safely anywhere in any hook and stock it staticaly
-	 * @staticvar array $versions
-	 * @param string $plugin_name
-	 * @return array|string
-	 */
-	public static function get_version($plugin_name=false) {
-		static $versions=array();
-		if(isset($versions[$plugin_name])) return $versions[$plugin_name];
-		if ( ! function_exists( 'get_plugins' ) )   {
-			if(file_exists(ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php')){
-				require_once( ABSPATH . 'wp-admin'.DS.'includes'.DS.'plugin.php' );
-			}
-		}
-		if (function_exists( 'get_plugins' ) )  {
-			if(!$plugin_name)    $plugin_name='wysija-newsletters/index.php';
-			$plugin_file = WP_PLUGIN_DIR . DS . str_replace('/',DS,$plugin_name);
-			$plugin_data = get_plugin_data( $plugin_file );
-			$versions[$plugin_name] = $plugin_data['Version'];
-		}else{
-			$versions[$plugin_name]='undefined';
-		}
-		return $versions[$plugin_name];
+	public static function sort_by_name( $a, $b ){
+		return strcmp( strtolower( $a['name'] ), strtolower( $b['name'] ) );
 	}
 
-
+	/**
+	 * Returns the version of based on a path
+	 *
+	 * @filter mailpoet/get_version
+	 * @filter mailpoet/package
+	 *
+	 * @param string $path
+	 * @return string Version of the package
+	 */
+	public static function get_version( $path = null ) {
+		return apply_filters( 'mailpoet/get_version', self::$version, apply_filters( 'mailpoet/package', 'core', $path ) );
+	}
 
 	/**
 	 * get the current_user data in a safe manner making sure a field exists before returning it's value
@@ -60,16 +55,18 @@ class WYSIJA_object{
 	 * @param string $field
 	 * @return mixed
 	 */
-	public static function wp_get_userdata($field=false){
+	public static function wp_get_userdata( $field = false ) {
 		//WordPress globals be careful there
 		global $current_user;
-		if($field){
-			if(function_exists('get_currentuserinfo')) get_currentuserinfo();
-			if(isset($current_user->$field))
-				return $current_user->$field;
-			elseif(isset($current_user->data->$field))
-			   return $current_user->data->$field;
-			else{
+		if ( $field ) {
+			if ( function_exists( 'get_currentuserinfo' ) ) {
+				get_currentuserinfo();
+			}
+			if ( isset( $current_user->{$field} ) ){
+				return $current_user->{$field};
+			} elseif ( isset( $current_user->data->{$field} ) ){
+				return $current_user->data->{$field};
+			} else {
 				return $current_user;
 			}
 		}
@@ -81,14 +78,16 @@ class WYSIJA_object{
 	 * @global array $wysija_wpmsg
 	 * @param type $msg
 	 */
-	function wp_notice($msg){
+	function wp_notice( $msg ){
 		global $wysija_wpmsg;
 
 		//add the hook only once
-		if(!$wysija_wpmsg) add_action('admin_notices', array($this,'wp_msgs'));
+		if ( ! $wysija_wpmsg ) {
+			add_action( 'admin_notices', array( $this, 'wp_msgs' ) );
+		}
 
 		//record msgs
-		$wysija_wpmsg['updated'][]=$msg;
+		$wysija_wpmsg['updated'][] = $msg;
 	}
 
 	/**
@@ -246,6 +245,8 @@ class WYSIJA_help extends WYSIJA_object{
 
 		if ( version_compare( $wp_version, '3.8', '<' ) ){
 			$class[] = 'mp-menu-icon-bg';
+		} else {
+			$class[] = 'mpoet-ui';
 		}
 
 		return implode( ' ', $class );
@@ -1342,7 +1343,7 @@ add_action('transition_post_status', array('WYSIJA', 'hook_postNotification_tran
 add_action('delete_post', array('WYSIJA', 'hook_auto_newsletter_refresh'), 1, 1);
 
 // add image size for emails
-add_image_size('wysija-newsletters-max', 600, 99999);
+add_image_size('wysija-newsletters-max', 600, 9999);
 
 $modelConf=WYSIJA::get('config','model');
 if($modelConf->getValue('installed_time')){
