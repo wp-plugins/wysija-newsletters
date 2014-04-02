@@ -150,17 +150,20 @@ class WYSIJA_help_install extends WYSIJA_object{
 
         // save the config into the db
 
-        if((int)get_option('installation_step')<16){
-            $values['installed']=true;
-            $values['manage_subscriptions']=true;
-            $values['installed_time']=time();
+        if( (int) get_option('installation_step') < 16){
 
-            $values['wysija_db_version']=WYSIJA::get_version();
+            $model_config = WYSIJA::get('config','model');
+
+            $values['installed'] = true;
+            $values['manage_subscriptions'] = true;
+            $values['installed_time'] = time();
+
+            $values['wysija_db_version'] = WYSIJA::get_version();
 
             $wptoolboxs = WYSIJA::get('toolbox', 'helper');
-            $values['dkim_domain']=$wptoolboxs->_make_domain_name();
+            $values['dkim_domain'] = $wptoolboxs->_make_domain_name();
 
-            if(get_option('wysija_reinstall',0)) $values['wysija_whats_new']=WYSIJA::get_version();
+            if( get_option('wysija_reinstall',0) ) $values['wysija_whats_new'] = WYSIJA::get_version();
             $model_config->save($values);
 
             WYSIJA::update_option('installation_step', '16');

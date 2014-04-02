@@ -508,6 +508,10 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
             // get title
             $title = $helper_articles->getPostTitle($post, $params);
 
+            if(!isset($params['title_position'])) {
+                $params['title_position'] = 'inside';
+            }
+
             // if post content is title, force title position inside
             if($params['post_content'] === 'title') {
                 $params['title_position'] = 'inside';

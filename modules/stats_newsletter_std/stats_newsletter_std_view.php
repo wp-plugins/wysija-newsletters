@@ -64,7 +64,7 @@ class WYSIJA_module_view_stats_newsletter_std_view extends WYSIJA_view_back {
         <?php } else { ?>              
                 <table class="widefat fixed">
                     <thead>
-                    <th class="check-column" style="width:3%">&nbsp;</th>
+                    <th class="check-column" style="width:40px">&nbsp;</th>
                     <th class="link_column" style="width:40%"><?php echo __('Link', WYSIJA); ?></th>
                     <!--th class="sortable sort-filter <?php // echo $data['order_direction']['clicks']; ?>" rel="click">
                         <a href="" class="orderlink">

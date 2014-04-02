@@ -1813,9 +1813,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 
                 $formObj = WYSIJA::get("forms", "helper");
 
-                function cmp($a, $b) {
-                }
-
                 usort( $this->data['lists'], array('WYSIJA_view_back_campaigns', 'sort_by_name' ) );
 
                 foreach ($this->data['lists'] as $list) {
