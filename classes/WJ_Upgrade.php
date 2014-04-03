@@ -32,8 +32,17 @@ class WJ_Upgrade extends WYSIJA_object {
 	}
 
 	public function update_warning() {
-		if ( ! ( ( is_multisite() && current_user_can( 'manage_network' ) ) || current_user_can( 'update_plugins' ) ) )
+		if ( ! is_admin()  ){
 			return;
+		}
+
+		if ( ! ( ( is_multisite() && current_user_can( 'manage_network' ) ) || current_user_can( 'update_plugins' ) ) ){
+			return;
+		}
+
+		if ( ! function_exists( 'get_plugin_data' ) ){
+			include_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
 
 		$current = get_site_transient( 'update_plugins' );
 
@@ -229,11 +238,17 @@ class WJ_Upgrade extends WYSIJA_object {
 
 	public function pre_set_site_transient_update_plugins( $update_data ){
 
-		if ( ! function_exists( 'get_plugin_data' ) )
+		if ( ! function_exists( 'get_plugin_data' ) ){
 			return (object) array();
+		}
 
-		if ( ! isset( $update_data->last_checked ) )
+		if ( ! is_object( $update_data ) && strlen( trim( $update_data ) ) === 0 ){
+			return (object) array();
+		}
+
+		if ( ! isset( $update_data->last_checked ) ){
 			$update_data->last_checked = 0;
+		}
 
 		if ( ( time() - ( 60 * 60 * 12 ) ) > ( $update_data->last_checked ) ) { // Just check once every 12 hours
 			return $update_data;
