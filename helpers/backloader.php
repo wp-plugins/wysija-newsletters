@@ -311,4 +311,25 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 		echo "</script>\n";
 	}
 
+
+
+     /**
+     * this is for backward compatibility and avoid blank screen on older version of the premium plugin
+     */
+    function loadScriptsStyles($pagename,$dirname,$urlname,&$controller,$extension='newsletter') {
+
+        return $this->load_assets($pagename, $dirname, $urlname, $controller, $extension);
+    }
+
+    /**
+     * this is for backward compatibility and avoid blank screen on older version of the premium plugin
+     */
+    function initLoad(&$controller){
+        return $this->init($controller);
+    }
+
+    function jsParse(&$controller, $pagename, $urlbase = WYSIJA_URL){
+        $this->parse_js( $controller, $pagename, $urlbase );
+    }
+
 }
