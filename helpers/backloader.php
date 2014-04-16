@@ -241,8 +241,8 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 						break;
 
 					case 'wysija-tooltip':
-						wp_enqueue_script( 'jquery-qtip', WYSIJA_URL . 'js/qtip2/jquery.qtip.min.js', array( 'jquery' ), WYSIJA::get_version() );
-						wp_enqueue_style( 'jquery-qtip-css', WYSIJA_URL . 'css/qtip2/jquery.qtip.min.css' );
+						wp_enqueue_script( 'mailpoet.tooltip', WYSIJA_URL . 'js/vendor/bootstrap.tooltip.js', array( 'jquery' ), WYSIJA::get_version(), true );
+						wp_enqueue_style( 'mailpoet.tooltip', WYSIJA_URL . 'css/vendor/bootstrap.tooltip.css', array(), WYSIJA::get_version(), 'screen' );
 						break;
 
 					default:
