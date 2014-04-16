@@ -21,7 +21,6 @@ class WYSIJA_model_archive_std extends WYSIJA_model {
         1, // sending
         3, // sending
         99, // sending
-        -1, // paused
         2 // sent
     );
 

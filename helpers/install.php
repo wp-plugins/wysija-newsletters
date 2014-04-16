@@ -150,17 +150,20 @@ class WYSIJA_help_install extends WYSIJA_object{
 
         // save the config into the db
 
-        if((int)get_option('installation_step')<16){
-            $values['installed']=true;
-            $values['manage_subscriptions']=true;
-            $values['installed_time']=time();
+        if( (int) get_option('installation_step') < 16){
 
-            $values['wysija_db_version']=WYSIJA::get_version();
+            $model_config = WYSIJA::get('config','model');
+
+            $values['installed'] = true;
+            $values['manage_subscriptions'] = true;
+            $values['installed_time'] = time();
+
+            $values['wysija_db_version'] = WYSIJA::get_version();
 
             $wptoolboxs = WYSIJA::get('toolbox', 'helper');
-            $values['dkim_domain']=$wptoolboxs->_make_domain_name();
+            $values['dkim_domain'] = $wptoolboxs->_make_domain_name();
 
-            if(get_option('wysija_reinstall',0)) $values['wysija_whats_new']=WYSIJA::get_version();
+            if( get_option('wysija_reinstall',0) ) $values['wysija_whats_new'] = WYSIJA::get_version();
             $model_config->save($values);
 
             WYSIJA::update_option('installation_step', '16');
@@ -476,15 +479,15 @@ class WYSIJA_help_install extends WYSIJA_object{
 
         // execute the queries one by one
         global $wpdb;
-        $has_errors=false;
+        $has_errors = false;
+        
         foreach($queries as $qry){
+            $last_error = $wpdb->last_error;
             $wpdb->query($qry);
-            $error = mysql_error( $wpdb->dbh );
 
-            if($error){
-                $this->notice(mysql_error());
-                $has_errors=true;
-
+            if( !empty($wpdb->last_error) && $last_error != $wpdb->last_error ){
+                $this->notice($wpdb->last_error);
+                $has_errors = true;
             }
 
         }

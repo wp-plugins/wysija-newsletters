@@ -18,8 +18,6 @@ class WYSIJA_view_back extends WYSIJA_view{
         if(!$this->column_actions)  $this->column_actions=array('view'=>__('View',WYSIJA),'edit'=>__('Edit',WYSIJA),'delete'=>__('Delete',WYSIJA));
 
         $this->bulks["delete"]=array("name"=>__("Delete",WYSIJA));
-
-        add_filter('admin_body_class', array($this, 'admin_body_class'));
     }
 
     /**
@@ -809,16 +807,4 @@ class WYSIJA_view_back extends WYSIJA_view{
         <?php
     }
 
-    /**
-     * Adds class to admin body for backwards compatibility.
-     *
-     * @param string $clesses Admin body classes.
-     */
-    function admin_body_class($classes) {
-        if ( version_compare( $GLOBALS['wp_version'], '3.8', '>=' ) ) {
-            $classes .= 'mpoet-ui';
-        }
-
-        return $classes;
-    }
 }

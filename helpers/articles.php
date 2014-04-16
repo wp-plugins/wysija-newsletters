@@ -6,6 +6,19 @@ class WYSIJA_help_articles extends WYSIJA_object {
 
     }
 
+    function stripShortcodes($content) {
+        if(strlen(trim($content)) === 0) {
+            return '';
+        }
+        // remove captions
+        $content = preg_replace("/\[caption.*?\](.*<\/a>)(.*?)\[\/caption\]/", '$1', $content);
+
+        // remove other shortcodes
+        $content = preg_replace('/\[[^\[\]]*\]/', '', $content);
+
+        return $content;
+    }
+
     function convertPostToBlock($post, $params = array()) {
 
         // defaults
@@ -35,8 +48,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
             if(!empty($post['post_excerpt'])) {
                 $content = $post['post_excerpt'];
             } else {
-                // remove shortcodes before getting the excerpt
-                $post['post_content'] = preg_replace('/\[[^\[\]]*\]/', '', $post['post_content']);
+                // strip shortcodes before getting the excerpt
+                $post['post_content'] = $this->stripShortcodes($post['post_content']);
 
                 // if excerpt is empty then try to find the "more" tag
                 $excerpts = explode('<!--more-->', $post['post_content']);
@@ -58,8 +71,8 @@ class WYSIJA_help_articles extends WYSIJA_object {
         // remove images
         $content = preg_replace('/<img[^>]+./','', $content);
 
-        // remove shortcodes
-        $content = preg_replace('/\[[^\[\]]*\]/', '', $content);
+        // strip shortcodes
+        $content = $this->stripShortcodes($content);
 
         // remove wysija nl shortcode
         $content= preg_replace('/\<div class="wysija-register">(.*?)\<\/div>/','',$content);
@@ -231,7 +244,9 @@ class WYSIJA_help_articles extends WYSIJA_object {
         $content = '';
 
         // get categories
-        $categories = get_the_category($post['ID']);
+        //$categories = get_the_category($post['ID']);
+        $helper_wp_tools = WYSIJA::get('wp_tools', 'helper');
+        $categories = $helper_wp_tools->get_post_categories($post);
 
         if(empty($categories) === false) {
             // check if the user specified a label to be displayed before the author's name
@@ -239,13 +254,7 @@ class WYSIJA_help_articles extends WYSIJA_object {
                 $content = stripslashes($params['category_label']).' ';
             }
 
-            $category_names = array();
-
-            foreach($categories as $category) {
-                $category_names[] = $category->name;
-            }
-
-            $content .= join(', ', $category_names);
+            $content .= join(', ', $categories);
         }
 
         return $content;

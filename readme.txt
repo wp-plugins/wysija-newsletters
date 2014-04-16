@@ -1,9 +1,9 @@
 === MailPoet Newsletters ===
-Contributors: wysija, kgjerstad, benheu, jon1op, badshark, tung-wysija, bordoni, rafaehlers, rafaelfunchal
+Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, tung-wysija, bordoni
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
 Tested up to: 3.8.1
-Stable tag: 2.6.1
+Stable tag: 2.6.3
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -132,6 +132,27 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.3 - 2014-04-16 =
+* Fixed filters on Automated Latest Content for Taxonomies and Post Types
+* Fixed White Screen on What's New page after updating
+* Fixed display bug, image sitting on top of the text editor in the Step2 of newsletter edition
+* Added support for `mysqli` of WordPress 3.9
+* Replaced The tooltip script "qTip2" in favor of "Bootstrap's Tooltip" (JavaScript Library)
+
+= 2.6.2 - 2014-04-01 =
+* Fixed Javascript conflict breaking some of WordPress post editor function (add media upload, etc ...)
+* Fixed bugs when using bulk actions within WordPress plugins listing
+* Fixed a rendering issue on the welcome page
+* Fixed ability to make firstname and last name field required fields on the subscription forms
+* Fixed rare issue of WordPress media uploader sending HTTP 500 error when uploading an image
+* Improved the performance of the plugin with a better version handling
+* Improved the Import/Export tools
+* Improved "admin_body_class" to be more consistent
+* Improved consistency for settings defaults
+* Improved the inner tabs JavaScript on the settings page in premium version
+* Improved the JavaScript on the "WordPress post" widget
+* Remove badly named functions creating conflicts on step 3 of the newsletter creation process
 
 = 2.6.1 - 2014-03-25 =
 * Fixed a conflict with the "Ultimate Shortcode" plugin breaking our subscription forms
