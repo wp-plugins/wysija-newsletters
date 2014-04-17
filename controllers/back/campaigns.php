@@ -1243,9 +1243,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
         }
         if (isset($_REQUEST['wysija']['email']['params']['googletrackingcode']) && $_REQUEST['wysija']['email']['params']['googletrackingcode'] &&
                 (!is_string($_REQUEST['wysija']['email']['params']['googletrackingcode']) OR
-                preg_match('#[^a-z0-9_-\s]#i', $_REQUEST['wysija']['email']['params']['googletrackingcode']) !== 0 )) {
+                preg_match('#[^a-z0-9_\-\s]#i', $_REQUEST['wysija']['email']['params']['googletrackingcode']) !== 0 )) {
             //force to simple text
-            $_REQUEST['wysija']['email']['params']['googletrackingcode'] = preg_replace('#[^a-z0-9_-\s]#i', '_', $_REQUEST['wysija']['email']['params']['googletrackingcode']);
+            $_REQUEST['wysija']['email']['params']['googletrackingcode'] = preg_replace('#[^a-z0-9_\-\s]#i', '_', $_REQUEST['wysija']['email']['params']['googletrackingcode']);
             $this->error(__('Your Google Campaign can only contain letters, number, spaces and hyphens!', WYSIJA), 1);
             return $this->editDetails();
         }
