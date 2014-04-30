@@ -1246,7 +1246,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
                 preg_match('#[^a-z0-9_\-\s]#i', $_REQUEST['wysija']['email']['params']['googletrackingcode']) !== 0 )) {
             //force to simple text
             $_REQUEST['wysija']['email']['params']['googletrackingcode'] = preg_replace('#[^a-z0-9_\-\s]#i', '_', $_REQUEST['wysija']['email']['params']['googletrackingcode']);
-            $this->error(__('Your Google Campaign can only contain letters, number, spaces and hyphens!', WYSIJA), 1);
+            $this->error(__('Your Google Campaign can only contain latin characters, numbers, spaces and hyphens!', WYSIJA), 1);
             return $this->editDetails();
         }
 
@@ -2172,7 +2172,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
         $query2 = "UPDATE `[wysija]user` SET `status`=-1 WHERE `user_id` IN ($query)";
         $this->modelObj->query($query2);
 
-        $this->notice(__('The segment has been unbsubscribed from all the lists.', WYSIJA));
+        $this->notice(__('The segment has been unsubscribed from all the lists.', WYSIJA));
         $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id=' . $_REQUEST['id']);
     }
 
@@ -2227,9 +2227,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
             $query2 = "DELETE FROM `[wysija]user_list` where user_id IN ($query) and list_id=" . $data['listid'];
             $this->modelObj->query($query2);
 
-            $this->notice(sprintf(__('The segment has been unbsubscribed from the list "%1$s".', WYSIJA), $list['name']));
+            $this->notice(sprintf(__('The segment has been unsubscribed from the list "%1$s".', WYSIJA), $list['name']));
         } else {
-            $this->notice(sprintf(__('The segment cannot be unbsubscribed from an [IMPORT] list.', WYSIJA), $list['name']));
+            $this->notice(sprintf(__('The segment cannot be unsubscribed from an [IMPORT] list.', WYSIJA), $list['name']));
         }
 
         $this->redirect('admin.php?page=wysija_campaigns&action=viewstats&id=' . $_REQUEST['id']);

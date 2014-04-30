@@ -386,9 +386,9 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             $helpU->removeFromLists(array(),$_POST['wysija']['user']['user_id']);
 
         if($this->_affected_rows > 1)
-            $this->notice(sprintf(__('%1$s subscribers have been removed from all exising lists.',WYSIJA),$this->_affected_rows));
+            $this->notice(sprintf(__('%1$s subscribers have been removed from all existing lists.',WYSIJA),$this->_affected_rows));
         else
-            $this->notice(sprintf(__('%1$s subscriber have been removed from all exising lists.',WYSIJA),$this->_affected_rows));
+            $this->notice(sprintf(__('%1$s subscriber have been removed from all existing lists.',WYSIJA),$this->_affected_rows));
         $this->defaultDisplay();
     }
 

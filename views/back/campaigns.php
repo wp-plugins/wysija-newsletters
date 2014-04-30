@@ -2994,14 +2994,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                     $model_config->save(array('wysija_whats_new' => WYSIJA::get_version()));
                 }
 
-
+                // we figure that a major release is a 2.6 or 2.7 etc.. just one dot
                 $major_release = true;
-
-                // those are point release exceptions for which we were advertising the features. we probably can remove that now
-                $except_version = array('2.6.0.5');
                 $wysija_version = WYSIJA::get_version();
-                if (!in_array($wysija_version, $except_version) && count(explode('.', $wysija_version)) > 2)
+                if (count(explode('.', $wysija_version)) > 2){
                     $major_release = false;
+                }
+
 
 
 
@@ -3031,37 +3030,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                         ),
                         'format' => 'three-col',
                     );
-
-
-/*
-                    $data['sections'][] = array(
-                        'title' => __('Improved', WYSIJA),
-                        'cols' => array(
-                            array(
-                                'key' => 'subscribers_profile',
-                                'title' => __('More data', WYSIJA),
-                                'desc' => __('In our form editor you can now create new fields to describe your subscribers better. You can add fields such as gender, city, date of birth, etc...', WYSIJA).' [link]'.__('Test this feature in the form editor.',WYSIJA).'[/link]',
-                                'link' => 'admin.php?page=wysija_config#tab-forms',
-                            ),
-                            array(
-                                'key' => 'more_visual_editor',
-                                'title' => __('More productivity', WYSIJA),
-                                'desc' => __('In our Visual Editor, we now allow you to add the author names of the post you insert.', WYSIJA) .' '.__('You also can set the dimensions of the thumbnails of the posts you want in your newsletter.', WYSIJA).' '.__('Finally you can now manually insert many posts in one go.', WYSIJA).' [link]'.__('Go and edit a newsletter to test it.',WYSIJA).'[/link]',
-                                'link' => 'admin.php?page=wysija_campaigns',
-                            ),
-                            array(
-                                'key' => 'more_stats',
-                                'title' => __('More stats', WYSIJA),
-                                'desc' => __('You have now one page to monitor all of your subscribers\' activity, an essential tool to know your subscribers better.', WYSIJA).' [link]'.__('Discover more Premium features.',WYSIJA).'[/link]',
-                                'class' => 'new',
-                                'link' => 'admin.php?page=wysija_premium',
-                            ),
-                        ),
-                        'format' => 'three-col',
-                    );*/
-
                 }
 
+                // inject a poll in the what's new page
+                $data = $this->_inject_poll( $data );
 
                 $msg = $model_config->getValue('ignore_msgs');
                 if (!isset($msg['ctaupdate']) && !$show_survey) {
@@ -3077,13 +3049,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                             'content' => $this->_get_social_buttons(false)
                         ),
                         'hidelink' => '<a class="linkignore ctaupdate" href="javascript:;">' . __('Hide!', WYSIJA) . '</a>',
-                        'format' => 'review-follow-kitten',
+                        'format' => 'review-follow',
                     );
                 }
 
-
-
-
+                $data['sections'][] = array(
+                    'format' => 'title-content',
+                    'title' => __( 'Subscribe to our newsletters.', WYSIJA ),
+                    'content' => '<iframe width="100%" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 104px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="Subscription Wysija"></iframe>'
+                );
 
                 if (isset($helper_readme->changelog[WYSIJA::get_version()])) {
                     $data['sections'][] = array(
@@ -3116,6 +3090,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                                 <div class="feature-section <?php echo $section['format'] ?>">
                                     <?php
                                     switch ($section['format']) {
+                                        case 'title-content':
+                                            ?>
+                                            <div>
+                                                <?php echo $section['content'] ?>
+                                            </div>
+                                            <?php
+                                            break;
                                         case 'three-col':
                                             if(isset($section['content'])){
                                                 foreach ($section['cols'] as $col) {
@@ -3197,10 +3178,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                                             echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
                                             echo '</div>';
 
-                                            echo '<div class="follow-left' . $class_review_kitten . '">';
-                                            echo '<div class="description" ><h4>' . $section['follow']['title'] . '</h4>';
-                                            echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
-                                            echo '</div>';
 
                                             $class_name = 'follow-right';
                                             if(version_compare(get_bloginfo('version'), '3.8')>= 0){
@@ -3230,6 +3207,53 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 
 
         <?php
+    }
+
+    /**
+     * poll section, we inject one section in the $data object if a poll is available
+     * @param array $data
+     * @return array
+     */
+    function _inject_poll( $data ){
+        $polls_available = array( '7970424' ); // all polls' ids from polldaddy
+        $display_poll = 0; // poll id to display
+
+        $model_config = WYSIJA::get( 'config' , 'model' );
+        $polls_already_viewed = $model_config->getValue('viewed_polls');
+
+        // we go through all of the viewed polls in order to find one that has not been viewed yet
+        if( !empty($polls_already_viewed) ){
+            foreach( $polls_available as $poll_id ){
+                if( !in_array( $poll_id , $polls_already_viewed )){
+                    $display_poll = $poll_id;
+                }
+            }
+        }else{
+            // no poll has been viewed yet, let's display the first one
+            $display_poll = $polls_available[0];
+        }
+
+        // only if we found a poll which has not been viewed yet, will we display it
+        if( $display_poll > 0 ){
+            $data['sections'][] = array(
+                'title' => __('Hey! We have a quick question for you:', WYSIJA),
+                'paragraphs' => array(
+                    'line1' => '<script type="text/javascript" charset="utf-8" src="https://secure.polldaddy.com/p/'.$display_poll.'.js"></script>
+                        <noscript>
+                            <a href="https://polldaddy.com/poll/'.$display_poll.'/">'.__('Hey! We have a quick question for you:', WYSIJA).'</a>
+                        </noscript>'
+                ),
+                'format' => 'paragraphs'
+            );
+
+            $polls_already_viewed[] = $display_poll;
+
+            // save the new array of viewed polls
+            $model_config->save( array( 'viewed_polls' => $polls_already_viewed ) );
+        }
+
+        // returning the new data array
+        return $data;
     }
 
     function _get_social_buttons($inline=true){

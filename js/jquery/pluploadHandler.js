@@ -41,7 +41,7 @@ function fileUploading(up, file) {
 		setTimeout(function(){
 			var done;
 
-			if ( file.status < 3 && file.loaded == 0 ) { // not uploading
+			if ( file.status < 3 && file.loaded === 0 ) { // not uploading
 				wpFileError(file, pluploadL10n.big_upload_failed.replace('%1$s', '<a class="uploader-html" href="#">').replace('%2$s', '</a>'));
 				up.stop(); // stops the whole queue
 				up.removeFile(file);
@@ -212,10 +212,11 @@ function WYSIJAsetParams(result,fileObj){
 
 function setResize(arg) {
 	if ( arg ) {
-		if ( uploader.features.jpgresize )
+		if ( uploader.features.jpgresize ){
 			uploader.settings['resize'] = { width: resize_width, height: resize_height, quality: 100 };
-		else
+		} else {
 			uploader.settings.multipart_params.image_resize = true;
+		}
 	} else {
 		delete(uploader.settings.resize);
 		delete(uploader.settings.multipart_params.image_resize);
@@ -438,6 +439,13 @@ jQuery(document).ready(function($){
 				else
 					fileQueued(file);
 			});
+
+			// Ok, this is a fix; Not the best solution for
+			// We have to keep our heads looking for Plupload changes
+			// at the WordPress Core
+			up.settings.resize = {
+				resize: true
+			};
 
 			up.refresh();
 			up.start();

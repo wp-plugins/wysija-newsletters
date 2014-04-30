@@ -176,7 +176,7 @@ function add_ons_list(){
 			'on_wordpress.org' 	=> 'no',
 			'free' 				=> 'no',
 			'service' 			=> 'yes',
-			'premium_offer' 	=> __('Premium users save 20% with this coupon: mailpoet25', WYSIJA),
+			'premium_offer' 	=> __('Premium users save 25% with this coupon: mailpoet25', WYSIJA),
 		),
 
 
