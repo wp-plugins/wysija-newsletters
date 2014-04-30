@@ -165,7 +165,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 							'mailpoet-select2-l10n',
 							'mailpoet_l10n_select2',
 							array(
-								'noMatches' => __( 'No Results where found', WYSIJA ),
+								'noMatches' => __( 'No Results were found', WYSIJA ),
 								'inputTooShort' => __( 'Please enter <%= chars %> more character<%= plural %>', WYSIJA ),
 								'inputTooLong' => __( 'Please delete <%= chars %> character<%= plural %>', WYSIJA ),
 								'selectionTooBig' => __( 'You can only select <%= chars %> item<%= plural %>', WYSIJA ),
@@ -215,7 +215,7 @@ class WYSIJA_help_backloader extends WYSIJA_help{
 								'image' => __( 'Image' ),
 								'of' => __( 'of' ),
 								'close' => __( 'Close' ),
-								'noif rames' => __( 'This feature requires inline frames. You have if rames disabled or your browser does not support them.' ),
+								'noif rames' => __( 'This feature requires inline frames. You have iframes disabled or your browser does not support them.' ),
 								'l10n_print_after' => 'try{convertEntities( thickboxL10n );}catch( e ){};',
 							)
 						);
