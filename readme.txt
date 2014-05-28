@@ -87,5 +87,3 @@ Our [support site](http://support.wysija.com/) has articles and a responsive tic
 
 * Hello World. We just launched this plugin.
 
-
-
