@@ -109,6 +109,9 @@ function WYSIJAprepareMediaItem(fileObj, serverData) {
 	jQuery('.bar', item).remove();
 	jQuery('.progress', item).hide();
 
+	// trim the attachement_id
+	serverData = serverData.trim();
+
 	// Old style: Append the HTML returned by the server -- thumbnail and form inputs
 	if ( isNaN(serverData) || !serverData ) {
 		item.append(serverData);
@@ -152,6 +155,8 @@ function WYSIJAsetParams(result,fileObj){
     var imgdimensions=null;
 
     wpid=jQuery('#media-item-'+fileObj.id).attr('alt');
+    // trim the attachment id
+    wpid = wpid.trim();
     dims=jQuery('#media-dims-'+wpid).html();
     imgdimensions=dims.split('&nbsp;×&nbsp;');
 
