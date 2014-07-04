@@ -178,9 +178,9 @@ class WYSIJA_help_back extends WYSIJA_help{
      * @return boolean
      */
     function verify_capability(){
-        if( isset( $_REQUEST['page'] ) && substr( $_REQUEST['page'] ,0 ,7 ) == 'wysija_' ){
+        if( isset( $_GET['page'] ) && substr( $_GET['page'] ,0 ,7 ) == 'wysija_' ){
 
-            switch( $_REQUEST['page'] ){
+            switch( $_GET['page'] ){
                 case 'wysija_campaigns':
                     $role_needed = 'wysija_newsletters';
                     break;

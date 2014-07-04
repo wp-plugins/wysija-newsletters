@@ -3,7 +3,7 @@ Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, tung-wysija, bordoni
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.6.7
+Stable tag: 2.6.8
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -132,6 +132,9 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.8 - 2014-07-04 =
+* Fixed security issue reported by Dominic
 
 = 2.6.7 - 2014-07-01 =
 * Added 1 more add-on to our plugin's listing
