@@ -25,6 +25,7 @@ class WYSIJA_help_back extends WYSIJA_help{
         //are we pluging-in to wordpress interfaces or doing entirely our own page?
         if(isset($_GET['page']) && substr($_GET['page'],0,7)=='wysija_'){
             define('WYSIJA_ITF',TRUE);
+            add_action('admin_init', array( $this , 'verify_capability'),1);
             $this->controller=WYSIJA::get(str_replace('wysija_','',$_GET['page']),'controller');
         }else{//check if we are pluging in wordpress interface
             define('WYSIJA_ITF',FALSE);
@@ -99,6 +100,43 @@ class WYSIJA_help_back extends WYSIJA_help{
 
 
 
+    }
+
+        /**
+     * this function will check the role of the user executing the action, if it's called from another
+     * WordPress admin page than page.php for instance admin-post.php
+     * @return boolean
+     */
+    function verify_capability(){
+        if( isset( $_GET['page'] ) && substr( $_GET['page'] ,0 ,7 ) == 'wysija_' ){
+
+            switch( $_GET['page'] ){
+                case 'wysija_campaigns':
+                    $role_needed = 'wysija_newsletters';
+                    break;
+                case 'wysija_subscribers':
+                    $role_needed = 'wysija_subscribers';
+                    break;
+                case 'wysija_config':
+                    $role_needed = 'wysija_config';
+                    break;
+                case 'wysija_statistics':
+                    $role_needed = 'wysija_stats_dashboard';
+                    break;
+                default:
+                    $role_needed = 'switch_themes';
+            }
+
+            if( current_user_can( $role_needed ) ){
+                return true;
+            } else{
+                die( 'You are not allowed here.' );
+            }
+
+        }else{
+            // this is not a wysija interface/action we can let it pass
+            return true;
+        }
     }
 
     function comment_approved($cid,$comment_status){
