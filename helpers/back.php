@@ -25,7 +25,6 @@ class WYSIJA_help_back extends WYSIJA_help{
         //are we pluging-in to wordpress interfaces or doing entirely our own page?
         if(isset($_GET['page']) && substr($_GET['page'],0,7)=='wysija_'){
             define('WYSIJA_ITF',TRUE);
-            add_action('admin_init', array( $this , 'verify_capability'),1);
             $this->controller=WYSIJA::get(str_replace('wysija_','',$_GET['page']),'controller');
         }else{//check if we are pluging in wordpress interface
             define('WYSIJA_ITF',FALSE);
@@ -46,6 +45,7 @@ class WYSIJA_help_back extends WYSIJA_help{
 
         }else{
             if(WYSIJA_ITF)  {
+                add_action('admin_init', array( $this , 'verify_capability'),1);
                 add_action('admin_init', array($this->controller, 'main'));
                 if(!isset($_REQUEST['action']) || (isset($_REQUEST['action']) && $_REQUEST['action'] !== 'editTemplate')) {
                     add_action('admin_footer',array($this,'version'),9);
