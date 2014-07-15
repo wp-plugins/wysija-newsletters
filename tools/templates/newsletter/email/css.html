@@ -257,54 +257,6 @@
 
         /* Prevent iOS Mail from adding padding to the body */
         body{ width:100% !important; min-width:100% !important; }
-
-        /* responsive images */
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.right table div {
-            margin-left:0 !important;
-            margin-right:0 !important;
-            width: 100% !important;
-        }
-
-        body[yahoo] .wysija_image_container.left,
-        body[yahoo] .wysija_image_placeholder.left,
-        body[yahoo] .wysija_image_container.right,
-        body[yahoo] .wysija_image_placeholder.right
-        {
-            padding: 0 !important;
-        }
-
-        body[yahoo] {#header},
-        body[yahoo] {#header} img,
-        body[yahoo] {#footer},
-        body[yahoo] {#footer} img {
-            width: 100% !important;
-            max-width: 600px !important;
-        }
-
-        body[yahoo] .wysija_block,
-        body[yahoo] .wysija_block .wysija_content_container.left table,
-        body[yahoo] .wysija_block .wysija_content_container.left table tr,
-        body[yahoo] .wysija_block .wysija_content_container.left table td,
-        body[yahoo] .wysija_block .wysija_content_container.left table div,
-        body[yahoo] .wysija_block .wysija_content_container.right table,
-        body[yahoo] .wysija_block .wysija_content_container.right table tr,
-        body[yahoo] .wysija_block .wysija_content_container.right table td,
-        body[yahoo] .wysija_block .wysija_content_container.right table div
-        body[yahoo] .wysija_content_container.left img,
-        body[yahoo] .wysija_content_container.right img,
-        body[yahoo] .wysija_divider_container,
-        body[yahoo] .wysija_divider_container img,
-        body[yahoo] .wysija_image_container.left,
-        body[yahoo] .wysija_image_placeholder.left,
-        body[yahoo] .wysija_image_container.right,
-        body[yahoo] .wysija_image_placeholder.right
-        {
-            min-width: 100% !important;
-            width: 100% !important;
-            max-width: 564px !important;
-            height: auto !important;
-        }
     }
 
     /* More Specific Targeting */
@@ -328,164 +280,17 @@
     }
 
     @media only screen and (-webkit-min-device-pixel-ratio: 2) {
-        /* increase font size */
-        body[yahoo] p,
-        body[yahoo] strong,
-        body[yahoo] span,
-        body[yahoo] em,
-        body[yahoo] a,
-        body[yahoo] li {
-            font-size: {#body.size|mult:2}px !important;
-        }
-
-        /* responsive images */
-        body[yahoo] .wysija_content_container.left table,
-        body[yahoo] .wysija_content_container.left table tr,
-        body[yahoo] .wysija_content_container.left table td,
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.left img,
-        body[yahoo] .wysija_content_container.right table,
-        body[yahoo] .wysija_content_container.right table tr,
-        body[yahoo] .wysija_content_container.right table td,
-        body[yahoo] .wysija_content_container.right table div,
-        body[yahoo] .wysija_content_container.right img {
-            width:100% !important;
-            height: auto !important;
-        }
-        body[yahoo] .wysija_image_container.left,
-        body[yahoo] .wysija_image_container.right {
-            padding: 0 !important;
-        }
-
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.right table div {
-            margin-left:0 !important;
-            margin-right:0 !important;
-        }
-
-        /* Titles and their children */
-        body[yahoo] {#title_1},
-        body[yahoo] {#title_1} strong,
-        body[yahoo] {#title_1} b,
-        body[yahoo] {#title_1} em,
-        body[yahoo] {#title_1} i,
-        body[yahoo] {#title_1} a,
-        body[yahoo] {#title_1} span {
-            font-size: {#h1.size|mult:2}px !important;
-        }
-        body[yahoo] {#title_2},
-        body[yahoo] {#title_2} strong,
-        body[yahoo] {#title_2} b,
-        body[yahoo] {#title_2} em,
-        body[yahoo] {#title_2} i,
-        body[yahoo] {#title_2} a,
-        body[yahoo] {#title_2} span {
-            font-size: {#h2.size|mult:2}px !important;
-        }
-        body[yahoo] {#title_3},
-        body[yahoo] {#title_3} strong,
-        body[yahoo] {#title_3} b,
-        body[yahoo] {#title_3} em,
-        body[yahoo] {#title_3} i,
-        body[yahoo] {#title_3} a,
-        body[yahoo] {#title_3} span {
-            font-size: {#h3.size|mult:2}px !important;
-        }
-
-        /* View in your browser */
-        body[yahoo] {#viewbrowser_container},
-        body[yahoo] {#viewbrowser_container} a {
-            font-size: {#viewbrowser.size|mult:2}px !important;
-        }
-        /* Unsubscribe */
-        body[yahoo] {#unsubscribe_container},
-        body[yahoo] {#unsubscribe_container} a {
-            font-size: {#unsubscribe.size|mult:2}px !important;
-        }
     }
 
     /* Android targeting */
     @media only screen and (-webkit-device-pixel-ratio:.75){
     /* Put CSS for low density (ldpi) Android layouts in here */
-        /* responsive images */
-        body[yahoo] .wysija_content_container.left table,
-        body[yahoo] .wysija_content_container.left table tr,
-        body[yahoo] .wysija_content_container.left table td,
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.left img,
-        body[yahoo] .wysija_content_container.right table,
-        body[yahoo] .wysija_content_container.right table tr,
-        body[yahoo] .wysija_content_container.right table td,
-        body[yahoo] .wysija_content_container.right table div,
-        body[yahoo] .wysija_content_container.right img {
-            width:100% !important;
-            height: auto !important;
-        }
-        body[yahoo] .wysija_image_container.left,
-        body[yahoo] .wysija_image_container.right {
-            padding: 0 !important;
-        }
-
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.right table div {
-            margin-left:0 !important;
-            margin-right:0 !important;
-        }
     }
     @media only screen and (-webkit-device-pixel-ratio:1){
     /* Put CSS for medium density (mdpi) Android layouts in here */
-        /* responsive images */
-        body[yahoo] .wysija_content_container.left table,
-        body[yahoo] .wysija_content_container.left table tr,
-        body[yahoo] .wysija_content_container.left table td,
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.left img,
-        body[yahoo] .wysija_content_container.right table,
-        body[yahoo] .wysija_content_container.right table tr,
-        body[yahoo] .wysija_content_container.right table td,
-        body[yahoo] .wysija_content_container.right table div,
-        body[yahoo] .wysija_content_container.right img {
-            width:100% !important;
-            height: auto !important;
-        }
-        body[yahoo] .wysija_image_container.left,
-        body[yahoo] .wysija_image_container.right {
-            padding: 0 !important;
-        }
-
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.right table div {
-            margin-left:0 !important;
-            margin-right:0 !important;
-        }
     }
     @media only screen and (-webkit-device-pixel-ratio:1.5){
     /* Put CSS for high density (hdpi) Android layouts in here */
-        /* responsive images */
-        body[yahoo] .wysija_content_container.left table,
-        body[yahoo] .wysija_content_container.left table tr,
-        body[yahoo] .wysija_content_container.left table td,
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.left img,
-        body[yahoo] .wysija_content_container.right table,
-        body[yahoo] .wysija_content_container.right table tr,
-        body[yahoo] .wysija_content_container.right table td,
-        body[yahoo] .wysija_content_container.right table div,
-        body[yahoo] .wysija_content_container.right img {
-            width:100% !important;
-            height: auto !important;
-        }
-        body[yahoo] .wysija_image_container.left,
-        body[yahoo] .wysija_image_container.right {
-            padding: 0 !important;
-        }
-
-        body[yahoo] .wysija_content_container.left table div,
-        body[yahoo] .wysija_content_container.right table div {
-            margin-left:0 !important;
-            margin-right:0 !important;
-            width: 100% !important;
-        }
     }
     /* end Android targeting */
 </style>

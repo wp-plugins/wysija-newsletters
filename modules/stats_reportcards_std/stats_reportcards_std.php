@@ -104,7 +104,7 @@ class WYSIJA_module_stats_reportcards_std extends WYSIJA_module_statistics {
         $this->cards['N0002'] = array(
             'title' => __('Opens', WYSIJA),
             'description' => str_replace(
-                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Over %1$s%% is excellent. %2$s%% to %3$s%% is good. Under that, it is bad. [link]Read why this stat can be unreliable on support.wysija.com[/link]', WYSIJA), 30, 15, 30)
+                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Over %1$s%% is excellent. %2$s%% to %3$s%% is good. Under that, it is bad. [link]Read why this stat can be unreliable on support.mailpoet.com[/link]', WYSIJA), 30, 15, 30)
             )
         );
 
@@ -122,7 +122,7 @@ class WYSIJA_module_stats_reportcards_std extends WYSIJA_module_statistics {
         $this->cards['N0004'] = array(
             'title' => __('Unsubscribes', WYSIJA),
             'description' => str_replace(
-                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Under %1$s%% is great. %2$s%% - %3$s%% is good. Over %4$s%%, we would assume you are a spammer. [link]Read more on support.wysija.com.[/link]', WYSIJA), 1, 1, 3, 5)
+                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Under %1$s%% is great. %2$s%% - %3$s%% is good. Over %4$s%%, we would assume you are a spammer. [link]Read more on support.mailpoet.com.[/link]', WYSIJA), 1, 1, 3, 5)
             )
         );
 
@@ -131,7 +131,7 @@ class WYSIJA_module_stats_reportcards_std extends WYSIJA_module_statistics {
         $this->cards['N0004'] = array(
             'title' => __('Unsubscribes', WYSIJA),
             'description' => str_replace(
-                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Excellent under %1$s%%. Under %2$s%% is acceptable. Over that, some servers might consider blocking. [link]Read more on support.wysija.com.[/link]', WYSIJA), 1, 5)
+                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Excellent under %1$s%%. Under %2$s%% is acceptable. Over that, some servers might consider blocking. [link]Read more on support.mailpoet.com.[/link]', WYSIJA), 1, 5)
             )
         );
 
@@ -140,7 +140,7 @@ class WYSIJA_module_stats_reportcards_std extends WYSIJA_module_statistics {
         $this->cards['N0005'] = array(
             'title' => __('Unsubscribes', WYSIJA),
             'description' => str_replace(
-                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Excellent under %1$s%%. Under %2$s%% is acceptable. Over that, some servers might consider blocking. [link]Read more on support.wysija.com.[/link]', WYSIJA), 1, 5)
+                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Excellent under %1$s%%. Under %2$s%% is acceptable. Over that, some servers might consider blocking. [link]Read more on support.mailpoet.com.[/link]', WYSIJA), 1, 5)
             )
         );
 
@@ -167,7 +167,7 @@ class WYSIJA_module_stats_reportcards_std extends WYSIJA_module_statistics {
         $this->cards['N0008'] = array(
             'title' => __('Google campaign', WYSIJA),
             'description' => str_replace(
-                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Excellent under %1$s%%. Under %2$s%% is acceptable. Over that, some servers might consider blocking. [link]Read more on support.wysija.com.[/link]', WYSIJA), 1, 5)
+                    array('[link]', '[/link]'), array('<a target="_blank" href="' . $url . '">', '</a>'), sprintf(__('Excellent under %1$s%%. Under %2$s%% is acceptable. Over that, some servers might consider blocking. [link]Read more on support.mailpoet.com.[/link]', WYSIJA), 1, 5)
             )
         );
     }

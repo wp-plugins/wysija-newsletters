@@ -15,7 +15,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
      * OR - users who never opened or clicked AND received at least 1 newsletter.
      * @var boolean
      */
-    var $_filter_by_inactive_users = false;
+    var $_filter_by_inactive_users = true;
 
     function WYSIJA_control_back_subscribers(){
 	WYSIJA_control_back::WYSIJA_control_back();

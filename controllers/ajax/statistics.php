@@ -19,6 +19,12 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 	public $view = 'statistics';
 
 	/**
+	 * Date format of filter
+	 * @var string
+	 */
+	protected $date_format = 'Y/m/d';
+
+	/**
 	 * Render a hook of a specific module
 	 * @return string
 	 */
@@ -88,6 +94,11 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 
 		// Hack!
 		$_REQUEST['limit_pp'] = $params['top'];// Pagination, mark current selected value
+
+		// Modify TO date to make sure we always count 23:59:59 of that day
+		$to = new DateTime($params['to']);
+		$to->modify('+1 day');
+		$params['to'] = $to->format($this->date_format);
 
 		return $params;
 	}

@@ -56,7 +56,7 @@ function add_ons_list(){
 			'name' 				=> 'Gravity Forms: Subscribe Add-on',
 			'search' 			=> 'MailPoet Gravity Forms Add-on',
 			'thumbnail' 		=> 'gravity-forms.png',
-			'description' 		=> __( 'Add a new field to add to your forms so your visitors can subscriber to your MailPoet newsletters.', WYSIJA ),
+			'description' 		=> __( 'Add a new field to add to your forms so your visitors can subscribe to your MailPoet newsletters.', WYSIJA ),
 			'plugin_url' 		=> 'mailpoet-gravity-forms-addon/mailpoet-gravity-forms-addon.php',
 			'version' 			=> '1.0.0',
 			'official' 			=> true,

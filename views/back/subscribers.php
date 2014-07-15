@@ -271,8 +271,8 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 		    $header .='<th class="manage-column column-list-names" id="list-list" scope="col">'.__('Lists', WYSIJA).'</th>';
 		    $header .='<th class="manage-column column-status'.$status_sorting.'" id="status" scope="col" style="width:80px;"><a href="#" class="orderlink" ><span>'.__('Status', WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
 		    $header .= '<th class="manage-column column-date'.$created_at_sorting.'" id="created_at" scope="col"><a href="#" class="orderlink" ><span>'.__('Subscribed on', WYSIJA).'</span><span class="sorting-indicator"></span></a></th>';
-		    // $header .= '<th class="manage-column column-date' . $last_opened_sorting . '" id="last_opened" scope="col"><a href="#" class="orderlink" ><span>' . __('Last open', WYSIJA) . '</span><span class="sorting-indicator"></span></a></th>';
-		    // $header .= '<th class="manage-column column-date' . $last_clicked_sorting . '" id="last_clicked" scope="col"><a href="#" class="orderlink" ><span>' . __('Last click', WYSIJA) . '</span><span class="sorting-indicator"></span></a></th>';
+		    $header .= '<th class="manage-column column-date' . $last_opened_sorting . '" id="last_opened" scope="col"><a href="#" class="orderlink" ><span>' . __('Last open', WYSIJA) . '</span><span class="sorting-indicator"></span></a></th>';
+		    $header .= '<th class="manage-column column-date' . $last_clicked_sorting . '" id="last_clicked" scope="col"><a href="#" class="orderlink" ><span>' . __('Last click', WYSIJA) . '</span><span class="sorting-indicator"></span></a></th>';
 
 		    $header .= '</tr>';
 		    echo $header;
@@ -350,8 +350,8 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 	    ?></td>
 	        <td><?php echo $statuses[$row['status']]; ?></td>
 	        <td><?php echo $this->fieldListHTML_created_at($row['created_at']) ?></td>
-	        <!--td><?php // echo $this->fieldListHTML_created_at($row['last_opened']) ?></td-->
-	        <!--td><?php // echo $this->fieldListHTML_created_at($row['last_clicked']) ?></td-->
+	        <td><?php echo $this->fieldListHTML_created_at($row['last_opened']) ?></td>
+	        <td><?php echo $this->fieldListHTML_created_at($row['last_clicked']) ?></td>
 	        </tr><?php
 			$alt = !$alt;
 		    }
