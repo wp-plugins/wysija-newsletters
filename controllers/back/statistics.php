@@ -35,7 +35,7 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 	 */
 	protected $pre_defined_dates = array( );
 
-	protected $date_format	= 'Y/m/d';
+	protected $date_format = 'Y/m/d';
 
 	protected $js_date_format = 'yy/mm/dd';
 
@@ -86,10 +86,15 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 		$hook_params['group_by'] = ($this->data['date_interval']->days == 0 || $this->data['date_interval']->days > WYSIJA_module_statistics::SWITCHING_DATE_TO_MONTH_THRESHOLD) ?
 				WYSIJA_module_statistics::GROUP_BY_MONTH :
 				WYSIJA_module_statistics::GROUP_BY_DATE; // $this->data['date_interval']->days == 0, means, no begin date, no end date
-
 		// Hack!
-		$_REQUEST['limit_pp'] = $hook_params['top'];// Pagination, mark current selected value
+		$_REQUEST['limit_pp'] = $hook_params['top']; // Pagination, mark current selected value
 
+
+		// Modify TO date to make sure we always count 23:59:59 of that day
+		$to = new DateTime($hook_params['to']);
+		$to->modify('+1 day');
+		$hook_params['to'] = $to->format($this->date_format);
+		
 		$modules = WYSIJA_module::get_modules_from_hook($hook_name);
 		$this->data['modules'] = $modules;
 		$this->data['lazy_load_modules'] = array( );
@@ -125,44 +130,42 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 				'label'	=> __('Last 7 days', WYSIJA),
 				'selected' => false,
 				'from'	 => date($this->date_format, strtotime('-7 days')),
-				'to'	   => date($this->date_format, strtotime('tomorrow'))
+				'to'	   => date($this->date_format, strtotime('today'))
 			),
 			array(
 				'value'	=> 'last_month',
 				'label'	=> __('Last month', WYSIJA),
 				'selected' => false,
-				'from'	 => date($this->date_format, mktime(0, 0, 0, date('m')-1, 1, date('Y'))),
-				'to'	  => date($this->date_format, mktime(0, 0, 0, date('m'), 0, date('Y')))
-
-
+				'from'	 => date($this->date_format, mktime(0, 0, 0, date('m') - 1, 1, date('Y'))),
+				'to'	   => date($this->date_format, mktime(0, 0, 0, date('m'), 0, date('Y')))
 			),
 			array(
 				'value'	=> 30,
 				'label'	=> __('Last 30 days', WYSIJA),
 				'selected' => false,
 				'from'	 => date($this->date_format, strtotime('-30 days')),
-				'to'	   => date($this->date_format, strtotime('tomorrow'))
+				'to'	   => date($this->date_format, strtotime('today'))
 			),
 			array(
 				'value'	=> 90,
 				'label'	=> __('Last 90 days', WYSIJA),
 				'selected' => true,
 				'from'	 => date($this->date_format, strtotime('-90 days')),
-				'to'	   => date($this->date_format, strtotime('tomorrow'))
+				'to'	   => date($this->date_format, strtotime('today'))
 			),
 			array(
 				'value'	=> 180,
 				'label'	=> __('Last 180 days', WYSIJA),
 				'selected' => false,
 				'from'	 => date($this->date_format, strtotime('-180 days')),
-				'to'	   => date($this->date_format, strtotime('tomorrow'))
+				'to'	   => date($this->date_format, strtotime('today'))
 			),
 			array(
 				'value'	=> 365,
 				'label'	=> __('Last 365 days', WYSIJA),
 				'selected' => false,
 				'from'	 => date($this->date_format, strtotime('-365 days')),
-				'to'	   => date($this->date_format, strtotime('tomorrow'))
+				'to'	   => date($this->date_format, strtotime('today'))
 			),
 			array(
 				'value'	=> 0,

@@ -733,32 +733,45 @@ class WYSIJA_model_user extends WYSIJA_model{
 	if ($result)
 	    return $result[0];
     }
-    public function structure_user_status_count_array($count_by_status){
-        $arr_max_create_at = array();
-        foreach($count_by_status as $status_data){
+    public function structure_user_status_count_array($count_by_status) {
+		$counts = array(
+			'unsubscribed' => 0,
+			'unconfirmed' => 0,
+			'subscribed' => 0,
+			'inactive' => 0
+		);
+        $model_config = WYSIJA::get('config','model');
+        $is_dbleoptin	  = (boolean)$model_config->getValue('confirm_dbleoptin');
 
-            switch($status_data['status']){
-                case '-1':
-                    $counts['unsubscribed'] = $status_data['users'];
-                    break;
-                case '0':
-                    $counts['unconfirmed'] = $status_data['users'];
-                    break;
-                case '1':
-                    $counts['subscribed'] = $status_data['users'];
-                    break;
-		case '-99':
-		    $counts['inactive'] = $status_data['users'];
-            }
-            $arr_max_create_at[] = $status_data['max_create_at'];
-        }
-        $counts['all'] = 0;
-        if(isset($counts['unsubscribed'])) $counts['all'] += $counts['unsubscribed'];
-        if(isset($counts['unconfirmed'])) $counts['all'] += $counts['unconfirmed'];
-        if(isset($counts['subscribed'])) $counts['all'] += $counts['subscribed'];
+		foreach ($count_by_status as $status_data) {
+			switch ($status_data['status']) {
+				case '-1':
+					$counts['unsubscribed'] += $status_data['users'];
+					break;
 
-        return $counts;
-    }
+				case '0':
+					if ($is_dbleoptin) {
+						$counts['unconfirmed']  += $status_data['users'];
+					} else {
+						$counts['subscribed']  += $status_data['users'];
+					}
+					break;
+
+				case '1':
+					$counts['subscribed']  += $status_data['users'];
+					break;
+
+				case '-99':
+					$counts['inactive']	 += $status_data['users'];
+
+				default:
+					break;
+			}
+		}
+
+		$counts['all'] = array_sum(array_values($counts));
+		return $counts;
+	}
 
     public function get_max_create($count_by_status){
         $arr_max_create_at = array();

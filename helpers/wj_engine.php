@@ -451,12 +451,21 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 			$background_color = $block['background_color'];
 		}
 
-		return $this->applyInlineStyles(
-			'body',
-			//$helper_render_engine->render($block, 'templates/email_v3/block_'.$block['type'].'.html'),
-			$helper_render_engine->render($block, 'templates/newsletter/email/block_template.html'),
-			array('background_color' => $background_color)
-		);
+		$blockHTML = $helper_render_engine->render($block, 'templates/newsletter/email/block_template.html');
+
+		// convert lists
+		$blockHTML = $this->convertLists($blockHTML);
+
+		// apply specific classes on titles and children (strong, em, a)
+		$blockHTML = $this->applyTitleClasses($blockHTML);
+
+		// apply inline styles
+		$blockHTML = $this->applyInlineStyles('body', $blockHTML, array('background_color' => $background_color));
+
+		// convert titles in block
+		$blockHTML = $this->convertTitles($blockHTML);
+
+		return $blockHTML;
 	}
 
 	function renderPostsToBlocks($posts = array(), $params = array(), $mode = 'post') {
@@ -587,7 +596,11 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 					'value' => base64_encode($list)
 				)
 			));
-			$html .= $this->renderEditorBlock($list_block);
+			if($context === 'editor') {
+				$html .= $this->renderEditorBlock($list_block);
+			} else if($context === 'email') {
+				$html .= $this->renderEmailBlock($list_block);
+			}
 		}
 
 		return $html;

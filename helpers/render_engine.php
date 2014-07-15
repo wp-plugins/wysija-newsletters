@@ -73,27 +73,6 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
         $this->_inline = $bool;
     }
 
-    public function renderForJS($vars, $template) {
-        if (is_object ($vars)) {
-            $vars = get_object_vars($vars);
-        }
-        if ($string = $this->_loadTemplate ($template)) {
-            // set vars
-            $this->_vars = $vars;
-
-            // inline mode (removes any tabs, carriage return, line breaks)
-            if($this->_inline) {
-                $string = preg_replace("#(\t|\r|\n)#UiS", '', trim($string));
-                $string = preg_replace("#> +<#UiS", '><', $string);
-            }
-
-            $output = $this->_parseForJS($string);
-            return $output;
-        } else {
-            throw new Exception('wysija rendering engine needs a template');
-        }
-    }
-
     public function render($vars, $template)
     {
         if (is_object ($vars)) {
@@ -106,6 +85,12 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
             $this->_vars = $vars;
 
             if($this->_inline) {
+                // remove html comments
+                $string = preg_replace("#\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>#", '', $string);
+                // remove multiline comments
+                $string = preg_replace("#(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)#", '', $string);
+
+                // inline mode (removes any tabs, carriage return, line breaks)
                 $string = preg_replace("#(\t|\r|\n)#UiS", '', trim($string));
                 $string = preg_replace("#> +<#UiS", '><', $string);
             }
