@@ -162,8 +162,8 @@ class WJ_Field {
 			$this->settings = array();
 		}
 
-		if ( isset( $this::$defaults[ $this->type ] ) && is_array( $this::$defaults[ $this->type ] ) ) {
-			$this->settings = wp_parse_args( (array) $this->settings, (array) $this::$defaults[ $this->type ] );
+		if ( isset( self::$defaults[ $this->type ] ) && is_array( self::$defaults[ $this->type ] ) ) {
+			$this->settings = wp_parse_args( (array) $this->settings, (array) self::$defaults[ $this->type ] );
 		}
 	}
 
