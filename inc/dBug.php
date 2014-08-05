@@ -45,7 +45,7 @@
  * new dBug ( $strXml, "xml" );
  *
 \*********************************************************************************************************************/
-
+defined('WYSIJA') or die('Restricted access');
 class dBug {
 
 	var $xmlDepth=array();

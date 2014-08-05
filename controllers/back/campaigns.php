@@ -574,51 +574,68 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 	}
 
 	function duplicate() {
-
 		/* 1 - copy the campaign entry */
-
-		$model = WYSIJA::get('campaign', 'model');
+		$model = WYSIJA::get( 'campaign', 'model' );
 		$query = 'INSERT INTO `[wysija]campaign` (`name`,`description`)
-			SELECT concat("' . stripslashes(__('Copy of ', WYSIJA)) . '",`name`),`description` FROM [wysija]campaign
+			SELECT concat("' . stripslashes( __( 'Copy of ', WYSIJA ) ) . '",`name`),`description` FROM [wysija]campaign
 			WHERE campaign_id=' . (int) $_REQUEST['id'];
-		$campaignid = $model->query($query);
+		$campaignid = $model->query( $query );
 
 		/* 2 - copy the email entry */
 		$query = 'INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`,`modified_at`)
-			SELECT ' . $campaignid . ', concat("' . stripslashes(__('Copy of ', WYSIJA)) . '",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,' . time() . ',' . time() . ' FROM [wysija]email
+			SELECT ' . $campaignid . ', concat("' . stripslashes( __( 'Copy of ', WYSIJA ) ) . '",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,' . time() . ',' . time() . ' FROM [wysija]email
 			WHERE email_id=' . (int) $_REQUEST['email_id'];
-		$emailid = $model->query($query);
+		$emailid = $model->query( $query );
 
 		//let's reset the count of total childs for auto newsletter
-		$mEmail = WYSIJA::get('email', 'model');
-		$emailData = $mEmail->getOne(false, array('email_id' => $emailid));
+		$mEmail = WYSIJA::get( 'email', 'model' );
+		$emailData = $mEmail->getOne( false, array( 'email_id' => $emailid ) );
 
-		if ($emailData['type'] == 2) {
+		if ( $emailData['type'] == 1 ){
+			$params = $emailData['params'];
+
+			if ( isset( $params['schedule'] ) ){
+				$date_scheduled = strtotime( $params['schedule']['day'] . ' ' . $params['schedule']['time'] );
+
+				if ( $date_scheduled === false || $date_scheduled < time() ){
+					unset( $params['schedule'] );
+				}
+			}
+			$mEmail->update( array( 'params' => $params ), array( 'email_id' => $emailid ) );
+		} elseif ( $emailData['type'] == 2 ) {
 			$paramsReseted = $emailData['params'];
-			if (isset($paramsReseted['autonl']['total_child']))
+			if ( isset( $paramsReseted['autonl']['total_child'] ) ){
 				$paramsReseted['autonl']['total_child'] = 0;
-			if (isset($paramsReseted['autonl']['nextSend']))
+			}
+
+			if ( isset( $paramsReseted['autonl']['nextSend'] ) ){
 				$paramsReseted['autonl']['nextSend'] = 0;
-			if (isset($paramsReseted['autonl']['firstSend']))
-				unset($paramsReseted['autonl']['firstSend']);
-			if (isset($paramsReseted['autonl']['lastSend']))
-				unset($paramsReseted['autonl']['lastSend']);
-			if (isset($paramsReseted['autonl']['articles']['ids']))
-				unset($paramsReseted['autonl']['articles']['ids']);
+			}
 
+			if ( isset( $paramsReseted['autonl']['firstSend'] ) ){
+				unset( $paramsReseted['autonl']['firstSend'] );
+			}
 
-			$mEmail->update(array('params' => $paramsReseted), array('email_id' => $emailid));
+			if ( isset( $paramsReseted['autonl']['lastSend'] ) ){
+				unset( $paramsReseted['autonl']['lastSend'] );
+			}
+
+			if ( isset( $paramsReseted['autonl']['articles']['ids'] ) ){
+				unset( $paramsReseted['autonl']['articles']['ids'] );
+			}
+
+			$mEmail->update( array( 'params' => $paramsReseted ), array( 'email_id' => $emailid ) );
 		}
 
 		/* 3 - copy the campaign_list entry */
 		$query = "INSERT INTO `[wysija]campaign_list` (`campaign_id`,`list_id`,`filter`)
 			SELECT $campaignid,`list_id`,`filter` FROM [wysija]campaign_list
 			WHERE campaign_id=" . (int) $_REQUEST['id'];
-		$model->query($query);
+		$model->query( $query );
 
-		$this->notice(__('The newsletter has been duplicated.', WYSIJA));
+		$this->notice( __( 'The newsletter has been duplicated.', WYSIJA ) );
 
-		$this->redirect('admin.php?page=wysija_campaigns&id=' . $emailid . '&action=edit');
+		$this->redirect( 'admin.php?page=wysija_campaigns&id=' . $emailid . '&action=edit' );
 	}
 
 	function duplicateEmail() {
@@ -2251,6 +2268,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		$this->js[] = 'wysija-base-script-64';
 		$this->js[] = 'wysija-scriptaculous';
 		$this->js[] = 'wysija-colorpicker';
+		$this->js[] = 'mailpoet-select2';
+		$this->js[] = 'mailpoet-field-select2-terms';
+		$this->js[] = 'mailpoet-field-select2-simple';
 
 		// translations
 		$this->jsTrans['show_advanced'] = __('Display and insert options', WYSIJA);
@@ -2522,6 +2542,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		$this->js[] = 'wysija-scriptaculous';
 		$this->js[] = 'wysija-colorpicker';
 		$this->js[] = 'mailpoet-select2';
+		$this->js[] = 'mailpoet-field-select2-terms';
 
 		// translations
 		$this->jsTrans['show_advanced'] = __('Show display options', WYSIJA);

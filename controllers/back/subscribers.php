@@ -750,7 +750,6 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 	$this->jsTrans['subscribers_import_match_confirmation_1'] = __('The selected value is already matched to another column.', WYSIJA);
 	$this->jsTrans['subscribers_import_match_confirmation_2'] = __('Can you confirm that this column is corresponding to that field?', WYSIJA);
         $this->js[] = 'wysija-validator';
-	wp_enqueue_script('jquery-matchColumn', WYSIJA_URL.'js/jquery/jquery.matchColumn.js', array('jquery'), WYSIJA::get_version());
         $helper_numbers = WYSIJA::get('numbers','helper');
         $bytes = $helper_numbers->get_max_file_upload();
 
@@ -771,6 +770,13 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 
         if($this->data === false) $this->redirect('admin.php?page=wysija_subscribers&action=import');
 
+		$model_config = WYSIJA::get('config', 'model');
+		$this->jsTrans['userStatuses'] = array(
+			-1 => __('Unsubscribed', WYSIJA),
+			0 => $model_config->getValue('confirm_dbleoptin') ? __('Unconfirmed',WYSIJA) : __('Subscribed',WYSIJA),
+			1 => __('Subscribed',WYSIJA)
+		);
+		$this->js[] = 'wysija-import-match';
         $this->viewObj->title=__('Import Subscribers',WYSIJA);
         $this->viewShow='importmatch';
 

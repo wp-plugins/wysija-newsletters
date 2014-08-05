@@ -1,5 +1,5 @@
 <?php
-
+defined('WYSIJA') or die('Restricted access');
 /**
 * Option.
 * It creates and modifies Wordpress options.
@@ -10,7 +10,7 @@
 * # => 'my_value'
 */
 class WJ_Option {
-  
+
   private $prefix = 'wysija_premium_';
   private $option_name;
 

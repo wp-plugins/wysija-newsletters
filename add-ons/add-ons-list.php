@@ -1,4 +1,5 @@
 <?php
+defined('WYSIJA') or die('Restricted access');
 /**
  * List of all add-ons available for MailPoet
  */

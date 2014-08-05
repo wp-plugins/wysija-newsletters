@@ -1,4 +1,5 @@
 <?php
+defined('WYSIJA') or die('Restricted access');
 class WJ_Upgrade extends WYSIJA_object {
 	/**
 	* A static variable that holds a dinamic instance of the class

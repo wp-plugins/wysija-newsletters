@@ -942,6 +942,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
 			try {
 				$template = $helper_render_engine->render($data, 'templates/newsletter/email/email_template.html');
+				$template = preg_replace('/\s*(?!<\")\/\*[^\*]+\*\/(?!\")\s*/', '', $template);
 
 				return $template;
 			} catch(Exception $e) {
@@ -1267,7 +1268,14 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 			// set auto newsletter parameters
 			$email['params']['autonl']['articles']['count'] = $post_count;
 			$email['params']['autonl']['articles']['first_subject'] = $first_subject;
-			$email['params']['autonl']['articles']['ids'] = array_unique(array_merge($email['params']['autonl']['articles']['ids'], $post_ids));
+			// merge post ids
+			if(!isset( $email['params']['autonl']['articles']['ids'])) {
+				$email['params']['autonl']['articles']['ids'] = array();
+			}
+			$email['params']['autonl']['articles']['ids'] = array_unique(array_merge(
+				(array)$email['params']['autonl']['articles']['ids'],
+				(array)$post_ids
+			));
 
 			$this->setEmailData($email);
 		}

@@ -1,5 +1,5 @@
 <?php
-
+defined('WYSIJA') or die('Restricted access');
 // We need the dbDelta migrator from Wordpress.
 require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 

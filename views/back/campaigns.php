@@ -2016,9 +2016,9 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 					<div class="clearfix">
 						<div class="filters-box">
 							<?php
-							echo $helper_articles->getFilterByType(array('value' => $data['params']['post_type'], 'label' => __('Filter by type', WYSIJA)));
-							echo $helper_articles->getFilterByCategory();
-							echo $helper_articles->getFilterByStatus();
+							echo $helper_articles->field_select_post_type(array('value' => $data['params']['post_type'], 'label' => __('Filter by type', WYSIJA)));
+							echo $helper_articles->field_select_terms();
+							echo $helper_articles->field_select_status();
 							?>
 						</div>
 						<div class="search-box">
@@ -2241,7 +2241,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 		$helper_articles = WYSIJA::get('articles', 'helper');
 		$output .= '<div class="block clearfix">';
 		$output .= '    <label>'.__('Post type', WYSIJA).'</label>';
-		$output .= $helper_articles->getFilterByType(array('value' => $data['params']['post_type']));
+		$output .= $helper_articles->field_select_post_type( array( 'value' => $data['params']['post_type'] ) );
 		$output .= '</div>';
 
 		// post limit
@@ -2280,10 +2280,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 		// categories
 		$output .=
 		'<div class="block clearfix" id="categories_filters">' .
-			'<label>' . __( 'Taxonomy filter', WYSIJA ) . '</label>' .
+			'<label title="' . esc_attr__( 'And taxonomies as well...', WYSIJA ) . '">' . __( 'Categories and tags', WYSIJA ) . '</label>' .
 			'<div class="group">' .
 				'<p class="category_select clearfix">' .
-					'<input data-placeholder="' . __( 'Select some terms', WYSIJA ) . '" name="category_ids" class="category_ids" data-selected=\'' . json_encode( $_attr_init_selection ). '\' value="' . implode( ',', $terms_selected ) . '" type="hidden">' .
+					'<input data-placeholder="' . __( 'Select...', WYSIJA ) . '" name="category_ids" style="width: 300px" class="category_ids mailpoet-field-select2-terms" data-multiple="true" data-value=\'' . WJ_Utils::esc_json_attr( $_attr_init_selection ) . '\' value="' . esc_attr( implode( ',', $terms_selected ) ) . '" type="hidden">' .
 				'</p>' .
 			'</div>' .
 		'</div>';

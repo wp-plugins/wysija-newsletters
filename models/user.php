@@ -153,17 +153,22 @@ class WYSIJA_model_user extends WYSIJA_model{
         static $result_user;
         if(!empty($result_user)) return $result_user;
         $this->getFormat = OBJECT;
-        $result_user = $this->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
+
+        $wp_user_id = (int)WYSIJA::wp_get_userdata('ID');
+        if( !( $wp_user_id > 0 ) ){
+            return $result_user;
+        }
+        $result_user = $this->getOne(false,array('wpuser_id'=>$wp_user_id));
 
         if(!$result_user){
             $this->getFormat = OBJECT;
             $result_user = $this->getOne(false,array('email'=>WYSIJA::wp_get_userdata('user_email')));
-            $this->update(array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')),array('email'=>WYSIJA::wp_get_userdata('user_email')));
+            $this->update(array('wpuser_id'=>$wp_user_id),array('email'=>WYSIJA::wp_get_userdata('user_email')));
         }
 
         //the subscriber doesn't seem to exist let's insert it in the DB
         if(!$result_user){
-            $data = get_userdata(WYSIJA::wp_get_userdata('ID'));
+            $data = get_userdata($wp_user_id);
             $firstname = $data->first_name;
             $lastname = $data->last_name;
             if(!$data->first_name && !$data->last_name) $firstname = $data->display_name;
@@ -175,7 +180,7 @@ class WYSIJA_model_user extends WYSIJA_model{
                 'lastname'=>$lastname));
 
             $this->getFormat = OBJECT;
-            $result_user = $this->getOne(false,array('wpuser_id'=>WYSIJA::wp_get_userdata('ID')));
+            $result_user = $this->getOne(false,array('wpuser_id'=>$wp_user_id));
         }
 
         return $result_user;
@@ -763,13 +768,14 @@ class WYSIJA_model_user extends WYSIJA_model{
 
 				case '-99':
 					$counts['inactive']	 += $status_data['users'];
+					break;
 
 				default:
 					break;
 			}
 		}
 
-		$counts['all'] = array_sum(array_values($counts));
+		$counts['all'] = array_sum(array_values($counts)) - $counts['inactive'];
 		return $counts;
 	}
 

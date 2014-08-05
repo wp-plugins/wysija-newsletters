@@ -3,8 +3,7 @@ defined('WYSIJA') or die('Restricted access');
 
 require_once(WYSIJA_CORE.'module'.DS.'statistics.php'); // @todo
 
-class WYSIJA_control_back_statistics extends WYSIJA_control
-{
+class WYSIJA_control_back_statistics extends WYSIJA_control {
 
 	/**
 	 * Main model of this controller
@@ -28,8 +27,10 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 	 * Render a hook of a specific module
 	 * @return string
 	 */
-	public function get_block()
-	{
+	public function get_block() {
+		if (!WYSIJA::current_user_can('wysija_stats_dashboard'))
+			die('Action is forbidden.');
+		
 		if (empty($_REQUEST['block']))
 			return '';
 		$module	= $_REQUEST['block'];
@@ -37,12 +38,10 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 		return apply_filters('custom_module_hook', '', $module, $hook_name, $this->get_post_params());
 	}
 
-	protected function get_post_params()
-	{
+	protected function get_post_params() {
 		$params = array( );
 		$order_by = !empty($_REQUEST['filter']['orderBy']) ? $_REQUEST['filter']['orderBy'] : null;
-		switch (strtolower($order_by))
-		{
+		switch (strtolower($order_by)) {
 			case 'sent':
 				$order_by		= WYSIJA_module_statistics::ORDER_BY_SENT;
 				break;
@@ -60,8 +59,7 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 				break;
 		}
 		$order_direction = !empty($_REQUEST['filter']['orderDirection']) ? $_REQUEST['filter']['orderDirection'] : null;
-		switch (strtolower($order_direction))
-		{
+		switch (strtolower($order_direction)) {
 			case 'asc':
 				$order_direction		   = WYSIJA_module_statistics::ORDER_DIRECTION_ASC;
 				break;
@@ -78,12 +76,10 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 
 		// this doesn't work when php is less than 5.3, this is the case on my host (ben) which is very popular in France, SPain and UK
 		// we cannot use functions from php 5.3
-		if (function_exists('date_diff'))
-		{
+		if (function_exists('date_diff')) {
 			$this->data['date_interval'] = date_diff(date_create($params['from']), date_create($params['to']));
 		}
-		else
-		{
+		else {
 			$duration		   = strtotime($params['to']) - strtotime($params['from']);
 			$helper_toolbox	 = WYSIJA::get('toolbox', 'helper');
 			$this->data['date_interval'] = (object)$helper_toolbox->convert_seconds_to_array($duration, false);
@@ -91,12 +87,10 @@ class WYSIJA_control_back_statistics extends WYSIJA_control
 		$params['group_by'] = ( $this->data['date_interval']->days == 0 || $this->data['date_interval']->days > WYSIJA_module_statistics::SWITCHING_DATE_TO_MONTH_THRESHOLD) ?
 				WYSIJA_module_statistics::GROUP_BY_MONTH :
 				WYSIJA_module_statistics::GROUP_BY_DATE; // $date_interval->days == 0, means, no begin date, no end date
-
 		// Hack!
-		$_REQUEST['limit_pp'] = $params['top'];// Pagination, mark current selected value
-
+		$_REQUEST['limit_pp'] = $params['top']; // Pagination, mark current selected value
 		// Modify TO date to make sure we always count 23:59:59 of that day
-		$to = new DateTime($params['to']);
+		$to		   = new DateTime($params['to']);
 		$to->modify('+1 day');
 		$params['to'] = $to->format($this->date_format);
 

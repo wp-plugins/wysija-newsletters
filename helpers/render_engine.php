@@ -85,11 +85,6 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
             $this->_vars = $vars;
 
             if($this->_inline) {
-                // remove html comments
-                $string = preg_replace("#\<![ \r\n\t]*(--([^\-]|[\r\n]|-[^\-])*--[ \r\n\t]*)\>#", '', $string);
-                // remove multiline comments
-                $string = preg_replace("#(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)#", '', $string);
-
                 // inline mode (removes any tabs, carriage return, line breaks)
                 $string = preg_replace("#(\t|\r|\n)#UiS", '', trim($string));
                 $string = preg_replace("#> +<#UiS", '><', $string);

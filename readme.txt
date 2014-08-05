@@ -3,7 +3,7 @@ Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, tung-wysija, bordoni
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.6.9
+Stable tag: 2.6.10
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -132,6 +132,15 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.10 - 2014-08-04 =
+* Improved protection of themes upload, unsubscribe links, file access and statistics.
+* Improved the "Send a test email" function.
+* Fixed never ending process while sending previews on certain servers.
+* Fixed a few regular expressions for a better rendering in Outlook.
+* Fixed memory issue when dropping the "WordPress Post" widget on sites with thousands of taxonomies.
+* Fixed wrong subscribers count in the subscribers' listing.
+* Old code Spring cleaning, removed unused rusty pieces.
 
 = 2.6.9 - 2014-07-14 =
 * Fixed email display issues caused by responsive CSS. We're truly sorry for this.

@@ -1,11 +1,11 @@
-<?php 
-
+<?php
+defined('WYSIJA') or die('Restricted access');
 /**
 * Settings.
 * Global Wysija Premium settings singleton.
 */
 class WJ_Settings {
-  
+
   static private $db_prefix;
   static private $name = 'wysija';
 
