@@ -60,14 +60,18 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
         $this->optional_subtitle = $model_config->getValue('unsubscribed_subtitle');
         if(!isset($model_config->values['unsubscribed_subtitle'])) $this->optional_subtitle = __("Great, you'll never hear from us again!",WYSIJA);
 
+        $wysija_key = '';
+        if(isset( $_GET['wysija-key'] )){
+            $wysija_key = $_GET['wysija-key'];
+        }
         $undo_paramsurl = array(
-             'wysija-page'=>1,
-             'controller'=>'confirm',
-             'action'=>'undounsubscribe',
-             'wysija-key'=>$_REQUEST['wysija-key']
+             'wysija-page' => 1,
+             'controller' => 'confirm',
+             'action' => 'undounsubscribe',
+             'wysija-key' => $wysija_key
              );
 
-        if(!isset($_REQUEST['demo'])){
+        if(! isset($_GET['demo']) ){
             if($this->_testKeyuser()){
                 $statusint=(int)$this->userData['details']['status'];
                 if( ($model_config->getValue('confirm_dbleoptin') && $statusint>0) || (!$model_config->getValue('confirm_dbleoptin') && $statusint>=0)){
@@ -212,7 +216,7 @@ class WYSIJA_control_front_confirm extends WYSIJA_control_front{
             $modelUL->backSave=true;
             /* list of core list */
             $modelLIST=WYSIJA::get('list','model');
-	    
+
 	    // Using "like" condition in order to force sql query to OR (instead of AND). It'll be incorrct if status contains other values than 0/1.
             $results=$modelLIST->get(array('list_id'),array('like' => array('is_enabled'=>0, 'is_public' => 0)));
             $static_listids=array();

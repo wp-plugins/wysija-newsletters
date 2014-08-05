@@ -147,17 +147,6 @@ class WYSIJA_control_back_config extends WYSIJA_control{
         return $res;
     }
 
-    function devalidate(){
-
-        $modelCOnfig=WYSIJA::get('config','model');
-        $res=$modelCOnfig->save(array('premium_key'=>false));
-
-        if(!isset($res['result']))  $res['result']=false;
-        return $res;
-    }
-
-
-
     function _convertPostedInarray(){
         $_POST   = stripslashes_deep($_POST);
         $dataTemp=$_POST['data'];

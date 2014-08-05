@@ -781,29 +781,41 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 		$key='sending_method';
 		$realvalue=$this->model->getValue($key);
 		$helper_forms=WYSIJA::get('forms','helper');
+		$current_user=WYSIJA::wp_get_userdata();
 		?>
 		<table class="form-table" id="ms-sendingmethod">
 			<tbody>
-
 				<tr class="methods">
-					<?php
-					$is_multisite = is_multisite();
-					//$is_multisite=true;//PROD comment that line
-					if($is_multisite){
-						$field='<th scope="row">';
-						$checked=false;
-						$value='network';
-						$id=str_replace('_','-',$key).'-'.$value;
-						if($value ==$realvalue) $checked=true;
-						$field.='<label for="'.$id.'" class="clearfix">';
-						$field.=$helper_forms->radio(array('id'=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-						$field.='<h3>'.__('Network\'s Method' ,WYSIJA).'</h3></label>';
-						$field.='<p>'.__('Method set by the network admin.',WYSIJA).'</p>';
-						if(!$this->model->getValue('ms_sending_emails_ok')) $field.='<strong'.__('Not Configured!',WYSIJA).'</strong>';
-						$field.='</th>';
-						echo $field;
-					}
-					?>
+		<?php
+		$is_multisite = is_multisite();
+
+		if ( is_multisite() ){
+			$field = '<th scope="row">';
+			$checked = false;
+			$value = 'network';
+			$id = str_replace( '_', '-', $key ) . '-' . $value;
+			if ( $value == $realvalue ){
+				$checked = true;
+			}
+			$field .= '<label for="'.$id.'" class="clearfix">';
+			$field .= $helper_forms->radio(
+				array(
+					'id' => $id,
+					'class' => 'mailpoet-delivery-method',
+					'name' => 'wysija[config][' . $key . ']',
+				),
+				$value,
+				$checked
+			);
+			$field .= '<h3>' . __( 'Network\'s Method', WYSIJA ) . '</h3></label>';
+			$field .= '<p>' . __( 'Method set by the network admin.', WYSIJA ) . '</p>';
+			if ( ! $this->model->getValue( 'ms_sending_emails_ok' ) ){
+				$field .= '<strong' . __( 'Not Configured!', WYSIJA ) . '</strong>';
+			}
+			$field .= '</th>';
+			echo $field;
+		}
+		?>
 
 					<th scope="row">
 						<?php
@@ -812,7 +824,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 							$id=str_replace('_','-',$key).'-'.$value;
 							if($value ==$realvalue) $checked=true;
 							$field='<label for="'.$id.'" class="clearfix">';
-							$field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+							$field.=$helper_forms->radio(array("id"=>$id,'class' => 'mailpoet-delivery-method','name'=>'wysija[config]['.$key.']'),$value,$checked);
 							$field.='<h3>'.__('Your own website',WYSIJA).'</h3></label>';
 							$field.='<p>'.__('The simplest solution for small lists. Your web host sets a daily email limit.',WYSIJA).'</p>';
 							echo $field;
@@ -825,7 +837,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 							$id=str_replace("_",'-',$key).'-'.$value;
 							if($value ==$realvalue) $checked=true;
 							$field='<label for="'.$id.'" class="clearfix">';
-							$field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
+							$field.=$helper_forms->radio(array("id"=>$id,'class' => 'mailpoet-delivery-method','name'=>'wysija[config]['.$key.']'),$value,$checked);
 							$field.='<h3>Gmail</h3></label>';
 							$field.='<p>'.__("Easy to setup. Limited to 500 emails a day. We recommend that you open a dedicated Gmail account for this purpose.",WYSIJA).'</p>';
 							echo $field;
@@ -839,7 +851,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 
 							$id = str_replace('_', '-', $key).'-'.$value;
 							$field ='<label for="'.$id.'" class="clearfix">';
-							$field.= $helper_forms->radio(array('id' => $id, 'name' => 'wysija[config]['.$key.']'), $value, $checked);
+							$field.= $helper_forms->radio(array('id' => $id,'class' => 'mailpoet-delivery-method', 'name' => 'wysija[config]['.$key.']'), $value, $checked);
 							$field.= '<h3>'.__('Third party',WYSIJA).'</h3></label>';
 							$field.='<p>'.__('Send with a professional SMTP provider, a great choice for big and small lists. We\'ve negotiated promotional offers with a few providers for you.',WYSIJA).' <a href="http://support.mailpoet.com/knowledgebase/send-with-smtp-when-using-a-professional-sending-provider/?utm_source=wpadmin&utm_campaign=sending method" target="_blank">'.__('Read more',WYSIJA).'</a>.</p>';
 							echo $field;
@@ -866,7 +878,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 							$id=str_replace("_",'-',$key).'-'.$value;
 							$field='<p class="title"><label for="'.$id.'">';
 							$field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-							$field.='PHP Mail</label><a class="button-secondary" id="send-test-mail-phpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
+							$field.='PHP Mail</label></p>';
 							$field.='<p class="description">'.__('This email engine works on 95&#37; of servers',WYSIJA).'</p>';
 
 
@@ -877,8 +889,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 							$id=str_replace("_",'-',$key).'-'.$value;
 							$field.='<p class="title"><label for="'.$id.'">';
 							$field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-							$field.='Sendmail</label>
-								<a class="button-secondary" id="send-test-mail-sendmail">'.__('Send a test mail',WYSIJA).'</a></p>';
+							$field.='Sendmail</label>';
 							$field.='<p class="description">'.__('This method works on 5&#37; of servers',WYSIJA).'</p>';
 
 							$id=str_replace("_",'-',$key).'-'.$value."-path";
@@ -894,7 +905,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 								$id=str_replace('_','-',$key).'-'.$value;
 								$field.='<p class="title"><label for="'.$id.'">';
 								$field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-								$field.='WP Mail</label><a class="button-secondary" id="send-test-mail-wpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
+								$field.='WP Mail</label></p>';
 								$field.='<p class="description">'.__('Use the same method as the one used for your WP site.',WYSIJA).'</p>';
 							}
 
@@ -1074,13 +1085,13 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 					</td>
 				</tr>
 
-				<tr class="hidechoice choice-sending-method-smtp choice-sending-method-gmail">
+				<tr class="hidechoice choice-sending-method-smtp choice-sending-method-site choice-sending-method-gmail choice-sending-method-network">
 					<th scope="row">
-						<a class="button-secondary" id="send-test-mail-smtp"><?php _e("Send a test mail", WYSIJA) ?></a>
+						<?php _e( 'Test method' ); ?>
 					</th>
-					<td colspan="2">
-						<?php
-						?>
+					<td colspan="<?php echo ( is_multisite() ? 3 : 2 ); ?>">
+						<input type="text" value="<?php echo esc_attr( $current_user->data->user_email ); ?>" class="mailpoet-test-emails" name="wysija[config][test_mails]" />
+						<a class="button-secondary mailpoet-test-delivery"><?php _e( 'Send a test mail', WYSIJA ); ?></a>
 					</td>
 				</tr>
 
@@ -1092,7 +1103,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 						echo $field . '<p class="description">' . str_replace(array('[link]', '[/link]'), array('<a href="http://support.mailpoet.com/knowledgebase/wp-cron-batch-emails-sending-frequency/?utm_source=wpadmin&utm_campaign=choosing%20frequency" target="_blank">', '</a>'), __('Your web host has limits. We suggest 70 emails per hour to be safe. [link]Find out more[/link].', WYSIJA)) . '</p>';
 						?>
 					</th>
-					<td colspan="2">
+					<td colspan="<?php echo ( is_multisite() ? 3 : 2 ); ?>">
 
 						<?php
 							$name='sending_emails_number';
@@ -1281,12 +1292,14 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 		<table class="form-table">
 			<tbody>
 				<?php echo $this->buildMyForm($advanced_fields ,'','config'); ?>
-				<tr class='title_row'><td colspan="2">
-					<h3 class='title' alt='<?php esc_attr_e( "Do or do not. There is no try.", WYSIJA ); ?>'>
-						<?php _e( "Geeky Options", WYSIJA ); ?>
-						<a href='#geeky_options' alt='<?php esc_attr_e( "Toggle Geeky Options", WYSIJA ); ?>' data-hide='<?php esc_attr_e( "Hide", WYSIJA ); ?>' class='add-new-h2 mailpoet-geeky-toggle is_toggled'><?php esc_attr_e( "Show", WYSIJA ); ?></a>
-					</h3>
-				</td></tr>
+				<tr class='title_row'>
+					<td colspan="2">
+						<h3 class='title' alt='<?php esc_attr_e( 'Do or do not. There is no try.', WYSIJA ); ?>'>
+							<?php _e( "Geeky Options", WYSIJA ); ?>
+							<a href='#geeky_options' alt='<?php esc_attr_e( "Toggle Geeky Options", WYSIJA ); ?>' data-hide='<?php esc_attr_e( "Hide", WYSIJA ); ?>' class='add-new-h2 mailpoet-geeky-toggle is_toggled'><?php esc_attr_e( "Show", WYSIJA ); ?></a>
+						</h3>
+					</td>
+				</tr>
 				<?php if (!empty($data['hooks']['hook_settings_super_advanced'])) echo $data['hooks']['hook_settings_super_advanced']; ?>
 				<?php echo $this->buildMyForm($super_advanced_fields ,'','config'); ?>
 				<?php if (current_user_can('delete_plugins')): ?>
@@ -1495,7 +1508,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 		$id = str_replace('_', '-', $key) . '-' . $value;
 		$field = '<p class="title"><label for="' . $id . '">';
 		$field.=$helper_forms->radio(array("id" => $id, 'name' => 'wysija[config][' . $key . ']'), $value, $checked);
-		$field.='PHP Mail</label><a class="button-secondary" id="ms-send-test-mail-phpmail">' . __('Send a test mail', WYSIJA) . '</a></p>';
+		$field.='PHP Mail</label></p>';
 		$field.='<p class="description">' . __('This email engine works on 95&#37; of servers', WYSIJA) . '</p>';
 
 
@@ -1507,7 +1520,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 								$id=str_replace('_','-',$key).'-'.$value;
 								$field.='<p class="title"><label for="'.$id.'">';
 								$field.=$helper_forms->radio(array("id"=>$id,'name'=>'wysija[config]['.$key.']'),$value,$checked);
-								$field.='WP Mail</label><a class="button-secondary" id="ms-send-test-mail-wpmail">'.__('Send a test mail',WYSIJA).'</a></p>';
+								$field.='WP Mail</label></p>';
 								$field.='<p class="description">'.__('Use the same method as the one used for your WP site.',WYSIJA).'</p>';
 							}
 
@@ -1664,13 +1677,18 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 		$html_content.='</td>
 				</tr>';
 
-		$html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp">
-					<th scope="row">
-						<a class="button-secondary" id="ms-send-test-mail-smtp">' . __('Send a test mail', WYSIJA) . '</a>
-					</th>
-					<td colspan="2">
-					</td>
-				</tr>';
+		$current_user = wp_get_current_user();
+		$html_content .=
+			'<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-sending-method-site">' .
+				'<th scope="row">' .
+					__( 'Test method' ) .
+				'</th>' .
+				'<td colspan="' . ( is_multisite() ? 3 : 2 ) . '">' .
+					'<input type="text" value="' . esc_attr( $current_user->data->user_email ) . '" class="mailpoet-test-emails" name="wysija[config][test_mails]" />' .
+					'<a class="button-secondary mailpoet-test-delivery" data-multisite="' . ( is_multisite() ? 'true' : 'false' ) . '">' . esc_attr__( 'Send a test mail', WYSIJA ) . '</a>' .
+				'</td>' .
+			'</tr>';
+
 
 		$html_content.='<tr class="ms-hidechoice ms-choice-sending-method-smtp ms-choice-sending-method-site">
 					<th scope="row">';

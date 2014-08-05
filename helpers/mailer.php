@@ -191,11 +191,11 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 
 	function send(){
 			// prevent user/script details being exposed in X-PHP-Script header
-			$oldphpself = $_SERVER['PHP_SELF'];
-			$oldremoteaddr = $_SERVER['REMOTE_ADDR'];
+			$oldphpself = ( isset( $_SERVER['PHP_SELF'] ) ? $_SERVER['PHP_SELF'] : '' );
+			$oldremoteaddr = ( isset( $_SERVER['PHP_SELF'] ) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1' );
 
 			$_SERVER['PHP_SELF'] = "/";
-			$_SERVER['REMOTE_ADDR'] = $_SERVER['SERVER_ADDR'];
+			$_SERVER['REMOTE_ADDR'] = ( isset( $_SERVER['PHP_SELF'] ) ? $_SERVER['SERVER_ADDR'] : '127.0.0.1' );
 
 			if(!empty($this->sendHTML)){
 				$this->AltBody = $this->textVersion($this->Body,true);
@@ -1091,10 +1091,4 @@ class WYSIJA_help_mailer extends acymailingPHPMailer {
 		$this->sendHTML = $ishtml;
 	}
 
-}
-
-class WYSIJA_sendfalse {
-	function send(){
-		return true;
-	}
 }

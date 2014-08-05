@@ -1,5 +1,5 @@
 <?php
-
+defined('WYSIJA') or die('Restricted access');
 /*
 Class Analytics.
 It's a sort of useful stats and numbers generator about MailPoet usage.

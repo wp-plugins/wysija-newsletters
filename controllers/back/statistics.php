@@ -2,8 +2,7 @@
 defined('WYSIJA') or die('Restricted access');
 require_once(WYSIJA_CORE.'module'.DS.'statistics.php'); // @todo
 
-class WYSIJA_control_back_statistics extends WYSIJA_control_back
-{
+class WYSIJA_control_back_statistics extends WYSIJA_control_back {
 
 	/**
 	 * Main model of this controller
@@ -42,13 +41,13 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 	/**
 	 * Constructor
 	 */
-	function WYSIJA_control_back_statistics()
-	{
-
+	function WYSIJA_control_back_statistics() {
 	}
 
-	public function defaultDisplay()
-	{
+	public function defaultDisplay() {
+		if (!WYSIJA::current_user_can('wysija_stats_dashboard'))
+			die('Action is forbidden.');
+
 		$this->pre_defined_dates = $this->get_pre_defined_dates();
 		// Define view
 		$this->viewShow = $this->action = 'main';
@@ -61,12 +60,10 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 
 		// date filter
 		$default_duration = $this->get_default_duration();
-		if (function_exists('date_diff'))
-		{
+		if (function_exists('date_diff')) {
 			$this->data['date_interval'] = date_diff(date_create($default_duration['from']), date_create($default_duration['to']));
 		}
-		else
-		{
+		else {
 			$duration	   = strtotime($default_duration['to']) - strtotime($default_duration['from']);
 			$helper_toolbox = WYSIJA::get('toolbox', 'helper');
 			$this->data['date_interval'] = (object)$helper_toolbox->convert_seconds_to_array($duration, false);
@@ -87,27 +84,22 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 				WYSIJA_module_statistics::GROUP_BY_MONTH :
 				WYSIJA_module_statistics::GROUP_BY_DATE; // $this->data['date_interval']->days == 0, means, no begin date, no end date
 		// Hack!
-		$_REQUEST['limit_pp'] = $hook_params['top']; // Pagination, mark current selected value
-
-
+		$_REQUEST['limit_pp']	= $hook_params['top']; // Pagination, mark current selected value
 		// Modify TO date to make sure we always count 23:59:59 of that day
-		$to = new DateTime($hook_params['to']);
+		$to				= new DateTime($hook_params['to']);
 		$to->modify('+1 day');
 		$hook_params['to'] = $to->format($this->date_format);
-		
+
 		$modules = WYSIJA_module::get_modules_from_hook($hook_name);
 		$this->data['modules'] = $modules;
 		$this->data['lazy_load_modules'] = array( );
 		$this->data['first_module'] = '';
 
-		if (!$this->lazy_load)
-		{
+		if (!$this->lazy_load) {
 			$this->data['hooks'][$hook_name] = apply_filters('hook_stats', '', $hook_params);
 		}
-		else
-		{
-			if (!empty($modules))
-			{
+		else {
+			if (!empty($modules)) {
 				$first_module = array_shift($modules);
 				// List of lazy loaded modules
 				$this->data['lazy_load_modules'] = $modules;
@@ -122,8 +114,7 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 	 * get pre defined dates (duration)
 	 * @return type
 	 */
-	protected function get_pre_defined_dates()
-	{
+	protected function get_pre_defined_dates() {
 		return array(
 			array(
 				'value'	=> 7,
@@ -181,16 +172,14 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back
 	 * Get default duration of stats
 	 * @return int
 	 */
-	protected function get_default_duration()
-	{
+	protected function get_default_duration() {
 		foreach ($this->pre_defined_dates as $duration)
 			if (isset($duration['selected']) && $duration['selected'])
 				return $duration;
 		return end($this->pre_defined_dates);
 	}
 
-	function date_diff($time_start, $time_end)
-	{
+	function date_diff($time_start, $time_end) {
 		$result   = null;
 		$duration = $time_end - $time_start;
 		$result->days = floor($duration / (60 * 60 * 24));

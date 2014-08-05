@@ -19,7 +19,7 @@ class WYSIJA_object{
 	 * Static variable holding core MailPoet's version
 	 * @var array
 	 */
-	static $version = '2.6.9';
+	static $version = '2.6.10';
 
 	function WYSIJA_object(){
 
@@ -1562,11 +1562,6 @@ if($modelConf->getValue('installed_time')){
 	// the only solution is to make sure on our end that the file exists and rewrite it if necessary
 	add_filter( 'override_load_textdomain', array( 'WYSIJA', 'override_load_textdomain' ), 10, 3);
 	add_filter('load_textdomain_mofile',  array( 'WYSIJA', 'load_textdomain_mofile' ), 10, 2);
-}
-
-// not yet used but the purpose is to override any notification sent through wp_mail
-if($modelConf->getValue('wp_notifications')){
-	$hWPnotif=WYSIJA::get('wp_notifications','helper');
 }
 
 register_deactivation_hook(WYSIJA_FILE, array( 'WYSIJA', 'deactivate' ));

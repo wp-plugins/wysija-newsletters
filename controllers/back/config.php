@@ -125,13 +125,6 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
         return true;
     }
 
-    function changeMode(){
-        $helperFile=WYSIJA::get('file','helper');
-        $helperFile->chmodr(WYSIJA_UPLOADS_DIR, 0666, 0777);
-        $this->redirect('admin.php?page=wysija_config');
-        return true;
-    }
-
     function doreinstall(){
 
         if(isset($_REQUEST['postedfrom']) && $_REQUEST['postedfrom'] === 'reinstall') {
