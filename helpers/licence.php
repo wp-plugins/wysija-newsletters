@@ -159,8 +159,8 @@ class WYSIJA_help_licence extends WYSIJA_help{
 
 
         //checkif the open ssl function for priv and ub key are present on that server
-        $hToolbox = WYSIJA::get('toolbox','helper');
-        $dkim_domain = $hToolbox->_make_domain_name(admin_url('admin.php'));
+        $helper_toolbox = WYSIJA::get('toolbox','helper');
+        $dkim_domain = $helper_toolbox->_make_domain_name(admin_url('admin.php'));
         $res1=$errorssl=false;
         if(function_exists('openssl_pkey_new')){
             while ($err = openssl_error_string());

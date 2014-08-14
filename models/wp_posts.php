@@ -138,8 +138,8 @@ class WYSIJA_model_wp_posts extends WYSIJA_model{
                     break;
                     case 'post_date':
                         // apply timezone to date value
-                        $helper_toolbar = WYSIJA::get('toolbox','helper');
-                        $value = $helper_toolbar->time_tzed($value);
+                        $helper_toolbox = WYSIJA::get('toolbox','helper');
+                        $value = $helper_toolbox->time_tzed($value);
 
                         if($value !== '') {
                             $conditions[] = array('col' => 'A.post_date', 'sign' => '>', 'val' => $value);

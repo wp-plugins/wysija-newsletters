@@ -123,7 +123,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			//if(!(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK) && $list['is_enabled']){ // Commented by TNT
 			if ($list['is_enabled'])
 			{
-			    ?><option value="actionvar_movetolist-listid_<?php echo $listK ?>"><?php
+			    ?><option value="actionvar_movetolist-listid_<?php echo $listK ?>" data-nonce="<?php echo $this->secure(array('action' => "actionvar_movetolist-listid_" . $listK), true)?>"><?php
 				echo str_repeat('&nbsp;', 5).$list['name'];
 				if (isset($list['users']))
 				    echo ' ('.$list['users'].')';
@@ -138,7 +138,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			//if(!(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK) && $list['is_enabled']){ // Commented by TNT
 			if ($list['is_enabled'])
 			{
-			    ?><option value="actionvar_copytolist-listid_<?php echo $listK ?>"><?php
+			    ?><option value="actionvar_copytolist-listid_<?php echo $listK ?>" data-nonce="<?php echo $this->secure(array('action' => "actionvar_copytolist-listid_" . $listK), true)?>"><?php
 				echo str_repeat('&nbsp;', 5).$list['name'];
 				if (isset($list['users']))
 				    echo ' ('.$list['users'].')';
@@ -153,7 +153,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			//if(!(isset($_REQUEST['filter-list']) && $_REQUEST['filter-list']== $listK) && $list['is_enabled']){ // Commented by TNT
 			if ($list['is_enabled'])
 			{
-			    ?><option value="actionvar_removefromlist-listid_<?php echo $listK ?>"><?php
+			    ?><option value="actionvar_removefromlist-listid_<?php echo $listK ?>" data-nonce="<?php echo $this->secure(array('action' => "actionvar_removefromlist-listid_" . $listK), true)?>"><?php
 			    echo str_repeat('&nbsp;', 5).$list['name'];
 			    if (isset($list['users']))
 				echo ' ('.$list['users'].')';
@@ -161,15 +161,15 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			}
 		    }
 		    ?>
-		    <option value="actionvar_removefromalllists"><?php _e('Remove from all lists', WYSIJA); ?></option>
-		    <option value="exportlist"><?php _e('Export', WYSIJA); ?></option>
-		    <option value="deleteusers"><?php _e('Delete subscribers', WYSIJA); ?></option>
+		    <option value="actionvar_removefromalllists" data-nonce="<?php echo $this->secure(array('action' => "actionvar_removefromalllists" ), true)?>"><?php _e('Remove from all lists', WYSIJA); ?></option>
+		    <option value="exportlist" data-nonce="<?php echo $this->secure(array('action' => "exportlist" ), true)?>"><?php _e('Export', WYSIJA); ?></option>
+		    <option value="deleteusers" data-nonce="<?php echo $this->secure(array('action' => "deleteusers" ), true)?>"><?php _e('Delete subscribers', WYSIJA); ?></option>
 		    <?php
 		    $config_model = WYSIJA::get('config', 'model');
 		    if ($config_model->getValue('confirm_dbleoptin'))
 		    {
 			?>
-	    	    <option value="actionvar_confirmusers"><?php _e('Confirm unconfirmed subscribers', WYSIJA); ?></option>
+	    	    <option value="actionvar_confirmusers" data-nonce="<?php echo $this->secure(array('action' => "actionvar_confirmusers" ), true)?>"><?php _e('Confirm unconfirmed subscribers', WYSIJA); ?></option>
 		    <?php } ?>
 		</select>
 		<input type="submit" class="bulksubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Apply', WYSIJA)); ?>">
@@ -454,6 +454,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 	    <p class="submit">
 		<input type="hidden" name="wysija[export][user_ids]" id="user_ids" value="<?php if (isset($data['subscribers'])) echo base64_encode(serialize($data['subscribers'])) ?>" />
 		<input type="hidden" value="export_get" name="action" />
+                <?php $this->secure(array('action' => "export_get")); ?>
 		<input type="submit" value="<?php echo esc_attr(__('Export', WYSIJA)) ?>" class="button-primary wysija">
 	    </p>
 	</form>
@@ -740,7 +741,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 	    	    <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=editlist" class="submitedit"><?php _e('Edit', WYSIJA) ?></a> |
 	    	</span>
 	    	<span class="duplicate">
-	    	    <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=duplicatelist" class="submitduplicate"><?php _e('Duplicate', WYSIJA) ?></a>
+	    	    <a href="admin.php?page=wysija_subscribers&id=<?php echo $columns['list_id'] ?>&action=duplicatelist&_wpnonce=<?php echo $this->secure(array("action" => "duplicatelist", "id" => $columns['list_id']), true); ?>" class="submitduplicate"><?php _e('Duplicate', WYSIJA) ?></a>
 	    	</span>
 	    <?php if ($columns['namekey'] != "users"): ?>
 			|
@@ -936,7 +937,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 
 		<p class="submit">
 		    <input type="hidden" value="importmatch" name="action" />
-
+                    <?php $this->secure(array('action' => "importmatch")); ?>
 		    <input type="submit" value="<?php echo esc_attr(__('Next step', WYSIJA)) ?>" class="button-primary wysija">
 
 		</p>

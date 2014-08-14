@@ -3,7 +3,7 @@ Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, tung-wysija, bordoni
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 2.6.10
+Stable tag: 2.6.11
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -132,6 +132,12 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.11 - 2014-08-14 =
+* Improved protection against CSRF attacks thanks to Yoshinori Matsumoto.
+* Fixed bug on scheduled newsletters edited back and forth and becoming uneditable.
+* Fixed when duplicating an email through the stats page of a newsletter, then deleting the duplicate would also delete the original.
+* Old code Spring cleaning part 2, getting rid of the junk.
 
 = 2.6.10 - 2014-08-04 =
 * Improved protection of themes upload, unsubscribe links, file access and statistics.
@@ -825,12 +831,12 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 
 * fixed small IE8 and IE9 compatibility issues
 * fixed fatal error for new installation
-* fixed MailPoet admin white screen on wordpres due to get_current_screen function
+* fixed MailPoet admin white screen on wordpress due to get_current_screen function
 * fixed unsubscribe link disappearing because of qtranslate fix
 * fixed old separators just blocked the email wizard
 * fixed unsubscribe link disappearing because of default color
 * fixed settings panel redirection
-* fixed update error message corrected :"An error occured during the update" sounding like update failed even though it succeeded
+* fixed update error message corrected :"An error occurred during the update" sounding like update failed even though it succeeded
 * fixed rendering of aligned text
 * fixed daily report email information
 * fixed export: first line with comma, the rest with semi colon now is all semi colon
@@ -838,7 +844,7 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 * fixed get_avatar during install completely irrelevant
 * fixed wordpress post in editor when an article had an image with height 0px
 * fixed when domain does not exist, trying to send email, we need to flag it as undelivered after 3 tries and remove it from the queue
-* fixed user tags [user:firstname | defaul:subscriber] left over when sent through queue and on some users
+* fixed user tags [user:firstname | default:subscriber] left over when sent through queue and on some users
 * fixed get_version when wp-admin folder doesn't exist...
 * fixed Bulk Unsubscribe from all list "why can't I add him"
 

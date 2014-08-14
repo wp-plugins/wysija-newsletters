@@ -119,7 +119,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
 			$html_response.= '</div>';
 			$html_response.= "<div id='divinfo' style='display:none; position:fixed; bottom:3px;left:3px;background-color : white; border : 1px solid grey; padding : 3px;'> </div>";
 
-                        $url = 'admin.php?page=wysija_campaigns&action=manual_send&emailid='.$this->email_id.'&totalsend='.$this->total.'&alreadysent=';
+                        $url = 'admin.php?page=wysija_campaigns&action=manual_send&emailid='.$this->email_id.'&_wpnonce='.WYSIJA_view::secure(array('action' => 'manual_send'), true).'&totalsend='.$this->total.'&alreadysent=';
 
 			$html_response.= '<script type="text/javascript" language="javascript">';
 			$html_response.= 'var mycounter = document.getElementById("counter");';
