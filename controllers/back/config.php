@@ -85,7 +85,6 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function dkimcheck(){
-
         if(isset($_POST['xtz'])){
 
             $dataconf=json_decode(base64_decode($_POST['xtz']));
@@ -126,7 +125,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function doreinstall(){
-
+        $this->requireSecurity();
         if(isset($_REQUEST['postedfrom']) && $_REQUEST['postedfrom'] === 'reinstall') {
             $uninstaller=WYSIJA::get('uninstall','helper');
             $uninstaller->reinstall();
@@ -147,6 +146,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function clearlog(){
+        $this->requireSecurity();
         update_option('wysija_log', array());
         $this->redirect('admin.php?page=wysija_config&action=log');
         return true;
@@ -154,6 +154,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
 
     // WYSIJA Form Editor
     function form_add() {
+        $this->requireSecurity();
         $helper_form_engine = WYSIJA::get('form_engine', 'helper');
         // set default form data
         $helper_form_engine->set_data();
@@ -182,7 +183,7 @@ class WYSIJA_control_back_config extends WYSIJA_control_back{
     }
 
     function form_duplicate() {
-
+        $this->requireSecurity();
         if(isset($_GET['id']) && (int)$_GET['id'] > 0) {
             $form_id = (int)$_GET['id'];
 

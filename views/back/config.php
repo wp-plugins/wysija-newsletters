@@ -1277,7 +1277,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 			$advanced_fields ['debug_log'] = array(
 				'type' => 'debuglog',
 				'label' => 'Logs',
-				'desc' => str_replace(array('[link]', '[linkclear]', '[/link]', '[/linkclear]'), array('<a href="admin.php?page=wysija_config&action=log">', '<a href="admin.php?page=wysija_config&action=clearlog">', '</a>', '</a>'), 'View them [link]here[/link]. Clear them [linkclear]here[/linkclear]'));
+				'desc' => str_replace(array('[link]', '[linkclear]', '[/link]', '[/linkclear]'), array('<a href="admin.php?page=wysija_config&action=log" target="_blank">', '<a target="_blank" href="admin.php?page=wysija_config&action=clearlog&_wpnonce='.$this->secure(array('action' => 'clearlog' ), true).'">', '</a>', '</a>'), 'View them [link]here[/link]. Clear them [linkclear]here[/linkclear]'));
 		}
 
 		//attach 'super-advanced' class to super_advanced_fields
@@ -1745,7 +1745,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 
 		<!-- Create a new form -->
 		<p class="new_form">
-			<a class="<?php echo $classes; ?>" href="admin.php?page=wysija_config&action=form_add"><?php _e('Create a new form', WYSIJA); ?></a>
+			<a class="<?php echo $classes; ?>" href="admin.php?page=wysija_config&action=form_add&_wpnonce=<?php echo $this->secure(array("action" => "form_add"), true); ?>"><?php _e('Create a new form', WYSIJA); ?></a>
 		</p>
 
 		<?php
@@ -1804,7 +1804,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 										<a href="admin.php?page=wysija_config&action=form_edit&id=<?php echo $row['form_id'] ?>"><?php _e('Edit', WYSIJA); ?></a>
 									</span> |
 									<span class="duplicate">
-										<a href="admin.php?page=wysija_config&action=form_duplicate&id=<?php echo $row['form_id'] ?>"><?php _e('Duplicate', WYSIJA) ?></a>
+										<a href="admin.php?page=wysija_config&action=form_duplicate&id=<?php echo $row['form_id'] ?>&_wpnonce=<?php echo $this->secure(array('action' => 'form_duplicate', 'id' => $row['form_id']), true); ?>"><?php _e('Duplicate', WYSIJA) ?></a>
 									</span> |
 									<span class="delete">
 										<a href="admin.php?page=wysija_config&action=form_delete&id=<?php echo $row['form_id'] ?>&_wpnonce=<?php echo $this->secure(array('action' => 'form_delete', 'id' => $row['form_id']), true); ?>" class="submitdelete"><?php _e('Delete', WYSIJA) ?></a>
@@ -1960,6 +1960,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 
 			function formEditorSave(callback) {
 				wysijaAJAX.task = 'form_save';
+                                wysijaAJAX._wpnonce = wysijanonces.config.form_save;
 				wysijaAJAX.wysijaData = WysijaForm.save();
 				WYSIJA_SYNC_AJAX({
 					success: callback
@@ -2045,6 +2046,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 					if(window.confirm(wysijatrans.delete_field_confirmation)) {
 						// make ajax request
 						wysijaAJAX.task = 'form_field_delete';
+                                                wysijaAJAX._wpnonce = wysijanonces.config.form_field_delete;
 						// build data with field id
 						var data = { field_id: parseInt($(this).readAttribute('data-field-id'), 10) },
 							self = this;
@@ -2140,6 +2142,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 					externalControl: 'edit-form-name',
 					callback: function(form, value) {
 						wysijaAJAX.task = 'form_name_save';
+                                                wysijaAJAX._wpnonce = wysijanonces.config.form_name_save;
 						return Object.toQueryString(wysijaAJAX) + '&id=' + wysijaAJAX.form_id + '&name=' + encodeURIComponent(value);
 					},
 					onComplete: function(response, element) {

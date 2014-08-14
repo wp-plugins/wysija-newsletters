@@ -143,15 +143,13 @@ class WYSIJA_module_view_stats_newsletter_std_view extends WYSIJA_view_back {
 		echo '<a id="action-view" target="_blank" href="'.$link_view.'" class="action-view '.$classes.'">'.__('View', WYSIJA).'</a>';
 
 		//duplicate button
-		$duplicate_suffix = '';
-		if (isset($data['email_object']['type']) && (int)$data['email_object']['type'] == 1) {
-			$duplicate_suffix = 'Email';
-		}
-		$action		   = 'duplicate'.$duplicate_suffix;
+		$action		   = 'duplicate';
 		$params		   = array(
 			'page'		  => 'wysija_campaigns',
 			'action'		=> $action,
-			'id'			=> $data['email_id']
+			'id'			=> $data['id'],
+                        'email_id'              => $data['email_id'],
+                        '_wpnonce'              => WYSIJA_view::secure(array('action' => $action , 'id' => $data['id']), true)
 		);
 		$link_duplicate = 'admin.php?'.http_build_query($params);
 		echo '<a id="action-'.$action.'" href="'.$link_duplicate.'" class="action-'.$action.' '.$classes.'">'.__('Duplicate', WYSIJA).'</a>';

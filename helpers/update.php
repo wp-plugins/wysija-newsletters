@@ -127,8 +127,8 @@ class WYSIJA_help_update extends WYSIJA_object {
 							}
 						}
 					}
-					$wptoolboxs = WYSIJA::get('toolbox', 'helper');
-					$model_config->save(array('dkim_domain'=>$wptoolboxs->_make_domain_name()));
+					$helper_toolbox = WYSIJA::get('toolbox', 'helper');
+					$model_config->save(array('dkim_domain'=>$helper_toolbox->_make_domain_name()));
 				}
 
 				if(!$this->modelWysija->query("SHOW COLUMNS FROM `[wysija]list` LIKE 'is_public';")){

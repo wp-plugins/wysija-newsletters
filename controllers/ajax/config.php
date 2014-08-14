@@ -23,6 +23,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function send_test_mail(){
+        $this->requireSecurity();
         $this->_displayErrors();
         /*switch the send method*/
         $configVal=$this->_convertPostedInarray();
@@ -40,6 +41,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function send_test_mail_ms(){
+        $this->requireSecurity();
         $this->_displayErrors();
         /*switch the send method*/
         $configVal=$this->_convertPostedInarray();
@@ -97,6 +99,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
      * @return type
      */
     function bounce_process(){
+        $this->requireSecurity();
         // bounce handling
         $helper_bounce = WYSIJA::get('bounce','helper');
 
@@ -112,6 +115,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function linkignore(){
+        $this->requireSecurity();
         $this->_displayErrors();
 
         $modelConf=WYSIJA::get('config','model');
@@ -129,6 +133,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
 
     // Ajax called function to enable analytics sharing from welcome page.
     function share_analytics() {
+        $this->requireSecurity();
         $this->_displayErrors();
 
         $model_config = WYSIJA::get('config','model');
@@ -140,24 +145,28 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function validate(){
-        $helpLic=WYSIJA::get('licence','helper');
-        $res=$helpLic->check();
+        $this->requireSecurity();
+        $helper_licence = WYSIJA::get('licence','helper');
+        $result = $helper_licence->check();
 
-        if(!isset($res['result']))  $res['result']=false;
-        return $res;
+        if(!isset($result['result'])){
+            $result['result']=false;
+        }
+
+        return $result;
     }
 
     function _convertPostedInarray(){
         $_POST   = stripslashes_deep($_POST);
-        $dataTemp=$_POST['data'];
+        $data_temp = $_POST['data'];
         $_POST['data']=array();
-        foreach($dataTemp as $val) $_POST['data'][$val['name']]=$val['value'];
-        $dataTemp=null;
+        foreach($data_temp as $val) $_POST['data'][$val['name']]=$val['value'];
+        $data_temp = null;
         foreach($_POST['data'] as $k =>$v){
-            $newkey=str_replace(array('wysija[config][',']'),'',$k);
-            $configVal[$newkey]=$v;
+            $new_key = str_replace(array('wysija[config][',']'),'',$k);
+            $config_val[$new_key] = $v;
         }
-        return $configVal;
+        return $config_val;
     }
 
     // WYSIJA Form Editor
@@ -169,6 +178,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function wysija_form_manage_field() {
+        $this->requireSecurity();
         $response = array('result' => true, 'error' => null);
 
         // get data
@@ -265,6 +275,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
 
     // remove a custom field
     function form_field_delete() {
+        $this->requireSecurity();
         $data = $this->_wysija_form_get_data();
 
         // check for field_id parameter
@@ -314,6 +325,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function form_name_save() {
+        $this->requireSecurity();
         // get name from post and stripslashes it
         $form_name = trim(stripslashes($_POST['name']));
         // get form_id from post
@@ -328,6 +340,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
     }
 
     function form_save() {
+        $this->requireSecurity();
         // get form id
         $form_id = null;
         if(isset($_POST['form_id']) && (int)$_POST['form_id'] > 0) {

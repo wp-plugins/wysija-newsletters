@@ -19,7 +19,7 @@ class WYSIJA_object{
 	 * Static variable holding core MailPoet's version
 	 * @var array
 	 */
-	static $version = '2.6.10';
+	static $version = '2.6.11';
 
 	function WYSIJA_object(){
 
@@ -191,7 +191,7 @@ class WYSIJA_object{
 		global $wysija_msg;
 
 		if(isset($wysija_msg['private']['error'])){
-			$wysija_msg['error'][]=str_replace(array('[link]','[/link]'),array('<a class="showerrors" href="javascript:;">','</a>'),__('An error occured. [link]Show more details.[/link]',WYSIJA));
+			$wysija_msg['error'][]=str_replace(array('[link]','[/link]'),array('<a class="showerrors" href="javascript:;">','</a>'),__('An error occurred. [link]Show more details.[/link]',WYSIJA));
 		}
 
 		if(isset($wysija_msg['private']['updated'])){

@@ -78,6 +78,127 @@ class WYSIJA_help_back extends WYSIJA_help{
         }
     }
 
+    private function _set_ajax_nonces(){
+            if( isset( $_GET['page'] ) && substr( $_GET['page'] ,0 ,7 ) == 'wysija_' ){
+
+                        $ajax_nonces = array(
+                            'campaigns' => array(
+                                'switch_theme' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'switch_theme'
+                                    ), true),
+                                'save_editor' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'save_editor'
+                                    ), true),
+                                'save_styles' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'save_styles'
+                                    ), true),
+                                'deleteimg' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'deleteimg'
+                                    ), true),
+                                'deleteTheme' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'deleteTheme'
+                                    ), true),
+                                'save_IQS' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'save_IQS'
+                                    ), true),
+                                'send_preview' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'send_preview'
+                                    ), true),
+                                'send_spamtest' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'send_spamtest'
+                                    ), true),
+                                'insert_articles' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'insert_articles'
+                                    ), true),
+                                'set_divider' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'set_divider'
+                                    ), true),
+                                'generate_social_bookmarks' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'generate_social_bookmarks'
+                                    ), true),
+                                'install_theme' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'install_theme'
+                                    ), true),
+                                'setDefaultTheme' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'setDefaultTheme'
+                                    ), true),
+                                'deleteTheme' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'deleteTheme'
+                                    ), true),
+                                'save_poll' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'save_poll'
+                                    ), true),
+                                'sub_delete_image' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_campaigns',
+                                    'action' => 'sub_delete_image',
+                                    ), true),
+
+                            ),
+                            'config' => array(
+                                'send_test_mail' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'send_test_mail'
+                                    ), true),
+                                'send_test_mail_ms' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'send_test_mail_ms'
+                                    ), true),
+                                'bounce_process' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'bounce_process'
+                                    ), true),
+                                'share_analytics' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'share_analytics'
+                                    ), true),
+                                'wysija_form_manage_field' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'wysija_form_manage_field'
+                                    ), true),
+                                'form_field_delete' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'form_field_delete'
+                                    ), true),
+                                'form_name_save' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'form_name_save'
+                                    ), true),
+                                'form_save' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'form_save'
+                                    ), true),
+                                'validate' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'validate'
+                                    ), true),
+                                'linkignore' => WYSIJA_view::secure(array(
+                                    'controller' => 'wysija_config',
+                                    'action' => 'linkignore'
+                                    ), true),
+                            )
+                        );
+
+            }else{
+                $ajax_nonces = array();
+            }
+
+            wp_localize_script('wysija-admin', 'wysijanonces', $ajax_nonces);
+    }
 
     /**
      * On any of the administration pages related to MailPoet, if the user
@@ -409,7 +530,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             if ( is_rtl() ) {
                 wp_enqueue_style('wysija-admin-rtl', WYSIJA_URL.'css/rtl.css',array(),WYSIJA::get_version());
             }
-
+            $this->_set_ajax_nonces();
         }
             $jstrans['newsletters']=__('Newsletters',WYSIJA);
             $jstrans['urlpremium']='admin.php?page=wysija_config#tab-premium';
@@ -418,6 +539,7 @@ class WYSIJA_help_back extends WYSIJA_help{
             }
             wp_localize_script('wysija-admin', 'wysijatrans', $jstrans);
     }
+
 
     /**
      * code only executed in the page or post in admin
