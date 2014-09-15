@@ -2,7 +2,6 @@
 Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, tung-wysija, bordoni
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
-Tested up to: 3.9
 Stable tag: 2.6.11
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
