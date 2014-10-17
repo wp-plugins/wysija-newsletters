@@ -25,7 +25,16 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 	var $VIEWBROWSER_SIZES = array(7, 8, 9, 10, 11, 12, 13, 14);
 	var $TEXT_SIZES = array(8, 9, 10, 11, 12, 13, 14, 16, 18, 24, 36, 48, 72);
 	var $TITLE_SIZES = array(16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 40, 44, 48, 54, 60, 66, 72);
-	var $FONTS = array("Arial", "Arial Black", "Comic Sans MS", "Courier New", "Georgia", "Impact", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana");
+	var $FONTS = array(
+		'Arial' => "Arial, 'Helvetica Neue', Helvetica, sans-serif",
+		'Comic Sans MS' => "'Comic Sans MS', 'Marker Felt-Thin', Arial, sans-serif",
+		'Courier New' => "'Courier New', Courier, 'Lucida Sans Typewriter', 'Lucida Typewriter', monospace",
+		'Georgia' => "Georgia, Times, 'Times New Roman', serif",
+		'Tahoma' => "Tahoma, Verdana, Segoe, sans-serif",
+		'Times New Roman' => "'Times New Roman', Times, Baskerville, Georgia, serif",
+		'Trebuchet MS' => "'Trebuchet MS', 'Lucida Grande', 'Lucida Sans Unicode', 'Lucida Sans', Tahoma, sans-serif",
+		'Verdana' => "Verdana, Geneva, sans-serif"
+	);
 
 	/* Constructor */
 	function WYSIJA_help_wj_engine() { }
@@ -332,7 +341,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				'i18n' => $this->getTranslations()
 			);
 
-			$viewbrowser = $config->viewInBrowserLink(true);
+			$viewbrowser = $config->view_in_browser_link(true);
 			if($viewbrowser) {
 				$data['viewbrowser'] = $viewbrowser;
 			}
@@ -782,7 +791,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		$data['TEXT_SIZES'] = $this->TEXT_SIZES;
 		$data['VIEWBROWSER_SIZES'] = $this->VIEWBROWSER_SIZES;
 		$data['TITLE_SIZES'] = $this->TITLE_SIZES;
-		$data['FONTS'] = $this->FONTS;
+		$data['FONTS'] = array_keys($this->FONTS);
 
 		return $helper_render_engine->render($data, 'templates/newsletter/editor/toolbar/styles.html');
 	}
@@ -857,7 +866,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				$data['wysija_container'] = '#wysija_wrapper';
 				$data['header_container'] = '#wysija_header';
 				$data['body_container'] = '#wysija_body';
-				$data['text_container'] = '.editable';
+				$data['text_container'] = '.wysija_editable';
 				$data['footer_container'] = '#wysija_footer';
 				$data['placeholder_container'] = '#wysija_block_placeholder';
 				$data['unsubscribe_container'] = '#wysija_unsubscribe';
@@ -874,10 +883,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				$data['text_container'] = '.wysija_text_container';
 				$data['image_container'] = '.wysija_image_container';
 				$data['image_placeholder'] = '.wysija_image_placeholder';
-				$data['title_1'] = '.wysija_title_1';
-				$data['title_2'] = '.wysija_title_2';
-				$data['title_3'] = '.wysija_title_3';
-
 				$data['footer'] = '.wysija_footer';
 				$data['footer_container'] = '.wysija_footer_container';
 				$data['unsubscribe_container'] = '.wysija_unsubscribe_container';
@@ -957,7 +962,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		$helper_render_engine->setStripSpecialchars(true);
 
 		$config=WYSIJA::get('config','model');
-		$data = $config->viewInBrowserLink();
+		$data = $config->view_in_browser_link();
 		if(!isset($data['link'])) {
 			return '';
 		} else {
@@ -1353,11 +1358,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		// set common styles
 		$styles = array(
 			'titles' => array(
-				'word-wrap' => true,
 				'padding' => '0',
-				'margin' => '3px 0 10px 0',
+				'margin' => '0',
+				'font-style' => 'normal',
 				'font-weight' => 'normal',
-				'line-height' => '1.25em'
+				'line-height' => '125%',
+				'letter-spacing' => 'normal'
 			),
 			'images' => array(
 				'margin' => '0',
@@ -1399,8 +1405,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 					'h1' => array_merge($styles['titles'], $this->getStyles('h1')),
 					'h2' => array_merge($styles['titles'], $this->getStyles('h2')),
 					'h3' => array_merge($styles['titles'], $this->getStyles('h3')),
-					'p' => array_merge($this->getStyles('body'), array('word-wrap' => true, 'padding' => '0', 'margin' => '1em 0', 'line-height' => '1.5em', 'vertical-align' => 'top')),
-					'a' => array_merge($this->getStyles('body'), $this->getStyles('a'), array('word-wrap' => true))
+					'p' => array_merge($this->getStyles('body'), array('word-wrap' => true, 'padding' => '0', 'margin' => '1em 0', 'line-height' => '1.5em', 'vertical-align' => 'top', 'letter-spacing' => 'normal')),
+					'a' => array_merge($this->getStyles('a'), array('word-wrap' => true)),
+					'br' => array('margin' => '0', 'padding' => '0', 'line-height' => '150%')
 				));
 
 				$classes = array(
@@ -1411,24 +1418,11 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 					'wysija_gallery_container' => array('padding' => '10px 17px 10px 17px'),
 
 					// text
-					'wysija_text_container' => array('margin' => '1em 0'),
+					// 'wysija_text_container' => array('margin' => '1em 0'),
 					'align-left' => array('text-align' => 'left'),
 					'align-center' => array('text-align' => 'center'),
 					'align-right' => array('text-align' => 'right'),
 					'align-justify' => array('text-align' => 'justify'),
-
-					// links in titles
-					'wysija_title_1_link' => array_merge($styles['titles'], $this->getStyles('h1'), $this->getStyles('a')),
-					'wysija_title_2_link' => array_merge($styles['titles'], $this->getStyles('h2'), $this->getStyles('a')),
-					'wysija_title_3_link' => array_merge($styles['titles'], $this->getStyles('h3'), $this->getStyles('a')),
-					// strong tags in titles
-					'wysija_title_1_strong' => array_merge($styles['titles'], $this->getStyles('h1'), array('font-weight' => 'bold')),
-					'wysija_title_2_strong' => array_merge($styles['titles'], $this->getStyles('h2'), array('font-weight' => 'bold')),
-					'wysija_title_3_strong' => array_merge($styles['titles'], $this->getStyles('h3'), array('font-weight' => 'bold')),
-					// italic tags in titles
-					'wysija_title_1_italic' => array_merge($styles['titles'], $this->getStyles('h1'), array('font-style' => 'italic')),
-					'wysija_title_2_italic' => array_merge($styles['titles'], $this->getStyles('h2'), array('font-style' => 'italic')),
-					'wysija_title_3_italic' => array_merge($styles['titles'], $this->getStyles('h3'), array('font-style' => 'italic')),
 
 					// links around images
 					'wysija_image_link' => array('outline' => '0', 'border' => '0', 'margin' => '0', 'padding' => '0', 'display' => 'block'),
@@ -1439,16 +1433,19 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 					// images alignments
 					'wysija_image_table center' => array('margin' => '0 auto 0 auto', 'text-align' => 'center'),
 
-					'wysija_image_container center' => array_merge($styles['images'], array('padding' => '1em 0 0 0', 'margin' => '0 auto 0 auto', 'text-align' => 'left')),
-					'wysija_image_container left' => array_merge($styles['images'], array('padding' => '1em 10px 1em 0')),
-					'wysija_image_container right' => array_merge($styles['images'], array('padding' => '1em 0 1em 10px')),
+					'wysija_image_container center' => array_merge($styles['images'], array('padding' => '0 0 0 0', 'margin' => '0 auto 0 auto', 'text-align' => 'left')),
+					'wysija_image_container left' => array_merge($styles['images'], array('padding' => '0 10px 0 0')),
+					'wysija_image_container right' => array_merge($styles['images'], array('padding' => '0 0 0 10px')),
 
-					'wysija_image_placeholder left' => array('padding' => '0 0 0 0', 'margin' => '3px 10px 1em 0', 'display' => 'block'),
-					'wysija_image_placeholder right' => array('padding' => '0 0 0 0', 'margin' => '3px 0 1em 10px', 'display' => 'block'),
+					'wysija_image_placeholder left' => array('padding' => '0 0 0 0', 'margin' => '0 10px 0 0', 'display' => 'block'),
+					'wysija_image_placeholder right' => array('padding' => '0 0 0 0', 'margin' => '0 0 0 10px', 'display' => 'block'),
 
 					// gallery
 					'wysija_gallery_table center' => array('margin' => '0 auto 0 auto', 'text-align' => 'center'),
-					'wysija_cell_container' => array('border' => $styles['images']['border'])
+					'wysija_cell_container' => array('border' => $styles['images']['border']),
+
+					// lists
+					'wysija_list_item' => array('margin' => '0')
 				);
 			break;
 
@@ -1489,8 +1486,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 			break;
 		}
 
-		$tags_to_check = array('p', 'a', 'ul', 'li', 'h2');
-		$classes_to_check = array('wysija_content_container', 'wysija_image_container', 'wysija_divider_container', 'wysija_gallery_container', 'wysija_cell_container', 'wysija_list_bullet', 'wysija_list_value');
+		$tags_to_check = array('p', 'a', 'ul', 'li', 'h1', 'h2', 'h3');
+		$classes_to_check = array('wysija_content_container', 'wysija_image_container', 'wysija_divider_container', 'wysija_gallery_container', 'wysija_cell_container', 'wysija_list_item');
 
 		// check tags and set custom background color
 		foreach($tags_to_check as $tag) {
@@ -1510,8 +1507,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
 			foreach($tags as $tag => $styles) {
 				$styles = $this->splitSpacing($styles);
-				$inlineStyles = $helper_render_engine->render(array_merge($styles, array('tag' => $tag)), 'styles/inline.html');
-				$inlineStyles = preg_replace('/(\n*)/', '', $inlineStyles);
+				$inlineStyles = $helper_render_engine->renderCSS(array_merge($styles, array('tag' => $tag)));
 				$tags['#< *'.$tag.'((?:(?!style).)*)>#Ui'] = '<'.$tag.' style="'.$inlineStyles.'"$1>';
 				unset($tags[$tag]);
 			}
@@ -1523,8 +1519,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 			foreach($classes as $class => $styles) {
 				// split spacing styles
 				$styles = $this->splitSpacing($styles);
-				$inlineStyles = $helper_render_engine->render($styles, 'styles/inline.html');
-				$inlineStyles = preg_replace('/(\n*)/', '', $inlineStyles);
+				$inlineStyles = $helper_render_engine->renderCSS($styles);
 
 				// build regexp for this class
 				$classes['#<([^ /]+) ((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)class="([^"]*)'.$class.'([^"]*)"((?:(?!>|style).)*)(?:style="([^"]*)")?((?:(?!>|style).)*)>#Ui'] = '<$1 $2$4$7 class="$5'.$class.'$6" style="$3$8'.$inlineStyles.'" $9>';
@@ -1532,7 +1527,12 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				unset($classes[$class]);
 			}
 
+			// apply styles
 			$styledBlock = preg_replace(array_keys($classes), $classes, $block);
+			// cleanup output (fixes rendering issues)
+			$styledBlock = preg_replace('/(\t+)/', ' ', $styledBlock);
+			$styledBlock = preg_replace('/( +)/', ' ', $styledBlock);
+
 			// Check if the preg_replace worked. Otherwise we simply return the original block
 			if(strlen(trim($styledBlock)) > 0) {
 				$block = $styledBlock;
@@ -1585,7 +1585,13 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		}
 	}
 
+	// TODO: remove this method?
 	function convertTitles($html) {
+
+		// TEMPORARY returning original content without changing anything
+		return $html;
+
+
 		$patterns = array(
 			'/<h[1|2|3](.*?)>/',
 			'/<\/h[1|2|3]>/',
@@ -1599,8 +1605,11 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		return preg_replace($patterns, $replacements, $html);
 	}
 
-	// apply
+	// TODO: remove this method?
 	function applyTitleClasses($html) {
+
+		// TEMPORARY returning original content without changing anything
+		return $html;
 
 		// set class for links in titles
 		$html = preg_replace_callback('#(<h([1|2|3]) ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>(.*)<\/h[1|2|3]>)#Ui',
@@ -1613,7 +1622,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				'$output = str_replace(\'<a\', \'<a class="\'.$link_class.\'"\', $output);'.
 				'$output = str_replace(\'<strong\', \'<strong class="\'.$strong_class.\'"\', $output);'.
 				'$output = str_replace(\'<em\', \'<em class="\'.$italic_class.\'"\', $output);'.
-				'$output = str_replace(\'<h\'.(int)$matches[2], \'<h\'.(int)$matches[2].\' class="\'.$title_class.\'"\', $output);'.
+				//'$output = str_replace(\'<h\'.(int)$matches[2], \'<h\'.(int)$matches[2].\' class="\'.$title_class.\'"\', $output);'.
 				'return $output;'
 			),
 			$html
@@ -1642,7 +1651,20 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 			'</p>'
 		);
 
-		return preg_replace($patterns, $replacements, $html);
+		$html = preg_replace_callback('#(<ul ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>(.*)<\/ul>)#Ui',
+			create_function('$matches',
+				'$output = $matches[5];'.
+				'$alignment = ( isset($matches[3]) && strlen(trim($matches[3])) ) ? trim($matches[3]) : "align-left";'.
+				'$output = preg_replace(\'/<li ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>/\', \'<p class="wysija_list_item \'.$alignment.\'">&bull;&nbsp;\', $output);'.
+				'$output = preg_replace(\'/<\/li>/\', \'</p>\', $output);'.
+				'return $output;'
+			),
+			$html
+		);
+		return $html;
+
+		//return preg_replace($patterns, $replacements, $html);
 
 	}
+
 }

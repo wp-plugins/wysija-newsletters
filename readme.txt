@@ -1,9 +1,9 @@
 === MailPoet Newsletters ===
-Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, tung-wysija, bordoni
+Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark
 Tags: newsletter, newsletters, wysija, newsletter signup, newsletter widget, subscribers, post notification, email subscription, email alerts, automatic newsletter, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription, mail poet, mailpoet
 Requires at least: 3.3
-Tested up to: 3.9
-Stable tag: 2.6.11
+Tested up to: 4.0
+Stable tag: 2.6.12
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
@@ -132,6 +132,18 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.12 - 2014-10-16 =
+* Improved security thanks to Dominik Schilling, [Ryan Satterfield](http://planetzuda.com) and [Logical Trust](https://logicaltrust.net/en/)
+* Improved performance issue
+* Improved email rendering
+* Improved our stats dashboard, now they have a few more goodiness attached to them
+* Improved Subscribers' Export, better data encoding for Windows servers
+* Improved Form Editor, Date fields now accept dates prior to 1970
+* Fixed conflict with EditFlow in our Visual Editor
+* Fixed rare bug on Windows Server stopping you from sending emails
+* Added option to Resend confirmation email in the Subscriber's listing
+* Hard at work cleaning up our code and making it better
 
 = 2.6.11 - 2014-08-14 =
 * Improved protection against CSRF attacks thanks to Yoshinori Matsumoto.

@@ -2,7 +2,7 @@
 
 /*make the difference between frontend and backend routing*/
 /*require what is needed for common purpose in backend such as backend menus*/
-
+defined( 'ABSPATH' ) or die( 'Not allowed' );
 if(defined('WP_ADMIN')) {
     define('WYSIJA_SIDE','back');
 }else define('WYSIJA_SIDE','front');

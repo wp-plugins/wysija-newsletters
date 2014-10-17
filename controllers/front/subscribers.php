@@ -32,7 +32,7 @@ class WYSIJA_control_front_subscribers extends WYSIJA_control_front{
         }elseif(isset($_REQUEST['wysija']['user_list']['list_ids'])){
             $_REQUEST['wysija']['user_list']['list_ids']=explode(',',$_REQUEST['wysija']['user_list']['list_ids']);
         }
-
+        $_REQUEST['wysija']['user_field'] = $_REQUEST['wysija']['field'];
         $data=$_REQUEST['wysija'];
         unset($_REQUEST['wysija']);
 

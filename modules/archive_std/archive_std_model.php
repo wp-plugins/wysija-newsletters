@@ -32,6 +32,7 @@ class WYSIJA_model_archive_std extends WYSIJA_model {
 		$where = array( 1 );
 		$where[]	= 'e.`type` IN ('.implode(',', $this->email_types).')';
 		$where[]	= 'e.`status` IN ('.implode(',', $this->email_status).')';
+		$where[]	= 'e.`sent_at` IS NOT NULL';
 		$where_join = '';
 		if (!empty($list_ids))
 			$where_join = ' AND cl.`list_id` IN ('.implode(',', $list_ids).')';

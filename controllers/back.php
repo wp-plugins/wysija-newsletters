@@ -11,7 +11,6 @@ class WYSIJA_control_back extends WYSIJA_control{
     var $statuses=array();
     var $viewShow=null;
     var $_affected_rows = 0; //affected rows by batch select
-    var $target_action_form = ''; // default target of a form
 
     function WYSIJA_control_back(){
         parent::WYSIJA_control();
@@ -54,6 +53,21 @@ class WYSIJA_control_back extends WYSIJA_control{
             $this->pref[$_REQUEST['page']][$action]['limit_pp']=$_REQUEST['limit_pp'];
         }
 
+        if (!empty($_REQUEST['orderby'])) {
+            $_REQUEST['orderby'] = preg_replace('|[^a-z0-9#_.-]|i','',$_REQUEST['orderby']);
+        }
+        if (!empty($_REQUEST['ordert']) && !in_array(strtoupper($_REQUEST['ordert']), array('DESC', 'ASC'))){
+            $_REQUEST['ordert'] = 'DESC';
+        }
+
+        if(!empty($_REQUEST['id'])){
+            $_REQUEST['id'] = (int) $_REQUEST['id'];
+        }
+
+        if(!empty($_REQUEST['search'])){
+            $_REQUEST['search'] = esc_attr($_REQUEST['search']);
+        }
+
         if($this->pref && isset($_REQUEST['page']) && $_REQUEST['page'] && isset($this->pref[$_REQUEST['page']][$action]['limit_pp'])){
             $this->viewObj->limit_pp=$this->pref[$_REQUEST['page']][$action]['limit_pp'];
             $this->modelObj->limit_pp=$this->pref[$_REQUEST['page']][$action]['limit_pp'];
@@ -67,26 +81,20 @@ class WYSIJA_control_back extends WYSIJA_control{
         add_action('wysija_various_check',array($this,'variousCheck'));
         do_action('wysija_various_check');
 
-        $this->target_action_form = $this->data['target_action_form'] = $this->_getTargetActionForm(); // set default value of any form action
     }
 
-
     function variousCheck(){
-        $model_config=WYSIJA::get('config','model');
+        $model_config = WYSIJA::get('config','model');
+
         if(get_option('wysicheck')){
-            $helper_licence=WYSIJA::get('licence','helper');
-            $result=$helper_licence->check(true);
+            $helper_licence = WYSIJA::get('licence','helper');
+            $result = $helper_licence->check(true);
             if($result['nocontact']){
                 // redirect instantly to a page with a javascript file  where we check the domain is ok
-                $data=get_option('wysijey');
+                $data = get_option('wysijey');
                 // remotely connect to host
                 wp_enqueue_script('wysija-verif-licence', 'http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=customer&action=checkDomain&js=1&data='.$data, array( 'jquery' ), time());
             }
-        }
-
-        // check if the name of the site or the upload folder has changed of name :
-        if(WYSIJA_UPLOADS_URL!=$model_config->getValue('uploadurl')){
-
         }
 
     }
@@ -104,10 +112,10 @@ class WYSIJA_control_back extends WYSIJA_control{
     function defaultDisplay(){
         $this->viewShow=$this->action='main';
 
-        /* if it has not been enqueud in the head we print it here(can happens based on the action after a save or so)*/
+        // if it has not been enqueud in the head we print it here(can happens based on the action after a save or so)
         $this->js[]='wysija-admin-list';
 
-        /*get the filters*/
+        // get the filters
         if(isset($_REQUEST['search']) && $_REQUEST['search']){
             $this->filters['like']=array();
             foreach($this->searchable as $searchable){
@@ -195,18 +203,6 @@ class WYSIJA_control_back extends WYSIJA_control{
         return true;
     }
 
-    function _getTargetActionForm(){
-        $url = parse_url($_SERVER['REQUEST_URI']);
-        $target_action_form = $url['path'];
-        if(!empty($url['query'])){
-            parse_str($url['query'], $params);
-            if(isset($params['redirect']))
-                unset($params['redirect']);
-            $url['query'] = http_build_query($params);
-            $target_action_form = $url['path'].'?'.$url['query'];
-        }
-        return $target_action_form;
-    }
     function __setMetaTitle(){
         global $title;
 
@@ -361,9 +357,6 @@ class WYSIJA_control_back extends WYSIJA_control{
         if(isset($_REQUEST['id']) || $id){
             if(!$id) $id=$_REQUEST['id'];
             $this->data[$this->modelObj->table_name]=$this->modelObj->getOne($this->form_columns,array($this->modelObj->pk=>$id));
-
-            //$this->viewObj->render($this->action,$data);
-
         }else{
             $this->error('Cannot edit element primary key is missing : '. get_class($this));
         }
@@ -398,8 +391,6 @@ class WYSIJA_control_back extends WYSIJA_control{
             $data[$this->viewObj->model->pk]='';
         }
 
-
-        //$this->viewObj->render('edit',$data);
     }
 
     function save(){
@@ -435,11 +426,9 @@ class WYSIJA_control_back extends WYSIJA_control{
                 if(isset($this->modelObj->stay)){
                     $this->action='edit';
                     $this->redirect();
-                    //$this->edit($result);
                 }else{
                     $this->action='edit';
                     $this->redirect();
-                    //$this->edit($result);
                 }
             }
 

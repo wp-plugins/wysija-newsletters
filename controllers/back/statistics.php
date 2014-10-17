@@ -61,10 +61,10 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back {
 		// date filter
 		$default_duration = $this->get_default_duration();
 		if (function_exists('date_diff')) {
-			$this->data['date_interval'] = date_diff(date_create($default_duration['from']), date_create($default_duration['to']));
+			$this->data['date_interval'] = date_diff(date_create($default_duration->from), date_create($default_duration->to));
 		}
 		else {
-			$duration	   = strtotime($default_duration['to']) - strtotime($default_duration['from']);
+			$duration	   = strtotime($default_duration->to) - strtotime($default_duration->from);
 			$helper_toolbox = WYSIJA::get('toolbox', 'helper');
 			$this->data['date_interval'] = (object)$helper_toolbox->convert_seconds_to_array($duration, false);
 		}
@@ -78,8 +78,8 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back {
 		$hook_name   = 'hook_stats';
 		$hook_params = array( );
 		$hook_params['top']	  = WYSIJA_module_statistics::DEFAULT_TOP_RECORDS;
-		$hook_params['from']	 = !empty($_REQUEST['filter']['from']) ? $_REQUEST['filter']['from'] : $default_duration['from'];
-		$hook_params['to']	   = !empty($_REQUEST['filter']['to']) ? $_REQUEST['filter']['to'] : $default_duration['to'];
+		$hook_params['from']	 = !empty($_REQUEST['filter']['from']) ? $_REQUEST['filter']['from'] : $default_duration->from;
+		$hook_params['to']	   = !empty($_REQUEST['filter']['to']) ? $_REQUEST['filter']['to'] : $default_duration->to;
 		$hook_params['group_by'] = ($this->data['date_interval']->days == 0 || $this->data['date_interval']->days > WYSIJA_module_statistics::SWITCHING_DATE_TO_MONTH_THRESHOLD) ?
 				WYSIJA_module_statistics::GROUP_BY_MONTH :
 				WYSIJA_module_statistics::GROUP_BY_DATE; // $this->data['date_interval']->days == 0, means, no begin date, no end date
@@ -170,13 +170,27 @@ class WYSIJA_control_back_statistics extends WYSIJA_control_back {
 
 	/**
 	 * Get default duration of stats
-	 * @return int
+	 * @return WJ_StatsSession
 	 */
 	protected function get_default_duration() {
-		foreach ($this->pre_defined_dates as $duration)
-			if (isset($duration['selected']) && $duration['selected'])
-				return $duration;
-		return end($this->pre_defined_dates);
+		$_duration = null;
+		foreach ($this->pre_defined_dates as $duration) {
+			if (isset($duration['selected']) && $duration['selected']) {
+				$_duration = $duration;
+				break;
+			}
+		}
+		if (empty($_duration))
+			$_duration = end($this->pre_defined_dates);
+
+		$stats_session_manager = new WJ_StatsSessionManager();
+		$stats_session = new WJ_StatsSession();
+		$stats_session->last_days = $_duration['value'];
+		$stats_session->from = $_duration['from'];
+		$stats_session->to = $_duration['to'];
+		$stats_session_manager->set_default_selection($stats_session);
+		$stats_session_manager->set_pre_defined_dates($this->get_pre_defined_dates());
+		return $stats_session_manager->get_last_selection();
 	}
 
 	function date_diff($time_start, $time_end) {

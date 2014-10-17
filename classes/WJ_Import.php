@@ -27,6 +27,8 @@ class WJ_Import extends WYSIJA_object {
 	private $_csv_file_string = '';
 	private $_data_result = array(); // used for importmatch refactor
 	private $_regex_new_field = "/^new_field\|([^\|]+)\|(.+)$/i";
+        private $_field_separators_to_test = array( ',', ';', "\t" );
+	private	$_field_enclosers_to_test = array( '"', '' );
 
 	function __construct() {
 		if (!empty($_POST['wysija']['match']))
@@ -45,8 +47,9 @@ class WJ_Import extends WYSIJA_object {
 	 * @return type
 	 */
 	private function _get_temp_file_info() {
-		if (!empty($_REQUEST['wysija']['dataImport']))
-			return unserialize(base64_decode($_REQUEST['wysija']['dataImport']));
+		if (!empty($_REQUEST['wysija']['dataImport'])){
+                    return (array) json_decode(base64_decode($_REQUEST['wysija']['dataImport']),true);
+                }
 	}
 
 	/**
@@ -57,7 +60,16 @@ class WJ_Import extends WYSIJA_object {
 		// try to access the temporary file created in the previous step
 		$this->_csv_data = $this->_get_temp_file_info();
 
+                if ( empty($this->_csv_data['csv']) || !is_string( $this->_csv_data['csv'] ) || preg_match('|[^a-z0-9#_.-]|i',$this->_csv_data['csv']) !== 0 ){
+                    $this->error('Error with import file name');
+                    return false;
+                }
+
 		$helper_file = WYSIJA::get('file', 'helper');
+
+                if (!is_string($this->_csv_data['csv']) OR preg_match('|[^a-z0-9#_.-]|i',$this->_csv_data['csv']) !== 0 ){
+                    die('Import file error.');
+                }
 		$result_file = $helper_file->get($this->_csv_data['csv'], 'import');
 
 		if (!$result_file) {
@@ -100,7 +112,11 @@ class WJ_Import extends WYSIJA_object {
 
 		// we're going through all of the selected value in each dropdown when importing
 		foreach($this->_match as $csv_column_number => $column_in_user_table){
-			// Reduce matching twice the same column
+
+                        if (!is_string($column_in_user_table) OR preg_match('|[^a-z0-9#_.-]|i',$column_in_user_table) !== 0 ){
+                            continue;
+                        }
+                        // Reduce matching twice the same column
 			if ($this->_is_column_matched($column_in_user_table))
 				continue;
 
@@ -308,6 +324,11 @@ class WJ_Import extends WYSIJA_object {
 	 */
 	private function _csv_to_array($csv_file_content, $rows_to_read = 0, $delimiter = ',', $enclosure = '') {
 		$data = array();
+
+                if( !(in_array($delimiter, $this->_field_separators_to_test) && in_array($enclosure, $this->_field_enclosers_to_test)) ){
+                    $this->error('Unknown csv separators.');
+                    return false;
+                }
 
 		// the new way for splitting a string into an array of lines
 		$csv_data_array = explode( $this->_line_delimiter, $csv_file_content );
@@ -521,7 +542,7 @@ class WJ_Import extends WYSIJA_object {
 					foreach ($active_autoresponders_per_list[$list_id] as $key_queue => $follow_up) {
 						// insert query per active followup
 						$query_queue = 'INSERT IGNORE INTO [wysija]queue (`email_id` ,`user_id`,`send_at`) ';
-						$query_queue .= ' SELECT ' . $follow_up['email_id'] . ' , B.user_id , ' . ($time_now + $follow_up['delay']);
+						$query_queue .= ' SELECT ' . (int)$follow_up['email_id'] . ' , B.user_id , ' . ($time_now + $follow_up['delay']);
 						$query_queue .= ' FROM [wysija]user_list as B';
 						$query_queue .= ' WHERE B.list_id=' . (int) $list_id . ' AND sub_date=' . $time_now;
 
@@ -559,7 +580,7 @@ class WJ_Import extends WYSIJA_object {
 			foreach ($user_ids as $key => $user_data) {
 
 				// inserting each user id to this list
-				$query.='(' . $list_id . ' , ' . $user_data['user_id'] . ' , ' . $time_now . ')';
+				$query.='(' . (int)$list_id . ' , ' . (int)$user_data['user_id'] . ' , ' . (int)$time_now . ')';
 
 				// if this is not the last row we put a comma for the next row
 				if (count($user_ids) > ($key + 1)) {
@@ -661,14 +682,13 @@ class WJ_Import extends WYSIJA_object {
 	 */
 	private function _run_test_on_csv_file(){
 		// try different set of enclosure and separator for the csv which can have different look depending on the data carried
-		$field_separators_to_test = array( ',', ';', "\t" );
-		$field_enclosers_to_test = array( '"', '' );
+
 		$this->_csv_data['fsep'] = false;
 		$this->_csv_data['fenc'] = '';
 		$helper_user = WYSIJA::get('user','helper');
 
-		foreach($field_enclosers_to_test as $enclosure){
-			foreach($field_separators_to_test as $fsep){
+		foreach($this->_field_enclosers_to_test as $enclosure){
+			foreach($this->_field_separators_to_test as $fsep){
 
 				// testing different combinations of separator and enclosers
 				$this->_csv_array = $this->_csv_to_array( $this->_csv_file_string, 10, $fsep, $enclosure );
@@ -702,13 +722,13 @@ class WJ_Import extends WYSIJA_object {
 				$text = __('Line is empty', WYSIJA);
 			else
 				$text = $arraylines[0];
-			$this->notice('<strong>' . $text . '</strong>');
+			$this->notice('<strong>' . esc_html($text) . '</strong>');
 
 			if (empty($arraylines[1]))
 				$text = __('Line is empty', WYSIJA);
 			else
 				$text = $arraylines[1];
-			$this->notice('<strong>' . $text . '</strong>');
+			$this->notice('<strong>' . esc_html($text) . '</strong>');
 
 			return false;
 		}
@@ -801,7 +821,7 @@ class WJ_Import extends WYSIJA_object {
 			'csv' => $file_name,
 			'fsep' => $this->_csv_data['fsep'],
 			'fenc' => $this->_csv_data['fenc']);
-		$this->_data_result['dataImport'] = base64_encode(serialize($data_import));
+		$this->_data_result['dataImport'] = base64_encode(json_encode($data_import));
 
 		$this->_data_result['keyemail'] = $this->_email_key;
 

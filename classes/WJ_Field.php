@@ -284,7 +284,7 @@ class WJ_Field {
 				$column_type = 'VARCHAR(255)';
 				break;
 			case 'date':
-				$column_type = 'INT(10) UNSIGNED';
+				$column_type = 'INT(20)';
 			break;
 			default:
 				$column_type = 'VARCHAR(255)';

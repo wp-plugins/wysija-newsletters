@@ -36,14 +36,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_front{
 
         $helperUser=WYSIJA::get('user','helper');
         if(!$helperUser->checkData($data))return false;
-        $user_id = $helperUser->addSubscriber($data);
-
-        if((int)$user_id > 0) {
-             // Handle custom fields
-            if(isset($data['user_field'])) {
-                WJ_FieldHandler::handle_all($data['user_field'], $user_id);
-            }
-        }
+        $helperUser->addSubscriber($data);
 
         return true;
     }

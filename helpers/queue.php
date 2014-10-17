@@ -64,7 +64,7 @@ class WYSIJA_help_queue extends WYSIJA_object{
          * @return boolean
          */
 	function process($email_id=false,$user_id=false){
-                if($email_id)    $this->email_id=$email_id;
+                if($email_id)    $this->email_id=(int)$email_id;
                 $model_queue = WYSIJA::get('queue','model');
 		$queue_elements = $model_queue->getReady($this->send_limit,$this->email_id,$user_id);
 

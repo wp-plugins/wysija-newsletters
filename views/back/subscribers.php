@@ -16,9 +16,10 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 	$this->column_actions = array('editlist' => __('Edit', WYSIJA), 'duplicatelist' => __('Duplicate', WYSIJA), 'deletelist' => __('Delete', WYSIJA));
     }
 
+
     function main($data)
     {
-	echo '<form method="post" action="'.$data['target_action_form'].'" id="posts-filter">';
+        echo '<form method="post" action="#currentform" id="posts-filter">';
 	$this->filtersLink($data);
 	$this->filterDDP($data);
 	$this->listing($data);
@@ -166,10 +167,12 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 		    <option value="deleteusers" data-nonce="<?php echo $this->secure(array('action' => "deleteusers" ), true)?>"><?php _e('Delete subscribers', WYSIJA); ?></option>
 		    <?php
 		    $config_model = WYSIJA::get('config', 'model');
-		    if ($config_model->getValue('confirm_dbleoptin'))
+			$confirm_dbleoptin = $config_model->getValue('confirm_dbleoptin');
+		    if ($confirm_dbleoptin)
 		    {
 			?>
 	    	    <option value="actionvar_confirmusers" data-nonce="<?php echo $this->secure(array('action' => "actionvar_confirmusers" ), true)?>"><?php _e('Confirm unconfirmed subscribers', WYSIJA); ?></option>
+				<option value="actionvar_resendconfirmationemail" data-nonce="<?php echo $this->secure(array('action' => "actionvar_resendconfirmationemail" ), true)?>"><?php _e('Resend confirmation email', WYSIJA); ?></option>
 		    <?php } ?>
 		</select>
 		<input type="submit" class="bulksubmit button-secondary action" name="doaction" value="<?php echo esc_attr(__('Apply', WYSIJA)); ?>">
@@ -329,7 +332,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 		<?php
 		echo get_avatar($row['email'], 32);
 		echo '<strong>'.$row['email'].'</strong>';
-		echo '<p style="margin:0;">'.$row['firstname'].' '.$row['lastname'].'</p>';
+		echo '<p style="margin:0;">'.esc_html($row['firstname'].' '.$row['lastname']).'</p>';
 		?>
 	    	<div class="row-actions">
 	    	    <span class="edit">
@@ -452,7 +455,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 		</tbody>
 	    </table>
 	    <p class="submit">
-		<input type="hidden" name="wysija[export][user_ids]" id="user_ids" value="<?php if (isset($data['subscribers'])) echo base64_encode(serialize($data['subscribers'])) ?>" />
+		<input type="hidden" name="wysija[export][user_ids]" id="user_ids" value="<?php if (isset($data['subscribers'])) echo base64_encode(json_encode($data['subscribers'])) ?>" />
 		<input type="hidden" value="export_get" name="action" />
                 <?php $this->secure(array('action' => "export_get")); ?>
 		<input type="submit" value="<?php echo esc_attr(__('Export', WYSIJA)) ?>" class="button-primary wysija">
@@ -990,8 +993,6 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			    {
 				$selected = '';
 
-
-
 				$columns_array = $columns;
 				// we make a key out of the column name
 				$column_name_key = str_replace(array(' ', '-', '_'), '', strtolower($column_name));
@@ -1012,7 +1013,9 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 				    {
 					// we need to put that extra value right after the ignore column value
 					if (count($columns_array) === 1) {
-					    $columns_array['new_field|input|'.$column_name] = sprintf(__('Import as "%1$s"', WYSIJA), $column_name);
+					    $column_name = preg_replace('|[^a-z0-9#_.-]|i','',$column_name);
+
+                                            $columns_array['new_field|input|'.$column_name] = sprintf(__('Import as "%1$s"', WYSIJA), $column_name);
 					    $columns_array['new_field|date|'.$column_name] = sprintf(__('Import "%1$s" as date field', WYSIJA), $column_name);
 					    $this->new_column_can_be_imported[$column_key] = true;
 					}
@@ -1085,7 +1088,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 		foreach ($columns as $key_col => $val)
 		{
 		    if ($i == 0 && !isset($data['firstrowisdata']))
-			echo '<td><strong>'.$val.'</strong></td>';
+			echo '<td><strong>'.esc_html($val).'</strong></td>';
 		    else
 		    {
 			if (!empty($this->new_column_can_be_imported[$key_col]))
@@ -1099,7 +1102,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 			    {
 				$val_converted = '<span class="converted-field-error row-'.$key_col.'" title="'.__('Do not match as a \'date field\' if most of the rows for that column return the same error.', WYSIJA).'">'.__('Error matching date.', WYSIJA).'</span>';
 			    }
-			    $val = ' <span class="imported-field">'.$val.'</span>'.$val_converted;
+			    $val = ' <span class="imported-field">'.esc_html($val).'</span>'.$val_converted;
 			}
 			echo '<td>'.$val.'</td>';
 		    }

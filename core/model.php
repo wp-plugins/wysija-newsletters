@@ -110,11 +110,27 @@ class WYSIJA_model extends WYSIJA_object{
 	function getRows($columns=false,$page=0,$limit=false){
 
 		/*set the columns*/
-		if($columns){
-			if(is_array($columns)){
-				$columns=implode(', ',$columns);
-			}
-		}else $columns='*';
+		if($columns !== false){
+                        if(is_array($columns)){
+
+                            foreach($columns as $column){
+
+                                if(!isset($this->columns[$column])){
+                                    $this->error(sprintf('Column does not exist.'));
+                                    return false;
+                                }
+                            }
+                            $columns=implode(', ',$columns);
+			}else{
+                                if(!isset($this->columns[$columns])){
+                                    $this->error(sprintf('Column does not exist.'));
+                                    return false;
+                                }
+                        }
+		}else{
+                    $columns='*';
+
+                }
 
 
 		$query='SELECT '.$columns.' FROM `'.$this->getSelectTableName()."`";
@@ -932,7 +948,7 @@ class WYSIJA_model extends WYSIJA_object{
 
 			if( $this->sql_error &&
                                 ( empty( $this->last_error ) || $this->last_error != $this->sql_error )) {
-				$this->last_error = $wysija_queries_errors[] = $this->sql_error;
+				$this->last_error = $wysija_queries_errors[] = array('query' => $wpdb->last_query, 'error' => $this->sql_error);
                                 $this->sql_error = false;
 				WYSIJA::log('queries_errors' , $this->sql_error , 'query_errors');
 			}
