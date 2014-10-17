@@ -28,7 +28,7 @@ class WYSIJA_control_front_email extends WYSIJA_control_front{
         $email_id = (int)$_REQUEST['email_id'];
         // Get current email object.
         $current_email = $emailM->getOne($email_id);
-
+        if(empty($current_email)) exit;
         if($current_email->type==2){
 
             $emailM->reset();

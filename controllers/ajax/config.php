@@ -376,7 +376,7 @@ class WYSIJA_control_back_config extends WYSIJA_control{
                     foreach($block['params'] as $key => $value) {
                         $value = base64_decode($value);
                         if(is_serialized($value) === true) {
-                            $value = unserialize($value);
+                            $value = (array) unserialize($value);
                         }
                         $params[$key] = $value;
                     }

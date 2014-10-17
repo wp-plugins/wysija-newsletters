@@ -19,7 +19,7 @@ class WYSIJA_object{
 	 * Static variable holding core MailPoet's version
 	 * @var array
 	 */
-	static $version = '2.6.11';
+	static $version = '2.6.12';
 
 	function WYSIJA_object(){
 
@@ -46,7 +46,17 @@ class WYSIJA_object{
 	 * @return string Version of the package
 	 */
 	public static function get_version( $path = null ) {
-		return apply_filters( 'mailpoet/get_version', self::$version, apply_filters( 'mailpoet/package', 'core', $path ) );
+		$version = self::$version;
+		// Backwards compatibility for Premium Versions
+		if ( ! has_filter( 'mailpoet/get_version', '_filter_mailpoet_premium_version' ) && in_array( $path, array( 'premium', 'wysija-newsletters-premium', 'wysija-newsletters-premium/index.php' ) ) ){
+			if ( ! function_exists( 'get_plugin_data' ) ){
+				include_once ABSPATH . 'wp-admin/includes/plugin.php';
+			}
+			$plugin_data = get_plugin_data( dirname( dirname( plugin_dir_path( __FILE__ ) ) ) . '/wysija-newsletters-premium/index.php' );
+			$version = trim( $plugin_data['Version'] );
+		}
+
+		return apply_filters( 'mailpoet/get_version', $version, apply_filters( 'mailpoet/package', 'core', $path ) );
 	}
 
 	/**
@@ -205,6 +215,30 @@ class WYSIJA_object{
 		}
 		return $wysija_msg;
 	}
+
+	/**
+	 * If the current server is Windows-based
+	 * @return boolean
+	 */
+	public static function is_windows() {
+		$is_windows = false;
+		$windows = array(
+			'windows nt',
+			'windows',
+			'winnt',
+			'win32',
+			'win'
+		);
+		$operating_system = strtolower( php_uname( 's' ) );
+		foreach ( $windows as $windows_name ) {
+			if (strpos($operating_system, $windows_name) !== false) {
+				$is_windows = true;
+				break;
+			}
+		}
+		return $is_windows;
+	}
+
 }
 
 
@@ -337,8 +371,8 @@ class WYSIJA_help extends WYSIJA_object{
 			$plugin_requesting_ajax = 'wysija-newsletters';
 
                         // we override the plugin resquesting ajax if specified in the request
-			if( isset( $_REQUEST['wysijaplugin'] ) ){
-                            $plugin_requesting_ajax = $_REQUEST['wysijaplugin'];
+			if( !empty( $_REQUEST['wysijaplugin'] )  ){
+                            $plugin_requesting_ajax = preg_replace('#[^a-z0-9\-_]#i','',$_REQUEST['wysijaplugin']);
                         }
 
                         // fetching the right controller
@@ -620,9 +654,11 @@ class WYSIJA extends WYSIJA_object{
 		}
 
 		if(!file_exists($class_path)) {
-			WYSIJA::setInfo('error','file has not been recognised '.$class_path);
-			WYSIJA::setInfo('error',$class_name);
-			WYSIJA::setInfo('error',$type);
+                        if(is_admin() && WYSIJA::current_user_can('switch_themes')){
+                            WYSIJA::setInfo('error','file has not been recognised '.$class_path);
+                            WYSIJA::setInfo('error',$class_name);
+                            WYSIJA::setInfo('error',$type);
+                        }
 			return;
 		}
 

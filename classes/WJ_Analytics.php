@@ -12,6 +12,10 @@ class WJ_Analytics {
 
     // All analytics data to be sent to JS.
     private $analytics_data = array(
+        'php_version' => array(
+          'label' => 'PHP version',
+          'value' => ''
+		),
         'monthly_emails_sent' => array(
           'label' => 'Monthly emails sent',
           'value' => ''
@@ -789,5 +793,25 @@ class WJ_Analytics {
       }
       return 'No';
     }
+
+	/**
+	 * Check PHP versions
+	 * @return string
+	 */
+	private function php_version() {
+		$php_version_factors = explode('.', phpversion());
+		$main_version		 = (int)$php_version_factors[0];
+		$sub_version		 = isset($php_version_factors[1]) ? (int)$php_version_factors[1] : null;
+
+		$php_version = 'others';
+		if ($sub_version !== null) {
+			if ($main_version == 4) {
+				$php_version = '4.x';
+			} elseif ($main_version >= 5) {
+				$php_version = implode('.', array( $main_version, $sub_version ));
+			}
+		}
+		return $php_version;
+	}
 
 }

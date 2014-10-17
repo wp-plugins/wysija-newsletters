@@ -17,19 +17,23 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
      */
     var $_filter_by_inactive_users = true;
 
-    function WYSIJA_control_back_subscribers(){
-	WYSIJA_control_back::WYSIJA_control_back();
-	if ($this->_filter_by_inactive_users) {
-	    if (
-		// default display
-		empty($_REQUEST['action'])
-		// bulk action
-		|| !empty($_REQUEST['doaction']) && trim(strtolower($_REQUEST['doaction'])) === 'apply'
-		    ) {
-		$this->modelObj->prepare_inactive_users_table();
-	    }
+    function WYSIJA_control_back_subscribers() {
+		WYSIJA_control_back::WYSIJA_control_back();
+		if ($this->_filter_by_inactive_users) {
+                        // load the inactive subscribers on the listing and when a any bulk action is executed
+                        if (    empty($_REQUEST['action'])
+                                ||
+                                (       !empty($_REQUEST['action'])
+                                        &&
+                                        ( in_array($_REQUEST['action'], array('export_get','exportlist', 'deleteusers'))
+                                        ||
+                                        substr($_REQUEST['action'], 0,10)=='actionvar_')
+                                )
+                        ) {
+				$this->modelObj->prepare_inactive_users_table();
+			}
+		}
 	}
-    }
 
     /*
      * common task to all the list actions
@@ -503,6 +507,47 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->redirect_after_bulk_action();
     }
 
+	/*
+     * Bulk resend confirmation emails
+	 * Maximum emails to be sent is 100, and only send to unconfirmed subscribers, of coruse.
+     */
+    function resendconfirmationemail() {
+        $this->requireSecurity();
+        $helper_user = WYSIJA::get('user','helper');
+		$user_ids = array();
+        if(!empty($this->_batch_select)) {
+			$model_user = WYSIJA::get('user','model');
+			$users = $model_user->get_results($this->_batch_select['query'] . ' LIMIT 0, 100');
+			if (!empty($users)) {
+				foreach ($users as $user) {
+					$user_ids[] = $user['user_id'];
+				}
+			}
+        } else {
+			$user_ids = $_POST['wysija']['user']['user_id'];
+		}
+
+		$sending_statuses = array();// array(user_id => 1/0)
+		if (!empty($user_ids)) {
+			$model_user_list = WYSIJA::get('user_list','model');
+			$user_lists = $model_user_list->get_lists($user_ids);
+			if (!empty($user_lists)) {
+				foreach ($user_lists as $user_id => $lists) {
+					$sending_statuses[$user_id] = $helper_user->sendConfirmationEmail($user_id, true, $lists);
+				}
+			}
+		}
+
+		$success_sending_number = count(array_values($sending_statuses));
+		if ($success_sending_number <= 0) {
+			$this->notice(__('No email sent.',WYSIJA));
+		} else {
+                        $this->notice( _n( 'One email has been sent.', '%d emails have been sent to unconfirmed subscribers.', $success_sending_number, WYSIJA ) );
+        }
+
+        $this->redirect_after_bulk_action();
+    }
+
     function lists(){
         $this->js[]='wysija-admin-list';
         $this->_commonlists();
@@ -535,23 +580,12 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
          * 1 duplicate the list
          * 2 duplicate the list's subscribers
          */
+
         $model_list = WYSIJA::get('list','model');
         $data=$model_list->getOne(array('name','namekey','welcome_mail_id','unsub_mail_id'),array('list_id'=>(int)$_REQUEST['id']));
 
-        $query='INSERT INTO `[wysija]email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`)
-            SELECT '.time().',`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status` FROM [wysija]email
-            WHERE email_id='.(int)$data['welcome_mail_id'];
-        $email_welcome_id = $model_list->query($query);
-
-
-        $query='INSERT INTO `[wysija]email` (`created_at`,`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`)
-            SELECT '.time().',`campaign_id`,`subject`,`body`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status` FROM [wysija]email
-            WHERE email_id='.(int)$data['unsub_mail_id'];
-        $email_unsub_id = $model_list->query($query);
-
-
         $query='INSERT INTO `[wysija]list` (`created_at`,`name`,`namekey`,`description`,`welcome_mail_id`,`unsub_mail_id`,`is_enabled`,`ordering`)
-            SELECT '.time().',"'.stripslashes(__('Copy of ',WYSIJA)).$data['name'].'" ,"copy_'.$data['namekey'].time().'" ,`description`,'.$email_welcome_id.','.$email_unsub_id.' ,1,`ordering` FROM [wysija]list
+            SELECT '.time().',concat("' . mysql_real_escape_string( __( 'Copy of ', WYSIJA ) ) . '",`name`) ,"copy_'.$data['namekey'].time().'" ,`description`,0,0 ,1,`ordering` FROM [wysija]list
             WHERE list_id='.(int)$_REQUEST['id'];
 
         $list_id = $model_list->query($query);
@@ -904,13 +938,12 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
         $this->requireSecurity();
 
         if(isset($_REQUEST['file_name'])){
-            $url = base64_decode($_REQUEST['file_name']);
+            $file_name = preg_replace('#[^a-z0-9_\-.]#i','',base64_decode($_REQUEST['file_name']));
 
-            if( substr( $url , 0 , 7) !== 'http://' ){
-                return false;
-            }
+            $helper_file = WYSIJA::get('file', 'helper');
+            $exported_file_link = $helper_file->url($file_name, 'temp');
 
-            $content = file_get_contents( $url );
+            $content = file_get_contents( $exported_file_link );
             $user_ids=explode(",",$content);
         }
         $_REQUEST['wysija']['user']['user_id']=$user_ids;

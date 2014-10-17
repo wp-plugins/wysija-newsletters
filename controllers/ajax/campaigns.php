@@ -9,12 +9,24 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 
 	function save_poll(){
 		$this->requireSecurity();
-                $model_config = WYSIJA::get('config','model');
-		$model_config->save(array('poll_origin' => $_REQUEST['how'] , 'poll_origin_url' => $_REQUEST['where']));
 
-		$res['result'] = true;
-		$res['msg'] = '<span><span class="checkmark">---</span>'. __('Thanks!',WYSIJA). '</span>';
-		return $res;
+                if( in_array($_REQUEST['how'], array('repository' , 'search_engine' , 'friend', 'url' )) ){
+
+                    $data_conf = array( 'poll_origin' => $_REQUEST['how'] );
+                    if( !empty( $_REQUEST['where'] ) ){
+                        $data_conf['poll_origin_url'] = esc_url($_REQUEST['where']);
+                    }
+                    $model_config = WYSIJA::get('config','model');
+                    $model_config->save( $data_conf );
+
+                    $res['result'] = true;
+                    $res['msg'] = '<span><span class="checkmark">---</span>'. __('Thanks!',WYSIJA). '</span>';
+                    return $res;
+                }
+
+                $res['result'] = false;
+                return $res;
+
 	}
 
 	function switch_theme() {
@@ -70,7 +82,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control{
 		}
 
 		$helper_wj_engine = WYSIJA::get('wj_engine', 'helper');
-		$helper_wj_engine->setData($rawData);
+		$helper_wj_engine->setData( $rawData );
 		$result = false;
 
 		// get email id

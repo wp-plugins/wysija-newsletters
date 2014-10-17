@@ -159,7 +159,7 @@ class WJ_FieldRender {
 				$field = $this->field_user->field;
 
 				// get timestamp value
-				$value = ((int) $this->value > 0) ? (int) $this->value : null;
+				$value = (int) $this->value;
 
 				// get date type (defaults to year + month + day)
 				$date_type = ( isset( $field->settings['date_type'] ) ) ? $field->settings['date_type'] : 'year_month_day';
@@ -167,63 +167,69 @@ class WJ_FieldRender {
 				$display_date_fields = explode( '_', $date_type );
 				// form engine to get date data
 				$helper_form_engine = WYSIJA::get( 'form_engine', 'helper' );
+				$date_order = explode('/', $field->settings['date_order']);
 
-				// year selection
-				if ( in_array( 'year', $display_date_fields ) ) {
-					$years = $helper_form_engine->get_years();
+				foreach ($date_order as $date_element) {
+					if (strpos($date_element, 'yy') !== false) {
+						// year selection
+						if ( in_array( 'year', $display_date_fields ) ) {
+							$years = $helper_form_engine->get_years();
 
-					$selected_year = null;
-					if ( $value !== null ) {
-						$selected_year = (int) strftime( '%Y', $value );
+							$selected_year = null;
+							if ( $value !== null ) {
+								$selected_year = (int) strftime( '%Y', $value );
+							}
+
+							// select
+							$input .= '<select name="wysija[field]['.$this->identifier.'][year]">';
+							$input .= '<option value="">' . __( 'Year' ) .'</option>';
+							foreach ( $years as $year ) {
+								$is_selected = ((int)$year['year'] === $selected_year) ? ' selected="selected"' : '';
+								$input .= '<option value="'.$year['year'].'"'.$is_selected.'>'.$year['year'].'</option>';
+							}
+							$input .= '</select>';
+						}
+					} elseif (strpos($date_element, 'mm') !== false) {
+						// month selection
+						if ( in_array( 'month', $display_date_fields ) ) {
+							$months = $helper_form_engine->get_months();
+
+							$selected_month = null;
+							if ( $value !== null ) {
+								$selected_month = (int) strftime( '%m', $value );
+							}
+
+							// select
+							$input .= '<select name="wysija[field]['.$this->identifier.'][month]">';
+							$input .= '<option value="">' . __( 'Month' ) . '</option>';
+							foreach ( $months as $month ) {
+								$is_selected = ((int)$month['month'] === $selected_month) ? ' selected="selected"' : '';
+								$input .= '<option value="'.$month['month'].'"'.$is_selected.'>'.$month['month_name'].'</option>';
+							}
+							$input .= '</select>';
+						}
+					} elseif (strpos($date_element, 'dd') !== false) {
+						// day selection
+						if ( in_array( 'day', $display_date_fields ) ) {
+							$days = $helper_form_engine->get_days();
+
+							$selected_day = null;
+							if ( $value !== null ) {
+								$selected_day = (int) strftime( '%d', $value );
+							}
+
+							// select
+							$input .= '<select name="wysija[field]['.$this->identifier.'][day]">';
+							$input .= '<option value="">' . __( 'Day' ) . '</option>';
+							foreach ( $days as $day ) {
+								$is_selected = ((int)$day['day'] === $selected_day) ? ' selected="selected"' : '';
+								$input .= '<option value="'.$day['day'].'"'.$is_selected.'>'.$day['day'].'</option>';
+							}
+							$input .= '</select>';
+						}
 					}
-
-					// select
-					$input .= '<select name="wysija[field]['.$this->identifier.'][year]">';
-					$input .= '<option value="">' . __( 'Year' ) .'</option>';
-					foreach ( $years as $year ) {
-						$is_selected = ((int)$year['year'] === $selected_year) ? ' selected="selected"' : '';
-						$input .= '<option value="'.$year['year'].'"'.$is_selected.'>'.$year['year'].'</option>';
-					}
-					$input .= '</select>';
 				}
 
-				// month selection
-				if ( in_array( 'month', $display_date_fields ) ) {
-					$months = $helper_form_engine->get_months();
-
-					$selected_month = null;
-					if ( $value !== null ) {
-						$selected_month = (int) strftime( '%m', $value );
-					}
-
-					// select
-					$input .= '<select name="wysija[field]['.$this->identifier.'][month]">';
-					$input .= '<option value="">' . __( 'Month' ) . '</option>';
-					foreach ( $months as $month ) {
-						$is_selected = ((int)$month['month'] === $selected_month) ? ' selected="selected"' : '';
-						$input .= '<option value="'.$month['month'].'"'.$is_selected.'>'.$month['month_name'].'</option>';
-					}
-					$input .= '</select>';
-				}
-
-				// day selection
-				if ( in_array( 'day', $display_date_fields ) ) {
-					$days = $helper_form_engine->get_days();
-
-					$selected_day = null;
-					if ( $value !== null ) {
-						$selected_day = (int) strftime( '%d', $value );
-					}
-
-					// select
-					$input .= '<select name="wysija[field]['.$this->identifier.'][day]">';
-					$input .= '<option value="">' . __( 'Day' ) . '</option>';
-					foreach ( $days as $day ) {
-						$is_selected = ((int)$day['day'] === $selected_day) ? ' selected="selected"' : '';
-						$input .= '<option value="'.$day['day'].'"'.$is_selected.'>'.$day['day'].'</option>';
-					}
-					$input .= '</select>';
-				}
 			break;
 			default:
 				$input = '';

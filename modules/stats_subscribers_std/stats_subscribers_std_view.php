@@ -23,18 +23,19 @@ class WYSIJA_module_view_stats_subscribers_std_view extends WYSIJA_view_back {
 				<table class="widefat fixed">
 					<thead>
 					<th class="check-column">&nbsp;</th>
-					<th class="newsletter"><?php echo __('Newsletter', WYSIJA); ?></th>
-					<th class="link"><?php echo __('Link', WYSIJA); ?></th>
-					<th class="click sortable sort-filter <?php echo $data['order_direction']['clicks']; ?>" rel="click"><a href="javascript:void(0);" class="orderlink"><span><?php echo __('Clicks'); ?></span><span class="sorting-indicator"></span></a></th>
-					<!--th><?php echo __('Device', WYSIJA); ?></th-->
-					<th class="date"><?php echo __('Date', WYSIJA); ?></th>
+					<th class="newsletter"><?php echo esc_attr__('Newsletter', WYSIJA); ?></th>
+					<th class="link"><?php echo esc_attr__('Link', WYSIJA); ?></th>
+					<th class="click sortable sort-filter <?php echo $data['order_direction']['clicks']; ?>" rel="click"><a href="javascript:void(0);" class="orderlink"><span><?php echo esc_attr__('Clicks'); ?></span><span class="sorting-indicator"></span></a></th>
+					<!--th><?php echo esc_attr__('Device', WYSIJA); ?></th-->
+					<!--th class="date"><?php echo esc_attr__('Opened date', WYSIJA); ?></th-->
+					<th class="date"><?php echo esc_attr__('Date sent', WYSIJA); ?></th>
 					</thead>
 					<tbody class="list:user user-list">
 						<?php
 						$i			= 1;
 						$alt		  = false;
 						$email_helper = WYSIJA::get('email', 'helper');
-						foreach ($data['opened_newsletters']['emails'] as $email_id => $email) {
+						foreach ($data['opened_newsletters']['emails'] as $email) {
 							$full_url = $email_helper->getVIB($email);
 							if (empty($email['urls'])) {
 								?>
@@ -53,8 +54,9 @@ class WYSIJA_module_view_stats_subscribers_std_view extends WYSIJA_view_back {
 									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
-									<!--td><?php echo __('N/A', WYSIJA); ?></td-->
-									<td><?php echo $this->fieldListHTML_created_at($email['opened_at']); ?></td>
+									<!--td><?php echo esc_attr__('N/A', WYSIJA); ?></td-->
+									<!--td><?php echo $this->fieldListHTML_created_at($email['opened_at']); ?></td-->
+									<td><?php echo $this->fieldListHTML_created_at($email['sent_at']); ?></td>
 								</tr>
 								<?php
 							}
@@ -84,8 +86,9 @@ class WYSIJA_module_view_stats_subscribers_std_view extends WYSIJA_view_back {
 										</td>
 										<td><?php echo $wysija_link; ?></td>
 										<td><?php echo $url['number_clicked']; ?></td>
-										<!--td><?php echo __('N/A', WYSIJA); ?></td-->
-										<td><?php echo $this->fieldListHTML_created_at($email['opened_at']); ?></td>
+										<!--td><?php echo esc_attr__('N/A', WYSIJA); ?></td-->
+										<!--td><?php echo $this->fieldListHTML_created_at($email['opened_at']); ?></td-->
+										<td><?php echo $this->fieldListHTML_created_at($email['sent_at']); ?></td>
 									</tr>
 									<?php
 								}
@@ -98,7 +101,7 @@ class WYSIJA_module_view_stats_subscribers_std_view extends WYSIJA_view_back {
 			<?php
 			//$this->model->countRows = 103;//$data['top_subscribers']['count'];
 //            if (empty($this->viewObj)) $this->viewObj = new stdClass();
-//            $this->viewObj->msgPerPage = __('Show',WYSIJA).':';
+//            $this->viewObj->msgPerPage = esc_attr__('Show',WYSIJA).':';
 //            $this->viewObj->title = '';
 			//$this->limitPerPage(); // not implemented yet
 			?>

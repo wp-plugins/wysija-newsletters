@@ -18,6 +18,10 @@ class WJ_Export extends WYSIJA_object {
 	private $_fields_separator = ';';
 	private $_lines_separator  = "\n";
 	private $_base_encode      = 'UTF-8';
+	/**
+	 * Default encoding of exported files
+	 * @var string
+	 */
 	private $_output_encode    = 'UTF-8//TRANSLIT//IGNORE';
 
 	//needed for tung's batch actions
@@ -43,10 +47,18 @@ class WJ_Export extends WYSIJA_object {
 		if ( ! empty($_POST['wysija']['export']['filter']['confirmed'] ) ) {
 			$this->_filter_confirmed = $_POST['wysija']['export']['filter']['confirmed'];
 		}
+
+		$this->set_output_encode();
 	}
 
+	/**
+	 * Set output encoding based on platform
+	 */
+	protected function set_output_encode() {
+		$this->_output_encode = WYSIJA::is_windows() ? 'Windows-1252' : 'UTF-8//TRANSLIT//IGNORE';
+	}
 
-        /**
+	/**
 	 * get the number of rows exported
 	 * @return type
 	 */
@@ -59,7 +71,7 @@ class WJ_Export extends WYSIJA_object {
 	 * @return type
 	 */
 	private function _get_posted_user_ids() {
-		return unserialize( base64_decode( $_POST['wysija']['export']['user_ids'] ) );
+            return (array) json_decode( base64_decode( $_POST['wysija']['export']['user_ids'] ), true );
 	}
 
 	/**

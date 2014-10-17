@@ -9,7 +9,12 @@ class WYSIJA_control_front extends WYSIJA_control{
         parent::WYSIJA_control();
         $_REQUEST   = stripslashes_deep($_REQUEST);
         $_POST   = stripslashes_deep($_POST);
-        $this->action = (isset($_REQUEST['action'])) ? $_REQUEST['action'] : 'index';
+
+        if(isset($_REQUEST['action'])){
+            $this->action = preg_replace('|[^a-z0-9_\-]|i','',$_REQUEST['action']);
+        }else{
+            $this->action = 'index';
+        }
     }
 
     function save(){

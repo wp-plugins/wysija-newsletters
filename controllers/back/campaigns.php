@@ -249,7 +249,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 				$helperQ = WYSIJA::get('queue', 'helper');
 				$emailid = false;
 				if ($_REQUEST['emailid']) {
-					$emailid = $_REQUEST['emailid'];
+					$emailid = (int)$_REQUEST['emailid'];
 				}
 				$helperQ->process($emailid);
 			} else {
@@ -543,13 +543,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
                 $this->requireSecurity();
 		$model = WYSIJA::get( 'campaign', 'model' );
 		$query = 'INSERT INTO `[wysija]campaign` (`name`,`description`)
-			SELECT concat("' . stripslashes( __( 'Copy of ', WYSIJA ) ) . '",`name`),`description` FROM [wysija]campaign
+			SELECT concat("' . mysql_real_escape_string( __( 'Copy of ', WYSIJA ) ) . '",`name`),`description` FROM [wysija]campaign
 			WHERE campaign_id=' . (int) $_REQUEST['id'];
 		$campaignid = $model->query( $query );
 
 		/* 2 - copy the email entry */
 		$query = 'INSERT INTO `[wysija]email` (`campaign_id`,`subject`,`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,`status`,`created_at`,`modified_at`)
-			SELECT ' . $campaignid . ', concat("' . stripslashes( __( 'Copy of ', WYSIJA ) ) . '",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,' . time() . ',' . time() . ' FROM [wysija]email
+			SELECT ' . $campaignid . ', concat("' . mysql_real_escape_string( __( 'Copy of ', WYSIJA ) ) . '",`subject`),`body`,`type`,`params`,`wj_data`,`wj_styles`,`from_email`,`from_name`,`replyto_email`,`replyto_name`,`attachments`,0,' . time() . ',' . time() . ' FROM [wysija]email
 			WHERE email_id=' . (int) $_REQUEST['email_id'];
 		$emailid = $model->query( $query );
 
@@ -1241,9 +1241,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 				$this->notice(__('Newsletter has been saved as a draft.', WYSIJA));
 
             if (isset($_POST['submit-draft'])) {
-                // Email is being stored as draft
-                $STATE_DRAFT_EMAIL = 0;
-                $update_email['state'] = $STATE_DRAFT_EMAIL;
+
+                $update_email['status'] = 0;// Email is being stored as draft
 
                 if (isset($update_email['params']['schedule']['isscheduled'])) {
                     // draft emails should not be scheduled, clear any schedules
@@ -1359,8 +1358,9 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 			if (!is_string($_REQUEST['orderby']) OR preg_match('|[^a-z0-9#_.-]|i', $_REQUEST['orderby']) !== 0) {
 				$_REQUEST['orderby'] = '';
 			}
-			if (!in_array(strtoupper($_REQUEST['ordert']), array('DESC', 'ASC')))
-				$_REQUEST['ordert'] = 'DESC';
+			if (!in_array(strtoupper($_REQUEST['ordert']), array('DESC', 'ASC'))){
+                            $_REQUEST['ordert'] = 'DESC';
+                        }
 			$order_by.=$_REQUEST['orderby'] . ' ' . $_REQUEST['ordert'];
 		}else {
 			$order_by.='FIELD(B.status, 99,3,1,0,2), ';
@@ -1590,9 +1590,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 
 		$this->modelObj->noCheck = true;
 		$this->modelObj->reset();
-		if ($this->filters)
-			$this->modelObj->setConditions($this->filters);
-
+		if ($this->filters){
+                    $this->modelObj->setConditions($this->filters);
+                }
+			
 
 		// Count emails by status and type
 		$emails_by_status = $this->count_emails_by_status();
@@ -1607,8 +1608,13 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		$this->data['lists'] = $lists;
 
 		// for paging
-		$this->modelObj->countRows = $this->filters ? $this->count_emails () : $counts['all'];
-
+		$this->modelObj->countRows = $counts['all'];
+                if ($this->filters){
+                    $count_emails = $this->count_emails();
+                    if( !empty($count_emails) ){
+                        $this->modelObj->countRows = $count_emails;
+                    }
+                }
 
 		// count queue
 		$email_ids = array();
@@ -1877,6 +1883,10 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		$this->modelObj->limitON = false;
 
 		$email_object = $this->modelObj->getOne(false, array("email_id" => $_REQUEST['id']));
+                if(empty($email_object)){
+                    $this->redirect('admin.php?page=wysija_campaigns');
+                    return;
+                }
 		$this->viewObj->model = $this->modelObj;
 		$this->viewObj->namecampaign = $email_object['subject'];
 		$this->viewObj->title = sprintf(__('Stats : %1$s', WYSIJA), $email_object['subject']);
@@ -1965,7 +1975,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		else
 			$this->modelObj->countRows = $counts['all'];
 
-		$orderby = " ORDER BY ";
+                $orderby = '';
 		/**
 		 * Until now, we have
 		 * - 3 possible values of $this->tableQuery (queue, email_user_url, email_user_stat), set by $this->setviewStatsfilter()
@@ -1976,27 +1986,35 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 			switch ($this->tableQuery) {
 				case 'email_user_url':
 				case 'email_user_stat':
-					$orderby .= 'B.' . $_REQUEST['orderby'] . " " . $_REQUEST['ordert'];
+					if (!is_string($_REQUEST['orderby']) OR preg_match('|[^a-z0-9#_.-]|i', $_REQUEST['orderby']) !== 0) {
+                                                $_REQUEST['orderby'] = '';
+                                                break;
+                                        }
+                                        if (!in_array(strtoupper($_REQUEST['ordert']), array('DESC', 'ASC'))){
+                                            $_REQUEST['ordert'] = 'DESC';
+                                        }
+
+                                        $orderby = ' ORDER BY ' . $_REQUEST['orderby'] . ' ' . $_REQUEST['ordert'];
 					break;
 
 				case 'queue':
 				default:
-					$orderby .= 'A.user_id DESC';
+					$orderby .= ' ORDER BY A.user_id DESC';
 					break;
 			}
 		} else {
 			switch ($this->tableQuery) {
 				case 'email_user_url':
-					$orderby .= 'B.clicked_at DESC, B.number_clicked DESC'; // by default, sort by last clicked and biggest hit
+					$orderby = ' ORDER BY B.clicked_at DESC, B.number_clicked DESC'; // by default, sort by last clicked and biggest hit
 					break;
 
 				case 'email_user_stat':
-					$orderby .= 'B.opened_at DESC, B.status DESC'; // by default, sort by last open and its staus value
+					$orderby = ' ORDER BY B.opened_at DESC, B.status DESC'; // by default, sort by last open and its staus value
 					break;
 
 				case 'queue':
 				default:
-					$orderby .= 'A.user_id DESC';
+					$orderby = ' ORDER BY A.user_id DESC';
 					break;
 			}
 		}
@@ -2189,7 +2207,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 
                 $wpnonce = '&_wpnonce='.WYSIJA_view::secure(array('controller' => 'wysija_subscribers' , 'action' => 'exportcampaign' ), true);
 
-		$this->redirect('admin.php?page=wysija_subscribers&action=exportcampaign&camp_id=' . $_REQUEST['id'] .$wpnonce .'&file_name=' . base64_encode($tempfilename['url']));
+		$this->redirect('admin.php?page=wysija_subscribers&action=exportcampaign&camp_id=' . $_REQUEST['id'] .$wpnonce .'&file_name=' . base64_encode($tempfilename['name']));
 	}
 
 	function unsubscribelist($data) {
@@ -2623,7 +2641,8 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 			'dismiss' => __('Dismiss'),
 			'crunching' => __('Crunching&hellip;'),
 			'deleted' => __('moved to the trash.'),
-			'error_uploading' => __('&#8220;%s&#8221; has failed to upload.')
+            'error_uploading' => __('&#8220;%s&#8221; has failed to upload.'),
+            'files_successfully_uploaded' => __('%d file(s) have been successfully uploaded.')
 		);
 
 		wp_localize_script('wysija-plupload-handlers', 'pluploadL10n', $uploader_l10n);

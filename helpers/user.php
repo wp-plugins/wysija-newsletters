@@ -38,6 +38,7 @@ class WYSIJA_help_user extends WYSIJA_object {
             // if undo unsubscribe then we re-subscribe all the previously unsubscribed lists based on the unsub_date value
             if( !empty( $_REQUEST['action'] ) && $_REQUEST['action'] == 'undounsubscribe' ){
                 // get latest time when users unsubcribe from a list
+                $model_user_list->columns['MAX(`unsub_date`) as `max_unsub_date`']=array("type"=>"integer");
                 $max_unsub_date = $model_user_list->get(array('MAX(`unsub_date`) as `max_unsub_date`'), array('user_id' => $user_id));
                 $max_unsub_date = $max_unsub_date[0]['max_unsub_date'];
                 // when somebody undo - unsubscribe, let's reset the unsub_date of all of the latest lists which users belong to
@@ -94,6 +95,14 @@ class WYSIJA_help_user extends WYSIJA_object {
             }
             unset($data['user']['abs']);
         }
+        $user_keys = array('email','firstname','lastname');
+        foreach($data['user'] as $keyi => $val){
+            if(!in_array($keyi, $user_keys)){
+                unset($data['user'][$keyi]);
+            }
+        }
+
+
         return true;
     }
 
@@ -293,7 +302,7 @@ class WYSIJA_help_user extends WYSIJA_object {
         $user_id = $model_user->insert($subscriber_data);
 
 
-        if ( $user_id ) {
+        if ( (int)$user_id > 0 ) {
             // if a form id is specified, let's increment its "subscribed count"
             if (isset($data['form_id']) && (int) $data['form_id'] > 0) {
                 // check if the form exists
@@ -307,6 +316,11 @@ class WYSIJA_help_user extends WYSIJA_object {
                         'form_id' => (int) $form['form_id']
                     ));
                 }
+            }
+
+            // set user profile data
+            if( !empty( $data['user_field'] ) ){
+                WJ_FieldHandler::handle_all( $data['user_field'], $user_id );
             }
 
             // display success message
@@ -582,15 +596,21 @@ class WYSIJA_help_user extends WYSIJA_object {
             $emailConfirmationData = $mEmail->getOne(false, array('email_id' => $config->getValue('confirm_email_id')));
         }
 
+		$result_send = false;
         foreach ($users as $userObj) {
-            $resultsend = $mailer->sendOne($emailConfirmationData, $userObj, true);
+            $result_send = $mailer->sendOne($emailConfirmationData, $userObj, true);
         }
 
-        if (!$sendone)
-            $this->notice(sprintf(__('%1$d emails have been sent to unconfirmed subscribers.', WYSIJA), count($users)));
+        if (!$sendone) {
+			if (count($users) <= 0) {
+				$this->notice(__('No email sent.',WYSIJA));
+			} else {
+                                $this->notice( _n( 'One email has been sent.', '%d emails have been sent to unconfirmed subscribers.', count($users), WYSIJA ) );
+            }
+			return true;
+		}
         else
-            return $resultsend;
-        return true;
+            return $result_send;
     }
 
     /**
@@ -799,10 +819,10 @@ class WYSIJA_help_user extends WYSIJA_object {
     function confirmUsers($userids = array(), $is_batch_select = false) {
         if (empty($userids))
             return true;
+
         $model_user = WYSIJA::get('user', 'model');
         if ($is_batch_select) {
-            $count = $model_user->query('get_row', $userids['count_query']);
-            $row_count = $count['row_count'];
+            $row_count = $userids['count'];
             $list_userids = $userids['query'];
         } else {
             $list_userids = implode(',', $userids);
@@ -853,7 +873,7 @@ class WYSIJA_help_user extends WYSIJA_object {
             $body = sprintf(__('Howdy,' . "\n\n" . 'The subscriber %1$s has just subscribed to your list "%2$s".' . "\n\n" . 'Cheers,' . "\n\n" . 'The MailPoet Plugin', WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
         } else {
             $title = sprintf(__('One less subscriber to %1$s', WYSIJA), implode(',', $list_names));
-            $body = sprintf(__('Howdy,' . "\n\n" . 'The subscriber : %1$s has just unsubscribed to your list "%2$s".' . "\n\n" . 'Cheers,' . "\n\n" . 'The MailPoet Plugin', WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
+            $body = sprintf(__('Howdy,' . "\n\n" . 'The subscriber : %1$s has just unsubscribed from your list "%2$s".' . "\n\n" . 'Cheers,' . "\n\n" . 'The MailPoet Plugin', WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
         }
 
         $model_config = WYSIJA::get('config', 'model');
@@ -1118,13 +1138,17 @@ class WYSIJA_help_user extends WYSIJA_object {
 
         $list_ids = array();
         if ( isset( $_REQUEST['wysiconf'] ) ){
-            $list_ids = unserialize( base64_decode( $_REQUEST['wysiconf'] ) );
+            $list_ids = json_decode( base64_decode( $_REQUEST['wysiconf'] ), true );
         }
 
+        if(empty( $list_ids ) || !is_array( $list_ids )){
+            $this->title = __('Your confirmation link expired, please subscribe again.', WYSIJA);
+            return;
+        }
 
         // START part linked to the view
         $this->title = $model_config->getValue( 'subscribed_title' );
-        if ( !empty( $list_ids ) ) {
+        if ( !empty( $list_ids ) && is_array( $list_ids ) ) {
             $model_list = WYSIJA::get('list', 'model');
             $lists_names_res = $model_list->get(array('name'), array('list_id' => $list_ids));
             $names = array();
