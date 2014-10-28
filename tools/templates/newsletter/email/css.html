@@ -1,7 +1,6 @@
 <style type="text/css">
     /* Based on The MailChimp Reset INLINE: Yes. */
     /* Client-specific Styles */
-    #outlook a {padding:0;} /* Force Outlook to provide a "view in browser" menu link. */
     body {
         width:100% !important;
         -webkit-text-size-adjust:100%;
@@ -10,164 +9,89 @@
         padding:0;
     }
 
+    body,table,td,p,a,li,blockquote{
+        -ms-text-size-adjust:100%;
+        -webkit-text-size-adjust:100%;
+    }
+
+    .ReadMsgBody{
+        width:100%;
+    }
+
     /* Prevent Webkit and Windows Mobile platforms from changing default font sizes.*/
     .ExternalClass {width:100%;} /* Force Hotmail to display emails at full width */
     .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
 
-    /*.ExternalClass .ecxwysija_text_container { padding:1.2em 0 0 0; }
-    .ExternalClass .ecxwysija_text_container p { padding: 1em 0 0 0; }*/
-
     /* Forces Hotmail to display normal line spacing.  More on that: http://www.emailonacid.com/forum/viewthread/43/ */
-    #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important; background:{#html.background|color};}
+    #backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important; {if #html.background}background:{#html.background|color};{/if}}
     /* End reset */
 
-    /* Some sensible defaults for images
-    Bring inline: Yes. */
-    img {outline:none; text-decoration:none; -ms-interpolation-mode: bicubic; }
+    /* Some sensible defaults for images. Bring inline: Yes. */
+    img {
+        outline:none;
+        text-decoration:none;
+        -ms-interpolation-mode: bicubic;
+    }
     a img {border:none;}
     .image_fix {display:block;}
 
     /* Yahoo paragraph fix
     Bring inline: Yes. */
-    p, strong, em { font-family:"{#body.family}"; font-size: {#body.size}px; }
-
     p {
+        font-family: "{#body.family}";
+        font-size: {#body.size}px;
+        line-height: 150%;
         margin: 1em 0;
+        padding: 0;
     }
 
     /* Hotmail header color reset
     Bring inline: Yes. */
 
+    h1,h2,h3,h4,h5,h6{
+        margin:0;
+        padding:0;
+    }
     /* --- title 1 --- */
-    {#title_1} {
-        font-family:"{#h1.family}";
-        font-size:{#h1.size}px;
+    h1 {
         color:{#h1.color|color} !important;
-        margin:3px 0 10px 0 !important;
-        padding:0;
+        display:block;
+        font-family:{#h1.family};
+        font-size:{#h1.size}px;
         font-style:normal;
         font-weight:normal;
-    }
-
-    {#title_1} a:link,
-    {#title_1} a:visited,
-    {#title_1} a:hover,
-    {#title_1} a:active {
-        font-family:"{#h1.family}";
-        font-size:{#h1.size}px;
-        color:{#a.color|color} !important;
+        line-height:125%;
+        letter-spacing:normal;
         margin:0;
-        padding:0;
-        font-style:normal;
-        font-weight:normal;
-    }
-
-    {#title_1} strong, {#title_1} b {
-        font-family:"{#h1.family}";
-        font-size:{#h1.size}px;
-        color:{#h1.color|color} !important;
-        margin:0;
-        padding:0;
-        font-style:normal;
-        font-weight:bold;
-    }
-
-    {#title_1} em, {#title_1} i {
-        font-family:"{#h1.family}";
-        font-size:{#h1.size}px;
-        color:{#h1.color|color} !important;
-        margin:0;
-        padding:0;
-        font-style:italic;
-        font-weight:normal;
+        text-align:left;
     }
 
     /* --- title 2 --- */
-    {#title_2} {
-        font-family:"{#h2.family}";
-        font-size:{#h2.size}px;
+    h2 {
         color:{#h2.color|color} !important;
-        margin:3px 0 10px 0 !important;
-        padding:0;
+        display:block;
+        font-family:{#h2.family};
+        font-size:{#h2.size}px;
         font-style:normal;
         font-weight:normal;
-    }
-
-    {#title_2} a:link,
-    {#title_2} a:visited,
-    {#title_2} a:hover,
-    {#title_2} a:active {
-        font-family:"{#h2.family}";
-        font-size:{#h2.size}px;
-        color:{#a.color|color} !important;
+        line-height:125%;
+        letter-spacing:normal;
         margin:0;
-        padding:0;
-        font-style:normal;
-        font-weight:normal;
-    }
-
-    {#title_2} strong, {#title_2} b {
-        font-family:"{#h2.family}";
-        font-size:{#h2.size}px;
-        color:{#h2.color|color} !important;
-        margin:0;
-        padding:0;
-        font-style:normal;
-        font-weight:bold;
-    }
-
-    {#title_2} em, {#title_2} i {
-        font-family:"{#h2.family}";
-        font-size:{#h2.size}px;
-        color:{#h2.color|color} !important;
-        margin:0;
-        padding:0;
-        font-style:italic;
-        font-weight:normal;
+        text-align:left;
     }
 
     /* --- title 3 (and others) --- */
-    {#title_3} {
-        font-family:"{#h3.family}";
-        font-size:{#h3.size}px;
+    h3 {
         color:{#h3.color|color} !important;
-        margin:3px 0 10px 0 !important;
-        padding:0;
+        display:block;
+        font-family:{#h3.family};
+        font-size:{#h3.size}px;
         font-style:normal;
         font-weight:normal;
-    }
-
-    {#title_3} a:link,
-    {#title_3} a:visited,
-    {#title_3} a:hover,
-    {#title_3} a:active {
-        font-family:"{#h3.family}";
-        font-size:{#h3.size}px;
-        color:{#a.color|color} !important;
+        line-height:125%;
+        letter-spacing:normal;
         margin:0;
-        padding:0;
-        font-style:normal;
-        font-weight:normal;
-    }
-
-    {#title_3} strong, {#title_3} b {
-        font-family:"{#h3.family}";
-        font-size:{#h3.size}px;
-        color:{#h3.color|color} !important;
-        margin:0;
-        padding:0;
-        font-style:normal;
-        font-weight:bold;
-    }
-
-    {#title_3} em, {#title_3} i {
-        font-family:"{#h3.family}";
-        font-size:{#h3.size}px;
-        color:{#h3.color|color} !important;
-        margin:0;
-        padding:0;
-        font-style:italic;
-        font-weight:normal;
+        text-align:left;
     }
 
     /* Outlook 07, 10 Padding issue fix
@@ -180,7 +104,11 @@
 
     /* Styling your links has become much simpler with the new Yahoo.  In fact, it falls in line with the main credo of styling in email and make sure to bring your styles inline.  Your link colors will be uniform across clients when brought inline.
     Bring inline: Yes. */
-    a { color:{#a.color|color}; }
+    a {
+        color:{#a.color|color};
+        word-wrap:break-word;
+    }
+    #outlook a {padding:0;}
     .yshortcuts { color:{#a.color|color}; }
 
     {#wysija_container} {
@@ -199,7 +127,7 @@
         mso-border-left-alt: 0;
         mso-border-top-alt: 0;
         mso-border-bottom-alt: 0;
-        background:{#header.background|color};
+        {if #header.background}background:{#header.background|color};{/if}
     }
 
     {#body_container} {
@@ -207,7 +135,7 @@
         mso-border-left-alt: 0;
         mso-border-top-alt: 0;
         mso-border-bottom-alt: 0;
-        background:{#body.background|color};
+        {if #body.background}background:{#body.background|color};{/if}
     }
 
     {#footer_container} {
@@ -215,7 +143,7 @@
         mso-border-left-alt: 0;
         mso-border-top-alt: 0;
         mso-border-bottom-alt: 0;
-        background:{#footer.background|color};
+        {if #footer.background}background:{#footer.background|color};{/if}
     }
 
     {#viewbrowser_container}, {#viewbrowser_container} a {
@@ -231,6 +159,10 @@
     {#viewbrowser_container} a, {#unsubscribe_container} a {
         text-decoration:underline;
     }
+    .wysija_list_item {
+        margin:0;
+    }
+
     /* MOBILE TARGETING */
     @media only screen and (max-device-width: 480px), screen and (max-width: 480px) {
         /* Part one of controlling phone number linking for mobile. */
@@ -303,25 +235,25 @@
 <!--[if gte mso 9]>
 <style type="text/css">
     /* Outlook 2007 and 2010 */
-    {#text_container} ul,
-    {#text_container} ol {
-        padding: 0 !important;
-        margin: 0 !important;
-        list-style: square inside none !important;
-    }
-    {#text_container},
-    p,
-    h1,
-    h2 {
-        mso-line-height-rule:exactly;
-        -mso-line-height-rule:exactly;
-        line-height: 110% !important;
+    {#image_container} {
+        padding-top:0 !important;
     }
     {#image_placeholder} {
         mso-text-raise:0;
         mso-table-lspace:0;
         mso-table-rspace:0;
         margin-bottom: 0 !important;
+    }
+    {#body_container} {#image_placeholder} {
+        margin:2px 1px 0 1px !important;
+    }
+    p {
+        line-height: 110% !important;
+    }
+    h1, h2, h3 {
+        line-height: 110% !important;
+        margin:0 !important;
+        padding: 0 !important;
     }
 </style>
 <![endif]-->

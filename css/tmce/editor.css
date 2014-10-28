@@ -661,7 +661,7 @@ a .mceIcon, .mceAction {
 
 .wp_themeSkin .mceMenu a {
 	position: relative;
-	padding: 3px 0 4px 0;
+	padding: 2px 0;
 	text-decoration: none !important;
 }
 

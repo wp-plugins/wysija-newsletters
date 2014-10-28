@@ -27,20 +27,32 @@ class WYSIJA_model_user extends WYSIJA_model{
         $this->WYSIJA_model();
     }
 
-    function beforeInsert(){
-        /* set the activation key */
-        $modelUser=WYSIJA::get("user","model");
+    function refresh_columns(){
+        $WJ_Field = new WJ_Field();
+        $custom_fields = $WJ_Field->get_all();
+        if(!empty($custom_fields)){
+            foreach($custom_fields as $row){
+                $this->columns['cf_'.$row->id] = array();
+            }
+        }
+    }
 
-        $this->values['keyuser']=md5($this->values['email'].$this->values['created_at']);
-        while($modelUser->exists(array("keyuser"=>$this->values['keyuser']))){
-            $this->values['keyuser']=$this->generateKeyuser($this->values['email']);
-            $modelUser->reset();
+    function beforeInsert(){
+        // set the activation key
+        $model_user = WYSIJA::get( 'user' , 'model' );
+
+        $this->values['keyuser'] = md5( AUTH_KEY . $this->values['email'] . $this->values['created_at'] );
+        while( $model_user->exists( array( 'keyuser' => $this->values['keyuser'] ) ) ){
+            $this->values['keyuser'] = $this->generateKeyuser( $this->values['email'] );
+            $model_user->reset();
         }
 
-        if(!isset($this->values['status'])) $this->values['status']=0;
+        if( !isset( $this->values['status'] ) ){
+            $this->values['status'] = 0;
+        }
 
         // automatically add value to the field "domain". This is useful for statistics
-        $this->values['domain'] = substr($this->values['email'],strpos($this->values['email'],'@')+1);
+        $this->values['domain'] = substr( $this->values['email'] , strpos( $this->values['email'] , '@' ) +1 );
         return true;
     }
 
@@ -50,9 +62,9 @@ class WYSIJA_model_user extends WYSIJA_model{
      * @return int or null
      */
     function getSubscriptionStatus($user_id){
-        $this->getFormat=OBJECT;
-        $result=$this->getOne(array('status'),array('user_id'=>$user_id));
-		return ($result->status !== NULL) ? (int)$result->status : $result->status;
+        $this->getFormat = OBJECT;
+        $result = $this->getOne( array( 'status' ) , array( 'user_id' => $user_id ) );
+        return ($result->status !== NULL) ? (int)$result->status : $result->status;
     }
 
     /**
@@ -196,7 +208,19 @@ class WYSIJA_model_user extends WYSIJA_model{
      * @return type
      */
     function getConfirmLink($user_obj = false, $action = 'subscribe', $text = false, $url_only = false, $target = '_blank' , $page_id_known = false){
-        if(!$text) $text = __('Click here to subscribe',WYSIJA);
+        if(!$text) {
+			switch ($action) {
+				case 'unsubscribe':
+					$text = __('Click here to unsubscribe',WYSIJA);
+					break;
+
+				case 'subscribe':
+				default:
+					$text = __('Click here to subscribe',WYSIJA);
+					break;
+
+			}
+		}
         $users_preview = false;
         //if($action=='subscriptions')dbg($userObj);
         if(!$user_obj){
@@ -282,7 +306,7 @@ class WYSIJA_model_user extends WYSIJA_model{
      * @return string md5
      */
     function generateKeyuser($email){
-        return md5($email.time());
+        return md5( AUTH_KEY . $email . time() );
     }
 
     /**
@@ -343,6 +367,11 @@ class WYSIJA_model_user extends WYSIJA_model{
         if(!empty($_REQUEST['wysija']['user']['timestamp'])){
             //$filters['created_at']= $_REQUEST['wysija']['user']['timestamp'];
         }
+
+		if (!empty($_REQUEST['action']) && $_REQUEST['action'] == 'actionvar_resendconfirmationemail') {
+			$filters['status'] = 'unconfirmed';
+		}
+
 
         return $filters;
     }
@@ -560,12 +589,19 @@ class WYSIJA_model_user extends WYSIJA_model{
         if(!$is_count){
             if($return_query) return $query;
 
-            $order_by = ' ORDER BY ';
-            if(!empty($_REQUEST['orderby'])){
-                $order_by .= '`'.$_REQUEST['orderby'].'` '.$_REQUEST['ordert'];
+            if( empty($_REQUEST['orderby']) || !is_string($_REQUEST['orderby']) || preg_match('|[^a-z0-9#_.-]|i',$_REQUEST['orderby']) !== 0 ){
+                    $order_by = ' ORDER BY A.user_id DESC';
             }else{
-                $order_by .= $this->pk.' DESC';
+
+                if(!in_array(strtoupper($_REQUEST['ordert']),array('DESC','ASC'))){
+                    $_REQUEST['ordert'] = 'DESC';
+                }
+
+                $order_by = ' ORDER BY `'.$_REQUEST['orderby'].'` '.$_REQUEST['ordert'];
             }
+
+
+
 
             $query = $query.' '.$order_by.$this->setLimit();
 	    return $this->getResults($query);
@@ -665,7 +701,7 @@ class WYSIJA_model_user extends WYSIJA_model{
      */
     protected function get_inactive_subscribers_table() {
 	if (empty(self::$_inactive_subscribers_table))
-	    self::$_inactive_subscribers_table = '[wysija]inactive_subscriber'.time();
+	    self::$_inactive_subscribers_table = '[wysija]is'.time();
 	return self::$_inactive_subscribers_table;
     }
 

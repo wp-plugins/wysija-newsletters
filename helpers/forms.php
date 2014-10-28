@@ -66,7 +66,7 @@ class WYSIJA_help_forms{
 					unset($data['value']);
 			}
 
-			return '<textarea '.$this->setAttrib($data, $defaults).$extra.'>'.$val.'</textarea>';
+			return '<textarea '.$this->setAttrib($data, $defaults).$extra.'>'.esc_textarea($val).'</textarea>';
 	}
 
 

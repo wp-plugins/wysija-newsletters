@@ -319,6 +319,25 @@ function add_ons_list(){
 			'requires_name' 	=> 'Ninja Forms',
 			'premium_offer' 	=> '',
 		),
+
+		array(
+			'name' 				=> 'Multilingual Press',
+			'search' 			=> 'Multilingual Press',
+			'thumbnail' 		=> 'multilingual-press.jpg',
+			'description' 		=> __( 'We recommend this plugin as the good alternative to WPML for multilingual sites. It\'s lean, straightforward, and leaves your site\'s core largely untouched. Each language has its own site in your WordPress Multisite install. Works great with MailPoet.', WYSIJA ),
+			'review' 			=> '',
+			'plugin_url' 		=> 'multilingual-press/multilingual-press.php',
+			'author_url' 		=> 'http://clicky.me/multilingual-press',
+			'purchase_url' 		=> 'http://clicky.me/multilingual-press',
+			'version' 			=> '2.0.3',
+			'official' 			=> true,
+			'on_wordpress.org' 	=> true,
+			'free' 				=> true,
+			'service' 			=> false,
+			'requires' 			=> 'multilingual-press/multilingual-press.php',
+			'requires_name' 	=> 'Multilingual Press',
+			'premium_offer' 	=> '',
+		),
 	);
 
 	return $available_add_ons;

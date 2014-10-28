@@ -439,7 +439,10 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 										echo __('Scheduled', WYSIJA);
 									} else {
 										if ($row['type'] == 2)
-											echo __('Draft', WYSIJA);
+											if ($row['status'] == -1)
+												echo __('Paused', WYSIJA);
+											else
+												echo __('Draft', WYSIJA);
 										else {
 											if ((int) $row['status'] == -1)
 												$resulttext = sprintf($statuses[(int) $row['status']], $data['sent'][$row["email_id"]]['to'], $data['sent'][$row["email_id"]]['total']);
@@ -1449,7 +1452,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 
 					function saveIQS() {
 						wysijaAJAX.task = 'save_IQS';
-                                                wysijaAJAX._wpnonce = wysijanonces.campaigns.save_IQS;
+						wysijaAJAX._wpnonce = wysijanonces.campaigns.save_IQS;
 						wysijaAJAX.wysijaIMG = Object.toJSON(wysijaIMG);
 						WYSIJA_AJAX_POST();
 					}
@@ -2780,14 +2783,14 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 
 					 if(isset($selectedImages["wp-".$attachment->ID])) $classname=" selected ";
 
-					$output.='<div class="wysija-thumb image-'.$attachment->ID.$classname.'">';
-					$output .= '<img title="'.$attachment->post_title.'" alt="'.$attachment->post_title.'" src="'.$thumb_url.'" class="thumbnail" />';
-					if(!$wpimage)    $output.='<span class="delete-wrap"><span class="delete del-attachment">'.$attachment->ID.'</span></span>';
-					$output.='<span class="identifier">'.$attachment->ID.'</span>
+					$output.='<div class="wysija-thumb image-'.  esc_attr($attachment->ID.$classname).'">';
+					$output .= '<img title="'.  esc_attr($attachment->post_title).'" alt="'.  esc_attr($attachment->post_title).'" src="'.esc_url($thumb_url).'" class="thumbnail" />';
+					if(!$wpimage)    $output.='<span class="delete-wrap"><span class="delete del-attachment">'.esc_html($attachment->ID).'</span></span>';
+					$output.='<span class="identifier">'.  esc_html($attachment->ID).'</span>
 						<span class="width">'.$image_template['width'].'</span>
 						<span class="height">'.$image_template['height'].'</span>
-						<span class="url">'.$full_url.'</span>
-						<span class="thumb_url">'.$thumb_url.'</span></div>';
+						<span class="url">'.esc_url($full_url).'</span>
+						<span class="thumb_url">'.esc_url($thumb_url).'</span></div>';
 				}
 				if (!$output) {
 					if($wpimage === false) {
@@ -2857,80 +2860,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 												}
 												echo '</ul>';
 												break;
-											case 'review-follow-kitten':
-												$class_review_kitten = ' small';
-												$count_title = count(str_split($section['review']['title']));
-												$count_content = count(str_split($section['review']['content']));
-												if ($count_title > 40 || $count_content > 340)
-													$class_review_kitten = ' medium';
-												if ($count_title > 50 || $count_content > 400)
-													$class_review_kitten = ' large';
 
-												echo '<div id="review-follow">';
-
-												echo '<div class="review-left' . $class_review_kitten . '">';
-												echo '<div class="description"><h4>' . $section['review']['title'] . '</h4>';
-												echo '<p>' . $section['review']['content'] . '</p></div>';
-												echo '<a title="On wordpress.org" target="_blank" class="link-cat-review" href="http://goo.gl/P0r5Fc"> </a></div>';
-
-												echo '<div class="review-right">';
-												echo '</div>';
-
-												echo '<div class="subscribe-middle' . $class_review_kitten . '">';
-												echo '<div class="description" ><h4>' . $section['follow']['title'] . '</h4>';
-												echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
-												echo '</div>';
-
-												echo '<div class="follow-left' . $class_review_kitten . '">';
-												echo '<div class="description" ><h4>' . $section['follow']['title'] . '</h4>';
-												echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
-												echo '</div>';
-
-												$class_name = 'follow-right';
-												if(version_compare(get_bloginfo('version'), '3.8')>= 0){
-													$class_name .= '38';
-												}
-												echo '<div class="'.$class_name.'">';
-												echo '</div>';
-												echo '</div>';
-												break;
-										case 'review-follow':
-												$class_review_kitten = ' small';
-												$count_title = count(str_split($section['review']['title']));
-												$count_content = count(str_split($section['review']['content']));
-												if ($count_title > 40 || $count_content > 340)
-													$class_review_kitten = ' medium';
-												if ($count_title > 50 || $count_content > 400)
-													$class_review_kitten = ' large';
-
-												echo '<div id="review-follow">';
-
-												echo '<div class="review-left' . $class_review_kitten . '">';
-												echo '<div class="description"><h4>' . $section['review']['title'] . '</h4>';
-												echo '<p>' . $section['review']['content'] . '</p></div>';
-												echo '<a title="On wordpress.org" target="_blank" class="link-cat-review" href="http://goo.gl/P0r5Fc"> </a></div>';
-
-												echo '<div class="review-right">';
-												echo '</div>';
-
-												echo '<div class="subscribe-middle' . $class_review_kitten . '">';
-												echo '<div class="description" ><h4>' . $section['follow']['title'] . '</h4>';
-												echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
-												echo '</div>';
-
-												echo '<div class="follow-left' . $class_review_kitten . '">';
-												echo '<div class="description" ><h4>' . $section['follow']['title'] . '</h4>';
-												echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
-												echo '</div>';
-
-												$class_name = 'follow-right';
-												if(version_compare(get_bloginfo('version'), '3.8')>= 0){
-													$class_name .= '38';
-												}
-												echo '<div class="'.$class_name.'">';
-												echo '</div>';
-												echo '</div>';
-												break;
 											default :
 												foreach ($section['paragraphs'] as $line) {
 													?>
@@ -3034,12 +2964,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 					);
 				}
 
-				$data['sections'][] = array(
-					'format' => 'title-content',
-					'title' => __( 'Subscribe to our newsletters.', WYSIJA ),
-					'content' => '<iframe width="100%" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 104px; left: 0pt; visibility: visible;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="Subscription Wysija"></iframe>'
-				);
-
 				if (isset($helper_readme->changelog[WYSIJA::get_version()])) {
 					$data['sections'][] = array(
 						'title' => __('Change log', WYSIJA),
@@ -3103,38 +3027,6 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 											}
 											echo '</ul>';
 											break;
-										case 'review-follow-kitten':
-											$class_review_kitten = ' small';
-											$count_title = count(str_split($section['review']['title']));
-											$count_content = count(str_split($section['review']['content']));
-											if ($count_title > 40 || $count_content > 340)
-												$class_review_kitten = ' medium';
-											if ($count_title > 50 || $count_content > 400)
-												$class_review_kitten = ' large';
-
-											echo '<div id="review-follow">';
-
-											echo '<div class="review-left' . $class_review_kitten . '">';
-											echo '<div class="description"><h4>' . $section['review']['title'] . '</h4>';
-											echo '<p>' . $section['review']['content'] . '</p></div>';
-											echo '<a title="On wordpress.org" target="_blank" class="link-cat-review" href="http://goo.gl/P0r5Fc"> </a></div>';
-
-											echo '<div class="review-right">';
-											echo '</div>';
-
-											echo '<div class="follow-left' . $class_review_kitten . '">';
-											echo '<div class="description" ><h4>' . $section['follow']['title'] . '</h4>';
-											echo '<div class="socials">' . $section['follow']['content'] . '</div></div>';
-											echo '</div>';
-
-											$class_name = 'follow-right';
-											if(version_compare(get_bloginfo('version'), '3.8')>= 0){
-												$class_name .= '38';
-											}
-											echo '<div class="'.$class_name.'">';
-											echo '</div>';
-											echo '</div>';
-											break;
 									case 'review-follow':
 											$class_review_kitten = ' small';
 											$count_title = count(str_split($section['review']['title']));
@@ -3167,6 +3059,27 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 											echo '<div class="'.$class_name.'">';
 											echo '</div>';
 											echo '</div>';
+
+
+                                                                                        echo '<div class="mpoet-update-subscribe" ><h4>3. '.__( 'Subscribe to our newsletters', WYSIJA ).'</h4>'.
+                                                                                                '<div class="mpoet-update-subscribe-left"><p>'.__('We send a monthly newsletter with the following:',WYSIJA).'</p>' .
+                                                                                                    '<ul>' .
+                                                                                                            '<li>'.__('Important plugin updates',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('Coupons',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('Tips for you, or your customers',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('What we’re working on',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('News from us, the team',WYSIJA).'</li>' .
+                                                                                                    '</ul>
+                                                                                                     <p>View <a target="_blank" href="http://www.mailpoet.com/?wysija-page=1&controller=email&action=view&email_id=64&wysijap=subscriptions-2">an example</a> of a newsletter we sent previously.</p>
+                                                                                                        </div>' .
+                                                                                            '<div class="mpoet-update-subscribe-right">' .
+
+                                                                                            '<iframe width="380px" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 125px; left: 0pt; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="Subscription Wysija"></iframe>
+                                                                                                </div>
+                                                                                                <div style="clear:both;"></div>
+
+                                                                                                </div>';
+
 											break;
 										default :
 											foreach ($section['paragraphs'] as $line) {

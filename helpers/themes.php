@@ -297,7 +297,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
         }
 
          if(!$theme_key){
-            $this->error('There was an error while unzipping the file :'.$tempzipfile.' to the folder: '.$dirthemetemp);
+            $this->error('There was an error while unzipping the file :'.  esc_html($tempzipfile).' to the folder: '.esc_html($dirthemetemp));
             $helperF->rrmdir($dirthemetemp);
             return false;
         }
@@ -322,8 +322,8 @@ class WYSIJA_help_themes extends WYSIJA_object{
                 if($manual){
                     if(!file_exists($dirthemetemp.DS.$testfile)){
                         //this is not a theme file let's remove it
-                        if($keyindex==0)    $this->error('Missing directory :'.$testfile);
-                        else    $this->error('Missing file :'.$dirthemetemp.DS.$testfile);
+                        if($keyindex==0)    $this->error('Missing directory :'.  esc_html($testfile));
+                        else    $this->error('Missing file :'.$dirthemetemp.DS.esc_html($testfile));
 
                         $result=false;
 
@@ -337,7 +337,7 @@ class WYSIJA_help_themes extends WYSIJA_object{
              //once it's all good we move the theme to the right folder
             $helperF->rcopy($dirthemetemp.DS.$listoffilestocheck[0],$dirtheme.DS.$listoffilestocheck[0]);
 
-            $this->notice(sprintf(__('The theme %1$s has been installed on your site.',WYSIJA),'<strong>'.$theme_key.'</strong>'));
+            $this->notice(sprintf(__('The theme %1$s has been installed on your site.',WYSIJA),'<strong>'.  esc_html($theme_key).'</strong>'));
         }else{
             $this->error(__("We could not install your theme. It appears it's not in the valid format.",WYSIJA),1);
         }

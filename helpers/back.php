@@ -569,7 +569,6 @@ class WYSIJA_help_back extends WYSIJA_help{
        }
 
        $plugin_array['wysija_register'] = WYSIJA_URL.'mce/wysija_register/editor_plugin'.$suffix.'.js';
-       //$plugin_array['wysija_subscribers'] = WYSIJA_URL.'mce/wysija_subscribers/editor_plugin.js';
 
        return $plugin_array;
     }
@@ -577,10 +576,7 @@ class WYSIJA_help_back extends WYSIJA_help{
     function addRichButton1($buttons) {
        $newButtons=array();
        foreach($buttons as $value) $newButtons[]=$value;
-       //array_push($newButtons, "|", "styleselect");
        array_push($newButtons, '|', 'wysija_register');
-       //array_push($newButtons, "|", "wysija_links");
-       //array_push($newButtons, '|', 'wysija_subscribers');
        return $newButtons;
     }
 
