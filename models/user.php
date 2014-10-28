@@ -27,6 +27,16 @@ class WYSIJA_model_user extends WYSIJA_model{
         $this->WYSIJA_model();
     }
 
+    function refresh_columns(){
+        $WJ_Field = new WJ_Field();
+        $custom_fields = $WJ_Field->get_all();
+        if(!empty($custom_fields)){
+            foreach($custom_fields as $row){
+                $this->columns['cf_'.$row->id] = array();
+            }
+        }
+    }
+
     function beforeInsert(){
         // set the activation key
         $model_user = WYSIJA::get( 'user' , 'model' );
@@ -580,7 +590,7 @@ class WYSIJA_model_user extends WYSIJA_model{
             if($return_query) return $query;
 
             if( empty($_REQUEST['orderby']) || !is_string($_REQUEST['orderby']) || preg_match('|[^a-z0-9#_.-]|i',$_REQUEST['orderby']) !== 0 ){
-                    $order_by = '';
+                    $order_by = ' ORDER BY A.user_id DESC';
             }else{
 
                 if(!in_array(strtoupper($_REQUEST['ordert']),array('DESC','ASC'))){

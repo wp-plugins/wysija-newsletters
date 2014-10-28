@@ -1507,7 +1507,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
 			foreach($tags as $tag => $styles) {
 				$styles = $this->splitSpacing($styles);
-				$inlineStyles = $helper_render_engine->renderCSS(array_merge($styles, array('tag' => $tag)));
+				$inlineStyles = $helper_render_engine->renderCSS($styles);
 				$tags['#< *'.$tag.'((?:(?!style).)*)>#Ui'] = '<'.$tag.' style="'.$inlineStyles.'"$1>';
 				unset($tags[$tag]);
 			}

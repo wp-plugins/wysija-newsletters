@@ -84,7 +84,6 @@ class WYSIJA_model_user_list extends WYSIJA_model{
 					AND ul.`user_id` IN ('.implode(', ', $user_ids).')
 				WHERE
 					l.`is_enabled` = 1
-					AND l.`namekey` != "users"
 				GROUP BY
 					`user_id`';
 			$result = $this->get_results($query);

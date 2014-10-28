@@ -155,6 +155,7 @@ class WJ_Export extends WYSIJA_object {
 		$this->_user_ids = null; // free memory
 
 		$model_user = WYSIJA::get( 'user', 'model' );
+                $model_user->refresh_columns();
 		foreach ( $user_ids_chunks as $user_id_chunk ) {
 			// get the full data for that specific chunk of ids
 			$data = $model_user->get( $this->_fields, array( 'user_id' => $user_id_chunk ) );

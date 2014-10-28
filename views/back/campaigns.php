@@ -3073,6 +3073,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                                                                                                      <p>View <a target="_blank" href="http://www.mailpoet.com/?wysija-page=1&controller=email&action=view&email_id=64&wysijap=subscriptions-2">an example</a> of a newsletter we sent previously.</p>
                                                                                                         </div>' .
                                                                                             '<div class="mpoet-update-subscribe-right">' .
+
                                                                                             '<iframe width="380px" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 125px; left: 0pt; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="Subscription Wysija"></iframe>
                                                                                                 </div>
                                                                                                 <div style="clear:both;"></div>

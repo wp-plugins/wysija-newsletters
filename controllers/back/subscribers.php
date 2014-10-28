@@ -524,8 +524,8 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 				}
 			}
         } else {
-			$user_ids = $_POST['wysija']['user']['user_id'];
-		}
+            $user_ids = array_filter($_POST['wysija']['user']['user_id'], 'ctype_digit');
+        }
 
 		$sending_statuses = array();// array(user_id => 1/0)
 		if (!empty($user_ids)) {
@@ -542,7 +542,7 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
 		if ($success_sending_number <= 0) {
 			$this->notice(__('No email sent.',WYSIJA));
 		} else {
-                        $this->notice( _n( 'One email has been sent.', '%d emails have been sent to unconfirmed subscribers.', $success_sending_number, WYSIJA ) );
+                        $this->notice( sprintf(_n( 'One email has been sent.', '%d emails have been sent to unconfirmed subscribers.', (int)$success_sending_number, WYSIJA ), $success_sending_number ) );
         }
 
         $this->redirect_after_bulk_action();

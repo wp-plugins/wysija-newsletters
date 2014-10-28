@@ -5,7 +5,6 @@ class WYSIJA_view_front extends WYSIJA_view{
 	function WYSIJA_view_front(){
 
 	}
-
         /**
          * deprecated, but kept for conflict with plugin Magic action box
          * until it's fixed.

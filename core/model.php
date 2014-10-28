@@ -739,13 +739,13 @@ class WYSIJA_model extends WYSIJA_object{
 	function validateFields(){
 		$error=false;
 		foreach($this->values as $key =>$val){
-			if(isset($this->columns[$key]['req']) && !$val && $this->columns[$key]['type']!='boolean'){
+			if(isset($this->columns[$key]['req']) && !$val && !in_array( $this->columns[$key]['type'], array( 'boolean', 'integer' )) ){
 				$this->error(sprintf(__('Field "%1$s" is required in table "%2$s".',WYSIJA), $key,$this->table_name),true);
 				$error=true;
 			}
 			/* let's correct the type of the values based on the one defined in the model*/
 			switch($this->columns[$key]['type']){
-				case "email":
+				case 'email':
 					$userHelper = WYSIJA::get('user','helper');
 					if(!$userHelper->validEmail($val)){
 						$this->error(sprintf(__('Field "%1$s" needs to be a valid Email.',WYSIJA), $key),true);

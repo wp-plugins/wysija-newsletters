@@ -105,8 +105,11 @@ class WYSIJA_help_render_engine extends WYSIJA_object {
         if (isset($vars['text-decoration'])) $result[] = 'text-decoration: ' . $vars['text-decoration'] . ';';
         if (isset($vars['outline'])) $result[] = 'outline: ' . $vars['outline'] . ';';
         if (isset($vars['height'])) $result[] = 'height: ' . $vars['height'] . ';';
-        if (!isset($vars['border'])) $result[] = 'border: 0;';
-        if (isset($vars['border'])) $result[] = 'border: ' . $vars['border']['size'] . ' ' . $vars['border']['style'] . ' ' . $vars['border']['color'] . ';';
+        if (isset($vars['border']) && is_array($vars['border'])) {
+            $result[] = 'border: ' . $vars['border']['size'] . ' ' . $vars['border']['style'] . ' ' . $vars['border']['color'] . ';';
+        } else {
+            $result[] = 'border: 0;';
+        }
         if (isset($vars['border-collapse'])) $result[] = 'border-collapse: ' . $vars['border-collapse'] . ';';
         if (isset($vars['mso-table-space'])) $result[] = 'mso-table-lspace: ' . $vars['mso-table-space'] . '; mso-table-rspace: ' . $vars['mso-table-space'] . ';';
         if (isset($vars['text-align'])) $result[] = 'text-align: ' . $vars['text-align'] . ';';
