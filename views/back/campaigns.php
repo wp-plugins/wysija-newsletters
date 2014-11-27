@@ -2891,7 +2891,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 				$data = array();
 				$data['abouttext'] = __('You updated! It\'s like having the next gadget, but better.', WYSIJA);
 				// this is a flag to have a pretty clean update page where teh only call to action is our survey
-				$show_survey = false;
+				$show_survey = true;
 
 				$is_multisite = is_multisite();
 				$is_network_admin = WYSIJA::current_user_can('manage_network');
@@ -2905,49 +2905,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 					$model_config->save(array('wysija_whats_new' => WYSIJA::get_version()));
 				}
 
-				// we figure that a major release is a 2.6 or 2.7 etc.. just one dot
-				$major_release = true;
-				$wysija_version = WYSIJA::get_version();
-				if (count(explode('.', $wysija_version)) > 2){
-					$major_release = false;
-				}
-
-
-
-
-				if ($major_release) {
-					$data['sections'][] = array(
-						'title' => __('Added', WYSIJA),
-						'cols' => array(
-							array(
-								'key' => 'subscribers_profile',
-								'title' => __('More subscriber fields', WYSIJA),
-								'desc' => __('In our form editor, you can now add new fields such as gender, city, date of birth, etc.', WYSIJA).' [link]'.__('Test this feature in the form editor.',WYSIJA).'[/link]',
-								'link' => 'admin.php?page=wysija_config#tab-forms',
-							),
-							array(
-								'key' => 'more_visual_editor',
-								'title' => __('More options in editor', WYSIJA),
-								'desc' => __('In our Visual Editor, you can now include the author name for each post.', WYSIJA) .' '.__('You can also set the default dimensions of the images of posts.', WYSIJA).' '.__('Finally, you can drop more than 1 post at once.', WYSIJA).' [link]'.__('Go and edit a newsletter to test it.',WYSIJA).'[/link]',
-								'link' => 'admin.php?page=wysija_campaigns',
-							),
-							array(
-								'key' => 'more_stats',
-								'title' => __('More stats', WYSIJA),
-								'desc' => __('Premium users now have a dedicated Statistics page to monitor all of their newsletters and their subscribers\' activity, an essential tool to know your subscribers better.', WYSIJA).' [link]'.__('Discover more Premium features.',WYSIJA).'[/link]',
-								'class' => 'new',
-								'link' => 'admin.php?page=wysija_premium',
-							),
-						),
-						'format' => 'three-col',
-					);
-				}
+                                $data = $this->_inject_alert( $data );
 
 				// inject a poll in the what's new page
-				$data = $this->_inject_poll( $data );
+				if($show_survey === false){
+                                    $data = $this->_inject_poll( $data );
+                                }
 
 				$msg = $model_config->getValue('ignore_msgs');
-				if (!isset($msg['ctaupdate']) && !$show_survey) {
+				if ( !isset($msg['ctaupdate']) && $show_survey === false ) {
 					$data['sections'][] = array(
 						'title' => __('Keep this plugin essentially free', WYSIJA),
 						'review' => array(
@@ -2963,6 +2929,15 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 						'format' => 'review-follow',
 					);
 				}
+
+                                if( $show_survey ){
+                                    $data['sections'][] = array(
+						'title' => 'Answer our survey and make your plugin better',
+
+						'content' => '<iframe frameborder="0" width="100%" height="600" scrolling="auto" allowtransparency="true" src="//mailpoet.polldaddy.com/s/mailpoet-survey-2014?iframe=1"><a href="//mailpoet.polldaddy.com/s/mailpoet-survey-2014">View Survey</a></iframe><hr/>',
+						'format' => 'title-content',
+					);
+                                }
 
 				if (isset($helper_readme->changelog[WYSIJA::get_version()])) {
 					$data['sections'][] = array(
@@ -3093,9 +3068,13 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 							</div>
 				<?php
 		}
+                $link_class = 'button-primary';
+                if($show_survey){
+                    $link_class = 'button-secondary';
+                }
 		?>
 
-					<a class="button-primary" href="admin.php?page=wysija_campaigns"><?php _e('Thanks! Now take me to MailPoet.', WYSIJA); ?></a>
+					<a class="<?php echo $link_class ?>" href="admin.php?page=wysija_campaigns"><?php _e('Thanks! Now take me to MailPoet.', WYSIJA); ?></a>
 
 				</div>
 
@@ -3108,7 +3087,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 	 * @param array $data
 	 * @return array
 	 */
-	function _inject_poll( $data ){
+	private function _inject_poll( $data ){
 		$polls_available = array( '7970424' ); // all polls' ids from polldaddy
 		$display_poll = 0; // poll id to display
 
@@ -3150,7 +3129,32 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 		return $data;
 	}
 
-	function _get_social_buttons($inline=true){
+        private function _inject_alert( $data ){
+            if ( WYSIJA::current_user_can( 'install_plugins' ) && version_compare( PHP_VERSION , '5.3' , '<' )) {
+
+                $data['abouttext'] .= '</div><div class="mp_php_alert">
+                    <h3>'.__('Hey! Your site is running an old software!', WYSIJA).'</h3>
+                    <ul>
+                        <li> '.__('MailPoet is modernizing itself in the coming months.',WYSIJA).'</li>
+                        <li>'.__("In order to enjoy our latest enhancements, you'll need to ask your hosting company to update your site.",WYSIJA).'</li>
+
+                        <li>'.' <h4>'.__("What are the benefits of updating my site now?",WYSIJA).'</h4>'.'</li>
+                        <li>
+                            <ol>
+                                <li>'.__("Your website will be more secure, running an updated software.",WYSIJA).'</li>
+                                <li>'.__("Your MailPoet will be more performant, scalable and reliable.",WYSIJA).'</li>
+                                <li>'.__("You will be one-step closer to the next generation of WordPress coming in 2015 which will require more recent software.",WYSIJA).'</li>
+                            </ol>
+                        </li>
+                        <li><h4>'.__("Ready to Update your site?",WYSIJA).'</h4></li>
+                        <li><a href="http://support.mailpoet.com/knowledgebase/how-to-prepare-my-site-for-mailpoet-3-0" target="_blank">'.__("Yes, please guide me!",WYSIJA).'</a> - <a href="http://support.mailpoet.com/?utm_source=wpadmin&utm_medium=plugin&utm_campaign=contact_php_update" class="mp_negative" target="_blank">'.__("No, I have a few concerns...",WYSIJA).'</a></li>
+                    </ul>';
+
+            }
+            return $data;
+        }
+
+	private function _get_social_buttons($inline=true){
 
 		 if($inline){
 			 $class=' class="socials removeme"';

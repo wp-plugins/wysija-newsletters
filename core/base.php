@@ -19,7 +19,7 @@ class WYSIJA_object{
 	 * Static variable holding core MailPoet's version
 	 * @var array
 	 */
-	static $version = '2.6.13';
+	static $version = '2.6.14';
 
 	function WYSIJA_object(){
 

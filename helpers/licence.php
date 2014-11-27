@@ -14,13 +14,13 @@ class WYSIJA_help_licence extends WYSIJA_help{
      * @param string $source
      * @return string
      */
-    function get_url_checkout($source = 'not_specified'){
+    function get_url_checkout($source = 'not_specified', $campaign = 'wpadmin'){
         $helper_toolbox = WYSIJA::get('toolbox' , 'helper');
         $currency = 'USD';
         if($helper_toolbox->is_european()){
             $currency = 'EUR';
         }
-        return 'http://www.mailpoet.com/checkout/?wysijadomain='.$this->getDomainInfo(true).'&nc=1&utm_source=wpadmin&utm_campaign='.$source.'&currency='.$currency;
+        return 'http://www.mailpoet.com/checkout/?wysijadomain='.$this->getDomainInfo(true).'&nc=1&utm_medium=plugin&utm_campaign='.$campaign.'&utm_source='.$source.'&currency='.$currency;
     }
 
     /**
@@ -94,7 +94,8 @@ class WYSIJA_help_licence extends WYSIJA_help{
                     // set premium key
                     $config_data = array(
                         'premium_key' => base64_encode(get_option('home').time()),
-                        'premium_val' => time()
+                        'premium_val' => time(),
+                        'premium_expire_at' => (int) $decoded['expire_at']
                     );
 
                     // success message
@@ -117,7 +118,11 @@ class WYSIJA_help_licence extends WYSIJA_help{
                                 $error_msg=__('There\'s no license for "%1$s". If you\'re Premium, add this domain in your [link]account manager[/link].',WYSIJA);
                                 break;
                             case 3: //Licence has expired
-                                $error_msg=__('Your Premium licence has expired.',WYSIJA);
+
+                                $renew_url = 'http://www.mailpoet.com/checkout/?utm_medium=plugin&utm_campaign=renewal_deal&utm_source=renewal_deal_';
+                                $link_renew = '<a href="'.$renew_url.'has_expired'.'" target="_blank" >'.__('Renew now.', WYSIJA).'</a>';
+                                $error_msg=__('Your Premium licence has expired.',WYSIJA). ' ' . $link_renew;
+
                                 break;
                             case 4: //You need to manually add this domain to your [link]account manager[/link]
                                 $error_msg=__('You can add this domain to your [link]account manager[/link].',WYSIJA);
@@ -137,8 +142,6 @@ class WYSIJA_help_licence extends WYSIJA_help{
                     // reset premium key data
                     $config_data = array('premium_key' => '', 'premium_val' => '');
 
-                    // error message
-                    //$this->error(str_replace(array('[link]','[/link]'),array('<a href="http://www.mailpoet.com/?wysijap=checkout&wysijashop-page=1&controller=orders&action=checkout&wysijadomain='.$domainData.'" target="_blank">','</a>'), __('Premium licence does not exist for your site. Purchase from our website [link]here[/link].',WYSIJA)), 1);
                      WYSIJA::update_option('wysicheck', false);
                 }
 

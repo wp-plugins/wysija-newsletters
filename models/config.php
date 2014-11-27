@@ -690,15 +690,19 @@ class WYSIJA_model_config extends WYSIJA_object{
 	function view_in_browser_link( $editor = false ){
 		$data = array();
 
-		if ( isset( $this->values['viewinbrowser_linkname'] ) ){
-			// Grab the value for the view in browser link
-			$link = $this->values['viewinbrowser_linkname'];
-		}
+		if(!$this->getValue('viewinbrowser')){
+                    return $data;
+                }
 
-		// If we don't have the value from DB load a default
-		if ( ! isset( $link ) ||  empty( $link ) || ! $link ){
-			$link = esc_attr__( 'Display problems? [link]View this newsletter in your browser.[/link]', WYSIJA );
-		}
+                if ( isset( $this->values['viewinbrowser_linkname'] ) ){
+                        // Grab the value for the view in browser link
+                        $link = $this->values['viewinbrowser_linkname'];
+                }
+
+                // If we don't have the value from DB load a default
+                if ( ! isset( $link ) ||  empty( $link ) || ! $link ){
+                        $link = esc_attr__( 'Display problems? [link]View this newsletter in your browser.[/link]', WYSIJA );
+                }
 
 		// if we spot a link tag in the text we decompose the text in different parts pre rendering
 		if ( strpos( $link, '[link]' ) !== false ){
@@ -708,7 +712,11 @@ class WYSIJA_model_config extends WYSIJA_object{
 			$data['posttext'] = $linkpost[1];
 			$data['label'] = $linkpost[0];
 			$data['link'] = '[view_in_browser_link]';
-		}
+		}else{
+                    $data['pretext'] = $data['posttext'] = '';
+                    $data['label'] = $link;
+                    $data['link'] = '[view_in_browser_link]';
+                }
 
 		if ( $editor ){
 			$params_url = array(

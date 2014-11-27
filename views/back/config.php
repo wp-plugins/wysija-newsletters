@@ -199,20 +199,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 		return $field;
 	}
 
-	function fieldFormHTML_betamode($key, $value, $model) {
-		// second part concerning the checkbox
-		$formsHelp = WYSIJA::get('forms', 'helper');
-		$checked   = false;
-		if ($this->model->getValue($key))
-			$checked   = true;
-		$field	 = '<p>';
-		$field.=$formsHelp->radios(array( 'id'	=> $key, 'name'  => 'wysija['.$model.']['.$key.']', 'class' => 'activateInput' ), array( true   => __('Yes', WYSIJA), false  => __('No', WYSIJA) ), $checked);
-		$value = $this->model->getValue($key.'_linkname');
-
-
-		return $field;
-	}
-
 	function fieldFormHTML_cron($key, $value, $model) {
 		//second part concerning the checkbox
 		$helper_forms = WYSIJA::get('forms', 'helper');
@@ -723,16 +709,7 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 		<table class="form-table">
 			<tbody>
 				<?php
-				// display that premium is activated
-				if (WYSIJA::is_plugin_active('wysija-newsletters-premium/index.php') && $this->model->getValue('premium_key')) {
-					?>
-					<tr>
-						<td class="premium_activated" colspan="2">
-							<i class="dashicons dashicons-awards"></i><?php echo __('Your Premium is activated.', WYSIJA); ?>
-						</td>
-					</tr>
-					<?php
-				}
+				do_action('mailpoet_pre_config_screen');
 				echo $this->buildMyForm($step, $model_config->values, 'config');
 				?>
 			</tbody>
@@ -1219,23 +1196,6 @@ class WYSIJA_view_back_config extends WYSIJA_view_back {
 			),
 			'label'			   => __('Industry', WYSIJA),
 			'desc'				=> __('Select your industry.', WYSIJA) );
-
-		$beta_mode_field = array(
-			'rowclass' => 'beta_mode',
-			'row_id'   => 'beta_mode_setting',
-			'type'	 => 'betamode',
-			'values'   => array( true	=> __('Yes', WYSIJA), false   => __('No', WYSIJA) ),
-			'label' => __('Become a beta tester', WYSIJA),
-			'desc'  => __('Update your MailPoet plugin to the latest beta version. Enjoy the upcoming features. [link]Get in touch[/link] with us for bugs and feedback. Only for experienced users!', WYSIJA),
-			'link'  => '<a target="_blank" href="http://support.mailpoet.com/feedback/?utm_source=wpadmin&utm_campaign=become_a_beta_tester">'
-		);
-		// only allow the beta mode to network administrators in multisite
-		if (is_multisite()) {
-			if (WYSIJA::current_user_can('manage_network'))
-				$advanced_fields ['ms_beta_mode'] = $beta_mode_field;
-		}else {
-			$advanced_fields ['beta_mode'] = $beta_mode_field;
-		}
 
 		$super_advanced_fields ['subscribers_count'] = array(
 			'type'  => 'subscribers_count',

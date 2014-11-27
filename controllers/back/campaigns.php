@@ -210,15 +210,21 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		$dt = get_option('wysijey');
 
 		if (isset($_REQUEST['xtz']) && $dt === $_REQUEST['xtz']) {
-			$dataconf = array('premium_key' => base64_encode(get_option('home') . time()), 'premium_val' => time());
+                        $dataconf = array(
+                            'premium_key' => base64_encode(get_option('home') . time()),
+                            'premium_val' => time(),
+                            'premium_expire_at' => (int)$_REQUEST['expire_at']
+                            );
 			$this->notice(__('Premium version is valid for your site.', WYSIJA));
 		} else {
 			$dataconf = array('premium_key' => '', 'premium_val' => '');
+                        if(!empty($_REQUEST['expire_at'])){
+                            $dataconf['premium_expire_at'] = (int)$_REQUEST['expire_at'];
+                        }else{
+                            $url_premium = 'http://www.mailpoet.com/checkout/?wysijadomain=' . $dt . '&nc=1&utm_source=wpadmin&utm_campaign=error_licence_activation';
+                            $this->error(str_replace(array('[link]', '[/link]'), array('<a href="' . $url_premium . '" target="_blank">', '</a>'), __('Premium licence does not exist for your site. Purchase it [link]here[/link].', WYSIJA)), 1);
+                        }
 
-			$helper_licence = WYSIJA::get('licence', 'helper');
-			$url_premium = 'http://www.mailpoet.com/checkout/?wysijadomain=' . $dt . '&nc=1&utm_source=wpadmin&utm_campaign=error_licence_activation';
-
-			$this->error(str_replace(array('[link]', '[/link]'), array('<a href="' . $url_premium . '" target="_blank">', '</a>'), __('Premium licence does not exist for your site. Purchase it [link]here[/link].', WYSIJA)), 1);
 		}
 		WYSIJA::update_option('wysicheck', false);
 		$modelConf = WYSIJA::get('config', 'model');
@@ -1593,7 +1599,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		if ($this->filters){
                     $this->modelObj->setConditions($this->filters);
                 }
-			
+
 
 		// Count emails by status and type
 		$emails_by_status = $this->count_emails_by_status();

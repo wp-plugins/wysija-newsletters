@@ -21,6 +21,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 	var $_data = null;
 	var $_styles = null;
 
+	// language direction
+	var $_is_rtl = false;
+
 	// styles: defaults
 	var $VIEWBROWSER_SIZES = array(7, 8, 9, 10, 11, 12, 13, 14);
 	var $TEXT_SIZES = array(8, 9, 10, 11, 12, 13, 14, 16, 18, 24, 36, 48, 72);
@@ -160,6 +163,17 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		if($value !== null) {
 			$this->_email_data = $value;
 		}
+	}
+
+	function setLanguageDirection() {
+		// right to left language property
+		if(function_exists('is_rtl')) {
+			$this->_is_rtl = is_rtl();
+		}
+	}
+
+	function isRtl() {
+		return $this->_is_rtl;
 	}
 
 	function getDefaultData() {
@@ -459,6 +473,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		if(isset($block['background_color'])) {
 			$background_color = $block['background_color'];
 		}
+
+		// set rtl mode
+		$block['is_rtl'] = $this->isRtl();
 
 		$blockHTML = $helper_render_engine->render($block, 'templates/newsletter/email/block_template.html');
 
@@ -851,13 +868,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 
 		$data = $this->getStyles();
 		$data['context'] = $this->getContext();
-
-		// right to left language property
-		if(function_exists('is_rtl')) {
-			$data['is_rtl'] = is_rtl();
-		} else {
-			$data['is_rtl'] = false;
-		}
+		$data['is_rtl'] = $this->isRtl();
 
 		switch($data['context']) {
 			case 'editor':
@@ -886,12 +897,6 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				$data['footer'] = '.wysija_footer';
 				$data['footer_container'] = '.wysija_footer_container';
 				$data['unsubscribe_container'] = '.wysija_unsubscribe_container';
-				//right to left language property
-				if(function_exists('is_rtl')) {
-					$data['is_rtl'] = is_rtl();
-				} else {
-					$data['is_rtl'] = false;
-				}
 				return $helper_render_engine->render($data, 'templates/newsletter/email/css.html');
 			break;
 		}
@@ -910,6 +915,9 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		@ini_set('pcre.backtrack_limit', 1000000);
 
 		$this->setContext('email');
+
+		// set language direction
+		$this->setLanguageDirection();
 
 		if($this->isDataValid() === false) {
 			throw new Exception('data is not valid');
@@ -930,12 +938,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 				'hide_unsubscribe' => $this->_hide_unsubscribe
 			);
 
-			//right to left language property
-			if(function_exists('is_rtl')) {
-				$data['is_rtl'] = is_rtl();
-			} else {
-				$data['is_rtl'] = false;
-			}
+			// get language direction
+			$data['is_rtl'] = $this->isRtl();
 
 			// set email subject if specified
 			$data['subject'] = $this->getEmailData('subject');
@@ -1243,6 +1247,10 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 			} else {
 				// set styles
 				$block['styles'] = $styles;
+
+				// set rtl
+				$block['is_rtl'] = $this->isRtl();
+
 				// generate block template
 				$blockHTML = $helper_render_engine->render($block, 'templates/newsletter/email/block_template.html');
 
