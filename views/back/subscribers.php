@@ -999,7 +999,7 @@ class WYSIJA_view_back_subscribers extends WYSIJA_view_back
 
 				// we try to automatically match columns with previous matches recorded in the past
 				$import_fields = get_option('wysija_import_fields');
-				if (isset($import_fields[$column_name_key]))
+				if (isset($import_fields[$column_name_key]) && substr($import_fields[$column_name_key], 0, 10) != 'new_field|')
 				{
 				    $selected = $import_fields[$column_name_key];
 				}

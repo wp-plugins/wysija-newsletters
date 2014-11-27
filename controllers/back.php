@@ -263,7 +263,10 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         if(defined('WYSIJA_REDIRECT'))  $this->redirectProcess();
 
-        $this->checkTotalSubscribers();
+        if( !empty( $_REQUEST['page'] ) && $_REQUEST['page'] !== 'wysija_premium'){
+            $this->checkTotalSubscribers();
+        }
+
     }
 
     function checkTotalSubscribers(){
@@ -337,11 +340,13 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         if((int)$totalSubscribers>1900){
             if((int)$totalSubscribers>2000){
+
                 $url_checkout = $helper_licence->get_url_checkout('over200');
                 $this->error(str_replace(array('[link]','[/link]'),
-                    array('<a title="'.__('Get Premium now',WYSIJA).'" target="_blank" href="'.$url_checkout.'">','</a>'),
-                    sprintf(__('Yikes. You\'re over the limit of 2000 subscribers for the free version of MailPoet (%1$s in total). Sending is disabled now. Please upgrade your version to [link]premium[/link] to send without limits.',WYSIJA)
-                            ,$totalSubscribers)),true);
+                array('<a title="'.__('Get Premium now',WYSIJA).'" target="_blank" href="'.$url_checkout.'">','</a>'),
+                sprintf(__('Yikes. You\'re over the limit of 2000 subscribers for the free version of MailPoet (%1$s in total). Sending is disabled now. Please upgrade your version to [link]premium[/link] to send without limits.',WYSIJA)
+                        ,$totalSubscribers)),true);
+
             }else{
                 $url_checkout = $helper_licence->get_url_checkout('near200');
                 $this->notice(str_replace(array('[link]','[/link]'),

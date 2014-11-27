@@ -63,7 +63,8 @@
         line-height:125%;
         letter-spacing:normal;
         margin:0;
-        text-align:left;
+        {if #is_rtl}text-align:right;{/if}
+        {if ! #is_rtl}text-align:left;{/if}
     }
 
     /* --- title 2 --- */
@@ -77,7 +78,8 @@
         line-height:125%;
         letter-spacing:normal;
         margin:0;
-        text-align:left;
+        {if #is_rtl}text-align:right;{/if}
+        {if ! #is_rtl}text-align:left;{/if}
     }
 
     /* --- title 3 (and others) --- */
@@ -91,7 +93,8 @@
         line-height:125%;
         letter-spacing:normal;
         margin:0;
-        text-align:left;
+        {if #is_rtl}text-align:right;{/if}
+        {if ! #is_rtl}text-align:left;{/if}
     }
 
     /* Outlook 07, 10 Padding issue fix

@@ -1,14 +1,14 @@
 === MailPoet Newsletters ===
 Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark
-Tags: newsletter, newsletters, newsletter signup, subscribers, post notification, email subscription, email alerts, auto newsletter, autoresponder, follow up, email, marketing, emailing, subscription
+Tags: newsletter, newsletters, email, subscribers, signup, notification, subscription, alerts, auto newsletter, autoresponder, follow up, dunning email, campaign, drip, marketing, emailing, mailpoet, wysija, mailchimp, aweber, mandrill, sendgrid, amazon
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 2.6.13
+Stable tag: 2.6.14
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
 == Description ==
 
-Create newsletters, post notifications and autoresponders. Drop your posts, images, social icons in your newsletter. Change fonts and colors on the fly. Manage all your subscribers. A new and simple newsletter solution for WordPress. Finally!
+Create newsletters, post notifications and autoresponders. Drop your posts, images, social icons in your newsletter. Change fonts and colors on the fly. Manage all your subscribers. A simple newsletter solution for WordPress. Finally!
 
 We built it with the idea that newsletters in WordPress should be easy. Not hard. Forget MailChimp, Aweber, etc. We're the good guys inside your WordPress.
 
@@ -133,15 +133,20 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 
 == Changelog ==
 
-= 2.6.13 - 2014-10-28 =
-* Improved security a lot since July 2014, please update.
+= 2.6.14 - 2014-11-26 =
+* Fixed all of the RTL issues on delivered newsletters and their web version
+* Fixed issue when importing subscribers with new custom fields
+* Fixed duplicated Monthly post notifications issue
+* Fixed View in Browser version deactivation
+* Removed option to switch to Beta
+
+= 2.6.13 - 2014-10-27 =
 * Fixed a conflict with the plugin [Magic Action Box](https://wordpress.org/plugins/magic-action-box/)
 * Fixed blank export file when exporting subscribers with custom fields
 * Fixed the default subscribers ordering in the backend, we now display the most recent first
 * Fixed the bug on Bold and Italic commands in our newsletter editor
 * Fixed an issue on the new bulk resend confirmation email feature
 * Fixed bounce management issue (Premium only), counting until 3 when a mailbox is full
-* Fixing 1 bug a day, stopped eating our veggies
 
 = 2.6.12 - 2014-10-16 =
 * Improved security thanks to Dominik Schilling, [Ryan Satterfield](http://planetzuda.com) and [Logical Trust](https://logicaltrust.net/en/)

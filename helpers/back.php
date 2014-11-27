@@ -340,11 +340,6 @@ class WYSIJA_help_back extends WYSIJA_help{
         $finds = array('[link]','[/link]');
         $replace = array('<a target="_blank" href="http://support.mailpoet.com" title="support.mailpoet.com">','</a>');
         $truelinkhelp = '<p>'.str_replace($finds,$replace,$linkcontent).'</p>';
-
-        $extra = '<a href="admin.php?page=wysija_config&scroll_to=beta_mode_setting#tab-advanced" title="'.__('Switch to beta',WYSIJA).'">'.__('Switch to beta',WYSIJA).'</a>';
-
-        $truelinkhelp .= '<p>'.str_replace($finds,$replace,$extra).'</p>';
-
         $truelinkhelp .= '<p>'.__('MailPoet Version: ',WYSIJA).'<strong>'.WYSIJA::get_version().'</strong></p>';
 
         $this->menus=array(
@@ -601,21 +596,6 @@ class WYSIJA_help_back extends WYSIJA_help{
         if (strpos($screen->base, 'wysija')===false)
             return $text;
 
-        $title = esc_attr((WYSIJA::is_beta()?__('Revert to stable',WYSIJA):__('Switch to beta',WYSIJA)));
-        $warn_message = esc_attr((WYSIJA::is_beta()?__('Confirm going back to the stable version?',WYSIJA):__('Great! But the beta version might be buggy, and we expect you to report any bugs. Confirm to installing the Beta version?',WYSIJA)));
-
-        $args = array(
-            'page' => 'wysija_config',
-            'action' => 'packager-switch',
-            '_wpnonce' => wp_create_nonce('packager-switch'),
-        );
-        if (WYSIJA::is_beta())
-            $args["stable"] = 1;
-
-        $switch_link = esc_attr(add_query_arg($args, admin_url('admin.php')));
-
-        $switch_text = esc_attr((WYSIJA::is_beta()?__('Revert to Stable', WYSIJA):__('Switch to Beta', WYSIJA)));
-
         $version_link = esc_url(add_query_arg(
             array(
                 'page' => 'wysija_campaigns',
@@ -624,24 +604,12 @@ class WYSIJA_help_back extends WYSIJA_help{
             admin_url('admin.php')
         ));
 
-        $premium = false;
-        if (is_plugin_active('wysija-newsletters-premium/index.php')){
-            $premium = WYSIJA::get_version('wysija-newsletters-premium/index.php');
-        }
-
-        return
-            ((is_multisite() && WYSIJA::current_user_can('manage_network')) || (!is_multisite() && WYSIJA::current_user_can('switch_themes'))?
-                "<span class='wrap'>" .
-                    "<a id='switch_to_package' href='{$switch_link}' title='{$title}' data-warn='{$warn_message}' class='add-new-h2'>{$switch_text}</a>" .
-                    (WYSIJA::is_beta()?"<a target='_blank' class='add-new-h2' href='http://support.mailpoet.com/feedback/?utm_source=wpadmin&utm_campaign=contact_beta'>" . __( 'Report Bugs', WYSIJA ) . "</a>":"") .
-                "</span>"
-            :"") .
-            "</p>" .
+        $version_string = "</p>" .
             "<p class='alignright'>" .
-                __("MailPoet Version", WYSIJA) . ": <a href='{$version_link}'>" . esc_attr(WYSIJA::get_version()) . "</a>" .
-                ($premium?
-                    " | " .
-                    __("Premium", WYSIJA) . ": " . esc_attr($premium) . "</a>"
-                :"");
+                __("MailPoet Version", WYSIJA) . ": <a href='{$version_link}'>" . esc_attr(WYSIJA::get_version()) . "</a>";
+
+        $version_string = apply_filters('mailpoet_back_footer', $version_string);
+        return $version_string;
+
     }
 }

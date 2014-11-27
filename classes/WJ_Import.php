@@ -113,7 +113,7 @@ class WJ_Import extends WYSIJA_object {
 		// we're going through all of the selected value in each dropdown when importing
 		foreach($this->_match as $csv_column_number => $column_in_user_table){
 
-                        if (!is_string($column_in_user_table) OR preg_match('|[^a-z0-9#_.-]|i',$column_in_user_table) !== 0 ){
+                        if (!is_string($column_in_user_table) OR preg_match('|[^a-z0-9#_\|.-]|i',$column_in_user_table) !== 0 ){
                             continue;
                         }
                         // Reduce matching twice the same column
