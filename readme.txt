@@ -1,6 +1,6 @@
 === MailPoet Newsletters ===
 Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark
-Tags: newsletter, newsletters, email, subscribers, signup, notification, subscription, alerts, auto newsletter, autoresponder, follow up, dunning email, campaign, drip, marketing, emailing, mailpoet, wysija, mailchimp, aweber, mandrill, sendgrid, amazon
+Tags: newsletter, newsletters, email, subscribe newsletter, newsletter signup, post notification, newsletter subscription, newsletter alert, auto newsletter, autoresponder, follow up email, dunning email, drip campaign, marketing email, mailpoet, wysija, mandrill, sendgrid
 Requires at least: 3.3
 Tested up to: 4.1
 Stable tag: 2.6.14
