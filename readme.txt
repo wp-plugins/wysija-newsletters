@@ -2,7 +2,7 @@
 Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark
 Tags: newsletter, newsletters, email, subscribers, signup, notification, subscription, alerts, auto newsletter, autoresponder, follow up, dunning email, campaign, drip, marketing, emailing, mailpoet, wysija, mailchimp, aweber, mandrill, sendgrid, amazon
 Requires at least: 3.3
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: 2.6.14
 Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
 
