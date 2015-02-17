@@ -1,14 +1,14 @@
 === MailPoet Newsletters ===
-Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark
-Tags: newsletter, newsletters, email, subscribe newsletter, newsletter signup, post notification, newsletter subscription, newsletter alert, auto newsletter, autoresponder, follow up email, dunning email, drip campaign, marketing email, mailpoet, wysija, mandrill, sendgrid
+Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, rafaehlers, rafaelfunchal, _dorsvenabili, vvaz, keiferski
+Tags: newsletter, newsletters, email newsletter, email subscription, newsletter signup, post notification, autoresponder, newsletter alert, auto newsletter, automatic post notification, email newsletters, email signup, auto post notifications, newsletter widget, newsletter builder, subscribe widget, signup widget, email subscription, newsletter plugin, widget, subscription, emailing, mailpoet, wysija, mandrill, sendgrid
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 2.6.14
-Send newsletters, post notifications or autoresponders from WordPress easily, and beautifully.
+Stable tag: 2.6.15
+Send newsletters post notifications or autoresponders from WordPress easily, and beautifully. Start to capture subscribers with our widget now.
 
 == Description ==
 
-Create newsletters, post notifications and autoresponders. Drop your posts, images, social icons in your newsletter. Change fonts and colors on the fly. Manage all your subscribers. A simple newsletter solution for WordPress. Finally!
+Create newsletters, automated emails, post notifications and autoresponders. Capture subscribers with our signup widget. Drop your posts, images, social icons in your newsletter. Change fonts and colors on the fly. A simple newsletter solution for WordPress. Finally!
 
 We built it with the idea that newsletters in WordPress should be easy. Not hard. Forget MailChimp, Aweber, etc. We're the good guys inside your WordPress.
 
@@ -25,16 +25,17 @@ http://vimeo.com/46247528
 * Drag & drop newsletter editor
 * Send your latest posts automatically
 * Autoresponders, i.e. "Send email 3 days after someone subscribes"
-* [Selection of over 30 themes](http://www.mailpoet.com/newsletter-templates-wordpress/). Photoshop files included
+* Send emails to your WordPress users
+* Start collecting subscribers in 2-clicks with our sign up widget
+* Single or double opt-in, your choice
+* Import subscribers in 2 steps
 * Get stats for your newsletter: opens, clicks, unsubscribes
 * Drag and drop subscription form designer
 * Your newsletters look the same in Gmail, iPhone, Android, Outlook, Yahoo, Hotmail, etc.
-* Send emails to your WordPress users
-* Import subscribers in 2 steps
-* Single or double opt-in, your choice
-* Send with your web host, Gmail, any SMTP, like Amazon SES or Mandrill
-* Segment your lists based on opened, clicked & bounced
-* Sending in free version is limited to 2000 subscribers
+* Send with your web host, Gmail, any SMTP, like SendGrid, Amazon SES Mandrill, etc...
+* Segment your lists based on unopened, opened and clicked
+* [Selection of over 70 themes](http://www.mailpoet.com/newsletter-templates-wordpress/). Photoshop files included
+* Sending newsletters in the free version is limited to 2000 subscribers
 
 = Premium version =
 
@@ -43,8 +44,8 @@ http://vimeo.com/46247528
 * Send to more than 2000 subscribers
 * A beautiful statistics dashboard to compare your newsletters, and subscribers
 * Detailed stats for each subscriber and newsletter
-* Automated bounce handling
-* Test your spam score before you send
+* Automated bounce handling, keep your subscribers' list clean
+* Test your spam score before you send a newsletter to your subscribers
 * Improve deliverability with DKIM signature
 * Don't reinstall. Simply install an additional plugin
 * Priority support: let us optimize your settings!
@@ -59,7 +60,7 @@ Find over 80 articles in our documentation:
 
 = Translations in your language =
 
-[Get a Premium license in exchange for your help  in translation](http://support.mailpoet.com/knowledgebase/translations-in-your-language/)
+[Get a Premium plugin license in exchange for your help in translation](http://support.mailpoet.com/knowledgebase/translations-in-your-language/)
 
 * Arabic
 * Basque
@@ -132,6 +133,17 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.15 - 2015-02-17 =
+* Fixed hidden signup confirmation when the theme "Twenty Fifteen" is activated
+* Fixed import issue on Windows servers, all valid subscribers CSV files can be imported now
+* Fixed the filter "Subscribers in no list" in the Subscribers' listing in the backend
+* Fixed bug in the frontend subscriptions page with the shortcode [wysija_page] not being replaced
+* Fixed rendering issue when sending WordPress Post notifications including multiple levels of nested HTML lists(ul & ol)
+* Improved performance in the Subscribers' listing
+* Improved scheduled tasks process responses for greater reliability
+* Added "WBounce" to our list of compatible plugins in Settings > Add-ons
+* Added non-translated strings for the subscribe and unsubscribe admin notifications
 
 = 2.6.14 - 2014-11-26 =
 * Fixed all of the RTL issues on delivered newsletters and their web version

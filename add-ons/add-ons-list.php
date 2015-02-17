@@ -231,6 +231,21 @@ function add_ons_list(){
 			'premium_offer' 	=> '',
 		),
 
+            array(
+			'name' 				=> 'wBounce: Exit popup forms',
+			'search' 			=> 'wBounce',
+			'thumbnail' 		=> 'wbounce-forms.jpg',
+			'description' 		=> __( 'Exit popups are not only "in vogue", they are provably increasing conversions and therefore boost marketing, signups and sales. wBounce displays an inline popup before the user leaves your site.', WYSIJA ),
+			'review' 			=> __( 'Exit popup will appear when your cursor leaves the window.', WYSIJA ),
+			'plugin_url' 		=> 'wbounce/wbounce.php',
+			'author_url' 		=> 'http://clicky.me/wbounce',
+			'version' 			=> '1.4',
+			'official' 			=> true,
+			'on_wordpress.org' 	=> true,
+			'free' 				=> true,
+			'service' 			=> false,
+			'requires' 			=> '',
+		),
 		array(
 			'name' 				=> 'Optin Revolution: Popup form',
 			'search' 			=> 'Optin Revolution: popup form',

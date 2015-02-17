@@ -2888,14 +2888,36 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 				$helper_readme = WYSIJA::get('readme', 'helper');
 				$helper_readme->scan();
 				$helper_licence = WYSIJA::get('licence', 'helper');
+                                $model_config = WYSIJA::get('config', 'model');
 				$data = array();
-				$data['abouttext'] = __('You updated! It\'s like having the next gadget, but better.', WYSIJA);
+				//
+
+                                $installed_time = (int)$model_config->getValue('installed_time');
+                                $usage =  time() - $installed_time;
+
+                                $helper_toolbox = WYSIJA::get('toolbox', 'helper');
+                                $usage_string = $helper_toolbox->duration_string($usage, true, 1);
+
+                                $onemonth = 3600*24*31;
+                                $twomonths = 3600*24*62;
+                                $year = 3600*24*365;
+                                if( $usage > $twomonths){
+                                    $data['abouttext'] = sprintf(__('You have been a MailPoet user for %s.', WYSIJA), '<strong>'.trim($usage_string).'</strong>');
+                                     if( $usage > $twomonths){
+                                         $data['abouttext'] .= '<br/>'.__( 'Wow! Thanks for being part of our community for so long.' , WYSIJA ) ;
+                                     }
+
+                                }else{
+                                    $data['abouttext'] = __('You updated! It\'s like having the next gadget, but better.', WYSIJA);
+                                }
+
+
 				// this is a flag to have a pretty clean update page where teh only call to action is our survey
-				$show_survey = true;
+				$show_survey = false;
 
 				$is_multisite = is_multisite();
 				$is_network_admin = WYSIJA::current_user_can('manage_network');
-				$model_config = WYSIJA::get('config', 'model');
+
 
 				if ($is_multisite) {
 					if ($is_network_admin) {
@@ -2907,10 +2929,24 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
 
                                 $data = $this->_inject_alert( $data );
 
-				// inject a poll in the what's new page
-				if($show_survey === false){
-                                    $data = $this->_inject_poll( $data );
+                                $sharing_data = $model_config->getValue('analytics');
+                                if( empty( $sharing_data ) ){
+                                    $data['sections'][] = array(
+                                            'title' => __('We need your help!',WYSIJA),
+
+                                            'content' => '<div style="margin-bottom: 14px;"><img src="http://ps.w.org/wysija-newsletters/assets/new-support-team.jpg" width="390px" height="181px" title="'.__('We need your help!',WYSIJA).'" alt="Rafael F., Kim, Rocio and Rafael E. from MailPoet" /></div>
+                                                <div class="mpoet-update-subscribe-left" style="width: 390px;">
+                                                <p>'.__('Here at MailPoet, we want to constantly improve our plugin.',WYSIJA).'</p>
+                                                    <p>'. __("If you want to help us better understand your needs, you can do so by sharing some anonymous data with us.",WYSIJA).' '. __( 'Thanks!' ,WYSIJA).'</p>'.
+
+                                            '<a href="javascript:;" id="share_analytics" class="button-primary">'.__('Share anonymous data',WYSIJA).'</a><div id="update-loading-icon"></div>'.
+                                    '<p><a style="font-size: 12px;" href="http://support.mailpoet.com/knowledgebase/share-your-data/?utm_medium=plugin&utm_campaign=know_data&utm_source=update_page" target="_blank">' . __('Read more about the shared data.',WYSIJA) .'</a></p>'
+                                                .'</div>',
+                                            'format' => 'title-content',
+                                    );
                                 }
+
+
 
 				$msg = $model_config->getValue('ignore_msgs');
 				if ( !isset($msg['ctaupdate']) && $show_survey === false ) {
@@ -3056,6 +3092,7 @@ class WYSIJA_view_back_campaigns extends WYSIJA_view_back {
                                                                                                 </div>';
 
 											break;
+
 										default :
 											foreach ($section['paragraphs'] as $line) {
 												?>

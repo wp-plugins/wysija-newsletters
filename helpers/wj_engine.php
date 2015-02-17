@@ -482,14 +482,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		// convert lists
 		$blockHTML = $this->convertLists($blockHTML);
 
-		// apply specific classes on titles and children (strong, em, a)
-		$blockHTML = $this->applyTitleClasses($blockHTML);
-
 		// apply inline styles
 		$blockHTML = $this->applyInlineStyles('body', $blockHTML, array('background_color' => $background_color));
-
-		// convert titles in block
-		$blockHTML = $this->convertTitles($blockHTML);
 
 		return $blockHTML;
 	}
@@ -1258,14 +1252,8 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 					// convert lists in block
 					$blockHTML = $this->convertLists($blockHTML);
 
-					// apply specific classes on titles and children (strong, em, a)
-					$blockHTML = $this->applyTitleClasses($blockHTML);
-
 					// apply inline styles
 					$blockHTML = $this->applyInlineStyles('body', $blockHTML, array('background_color' => $block_background_color));
-
-					// convert titles in block
-					$blockHTML = $this->convertTitles($blockHTML);
 				}
 			}
 
@@ -1414,6 +1402,7 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 					'h2' => array_merge($styles['titles'], $this->getStyles('h2')),
 					'h3' => array_merge($styles['titles'], $this->getStyles('h3')),
 					'p' => array_merge($this->getStyles('body'), array('word-wrap' => true, 'padding' => '0', 'margin' => '1em 0', 'line-height' => '1.5em', 'vertical-align' => 'top', 'letter-spacing' => 'normal')),
+					'li' => array_merge($this->getStyles('body'), array('word-wrap' => true, 'padding' => '0', 'margin' => '0', 'line-height' => '1.5em', 'vertical-align' => 'top', 'letter-spacing' => 'normal')),
 					'a' => array_merge($this->getStyles('a'), array('word-wrap' => true)),
 					'br' => array('margin' => '0', 'padding' => '0', 'line-height' => '150%')
 				));
@@ -1593,86 +1582,36 @@ class WYSIJA_help_wj_engine extends WYSIJA_object {
 		}
 	}
 
-	// TODO: remove this method?
-	function convertTitles($html) {
-
-		// TEMPORARY returning original content without changing anything
-		return $html;
-
-
-		$patterns = array(
-			'/<h[1|2|3](.*?)>/',
-			'/<\/h[1|2|3]>/',
-		);
-
-		$replacements = array(
-			'<p$1>',
-			'</p>'
-		);
-
-		return preg_replace($patterns, $replacements, $html);
-	}
-
-	// TODO: remove this method?
-	function applyTitleClasses($html) {
-
-		// TEMPORARY returning original content without changing anything
-		return $html;
-
-		// set class for links in titles
-		$html = preg_replace_callback('#(<h([1|2|3]) ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>(.*)<\/h[1|2|3]>)#Ui',
-			create_function('$matches',
-				'$output = $matches[0];'.
-				'$title_class  = \'wysija_title_\'.(int)$matches[2];'.
-				'$link_class   = $title_class.\'_link\';'.
-				'$strong_class = $title_class.\'_strong\';'.
-				'$italic_class = $title_class.\'_italic\';'.
-				'$output = str_replace(\'<a\', \'<a class="\'.$link_class.\'"\', $output);'.
-				'$output = str_replace(\'<strong\', \'<strong class="\'.$strong_class.\'"\', $output);'.
-				'$output = str_replace(\'<em\', \'<em class="\'.$italic_class.\'"\', $output);'.
-				//'$output = str_replace(\'<h\'.(int)$matches[2], \'<h\'.(int)$matches[2].\' class="\'.$title_class.\'"\', $output);'.
-				'return $output;'
-			),
-			$html
-		);
-
-		return $html;
-	}
-
 	// converts lists (ul, ol, li) into paragraphs for email compatibility
-	function convertLists($html) {
-		$patterns = array(
-			'/<ul.*?>/',
-			'/<ol.*?>/',
-			'/<\/ul>/',
-			'/<\/ol>/',
-			'/<li ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>/',
-			'/<\/li>/'
-		);
-
-		$replacements = array(
-			'',
-			'',
-			'',
-			'',
-			'<p class="wysija_list_item $2">&bull;&nbsp;',
-			'</p>'
-		);
-
-		$html = preg_replace_callback('#(<ul ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>(.*)<\/ul>)#Ui',
-			create_function('$matches',
-				'$output = $matches[5];'.
-				'$alignment = ( isset($matches[3]) && strlen(trim($matches[3])) ) ? trim($matches[3]) : "align-left";'.
-				'$output = preg_replace(\'/<li ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>/\', \'<p class="wysija_list_item \'.$alignment.\'">&bull;&nbsp;\', $output);'.
-				'$output = preg_replace(\'/<\/li>/\', \'</p>\', $output);'.
-				'return $output;'
-			),
-			$html
-		);
-		return $html;
-
-		//return preg_replace($patterns, $replacements, $html);
-
+	function convertList($matches) {
+		$output = $matches[5];
+		// get alignment from ul tag and make sure it's a valid value
+		$alignment = (isset($matches[3]) && in_array($matches[3], array('align-left', 'align-center', 'align-right'))) ? trim($matches[3]) : 'align-left';
+		// convert opening li tag to paragraph
+		$output = preg_replace('#<li ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>#Uis', "\n".'<p class="wysija_list_item '.$alignment.'">&bull;&nbsp;', $output);
+		// replace all closing li tags by p
+		$output = str_replace('</li>', "</p>\n", $output);
+		return $output;
 	}
 
+	function convertLists($html) {
+		$model_config = WYSIJA::get('config', 'model');
+		if((bool)$model_config->getValue('disable_list_conversion') === true) {
+			return $html;
+		}
+		// define maximum recursion level
+		$max_recursion = 100;
+		$recursion_count = 0;
+		// as long as there are ul tags in the content and we haven't reached the maximum recursion value
+		while(strpos($html, '<ul') !== false && $recursion_count < $max_recursion) {
+			$html = preg_replace_callback(
+				'#(<ul ?((?:(?!>|class).)*)(?:class="([^"]*)")?((?:(?!>|class).)*)>((?:(?!<ul).)*)<\/ul>)#Uis',
+				array($this, 'convertList'),
+				$html
+			);
+			$recursion_count++;
+		}
+
+		return $html;
+	}
 }
