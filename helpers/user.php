@@ -870,10 +870,10 @@ class WYSIJA_help_user extends WYSIJA_object {
 
         if ($subscribed) {
             $title = sprintf(__('New subscriber to %1$s', WYSIJA), implode(',', $list_names));
-            $body = sprintf(__('Howdy,' . "\n\n" . 'The subscriber %1$s has just subscribed to your list "%2$s".' . "\n\n" . 'Cheers,' . "\n\n" . 'The MailPoet Plugin', WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
+            $body = sprintf(__("Howdy,\n\n The subscriber %1\$s has just subscribed to your list '%2\$s' \n\n Cheers,\n\n The MailPoet Plugin", WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
         } else {
             $title = sprintf(__('One less subscriber to %1$s', WYSIJA), implode(',', $list_names));
-            $body = sprintf(__('Howdy,' . "\n\n" . 'The subscriber : %1$s has just unsubscribed from your list "%2$s".' . "\n\n" . 'Cheers,' . "\n\n" . 'The MailPoet Plugin', WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
+            $body = sprintf(__("Howdy,\n\n The subscriber %1\$s has just unsubscribed to your list '%2\$s' \n\n Cheers,\n\n The MailPoet Plugin", WYSIJA), "<strong>" . $email . "</strong>", "<strong>" . implode(',', $list_names) . "</strong>");
         }
 
         $model_config = WYSIJA::get('config', 'model');

@@ -536,25 +536,19 @@ class WYSIJA_model_user extends WYSIJA_model{
             // orphans are selected with this kind of join
             if($filters['equal']['list_id']=== 0) {
                 // reset all prefixes. We are selecting from only 1 table - [wysija]user
-                $select_string = str_replace(array('[wysija]user.', '[wysija]user_list.', 'A.','B.'), array('','','',''), implode(', ', $select));
+                $select_string = implode(', ', $select);
+
+                // make sure we select the user_id from the table that has that information not from user_list which will return NULL
+                $select_string = str_replace('B.user_id','A.user_id',$select_string);
+
+                // we need to make the difference between the count query useful for pagination etc and the rest
                 $is_count = strpos($select_string, 'COUNT(') !== false;
 
-                // this approach is not so good! Refactoring is needed.
-                if ($is_count) {
-                    $query = '
-                        SELECT
-                            '.$select_string.'
-                        FROM [wysija]user
-                        WHERE `user_id` NOT IN (SELECT DISTINCT user_id FROM [wysija]user_list)
-                        ';
-                } else {
-                    $query = '
-                        SELECT
-                            '.$select_string.'
-                        FROM [wysija]user
-                        WHERE `user_id` NOT IN (SELECT DISTINCT user_id FROM [wysija]user_list)
-                        ';
-                }
+                // this query left joins on null values of user_list, allows us to display the subscribers not belonging to any list
+                $query = 'SELECT '.$select_string.'
+                        FROM [wysija]user as A
+                        LEFT OUTER JOIN [wysija]user_list as B on A.user_id = B.user_id
+                        WHERE B.`user_id` is NULL';
 
                 $this->conditions=array(); // reset all conditions
                 $filters = array(); // reset all conditions
@@ -590,7 +584,11 @@ class WYSIJA_model_user extends WYSIJA_model{
             if($return_query) return $query;
 
             if( empty($_REQUEST['orderby']) || !is_string($_REQUEST['orderby']) || preg_match('|[^a-z0-9#_.-]|i',$_REQUEST['orderby']) !== 0 ){
+                if(!empty($_REQUEST['wysija']['filter']['filter_list']) && $_REQUEST['wysija']['filter']['filter_list'] == 'orphaned'){
+                    $order_by = '';
+                }else{
                     $order_by = ' ORDER BY A.user_id DESC';
+                }
             }else{
 
                 if(!in_array(strtoupper($_REQUEST['ordert']),array('DESC','ASC'))){

@@ -19,7 +19,7 @@ class WYSIJA_object{
 	 * Static variable holding core MailPoet's version
 	 * @var array
 	 */
-	static $version = '2.6.14';
+	static $version = '2.6.15';
 
 	function WYSIJA_object(){
 
@@ -1398,6 +1398,7 @@ class WYSIJA extends WYSIJA_object{
 		$processesToRun = array();
 		foreach($cron_schedules as $schedule => $scheduled_times){
 			if(strpos($schedule, '(bounce handling not activated)')!==false) continue;
+                        if( !isset($processes[$schedule]) ) continue;
 			$process_frequency = $processes[$schedule];
 			if( ( !$scheduled_times['running'] || (int)$scheduled_times['running'] + $process_frequency < $time_now ) && $scheduled_times['next_schedule'] < $time_now){
 				$processesToRun[] = $schedule;
