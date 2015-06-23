@@ -2,8 +2,8 @@
 Contributors: wysija, kgjerstad, benheu, JoN1oP, badshark, rafaehlers, rafaelfunchal, _dorsvenabili, vvaz, keiferski
 Tags: newsletter, newsletters, email newsletter, email subscription, newsletter signup, post notification, autoresponder, newsletter alert, auto newsletter, automatic post notification, email newsletters, email signup, auto post notifications, newsletter widget, newsletter builder, subscribe widget, signup widget, email subscription, newsletter plugin, widget, subscription, emailing, mailpoet, wysija, mandrill, sendgrid
 Requires at least: 3.3
-Tested up to: 4.1
-Stable tag: 2.6.15
+Tested up to: 4.2
+Stable tag: 2.6.16
 Send newsletters post notifications or autoresponders from WordPress easily, and beautifully. Start to capture subscribers with our widget now.
 
 == Description ==
@@ -14,11 +14,7 @@ We built it with the idea that newsletters in WordPress should be easy. Not hard
 
 = Check out this 2 minute video. =
 
-http://vimeo.com/35054446
-
-= Post notifications video. =
-
-http://vimeo.com/46247528
+https://vimeo.com/130151897
 
 = Features =
 
@@ -39,7 +35,7 @@ http://vimeo.com/46247528
 
 = Premium version =
 
-[MailPoet Premium](http://www.mailpoet.com/wordpress-newsletter-plugin-premium/) offers these nifty extra features:
+[MailPoet Premium](http://www.mailpoet.com/premium/) offers these nifty extra features:
 
 * Send to more than 2000 subscribers
 * A beautiful statistics dashboard to compare your newsletters, and subscribers
@@ -50,7 +46,7 @@ http://vimeo.com/46247528
 * Don't reinstall. Simply install an additional plugin
 * Priority support: let us optimize your settings!
 
-[Visit our Premium page](http://www.mailpoet.com/wordpress-newsletter-plugin-premium/).
+[Visit our Premium page](http://www.mailpoet.com/premium/).
 
 = Support =
 
@@ -133,6 +129,12 @@ Our [support site](http://support.mailpoet.com/) has plenty of articles and a ti
 7. Importing subscribers with a CSV.
 
 == Changelog ==
+
+= 2.6.16 - 2015-06-23 =
+* Added HHVM support
+* Added MariaDB support
+* Fixed import issue where existing subscriber's data was not updated
+* Fixed minor issues
 
 = 2.6.15 - 2015-02-17 =
 * Fixed hidden signup confirmation when the theme "Twenty Fifteen" is activated

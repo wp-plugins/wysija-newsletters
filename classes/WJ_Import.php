@@ -170,7 +170,7 @@ class WJ_Import extends WYSIJA_object {
 	 * @return type
 	 */
 	private function _get_import_query_header() {
-		return 'INSERT IGNORE INTO [wysija]user (`' . implode('` ,`', $this->_data_to_insert) . '`,`created_at`) VALUES ';
+		return 'INSERT INTO [wysija]user (`' . implode('` ,`', $this->_data_to_insert) . '`,`created_at`) VALUES ';
 	}
 
 	/**
@@ -463,6 +463,9 @@ class WJ_Import extends WYSIJA_object {
 		}
 
 		$query .= implode(', ', $lines);
+
+		// update values when the user already exists
+		$query .= ' ON DUPLICATE KEY UPDATE '.implode(', ', array_map(function($v) { return '`'.$v.'` = VALUES(`'.$v.'`)'; }, $this->_data_to_insert));
 
 		// replace query to import the subscribers
 		$model_wysija = new WYSIJA_model();

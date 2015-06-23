@@ -105,7 +105,7 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 
 		//add a new language code with a new video
 		$video_language=array();
-		$video_language['en_EN'] = '<iframe src="//player.vimeo.com/video/81479899" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
+		$video_language['en_EN'] = '<iframe src="//player.vimeo.com/video/130224536" width="500" height="281" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>';
 
 		$wp_lang = get_locale();
 		if (!empty($wp_lang) && isset($video_language[$wp_lang])) {
@@ -115,28 +115,25 @@ class WYSIJA_control_back_campaigns extends WYSIJA_control_back {
 		}
 
 		$this->data['sections'][] = array(
-			'title' => __('Hey, we\'re curious! How did you find out about us?', WYSIJA) . '<span id="poll_result"></span>',
+			'title' => __('Stay up to date! Subscribe to our newsletters', WYSIJA) . '<span id="poll_result"></span>',
 			'format' => 'normal',
-			'paragraphs' => array(
-				'<ul class="welcome_poll">
-						<li>
-							<input type="radio" id="how_did_you_find_us_1" value="repository" name="how_did_you_find_us">
-							<label value="lab1" for="how_did_you_find_us_1">' . __('WordPress.org plugin repository', WYSIJA) . '</label>
-						</li>
-						<li>
-							<input type="radio" id="how_did_you_find_us_2" value="search_engine" name="how_did_you_find_us">
-							<label value="lab2" for="how_did_you_find_us_2">' . __('Google or other search engine', WYSIJA) . '</label>
-						</li>
-						<li>
-							<input type="radio" id="how_did_you_find_us_3" value="friend" name="how_did_you_find_us">
-							<label value="lab3" for="how_did_you_find_us_3">' . __('Friend recommendation', WYSIJA) . '</label>
-						</li>
-						<li>
-							<input type="radio" id="how_did_you_find_us_4" value="url" name="how_did_you_find_us">
-							<label value="lab4" for="how_did_you_find_us_4">' . __('Blog post, online review, forum:', WYSIJA) . '</label>
-							<input type="text" id="how_did_you_find_us_4_url"  name="how_did_you_find_us_url" placeholder="' . __('Please enter the address where you\'ve found out about us', WYSIJA) . '">
-						</li>
-					</ul>'
+			'paragraphs' => array('<div class="mpoet-update-subscribe" ><h4></h4><div class="mpoet-update-subscribe-left"> <p>'.__('We send a monthly newsletter with the following:',WYSIJA).'</p>' .
+                                                                                                    '<ul>' .
+                                                                                                            '<li>'.__('Important plugin updates',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('Coupons',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('Tips for you, or your customers',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('What we’re working on',WYSIJA).'</li>' .
+                                                                                                            '<li>'.__('News from us, the team',WYSIJA).'</li>' .
+                                                                                                    '</ul>
+                                                                                                     <p>View an <a target="_blank" href="http://www.mailpoet.com/?wysija-page=1&controller=email&action=view&email_id=1181&wysijap=subscriptions-3">an example blog post email</a> and <a target="_blank" href="http://www.mailpoet.com/?wysija-page=1&controller=email&action=view&email_id=64&wysijap=subscriptions-2">an example newsletter</a>.</p>
+                                                                                                        </div>' .
+                                                                                            '<div class="mpoet-update-subscribe-right">' .
+
+                                                                                            '<iframe width="380" scrolling="no" frameborder="0" src="http://www.mailpoet.com/?wysija-page=1&controller=subscribers&action=wysija_outter&wysija_form=5&external_site=1&wysijap=subscriptions-3" class="iframe-wysija" vspace="0" tabindex="0" style="position: static; top: 0pt; margin: 0px; border-style: none; height: 180px; left: 0pt; visibility: visible; background-color: #f1f1f1!important;" marginwidth="0" marginheight="0" hspace="0" allowtransparency="true" title="Subscription Wysija"></iframe>
+                                                                                                </div>
+                                                                                                <div style="clear:both;"></div>
+
+                                                                                                </div>',
 			)
 		);
 

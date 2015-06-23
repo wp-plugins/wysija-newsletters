@@ -312,7 +312,7 @@ class WYSIJA_control_back extends WYSIJA_control{
 
         //Create a temporary table
         $temp_table_name = '[wysija]user'. time();
-        $temp_table_create = 'CREATE TEMPORARY TABLE IF NOT EXISTS '.$temp_table_name . ' (user_id int (10) NOT NULL, PRIMARY KEY (user_id)) ENGINE=MyISAM';
+        $temp_table_create = 'CREATE TEMPORARY TABLE IF NOT EXISTS '.$temp_table_name . ' (user_id int (10) NOT NULL, PRIMARY KEY (user_id))';
         $temp_table_insert = 'INSERT IGNORE INTO '.$temp_table_name.' ' . $this->_batch_select['query'];
         $model_user = WYSIJA::get('user','model');
 

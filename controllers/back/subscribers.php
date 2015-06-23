@@ -212,11 +212,14 @@ class WYSIJA_control_back_subscribers extends WYSIJA_control_back{
             unset($data['user_list']['list_id']);
             $data['message_success']=__('Subscriber has been saved.',WYSIJA);
             $id=$helper_user->addSubscriber($data,true);
-            //$id= parent::save();
             if(!$id) {
                 $this->viewShow=$this->action='add';
                 $data=array('details'=>$_REQUEST['wysija']['user']);
                 return $this->add($data);
+            } else {
+                if(isset($_POST['wysija']['field'])) {
+                    WJ_FieldHandler::handle_all($_POST['wysija']['field'], $id);
+                }
             }
         }
         $this->redirect();

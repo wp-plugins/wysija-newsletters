@@ -191,7 +191,7 @@ class WYSIJA_help_server extends WYSIJA_object {
   `sub_date` INT unsigned DEFAULT 0,
   `unsub_date` INT unsigned DEFAULT 0,
   PRIMARY KEY (`list_id`,`user_id`)
-) ENGINE=MyISAM';
+)';
 
         global $wpdb;
 
